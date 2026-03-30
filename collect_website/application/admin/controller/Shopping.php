@@ -1415,6 +1415,93 @@ class Shopping
         }
     }
 
+    //选购单--start
+    public function cart_manage(Request $request){
+        $dat = input();
+        $pa = intval($dat['pa']);
+
+        if ($request->isAjax()) {
+            // 排序
+            $order = input('sort') . ' ' . input('order');
+            // 分页
+            $limit = input('offset') . ',' . input('limit');
+
+            // 连接数据库
+            $conn = Db::connect($this->config);
+            //显示未购买的选购单
+            $total = $conn->name('cart')->where(['is_buy'=>0])->count();
+            $data = $conn->name('cart')
+                ->where(['is_buy'=>0])
+                ->order($order)
+                ->limit($limit)
+                ->select();
+
+            foreach ($data as &$item) {
+                $user = Db::name('website_user')->where(['id'=>$item['user_id']])->find();
+                if(!empty($user['realname'])){
+                    $item['buyer_name'] = $user['realname'].'（'.$user['custom_id'].'）';
+                }
+                elseif(!empty($user['nickname'])){
+                    $item['buyer_name'] = $user['nickname'].'（'.$user['custom_id'].'）';
+                }else{
+                    $item['buyer_name'] = $user['custom_id'];
+                }
+                $item['created_at'] = date('Y-m-d H:i',$item['created_at']);
+
+                $item['goods_name'] = $conn->name('goods')->where(['goods_id'=>$item['goods_id']])->field('goods_name')->find()['goods_name'];
+            }
+
+            return json(['message' => "", 'status' => 0, 'total' => $total, 'rows' => $data]);
+        } else {
+            return view('', ['pa'=>$pa]);
+        }
+    }
+
+    public function cart_detail(Request $request){
+        $dat = input();
+        $id = isset($dat['id'])?$dat['id']:0;
+
+        if($request->isAjax()){
+
+        }else{
+            $conn = Db::connect($this->config);
+            $cartDetail = $conn->name('cart')->where(['is_buy'=>0,'cart_id'=>$id])->find();
+
+            $user = Db::name('website_user')->where(['id'=>$cartDetail['user_id']])->find();
+            if(!empty($user['realname'])){
+                $cartDetail['buyer_name'] = $user['realname'].'（'.$user['custom_id'].'）';
+            }
+            elseif(!empty($user['nickname'])){
+                $cartDetail['buyer_name'] = $user['nickname'].'（'.$user['custom_id'].'）';
+            }else{
+                $cartDetail['buyer_name'] = $user['custom_id'];
+            }
+            $cartDetail['created_at'] = date('Y-m-d H:i',$cartDetail['created_at']);
+
+            $goods = $conn->name('goods')->where(['goods_id'=>$cartDetail['goods_id']])->field('goods_name,buyer_id,api_id,shop_id')->find();
+            $cartDetail['shop_name'] = '';
+            if($goods['shop_id']>0){
+                #自营商家
+                $cartDetail['shop_name'] = Db::name('website_user_company')->where(['id'=>$goods['shop_id']])->field('company')->find()['company'];
+                $cartDetail['shop_name'] .= '（自营）';
+            }
+            elseif($goods['api_id']>0){
+                #接口商家
+                $cartDetail['shop_name'] = Db::name('website_user_company')->where(['id'=>$goods['api_id']])->field('company')->find()['company'];
+                $cartDetail['shop_name'] .= '（接口）';
+            }
+            elseif($goods['buyer_id']>0){
+                #买手
+                $cartDetail['shop_name'] = Db::name('website_buyer')->where(['id'=>$goods['buyer_id']])->field('name')->find()['name'];
+                $cartDetail['shop_name'] .= '（买手）';
+            }
+
+            return view('',compact('id','cartDetail','goods'));
+        }
+    }
+    //选购单--end
+
+
     //订单处理--start
     public function order_manage(Request $request){
         $dat = input();
@@ -1637,7 +1724,8 @@ class Shopping
                 ]);
                 return json(['code'=>0,'msg'=>'操作成功']);
             }
-        }else{
+        }
+        else{
             #1、获取账单信息
             $order = Db::name('website_order_list')->where(['id'=>$id])->find();
             $order['content'] = json_decode($order['content'],true);

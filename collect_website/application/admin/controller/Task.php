@@ -24,11 +24,13 @@ class Task extends  Auth{
 
             $_notice = ['1'=>'手机号码','2'=>'电子邮箱'];
             $_status = ['-1'=>'拒绝邀请','0'=>'待确认','1'=>'已确认'];
+            $_identify = ['0'=>'员工客服','1'=>'管理员客服'];
             foreach($rows as $k=>$v){
                 $rows[$k]['notice_type'] = $_notice[$v['verify_type']];
                 $rows[$k]['createtime'] = date('Y-m-d H:i',$v['createtime']);
 //                $rows[$k]['suretime'] = date('Y-m-d H:i',$v['suretime']);
                 $rows[$k]['statusname'] = $_status[$v['status']];
+                $rows[$k]['identify'] = $_identify[$v['isadmin']];
             }
             return json(['message' => "", 'status' => 0, 'total' => $count, 'rows' => $rows]);
         }

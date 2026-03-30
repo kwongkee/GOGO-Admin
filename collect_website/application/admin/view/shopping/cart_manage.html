@@ -1,19 +1,22 @@
-{include file="common/header_new"}
+{include file="public/header_new"}
+<style>
+    img{ width:20px;height:20px;}
+</style>
 <body class="gray-bg">
 <div class="row">
     <div class="col-sm-12">
         <div class="ibox float-e-margins">
             <div class="ibox-content">
-                <h3 style="text-align: center;">平台客服管理</h3>
+                <h3 style="text-align: center;">选购单管理</h3>
                 <div id="toolbar" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;">
-                    <button type="button" href="javascript:;" onclick="save();" class="btn btn-default">
-                        新增客服
-                    </button>
+<!--                    <button type="button" href="javascript:;" onclick="save();" class="btn btn-default">-->
+<!--                        新增支付类别-->
+<!--                    </button>-->
                 </div>
                 <table id="table"
 
                 /*默认排序项*/
-                data-sort-name="id"
+                data-sort-name="cart_id"
                 data-sort-order="desc"
                 /*工具栏相关*/
                 data-toolbar="#toolbar"
@@ -33,28 +36,21 @@
 
                 <thead>
                 <tr>
-                    <th data-field="checkbox"
+<!--                    <th data-field="checkbox"-->
+<!--                        data-align="center"-->
+<!--                        data-checkbox="true"></th>-->
+                    <th data-field="ordersn"
                         data-align="center"
-                        data-checkbox="true"></th>
-                    <th data-field="id"
+                        data-sortable="true">选购单号</th>
+                    <th data-field="buyer_name"
                         data-align="center"
-                        data-sortable="true"
-                        data-visible="true">ID</th>
-                    <th data-field="name"
+                        data-sortable="true">买家信息</th>
+                    <th data-field="goods_name"
                         data-align="center"
-                        data-sortable="true">客服名称</th>
-                    <th data-field="notice_type"
+                        data-sortable="true">商品名称</th>
+                    <th data-field="created_at"
                         data-align="center"
-                        data-sortable="true">邀请方式</th>
-                    <th data-field="identify"
-                        data-align="center"
-                        data-sortable="true">身份</th>
-                    <th data-field="statusname"
-                        data-align="center"
-                        data-sortable="true">状态</th>
-                    <th data-field="createtime"
-                        data-align="center"
-                        data-sortable="true">邀请时间</th>
+                        data-sortable="true">创建时间</th>
                     <th data-field="manage"
                         data-align="center"
                         data-sortable="true"
@@ -66,19 +62,16 @@
         </div>
     </div>
 </div>
-<!-- 自定义js -->
-<script src="./static/hadmin/js/content.js?v=1.0.0"></script>
-<script src="./static/hadmin/layui/layui.all.js"></script>
-</body>
-<script>
+
+<script type="text/javascript">
     var table;
 
     $(document).ready(function(){
         table = $('#table').bootstrapTable({
-            url: "{:url('admin/task/notice_list')}",
+            url: "{:url('admin/shopping/cart_manage')}&pa={$pa}",
             queryParams: queryParams,
         });
-        $('.form-control').attr('placeholder','搜索用户名称');
+        $('.form-control').attr('placeholder','搜索仓库名称');
     });
 
     queryParams = function (params) {
@@ -94,13 +87,12 @@
 
     //操作栏的格式化
     function actionFormatter(value, row, index) {
-        var id = row.id;
-        var name = row.name;
+        var id = row.cart_id;
+        var title = row.goods_name;
+        var result = '';
 
-        var result = "";
+        result += '<button style="margin-right: 5px;" type="button" onclick="edit('+id+',\''+title+'\')" class="btn btn-primary btn-xs">查看</button>';
 
-        result += '<button style="margin-right: 5px;" type="button" onclick="edit('+id+',\''+name+'\')" class="btn btn-primary btn-xs">查看</button>';
-        result += '<button style="margin-right: 5px;" type="button" onclick="del('+id+',\''+name+'\')" class="btn btn-danger btn-xs">删除</button>';
         return result;
     }
 
@@ -109,25 +101,15 @@
             type: 2,
             title: '查看-'+name,
             area:['100%','100%'],
-            content: "{:url('admin/task/notice')}&id="+id
-        });
-        // layer.full(index);
-    }
-
-    function save(title) {
-        var index = layer.open({
-            type: 2,
-            title: title,
-            area:['100%','100%'],
-            content: "{:url('admin/task/notice')}"
+            content: "{:url('admin/shopping/cart_detail')}&id="+id
         });
         // layer.full(index);
     }
 
     function del(id,title){
-        layer.confirm('确认删除该客服吗？',function(index){
+        layer.confirm('确认删除该支付类别['+title+']吗？',function(index){
             $.ajax({
-                url: "<?php echo Url('admin/task/del_notice'); ?>",
+                url: "<?php echo Url('admin/shopping/del_cashier_category'); ?>",
                 data:{'id':id},
                 type:'post',
                 cache:false,
@@ -153,6 +135,7 @@
             });
         });
     }
-</script>
 
+</script>
+</body>
 </html>
