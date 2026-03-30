@@ -1,0 +1,115 @@
+{include file="public/header"}
+<body style="padding: 10px;">
+<!-- 上级ID -->
+<input type="hidden" id="pid" value="{$pid}">
+<div class="header">
+    <span>菜单列表</span>
+    <button class="layui-btn layui-btn-sm" onclick="add()">添加</button>
+    <div></div>
+</div>
+
+{if condition="$pid > 0"}
+<button class="layui-btn layui-btn-primary layui-btn-sm" style="float: right;margin: 5px 0px 5px 0px;" onclick="backs({$data.backs_id})">返回上级菜单</button>
+{/if}
+
+<table class="layui-table">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>排序</th>
+        <th>菜单名称</th>
+        <th>控制器</th>
+        <th>方法</th>
+        <th>是否隐藏</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {volist name="data.lists" id="vo"}
+    <tr>
+        <td>{$vo.mid}</td>
+        <td>{$vo.ord}</td>
+        <td>{$vo.title}</td>
+        <td>{$vo.controller}</td>
+        <td>{$vo.method}</td>
+        <td>{$vo.ishidden == 1 ? '隐藏':'显示'}</td>
+        <td>
+            <button class="layui-btn layui-btn-xs" onclick="childs({$vo.mid})">子菜单</button>
+            <button class="layui-btn layui-btn-warm layui-btn-xs" onclick="edit({$vo.mid})">编辑</button>
+            <button class="layui-btn layui-btn-danger layui-btn-xs" onclick="del({$vo.mid})">删除</button>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<script type="text/javascript">
+
+    layui.use(['layer'],function(){
+        layer = layui.layer;
+        $     = layui.jquery;
+    });
+
+    // 添加管理员
+    function add()
+    {
+        var pid = $('#pid').val();
+        layer.open({
+            type:2,
+            title:'添加菜单',
+            shade:0.3,
+            area:['480px','420px'],
+            content:'{:Url("agents/menu/add")}&pid='+pid
+        });
+    }
+
+    // 编辑操作
+    function edit(id)
+    {
+        layer.open({
+            type:2,
+            title:'编辑菜单',
+            shade:0.3,
+            area:['480px','420px'],
+            content:'{:Url("agents/menu/edit")}&mid='+id
+        });
+    }
+
+    function del(id)
+    {
+        layer.confirm('确定要删除吗？',{icon:3,btn:['确定','取消']},function(){
+
+            $.post("{:Url('agents/menu/doDel')}",{mid:id},function(res){
+                if(res.code == 1) {
+                    layer.msg(res.msg,{icon:1});
+                    setTimeout(function(){
+                        layer.closeAll();
+                        parent.window.location.reload();
+                    },1500);
+                } else {
+                    layer.alert(res.msg,{icon:2});
+                }
+            },'json');
+        })
+    }
+
+    // 子菜单
+    function childs(mid)
+    {
+        //var host = '{$_SERVER["SERVER_NAME"]}{$_SERVER["REQUEST_URI"]}&pid='+mid;
+        var host = '{:Url("agents/menu/list")}&pid='+mid;
+        // 跳转
+        window.location.href = host;
+    }
+
+    //返回上级菜单
+    function backs(pid) {
+        //var host = '{$_SERVER["SERVER_NAME"]}{$_SERVER["REQUEST_URI"]}&pid='+pid;
+        var host = '{:Url("agents/menu/list")}&pid='+pid;
+        window.location.href = host;
+    }
+</script>
+
+</body>
+</html>

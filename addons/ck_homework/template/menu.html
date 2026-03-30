@@ -1,0 +1,161 @@
+{template 'common/header'}
+<ul class="nav nav-tabs">
+	{template 'config_header'}
+	<li style="float:right;"><a href="{$urlt}&op=add" class="btn btn-primary"><i class="fa fa-plus"></i> 添加</a></li>
+</ul>
+
+{if $op == 'add' || $op == 'edit'}
+<style>
+	.t_input{ height:30px; border: 1px solid #cccc; line-height: 30px; border-radius: 5px;}
+</style>
+<script>
+	//类型
+	function lxpeck(id) {
+		if(id == 1){
+			document.getElementById("lxpeck1").style.display= "none";
+			document.getElementById("lxpeck2").style.display= "block";
+		}else{
+			document.getElementById("lxpeck1").style.display= "block";
+			document.getElementById("lxpeck2").style.display= "none";
+		}
+	}
+</script>
+<div class="main">
+	<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data" onsubmit='return formcheck()'>
+	<input type="hidden" name="token" value="{$_W['token']}" />
+    	<input type="hidden" name="cid" value="{$srdb['cid']}" />
+        <div class="panel panel-default">
+            <div class="panel-heading">
+            	{if $op == 'add'}添加{elseif $op == 'edit'}修改{/if}
+            </div>
+            <div class="panel-body">
+                
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">名称</label>
+                    <div class="col-xs-12 col-sm-9" >
+						<input type="txt" class="form-control" name="titlename" value="{$srdb[titlename]}">
+                    </div>
+                </div>
+				
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">类型</label>
+                    <div class="col-xs-12 col-sm-9" >
+                    	<p class="form-control-static">
+							<input type="radio" name="lx_type" value="0" {if $srdb[lx_type]!='1'}checked{/if} onclick="lxpeck(0)"/>&nbsp;栏目&nbsp;&nbsp;&nbsp;&nbsp;
+							<input type="radio" name="lx_type" value="1" {if $srdb[lx_type]=='1'}checked{/if} onclick="lxpeck(1)"/>&nbsp;单页
+						</p>
+                    </div>
+                </div>
+				
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">图标</label>
+                    <div class="col-xs-12 col-sm-9" >
+						{php echo tpl_form_field_image('icon_img', $srdb['icon_img'])}
+						<br/>
+						建议尺寸64*64
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">是否显示</label>
+                    <div class="col-xs-12 col-sm-9" >
+						<p class="form-control-static"><input type="checkbox" name="showt" value="1" {if $srdb['showt'] == '1'}checked{/if} /></p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">序号</label>
+                    <div class="col-xs-12 col-sm-9" >
+                    	<input type="txt" class="form-control" id="listorder" name="listorder" value="{$srdb[listorder]}" style="width:100px;">
+                    </div>
+                </div>
+                
+				<div id="lxpeck1" {if $srdb[lx_type] == '1'} style="display:none;"{/if}>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">访问地址</label>
+                    <div class="col-xs-12 col-sm-9" >
+						<input type="txt" class="form-control" id="turl" name="turl" value="{$srdb[turl]}" > 注意：以http://为开头
+                    </div>
+                </div>
+				</div>
+				
+				<div id="lxpeck2" {if $srdb[lx_type] != '1'} style="display:none;"{/if}>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">详情</label>
+                    <div class="col-xs-12 col-sm-9" >
+						{php echo tpl_ueditor('message', $srdb['message']);}
+                    </div>
+                </div>
+				</div>
+				
+            </div>
+        </div>
+        <div class="form-group col-sm-12 col-xs-12">
+			<input type="submit" name="{$op}_submit" value="保 存" class="btn btn-primary col-lg-1" onclick='return formcheck()' />
+		</div>
+  </form>
+</div>
+
+{else}
+
+<script language="javascript" type="text/javascript">
+	function checkAll(form, name) {
+		for(var i = 0; i < form.elements.length; i++) {
+			var e = form.elements[i];
+			if(e.name.match(name)) {
+				e.checked = form.elements['chkall'].checked;
+			}
+		}
+	}
+</script>
+<style>
+	.t_input{ height:26px; border: 1px solid #cccc; line-height: 26px; border-radius: 5px; text-align:center;}
+</style>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <form method="post" class="form">
+	<input name="token" type="hidden" value="{$_W['token']}" />
+	<div class="table-responsive">
+	  <table class="table">
+		<tr>
+			<th width="30">选择</th>
+			<th width="100">序号</th>
+			<th width="40">图标</th>
+			<th >名称</th>
+			<th >类型</th>
+			<th >状态</th>
+			<th width="100">操作</th>
+		</tr>
+		{loop $list $key $value}
+		<tr>
+			<td><input type="checkbox" name="ids[]" value="{$value[id]}"></td>
+			<td><input type="text" name="listorder[{$value[id]}]" value="{$value[listorder]}" size="6" class="t_input"/></td>
+			<td><img src="{php echo tomedia($value[icon_img]);}" style="width:30px; height:30px;" /></td>
+			<td>{$value[titlename]}</td>
+			<td>{if $value[lx_type]=='1'}单页{else}栏目{/if}</td>
+			<td>{if $value[showt]=='1'}显示{else}隐蔽{/if}</td>
+			<td>
+				<a class="btn btn-info btn-sm" href="{$urlt}&op=edit&id={$value[id]}" title="修改"><i class="fa fa-edit"></i></a>
+				<a class="btn btn-danger btn-sm" href="{$urlt}&op=delete&id={$value[id]}" title="删除" onclick="return confirm('确认删除吗？');return false;"><i class="fa fa-remove"></i></a>
+			</td>
+		</tr>
+		{/loop}
+		{if $pager}
+		<tr>
+			<td colspan="7">{$pager}</td>
+		</tr>
+		{/if}
+		<tr >
+			<td colspan="7" align="center">
+				<input type="checkbox" id="chkall" name="chkall" onclick="checkAll(this.form, 'ids')">&nbsp;全选 &nbsp;&nbsp;
+				<input type="radio" name="optype" value="1">&nbsp;删除 &nbsp;&nbsp;
+				<input type="radio" name="optype" value="2">&nbsp;修改 &nbsp;&nbsp;
+				<input type="submit" name="listsubmit" value="提  交" class="btn btn-primary" onclick="return confirm('确认该操作吗？');return false;">
+			</td>
+		 </tr>
+	  </table>
+	</div>
+	</form>
+  </div>
+</div>
+{/if}
+
+{template 'common/footer'}

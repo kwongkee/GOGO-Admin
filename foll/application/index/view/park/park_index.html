@@ -1,0 +1,142 @@
+{include file="common/header"}
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<body>
+<div class="x-nav">
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<div class="x-body">
+    <div class="layui-btn-group demoTable">
+        <button class="layui-btn" onclick="getCheck()">导出选中</button>
+        <button class="layui-btn" onclick="getAll()">导出全部</button>
+    </div>
+    <div class="layui-row" style="float:right;">
+        <form class="layui-form layui-col-md12 x-so" action="{:Url('index/park_index')}" method="post">
+            <input type="text" name="search"  placeholder="请输入设备编号或泊位编号" autocomplete="off" class="layui-input">
+            <button class="layui-btn"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+    </div>
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th style="width:18px;">
+                <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+            </th>
+            <th style="width:60px;">序号</th>
+            <th style="width:62px;">泊位编号</th>
+            <th style="width:57px;">设备编号</th>
+            <!--<th>道路名称</th>-->
+            <th>泊位地址</th>
+            <th>状态</th>
+            <th style="width:68px;">计费方案</th>
+            <th>数据更新时间</th>
+            <th>操作</th></tr>
+        </thead>
+        <tbody>
+        {volist name="list.data" item="key" id="vo" empty="<td colspan='9'>没有数据</td>"}
+        <tr>
+            <td>
+                <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='{"id":{$vo.sid},"park_code":"{$vo.park_code}","dev_code":"{$vo.numbers}","road":"{$vo.Road}","addr":"{$vo.City}{$vo.Area}{$vo.Town}{$vo.Committee}"}'><i class="layui-icon">&#xe605;</i></div>
+            </td>
+            <td>{$vo.sid}</td>
+            <td>{$vo.park_code}</td>
+            <td>{$vo.numbers}</td>
+            <!--<td></td>-->
+            <td>{$vo.City}{$vo.Area}{$vo.Town}{$vo.Committee}{$vo.Road}{$vo.Road_num}号</td>
+            {if isset($status[$vo['status']])}
+            <td>{$status[$vo['status']]}</td>
+            {else}
+            <td>空</td>
+            {/if}
+            <td>{$vo.ChargeClass}</td>
+            {if empty($vo.up_time)}
+            <td>空</td>
+            {else}
+            <td>{$vo.up_time|date='Y-m-d H:i',###}</td>
+            {/if}
+            <td><a href="{:Url('index/park_del')}&id={$vo.sid}">删除</a></td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+    <div class="page">
+        <div>
+           {$page}
+        </div>
+    </div>
+</div>
+<script>
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#start' //指定元素
+        });
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#end' //指定元素
+        });
+    });
+    var data=null;
+    function getCheck (argument) {
+        data = tableCheck.getData();//异步发送邮箱
+        if(data.length<1){
+            alert('请选择');
+            return false;
+        }
+       layer.open({
+            type: 1,
+            area: ['300px', '150px'],
+            content: '<div class="layui-row"><form class="layui-form layui-col-md12 x-so"><input style="width:100%;" class="layui-input" placeholder="请输入接收文件邮箱" name="email" id="email"><a style="margin-left:112px;margin-top:12px" class="layui-btn" onclick="RequestSendEmail();return false;">确认</a></form></div>'
+        });
+
+    }
+    function getAll() {
+      layer.open({
+            type: 1,
+            area: ['300px', '150px'],
+            content: '<div class="layui-row"><form class="layui-form layui-col-md12 x-so"><input style="width:100%;" class="layui-input" placeholder="请输入接收文件邮箱" name="email" id="email"><a style="margin-left:112px;margin-top:12px" class="layui-btn" onclick="RequestSendEmailAllData();return false;">确认</a></form></div>'
+        });
+    }
+    function RequestSendEmailAllData() {
+        var em =$("#email").val();
+        if(em==''){
+            layer.msg('邮箱不能空');
+            return false;
+        }
+        jiazai();
+        $.post("{:Url('index/sendParkNumberMail')}",{
+            "type":2,
+            "data":JSON.stringify(data),
+            "email":em
+        },function (data) {
+            layer.closeAll();
+            layer.msg(data.msg);
+        });
+        return false;
+    }
+    function RequestSendEmail() {
+        var em =$("#email").val();
+        if(em==''){
+            layer.msg('邮箱不能空');
+            return false;
+        }
+        jiazai();
+        $.post("{:Url('index/sendParkNumberMail')}",{
+            "type":1,
+            "data":JSON.stringify(data),
+            "email":em
+        },function (data) {
+            layer.closeAll();
+            layer.msg(data.msg);
+        });
+        return false;
+    }
+
+    function jiazai() {
+       layer.load(1, {shade: 0.3});
+    }
+</script>
+</body>
+</html>

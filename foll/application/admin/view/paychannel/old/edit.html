@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>海关申报主体</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+</head>
+<body>
+
+<form class="layui-form" action="">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <input type="hidden" name="id" value="{$info['id']}">
+        <input type="hidden" name="customId" value="{$info['customId']}">
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">商户名称</label>
+        <div class="layui-input-block">
+            <input type="text" value="{$info['customName']}" readonly  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">支付企业</label>
+        <div class="layui-input-block">
+            <input type="text" value="{$info['payName']}" readonly  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">商户号</label>
+        <div class="layui-input-block">
+            <input type="number" name="merchatId" value="{$info['merchatId']}"  placeholder="请填写商户号" required lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">商户Key</label>
+        <div class="layui-input-block">
+            <input type="text" name="merchatKey" value="{$info['merchatKey']}"  placeholder="请填写商户Key" required lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">收款账户</label>
+        <div class="layui-input-block">
+            <input type="text" name="recpAccount" value="{$info['recpAccount']}" placeholder="请填写收款账户" required lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">收款企业信用代码</label>
+        <div class="layui-input-block">
+            <input type="text" name="recpCode" value="{$info['recpCode']}" placeholder="请填写收款企业信用代码" required lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">收款企业名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="recpName" value="{$info['recpName']}" placeholder="请填写收款企业名称" required lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">确认编辑</button>
+            <button type="reset" class="layui-btn layui-btn-danger">重置数据</button>
+        </div>
+    </div>
+</form>
+
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+
+<script>
+    //Demo
+    layui.use('form', function(){
+        var form = layui.form;
+
+        //监听提交
+        form.on('submit(formDemo)', function(data) {
+            // 获取通道名称
+            var pay = $('#pay option:selected').html();
+            data.field.payName = pay;
+            $.ajax({
+                url:"{:Url('paychannel/doedit')}",
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (res) {
+                    var red = JSON.parse(res);
+                    if(red.code <= 0) {
+                        layer.msg(red.msg);
+                        return false;
+                    }
+                    layer.msg(red.msg);
+                    setTimeout(function(){
+                        layer.closeAll();
+                        parent.window.location.reload();
+                    },1200)
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</html>

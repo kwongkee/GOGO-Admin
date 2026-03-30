@@ -1,0 +1,318 @@
+{include file="common/header_inner_new"}
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    #service_ids{width:200px;}
+    .addService,.delService{font-size:20px;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <input type="text" style="display:none;" name="type" id="type" value="{$type}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">等级名称</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" lay-verify="required" name="name" id="name" value="{$data['name']}" placeholder="等级名称">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">内页背景色</div>
+                            <div class="layui-input-block">
+                                <div id="color"></div>
+                                <input type="hidden" name="color" value="{$data['color']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">等级图片(800*800)</div>
+                            <div class="layui-input-block">
+                                <div class="layui-upload" style="margin-top: 10px;">
+                                    <button type="button" class="layui-btn" id="img_file-upload">上传图片(一张)</button>
+                                    <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                                        预览图：
+                                        <div class="layui-upload-list" id="img_file-upload-list">
+                                            {if !empty($data['thumb'])}
+                                            <div style="display: inline-block;">
+                                                <img onclick="seePic(this);" src="<?php echo str_replace('//shop.gogo198.cn','',$data['thumb']);?>" class="layui-upload-img" style="width:80px;height:80px;">
+                                                <button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button>
+                                                <input type="hidden" name="thumb[]" value="<?php echo str_replace('//shop.gogo198.cn/','',$data['thumb']);?>">
+                                            </div>
+                                            {/if}
+                                        </div>
+                                    </blockquote>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">选择服务</div>
+                            <div class="layui-input-block disf">
+                                <div id="service_ids" class="xm-select-demo"></div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">会员价格</div>
+                            <div class="layui-input-block">
+                                <table class="layui-table table_price">
+                                    <thead>
+                                        <th>时效名称</th>
+                                        <th>币种</th>
+                                        <th>价格</th>
+                                        <th>时效天数</th>
+                                        <th>操作</th>
+                                    </thead>
+                                    <tbody>
+                                        {if !empty($data['service_desc'])}
+                                            {volist name="data.service_desc" key="k" id="v"}
+                                            <tr>
+                                                <td>
+                                                    <input type="text" class="layui-input" lay-verify="" name="mname[]" value="{$v['mname']}" placeholder="时效名称" readonly style="background:#e6e6e6;">
+                                                </td>
+                                                <td>
+                                                    <select name="mcurrency[]" lay-search>
+                                                        {volist name="currency" id="vo"}
+                                                        <option value="{$vo['id']}" {if $v['mcurrency']==$vo['id']}selected{/if}>{$vo['currency_symbol_standard']}</option>
+                                                        {/volist}
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="layui-input" lay-verify="" name="mprice[]" value="{$v['mprice']}" placeholder="购买价格">
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="layui-input" lay-verify="" name="mday[]" value="{$v['mday']}" placeholder="购买天数">
+                                                </td>
+                                                <td>
+                                                    <div class="disf">
+                                                        {if $k!=1}
+                                                            <div class="layui-btn layui-btn-danger delService" onclick="delete_service(this)">×</div>
+                                                        {/if}
+                                                        <div class="layui-btn layui-btn-normal addService" onclick="add_service(this)">+</div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {/volist}
+                                        {else}
+                                            <tr>
+                                                <td>
+                                                    <input type="text" class="layui-input" lay-verify="" name="mname[]" value="" placeholder="时效名称">
+                                                </td>
+                                                <td>
+                                                    <select name="mcurrency[]" lay-search>
+                                                        {volist name="currency" id="vo"}
+                                                        <option value="{$vo['id']}" {if 5==$vo['id']}selected{/if}>{$vo['currency_symbol_standard']}</option>
+                                                        {/volist}
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="layui-input" lay-verify="" name="mprice[]" value="" placeholder="购买价格">
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="layui-input" lay-verify="" name="mday[]" value="" placeholder="购买天数">
+                                                </td>
+                                                <td>
+                                                    <div class="disf">
+                                                        <div class="layui-btn layui-btn-normal addService" onclick="add_service(this)">+</div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {/if}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script src="./static/hadmin/assets/layui/xm-select.js"></script>
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload','colorpicker'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+        var colorpicker = layui.colorpicker;
+
+        xmSelect.render({
+            name:'service_ids',
+            el: '#service_ids',
+            autoRow: true, //自动换行
+            filterable: true, //可搜索
+            model: {
+                icon: 'hidden',//是否展示复选框或者单选框图标 show, hidden:变换背景色  ！！这句话是重点，不然会变成父节点也有单选框！！
+            },
+            tree: {
+                show: true, //用树显示
+                showFolderIcon: true, //是否显示节点前的三角图标
+                expandedKeys: true, //默认全部展开
+                showLine: true, //显示渐近线
+                indent: 20, //间距
+                strict: false, //重点！！设置成非严格父子模式，这样父节点被禁用，子节点依然可以点击
+            },
+            toolbar: {
+                show: true, //显示工具条
+                list: ['ALL', 'REVERSE', 'CLEAR']
+            },
+            height: '300px', //最大下拉框高度
+            data: {$services},
+            initValue:[{$data["service_ids"]}]
+        });
+
+        {if !empty($data['color'])}
+            colorpicker.render({
+                elem:'#color',
+                alpha:true,
+                size:'lg',
+                predefine:true,
+                color:'{$data["color"]}',
+                done:function(color){
+                    $('input[name="color"]').val(color);
+                }
+            });
+        {else}
+            colorpicker.render({
+                elem:'#color',
+                alpha:true,
+                size:'lg',
+                done:function(color){
+                    $('input[name="color"]').val(color);
+                }
+            });
+        {/if}
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+
+            $.ajax({
+                url:"{:Url('admin/shopping/save_member_level')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+        // 轮播图文件
+        upload.render({
+            elem: '#img_file-upload'
+            ,url: '{:Url("admin/basic/upload_file")}'
+            ,accept: 'image'
+            ,data: { folder: 'centralize', type: 'website_level'}
+            ,multiple: false
+            ,number:1
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+
+                    $('#img_file-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="thumb[]" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+    });
+
+    function add_service(t){
+        var layer = layui.layer,$ = layui.$,form  = layui.form;
+        var tr_num = $('.table_price').find('tbody').find('tr').length;
+
+        var html = '<tr>\n' +
+            '                                                <td>\n' +
+            '                                                    <input type="text" class="layui-input" lay-verify="" name="mname['+tr_num+']" value="" placeholder="时效名称">\n' +
+            '                                                </td>\n' +
+            '                                                <td>\n' +
+            '                                                    <select name="mcurrency['+tr_num+']" lay-search>\n';
+                                                                    {volist name="currency" id="vo"}
+            html+='                                                        <option value="{$vo.id}" {if 5==$vo.id}selected{/if}>{$vo.currency_symbol_standard}</option>\n';
+                                                                    {/volist}
+            html+='                                              </select>\n' +
+            '                                                </td>\n' +
+            '                                                <td>\n' +
+            '                                                    <input type="text" class="layui-input" lay-verify="" name="mprice['+tr_num+']" value="" placeholder="购买价格">\n' +
+            '                                                </td>\n' +
+            '                                                <td>\n' +
+            '                                                    <input type="text" class="layui-input" lay-verify="" name="mday['+tr_num+']" value="" placeholder="购买天数">\n' +
+            '                                                </td>\n' +
+            '                                                <td>\n' +
+            '                                                    <div class="disf">\n' +
+            '                                                        <div class="layui-btn layui-btn-danger delService" onclick="delete_service(this)">×</div>\n'+
+            '                                                        <div class="layui-btn layui-btn-normal addService" onclick="add_service(this)">+</div>\n' +
+            '                                                    </div>\n' +
+            '                                                </td>\n' +
+            '                                            </tr>';
+
+            $('.table_price').find('tbody').append(html);
+            form.render(null,'component-form-element');
+    }
+
+    function delete_service(t){
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该时效？', {
+            btn: ['删除','取消']
+        }, function(){
+            let mname = $(t).parents(":eq(2)").find('td').eq(0).find('input').val();
+            if("{$id}">0 && mname!=''){
+                //已有会员信息
+                $.ajax({
+                    url:"{:Url('admin/shopping/del_member_level_goods')}",
+                    method:'post',
+                    data:{'id':"{$id}",'mname':mname},
+                    dataType:'JSON',
+                    success:function(res){
+
+                    },
+                    error:function (data) {
+                        layer.msg('系统错误',{time:2000});
+                    }
+                });
+            }
+
+            $(t).parents(":eq(2)").remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+</script>
+</body>
+</html>

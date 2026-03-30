@@ -1,0 +1,79 @@
+<div class="ui-footer ui-footer-stable ui-btn-group" style="background-color:#1f2127;color:#a6a6a6;opacity:0.9">
+	<ul class="ui-tiled">
+		<li id="bottom_menu_li">
+			<div class="fa fa-align-justify" style="display:block"></div>
+		</li>
+		<li onclick="window.location.href='{php echo $this->createMobileUrl('mymoments',array('user_openid'=>$info['openid']))}'">
+			<div class="fa fa-camera" style="display:block"></div>
+			<i>
+			TA的帖子
+		    </i>
+		</li>
+		<li onclick="startTalk()">
+			<div class="fa fa-comments" style="display:block"></div>
+			<i>
+		    对话
+		    </i>
+		</li>
+		<li onclick="$('#report').addClass('show');">
+			<div class="fa fa-user-times" style="display:block;color:#e72424"></div>
+			<i>
+		    拉黑
+		    </i>
+		</li>
+	</ul>
+</div>
+<div class="ui-actionsheet" id="report">  
+	<div class="ui-actionsheet-cnt">
+		{if !$defriend_status}
+		<button onclick="defriend('{$info['openid']}','y')">拉黑</button>  
+		{else}
+		<button onclick="defriend('{$info['openid']}','n')">从黑名单中移出</button>  
+		{/if}
+		<!-- <button class="ui-actionsheet-del">举报</button>   -->
+		<button onclick="$('.ui-actionsheet').removeClass('show')">取消</button> 
+	</div>
+</div>
+{template 'pop_menu'}
+<script type="text/javascript">
+	function startTalk() {
+		if('{php echo $info['openid']}' == '{php echo self::$openid}') {
+			alert("您不能和自己聊天");
+		}else{
+			window.location.href="{php echo $this->createMobileUrl('chat',array('chat_openid'=>$info['openid']))}";	
+		}
+	}
+	// 拉黑
+	function defriend(openid,type) {
+		if(!openid) {
+			alert('openid is error');
+			return;
+		}
+
+		if(type == 'y') {
+			if(!confirm('确定加入黑名单？移入黑名单后将不再接受该用户消息以及点评，您可以在个人中心黑名单中进行管理')) {
+				return;
+			}	
+		}
+		if(type == 'n') {
+			if(!confirm('确认从黑名单中移除？移除后可以接收对方消息！')) {
+				return;
+			}	
+		}
+		
+
+		$.ajax({
+			type:'post',
+			data:{defriend_openid:openid,status:type},
+			url:"{php echo $this->createMobileUrl('defriend')}",
+			success:function(d,s) {
+				
+				if(d.res == '100') {
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+	}
+</script>

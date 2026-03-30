@@ -1,0 +1,113 @@
+{include file="public/header_new"}
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+
+            <div class="ibox-content">
+                <h3 style="text-align: center;">转关单预录列表</h3>
+                <table id="table"
+                /*默认排序项*/
+                data-sort-name="create_at"
+                data-sort-order="desc"
+                /*工具栏相关*/
+                data-toolbar="#toolbar"
+                data-search="true" /*搜索框*/
+                data-search-on-enter-key="false"
+                data-show-refresh="true" /*刷新按钮*/
+                /*分页相关*/
+                data-side-pagination="server"
+                data-pagination="true" /*显示分页*/
+                data-page-size="10" /*每页显示条数*/
+                /*移动端相关*/
+                data-mobile-responsive="true"
+                data-card-view="true"
+                data-show-columns="true"
+                /*radio or checkbox字段名称*/
+                data-select-item-name="tids" >
+
+                <thead>
+                <tr>
+                    <th data-field="id"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="false">ID
+                    </th>
+                    <th data-field="ordersn"
+                        data-align="center"
+                        data-sortable="true">预录单号
+                    </th>
+                    <th data-field="user_name"
+                        data-align="center"
+                        data-sortable="true">操作用户
+                    </th>
+                    <th data-field="customs_code"
+                        data-align="center"
+                        data-sortable="true">办理关区
+                    </th>
+                    <th data-field="port_code"
+                        data-align="center"
+                        data-sortable="true">出关区
+                    </th>
+                    <th data-field="trade_mode"
+                        data-align="center"
+                        data-sortable="true">贸易方式
+                    </th>
+                    <th data-field="traf_mode"
+                        data-align="center"
+                        data-sortable="true">运输方式
+                    </th>
+                    <th data-field="country" data-align="center" data-sortable="true">运抵国</th>
+                    <th data-field="pod" data-align="center" data-sortable="true">指运港</th>
+                    <th data-field="create_at"
+                        data-align="center"
+                        data-sortable="true">时间
+                    </th>
+                    <th data-field="manage"
+                        data-align="center"
+                        data-sortable="true"
+                        data-formatter="actionFormatter">操作
+                    </th>
+                </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var table;
+
+    $(document).ready(function () {
+        table = $('#table').bootstrapTable({
+            url: "{:url('admin/Prerecorded/getlist')}&type=zhuanguan",
+            queryParams: queryParams,
+        });
+        $('.form-control').attr('placeholder', '搜索标识');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.tracking_num;
+        var result = "";
+        // result += '<button style="margin-right: 5px;" type="button" onclick="batchView(' + id + ')" class="btn btn-primary btn-xs">查看批次</button>';
+        return result;
+    }
+</script>
+
+</body>
+</html>

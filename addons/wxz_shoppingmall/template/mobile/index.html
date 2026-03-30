@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8"> 
+    <title>我的会员卡</title>
+    <meta name="keywords" content=""> 
+    <meta name="description" content="" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"  content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta content="telephone=no" name="format-detection">
+    <link rel="stylesheet" type="text/css" href="{$modulePublic}skin2016/css/frozen.css" />
+    <link rel="stylesheet" type="text/css" href="{$modulePublic}skin2016/css/base.css" />
+    <link rel="stylesheet" type="text/css" href="{$modulePublic}skin2016/css/center.css" />
+</head>
+
+<style type="text/css">
+    .ui-text1{
+        position:absolute;
+        top:15px;
+        right:10px;
+        font-size:12px;	
+    }
+</style>
+<body>
+    {if !$user['mobile']}
+    <header>
+        <div class="ui-topBox">
+            <div class="ui-couponBox">
+                <a href="{php echo $this->createMobileUrl('reg')}">
+                    {if $pageContents[6]['img']}
+                    <img src="{php echo $attach_url . '/'.$pageContents[6]['img']}" />
+                    {else}
+                    <img src="{$modulePublic}skin2016/img/nocard.png" />
+                    {/if}
+                </a>
+            </div>
+    </header>
+    {else}
+    <header>
+        <div class="ui-topBox">
+            <div class="ui-couponBox">
+                <a href="{php echo $this->createMobileUrl('index')}">
+                    {if $pageContents[5]['img']}
+                    <img src="{php echo $attach_url . '/'.$pageContents[5]['img']}" />
+                    {else}
+                    <img src="{$modulePublic}skin2016/img/vipcar.png" />
+                    {/if}
+                </a>
+                <div class="ui-text1" style="left:10px;top:10px;color:white;font-size: 10px;">姓名: {php echo $user['username'];} </div>
+                <div class="ui-text1" style="left:80px;top:10px;color:white;font-size: 10px;">级别: {php echo $levels[$user['level']];} </div>
+                <div class="ui-text1" style="left:150px;top:10px;color:white;font-size: 10px;">卡号: {php echo sprintf('%05d',$user['uid']);} </div>
+            </div>
+    </header>
+    {/if}
+    <section>
+        <!-- 积分相关 -->
+        <ul class="ui-list ui-list-link ui-list-text border-list ui-boxlist">
+            <li class="ui-widthLi ui-widthLi-borderRight ui-widthLi-borderBottom">
+                <div class="ui-avatar">
+                    <span style="background-image:url('{$modulePublic}skin2016/img/icon-shopPoint.png')"></span>
+                </div>
+                <div class="ui-list-info">
+                    <h4 class="ui-nowrap">会员积分</h4>
+                    {if !$user['mobile']}
+                    <p class="ui-nowrap">激活会员显示积分</p>
+                    {else}
+                    <p class="ui-nowrap">{$user['left_credit']}分<a href = '{php echo $this->createMobileUrl('credit_pass')}'>【转赠好友】</a></p>
+                    {/if}
+                </div>
+            </li>
+            <li class="ui-widthLi ui-widthLi-borderBottom" onclick="location.href = '{php echo $this->createMobileUrl('reg2')}';">
+                <div class="ui-avatar">
+                    <span style="background-image:url('{$modulePublic}skin2016/img/icon-parkPoint.png')"></span>
+                </div>
+                <div class="ui-list-info ">
+                    <h4 class="ui-nowrap">我的资料</h4>
+                    <p class="ui-nowrap">完善资料送{php echo $_W['module_setting']['credit_reg2_credit_num']}积分</p>
+                </div>
+            </li>
+            <li class="ui-widthLi  ui-widthLi-borderRight" onclick="location.href = '{php echo $this->createMobileUrl('user_award_list_credit')}';">
+                <div class="ui-avatar">
+                    <span style="background-image:url('{$modulePublic}skin2016/img/icon-presentPoint.png')"></span>
+                </div>
+                <div class="ui-list-info">
+                    <h4 class="ui-nowrap">我兑换的礼品</h4>
+                    <p class="ui-nowrap">赢积分，换大奖</p>
+                </div>
+            </li>
+            <li class="ui-widthLi" onclick="location.href = '{php echo $this->createMobileUrl('user_award_list_coupon')}';">
+                <div class="ui-avatar">
+                    <span style="background-image:url('{$modulePublic}skin2016/img/icon-pointRecord.png')"></span>
+                </div>
+                <div class="ui-list-info">
+                    <h4 class="ui-nowrap">我的优惠券</h4>
+                    <p class="ui-nowrap">买买买更优惠</p>
+                </div>
+            </li>
+            <div class="ui-divide"></div>
+        </ul>
+        <!-- 停车服务 -->
+        <!-- <div class="ui-parkService">停车服务</div>
+         <ul class="ui-bg-fff">
+             <li class="ui-widthLi2 ui-widthLi-borderRight" onclick="location.href = '{php echo $this->createMobileUrl('reg2')}';">
+                 <div class="ui-avatar ui-icon-s2" >
+                     <span style="background-image:url('{$modulePublic}skin2016/img/icon-plateBound.png')"></span>
+                 </div>
+                 <div class="ui-panel-info" >
+                     <h4 class="ui-nowrap">绑定车牌号</h4>
+                 </div>
+             </li>
+             <li class="ui-widthLi2 ui-widthLi-borderRight" onclick="alert('敬请期待');">
+                 <div class="ui-avatar ui-icon-s2" >
+                     <span style="background-image:url('{$modulePublic}skin2016/img/icon-parkInfo.png')"></span>
+                 </div>
+                 <div class="ui-panel-info" >
+                     <h4 class="ui-nowrap" >停车信息查询</h4>
+                 </div>
+             </li>
+             <li class="ui-widthLi2 ui-widthLi-borderRight" onclick="alert('敬请期待');" >
+                 <div class="ui-avatar ui-icon-s2" >
+                     <span style="background-image:url('{$modulePublic}skin2016/img/icon-autoPay.png')"></span>
+                 </div>
+                 <div class="ui-panel-info" >
+                     <h4 class="ui-nowrap" >自动交费</h4>
+                 </div>
+             </li>
+             <li class="ui-widthLi2" onclick="alert('敬请期待');" >
+                 <div class="ui-avatar ui-icon-s2" >
+                     <span style="background-image:url('{$modulePublic}skin2016/img/icon-payment.png')"></span>
+                 </div>
+                 <div class="ui-panel-info" >
+                     <h4 class="ui-nowrap" >停车交费记录</h4>
+                 </div>
+             </li>
+             <div class="ui-divide"></div>
+         </ul>
+                 
+                 
+        -->
+        <!-- 会员服务 -->
+        <div class="ui-parkService">会员服务</div>
+        <ul class="ui-bg-fff">
+            <li class="ui-widthLi2 ui-widthLi-borderRight" onclick="location.href = '{php echo $this->createMobileUrl('shop_list')}';">
+                <div class="ui-avatar ui-icon-s2" >
+                    <span style="background-image:url('{$modulePublic}skin2016/img/icon-vvvip.png')"></span>
+                </div>
+                <div class="ui-panel-info" >
+                    <h4 class="ui-nowrap" id="applytext">商户优惠</h4>
+                </div>
+            </li>
+
+            <li class="ui-widthLi2 ui-widthLi-borderRight"  onclick="location.href = '{php echo $this->createMobileUrl('award_list')}';">
+                <div class="ui-avatar ui-icon-s2" >
+                    <span style="background-image:url('{$modulePublic}skin2016/img/icon-memberInfo.png')"></span>
+                </div>
+                <div class="ui-panel-info" >
+                    <h4 class="ui-nowrap"  >积分兑换</h4>
+                </div>
+            </li>
+            <li class="ui-widthLi2 ui-widthLi-borderRight" onclick="location.href = '{php echo $this->createMobileUrl('shop_activity_list',array('type'=>2))}';">
+                <div class="ui-avatar ui-icon-s2" >
+                    <span style="background-image:url('{$modulePublic}skin2016/img/icon-memberCoupon.png')"></span>
+                </div>
+                <div class="ui-panel-info" >
+                    <h4 class="ui-nowrap" >商场活动</h4>
+                </div>
+            </li>
+            <li class="ui-widthLi2" onclick="location.href = '{php echo $this->createMobileUrl('user_upLoad_ticket')}';">
+                <div class="ui-avatar ui-icon-s2" >
+                    <span style="background-image:url('{$modulePublic}skin2016/img/icon-pointRecord.png')"></span>
+                </div>
+                <div class="ui-panel-info" >
+                    <h4 class="ui-nowrap" >拍小票赢积分</h4>
+                </div>
+            </li>
+            <div class="ui-divide"></div>
+        </ul>
+    </section>
+    <script type="text/javascript" src="{$modulePublic}skin2016/js/zepto.min.js"></script>
+    <script type="text/javascript" src="{$modulePublic}skin2016/js/frozen.js"></script>
+    <script src="{$modulePublic}skin2016/js/layer.m.js"></script>
+    <script type="text/javascript">
+                        function applying() {
+                        layer.open({
+                        content: '<div style=\'text-align:center\'>尊敬的顾客，您的高级会员身份正在申请中<br><a href=\'http://wx.cnsaga.com/app/index.php?i=4&c=entry&do=showRights&m=member\' style=\'color:#fff;text-decoration:underline !important;\'>点击提前查看高级会员特权</a></div>',
+                                style: 'background-color:#52277D; color:#fff;',
+                                time: 4
+                        });
+                        }
+                function alert(msg) {
+                layer.open({
+                content: msg,
+                        style: 'background-color:#52277D; color:#fff; border:none;text-align:center',
+                        time: 2
+                });
+                }
+                function registValuedMember(uid) {
+                layer.open({
+                content: '您确认申请高级会员吗？申请成功后会有客服专员联系您',
+                        btn: ['确认', '取消'],
+                        shadeClose: false,
+                        yes: function () {
+                        $.post("./index.php?i=4&c=entry&do=registValuedMember&m=member", {"uid": uid}, function (msg) {
+                        if (msg.status) {
+                        layer.open({
+                        content: msg.msg,
+                                style: 'background-color:#52277D; color:#fff; border:none;text-align:center',
+                                time: 3
+                        });
+                                $('#applytext').html('申请中...');
+                                $('#applytext').css({'color': '#999'});
+                                //                        window.location.reload();
+                        } else {
+                        layer.open({
+                        content: msg.msg,
+                                style: 'background-color:#52277D; color:#fff; border:none;text-align:center',
+                                time: 3
+                        });
+                        }
+                        }, 'json')
+                        }, no: function () {
+                }
+                });
+                }
+
+
+                function reapplying(uid) {
+                layer.open({
+                content: '您确认二次申请高级会员吗？此次申请将扣除您40000积分，审核成功后会有客服专员联系您',
+                        btn: ['确认', '取消'],
+                        shadeClose: false,
+                        yes: function () {
+                        $.post("./index.php?i=4&c=entry&do=ReApplyinfo&m=member", {"uid": uid}, function (msg) {
+                        if (msg.status) {
+                        layer.open({
+                        content: msg.msg,
+                                style: 'background-color:#52277D; color:#fff; border:none;text-align:center',
+                                time: 3
+                        });
+                                $('#applytext').html('申请中...');
+                                $('#applytext').css({'color': '#999'});
+                                //                        window.location.reload();
+                        } else {
+                        layer.open({
+                        content: msg.msg,
+                                style: 'background-color:#52277D; color:#fff; border:none;text-align:center',
+                                time: 3
+                        });
+                        }
+                        }, 'json')
+                        }, no: function () {
+                }
+                });
+                }
+    </script>
+    {template 'share'}
+</body>
+</html>

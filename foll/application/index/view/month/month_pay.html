@@ -1,0 +1,58 @@
+{include file="common/header"}
+<body>
+<div class="x-nav">
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<a class="layui-btn" style="margin-left:14px;" href="{:Url('month_card/exproPayInfo')}&mid={$mid}">导出支付</a>
+<a class="layui-btn" style="margin-left:14px;">重新通知支付</a>
+<div class="x-body">
+    <table class="layui-table" lay-size="sm">
+        <thead>
+        <th>序号</th>
+        <th>交易单号</th>
+        <th>姓名</th>
+        <th>受理编号</th>
+        <th lay-data="{field:'center', width:80}">方案名称</th>
+        <th lay-data="{align:'center',width:80}" >支付金额</th>
+        <th lay-data="{field:'center', width:100}" >支付状态</th>
+        <th lay-data="{field:'center', width:100}" >支付时间</th>
+        </thead>
+        <tbody>
+        {volist name='list' id="item" key='k' empty='空数据'}
+        <tr>
+
+            <td>{$k}</td>
+            <td>{$item['pay']['ordersn']}</td>
+
+            <td>{$item.user_name}</td>
+            <td>{$item.flag_id}</td>
+            <td>{$item.scheme_name}</td>
+            {if empty($item['pay']['pay_money'])}
+            <td>0</td>
+            {else}
+            <td>{$item['pay']['pay_money']}</td>
+            {/if}
+            {if empty($item['pay']['pay_status'])}
+            <td>未支付</td>
+            {else}
+            <td>{$isPay[$item['pay']['pay_status']]}</td>
+            {/if}
+            {if empty($item['pay_time'])}
+            <td>空</td>
+            {else}
+            <td>{$item['pay_time']|date='Y-m-d H:i:s',###}</td>
+            {/if}
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+</div>
+<div class="page">
+    <div>
+        {$page}
+    </div>
+</div>
+
+</body>
+</html>

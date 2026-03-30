@@ -1,0 +1,206 @@
+
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
+    <meta name="format-detection" content="telephone=no" />
+    <title>增加班级  - {$config['webtitle']}</title>
+
+    <!--头像 start-->
+    <script type="text/javascript" src="./resource/js/lib/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="./resource/js/app/util.js"></script>
+    <script type="text/javascript" src="./resource/js/require.js"></script>
+    <link href="{$_W['siteroot']}app/resource/css/bootstrap.min.css?v=20170802" rel="stylesheet">
+    <style>
+        .mui-toast-container{position:fixed;z-index:9999;width:120px;min-height:120px;top:180px;left:50%;margin-left:-3.8em;background:rgba(40,40,40,.75);text-align:center;border-radius:5px;color:#fff;opacity:0;-webkit-transition:opacity .8s;transition:opacity .8s}.mui-toast-container.mui-active{opacity:1}.mui-toast-container .mui-toast-icon{margin-top:20px;height:55px;line-height:55px;color:#fff;font-size:40px;text-align:center;margin-bottom:4px}
+        .help-block img{ width:80px; height:80px; border-radius: 50%;}
+    </style>
+    <!--头像 end-->
+
+    <link rel="stylesheet" href="{$templateurl}css/ydui.css?rev=@@hash">
+    <link href="{$templateurl}css/foxui.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="{$templateurl}css/selectFilter.css" />
+</head>
+
+<body ontouchstart>
+
+<div class='fui-page-group '>
+
+    <div class='fui-page  fui-page-current'>
+        <div class="fui-header">
+            <div class="fui-header-left">
+                <a class="back" href="{php echo $this->createMobileUrl('t_index');}"></a>
+            </div>
+            <div class="title">班级信息</div>
+        </div>
+        <div class='fui-content'>
+            <script>
+                function checkinfo() {
+                    var titlename = document.formpt.titlename.value;
+                    if (titlename == ""){
+                        alert("班级名称不能为空!");
+                        document.formpt.titlename.focus();
+                        return false;
+                    }
+                    var school = document.formpt.school.value;
+                    if (school == ""){
+                        alert("请选择学校!");
+                        document.formpt.school.focus();
+                        return false;
+                    }
+                    var nianji = document.formpt.nianji.value;
+                    if (nianji == ""){
+                        alert("请选择年级!");
+                        document.formpt.nianji.focus();
+                        return false;
+                    }
+                    var banjikm = document.formpt.banjikm.value;
+                    if (banjikm == ""){
+                        alert("请选择科目!");
+                        document.formpt.banjikm.focus();
+                        return false;
+                    }
+                    var imgurl = document.formpt.imgurl.value;
+                    if (imgurl == ""){
+                        alert("班级头像不能为空!");
+                        document.formpt.imgurl.focus();
+                        return false;
+                    }
+                }
+            </script>
+            <form name="formpt" action="{$urltk}" method="post" class='form-ajax' onSubmit="return checkinfo(this);" enctype="multipart/form-data" >
+                <input type="hidden" name="token" value="{$_W['token']}" />
+                <input type="hidden" name="id" value="{$id}" />
+                <div class='fui-cell-group' style="overflow:inherit; padding:0; margin:0;">
+
+                    <div class='fui-cell'>
+                        <div class='fui-cell-label'>班级编号</div>
+                        <div class='fui-cell-info c000'><input type="text" name='code' maxlength="2" value="{$result['code']}" placeholder='请填写班级编号' disabled class="fui-input"/></div>
+                    </div>
+
+                    <div class='fui-cell'>
+                        <div class='fui-cell-label'>班级名称</div>
+                        <div class='fui-cell-info c000'><input type="text" name='titlename' value="{$result['titlename']}" placeholder='请填写班级名称' class="fui-input"/></div>
+                    </div>
+
+                    <div class='fui-cell' style=" padding-top:20px; padding-bottom:20px;">
+                        <div class='fui-cell-label'>所属学校</div>
+                        <div class='fui-cell-info'>
+                            <div class="filter-box3" style="z-index:9;">
+                                <div class="filter-text">
+                                    <input class="filter-title" type="text" name="school" value="{$school[$result[school_id]]['school_name']}" readonly placeholder="选择学校" />
+                                    <i class="icon icon-filter-arrow"></i>
+                                </div>
+                                <select name="schools">
+                                    {loop $school $value}
+                                    <option value="{$value[id]}" {if $result['school_id']==$value['id']}selected{/if}>{$value['school_name']}</option>
+                                    {/loop}
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class='fui-cell' style=" padding-top:20px; padding-bottom:20px;">
+                        <div class='fui-cell-label'>当前年级</div>
+                        <div class='fui-cell-info'>
+
+                            <div class="filter-box" style="z-index:9;">
+                                <div class="filter-text">
+                                    <input class="filter-title" type="text" name="nianji" value="{$category_nj[$result[njid]]['name']}" readonly placeholder="选择年级" />
+                                    <i class="icon icon-filter-arrow"></i>
+                                </div>
+                                <select name="njid">
+                                    {loop $category_nj $value}
+                                    <option value="{$value[cid]}" {if $result['njid']}selected{/if}>{$value[name]}</option>
+                                    {/loop}
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class='fui-cell' style=" padding-top:20px; padding-bottom:20px;">
+                        <div class='fui-cell-label'>班级科目</div>
+                        <div class='fui-cell-info'>
+
+                            <div class="filter-box1">
+                                <div class="filter-text">
+                                    <input class="filter-title" type="text" name="banjikm" value="{$category[$result[xkid]]['name']}" readonly placeholder="选择科目" />
+                                    <i class="icon icon-filter-arrow"></i>
+                                </div>
+                                <select name="xkid">
+                                    {loop $category $value}
+                                    <option value="{$value[cid]}" {if $result['xkid']}selected{/if}>{$value[name]}</option>
+                                    {/loop}
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class='fui-cell' style=" padding-top:20px; padding-bottom:20px;">
+                        <div class='fui-cell-label'>开学时间</div>
+                        <div class='fui-cell-info'>
+                            <div class="tixinglan">
+                                <input type="date" name="kxtimes" value="{php echo date('Y-m-d', $result['kxtimes']);}" style="width:100%; border:1px solid #ccc; line-height:32px; background:#fff; height:32px; text-indent:5px;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class='fui-cell'>
+                        <div class='fui-cell-label'>招生人数</div>
+                        <div class='fui-cell-info c000'><input type="text" name='number' value="{$result['number']}" placeholder='需要招生多少人？' class="fui-input"/></div>
+                    </div>
+                    <div class='fui-cell'>
+                        <div class='fui-cell-label'>收费价格</div>
+                        <div class='fui-cell-info c000'><input type="text" name='price' value="{$result['price']}" placeholder='收费价格  元/学期（免费请填0）' class="fui-input"/></div>
+                    </div>
+
+                    <div class='fui-cell'>
+                        <div class='fui-cell-label'>班级头像</div>
+                        <div class='fui-cell-info'>
+                            {php echo tpl_form_field_image('imgurl', $result['imgurl'])}
+                        </div>
+                    </div>
+
+                </div>
+
+                <input type="submit" name="save_submit" value="修  改" class='external btn btn-danger block' style="margin-top:1.25rem; width:95%;">
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript" src="{$templateurl}js/selectFilter.js"></script>
+<script type="text/javascript">
+    //本小插件支持移动端哦
+
+    $('.filter-box3').selectFilter({
+        callBack : function (val){
+            //返回选择的值
+            console.log(val+'-是返回的值')
+        }
+    });
+    //这里是初始化
+    $('.filter-box').selectFilter({
+        callBack : function (val){
+            //返回选择的值
+            console.log(val+'-是返回的值')
+        }
+    });//这里是初始化
+    $('.filter-box1').selectFilter({
+        callBack : function (val){
+            //返回选择的值
+            console.log(val+'-是返回的值')
+        }
+    });
+</script>
+
+
+
+</body>
+</html>
+

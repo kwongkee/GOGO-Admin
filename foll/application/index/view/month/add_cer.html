@@ -1,0 +1,81 @@
+{include file="common/header"}
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<body>
+<div class="x-body">
+    <div class="layui-card-body" style="display: block;">
+        <form class="layui-form layui-form-pane"  lay-filter="component-form-element">
+            <div class="layui-row layui-col-space10 layui-form-item">
+                <div class="layui-col-lg6">
+                    <label class="layui-form-label">需要上传资料：</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="name" lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block" style="width: 100%">
+                    <button class="layui-btn layui-btn-normal layui-btn-radius" lay-submit="" lay-filter="component-form-element">添加</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!--<a class="layui-btn layui-btn-xs layui-btn-radius xz layui-btn-primary" onclick="xz(this);" style="display: none;color:black;">新增</a>-->
+    <table class="layui-table" lay-size="sm">
+        <thead>
+        <th lay-data="{field:'center', width:80%}">名称</th>
+        <th lay-data="{field:'center', width:20%}">操作</th>
+        </thead>
+        <tbody>
+        {volist name='list' id="item" empty='空数据'}
+        <tr>
+            <td>{$item.name}</td>
+            <td> <div class="layui-btn-group">
+                <a class="layui-btn layui-btn-sm" href="{:Url('month_card/cer_del')}&id={$item.id}" class="layui-btn layui-btn-xs">
+                    <i class="layui-icon">&#xe640;</i>
+                </a>
+            </div></td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+</div>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script type="text/javascript">
+    layui.use(['layer','form','jquery','laypage','table'],function(){
+        $ = layui.jquery;
+        layer = layui.layer;
+        var form = layui.form;
+        //监听工具条
+        form.on('submit(component-form-element)', function(data){
+            submit_data(data.field);
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+    function submit_data(filed) {
+        axios.post('{:Url("month_card/add_cer")}',filed).then(function (repose) {
+            console.log(repose.data);
+            if(repose.data.code == 0){
+                location.reload();
+            }else{
+                layer.msg(repose.data.message, {icon: 5});
+            }
+        }).catch(function (error) {
+            layer.msg(error, {icon: 5});
+        });
+
+    }
+    function xz(obj){
+        if($(obj).html() == '新增'){
+            $('.layui-card-body').css('display','block');
+            $(obj).html('关闭');
+        }else{
+            $('.layui-card-body').css('display','none');
+            $(obj).html('新增');
+        }
+        return false;
+    }
+
+</script>
+</body>
+</html>

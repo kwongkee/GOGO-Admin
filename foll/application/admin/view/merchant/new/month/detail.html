@@ -1,0 +1,144 @@
+<style type="text/css">
+    table {font-size: 13px;font-weight: normal;
+        border: 1px solid #2a94de; border-collapse: collapse;margin-left: 10px;
+        word-break: break-all; word-wrap: break-word;width: 100%;
+        box-shadow: 0px 0px 10px 5px #ccc;
+    }
+    tr{
+        height: 35px;
+    }
+    tr td{height: 35px;text-align: center;padding: 3px;}
+    tr th{padding: 5px;}
+    .h{height: 35px;}
+    .hot a{color: #de9a20;}
+    .hot a:hover{color: #2a94de}
+    .bg1{color: green;}
+    .bg2{color: #2a94de;}
+    .bg3{color: red;}
+    .cols{color: red;}
+</style>
+
+<table border="1" cellspacing="0" cellpadding="0">
+
+    <tr class="h">
+        <th colspan="50">Gogo購購網|跨境網 网购直邮进口<br>订单申报 <label class="cols">{$config['etime']|date='Y-m-d',###} </label> 月对账单</th>
+    </tr>
+
+    <tr>
+        <th>经营商户</th>
+        <th colspan="10" class="sh">{$config['uname']}</th>
+        <th>电话</th>
+        <th colspan="6">{$config['tel']}</th>
+        <th>电邮</th>
+        <th colspan="8">{$config['email']}</th>
+    </tr>
+
+
+    <tr>
+        <th rowspan="2">提单编号</th>
+
+        <th rowspan="2" colspan="2">操作员工</th>
+        <th rowspan="2" colspan="2">提交票数</th>
+
+        <th colspan="6" class="bg1">申报费用</th>
+
+        <th colspan="6" class="bg2">验证费用</th>
+
+        <th colspan="8" class="bg3">支付费用</th>
+        <th rowspan="2">操作</th>
+    </tr>
+
+    <tr>
+        <th class="num bg1" colspan="2">成功</th>
+        <th class="num bg1" colspan="2">失败</th>
+        <th class="num bg1" colspan="2">金额</th>
+
+        <th class="num bg2" colspan="2">成功</th>
+        <th class="num bg2" colspan="2">失败</th>
+        <th class="num bg2" colspan="2">金额</th>
+
+        <th class="num bg3" colspan="3">成功</th>
+        <th class="num bg3" colspan="3">失败</th>
+        <th class="num bg3" colspan="2">金额</th>
+    </tr>
+
+    {volist name='datas' id='vo' key='k'}
+    <tr>
+        <td>{$vo.bill_num}</td>
+        <td colspan="2">{$vo.uname}</td>
+        <td colspan="2">{$vo.votes}</td>
+
+        <td colspan="2" class="bg1">{$vo.declVotes}</td>
+        <td colspan="2" class="bg1">{$vo.declFail}</td>
+        <td colspan="2" class="bg1">{$vo.declMoney}</td>
+
+        <td colspan="2" class="bg2">{$vo.valVotes}</td>
+        <td colspan="2" class="bg2">{$vo.valFail}</td>
+        <td colspan="2" class="bg2">{$vo.valMoney}</td>
+
+        <td colspan="3" class="bg3">{$vo.paySuccvaluesb}</td>
+        <td colspan="3" class="bg3">{$vo.payFailvaluesb}</td>
+        <td colspan="2" class="bg3">{$vo.payMoneysb}</td>
+
+        <td class="hot">
+            <a href="{:Url('Financed/Dayexports')}&batch_num={$vo.batch_num}" class="confirmd">导出清单</a>
+        </td>
+    </tr>
+    {/volist}
+
+
+
+    <tr class="bg4">
+        <td style="background:yellow;">本月累计</td>
+        <td colspan="2"></td>
+        <td colspan="2"><label style="font-size: 16px;color: red;font-weight: bold;"> {$config['votesd']}</label> </td>
+
+        <td colspan="2"> <label style="font-size: 16px;color: red;font-weight: bold;">{$config['declVotesd']}</label></td>
+        <td colspan="2"> <label style="font-size: 16px;color: red;font-weight: bold;">{$config['declFaild']}</label></td>
+        <td colspan="2"> <label style="font-size: 16px;color: red;font-weight: bold;">{$config['declMoneyd']}</label></td>
+
+        <td colspan="2"> <label style="font-size: 16px;color: red;font-weight: bold;">{$config['valVotesd']}</label></td>
+        <td colspan="2"> <label style="font-size: 16px;color: red;font-weight: bold;">{$config['valFaild']}</label></td>
+        <td colspan="2"> <label style="font-size: 16px;color: red;font-weight: bold;">{$config['valMoneyd']}</label></td>
+
+        <td colspan="3"> <label style="font-size: 16px;color: red;font-weight: bold;">{$config['paySuccvaluedsb']}</label></td>
+        <td colspan="3"> <label style="font-size: 16px;color: red;font-weight: bold;">{$config['payFailvaluedsb']}</label></td>
+        <td colspan="2"> <label style="font-size: 16px;color: red;font-weight: bold;">{$config['payMoneydsb']}</label></td>
+        <td>&nbsp;</td>
+    </tr>
+
+
+    <tr>
+        <td style="background:#de9a20;">本月应付</td>
+        <td colspan="16"><label style="font-size: 18px;font-weight: bold;color: red;">￥{$config['valTotaldsb']}</label> </td>
+        <td colspan="3">止账时间</td>
+        <td colspan="6">{$config['etime']|date='Y-m-d H:i:s',###}</td>
+    </tr>
+
+    <tr>
+        <td style="border-bottom: 0;">商户确认</td>
+        <td colspan="6" style="border-bottom: 0;">
+            <select name="checks" id="checks">
+                <option value="1" selected>无误，确认对账</option>
+                <option value="2">有误，需要核对</option>
+            </select>
+        </td>
+
+        <td colspan="3" style="border-bottom: 0;">确认员工</td>
+        <td colspan="5" style="border-bottom: 0;">无</td>
+
+        <td colspan="3">确认状态</td>
+
+        <td colspan="8">
+            {$checks[$config['checks']]}
+        </td>
+    </tr>
+
+</table>
+
+<div id="pagesd" style="width: 100%;text-align: center;">
+
+    <label onclick="prevs('{$prev_page_url}')">上一页</label>
+    <label onclick="prevs('{$next_page_url}')">下一页</label>
+
+</div>

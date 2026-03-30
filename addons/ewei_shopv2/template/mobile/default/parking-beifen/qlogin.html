@@ -1,0 +1,93 @@
+{template 'parking/base/header'}
+<body class="whiteBg">
+<div class="wx_box">
+    <div class="login">
+        <h3><span><img src="../addons/ewei_shopv2/static/images/img/moren.png"></span></h3>
+        <ul class="login_ul">
+            <li><input type="number" name="tel" value="" id="mobiles" placeholder="请输入手机号" /></li>
+            <li class="login_ul_li01">
+                <p><input type="number" name="code" value="" id="code" placeholder="请输入验证码"/></p>
+                <span class="login_gray" id="loginVerif" onclick="sendemail()">获取验证码</span>
+            </li>
+            <li class="login_ul_li02"><a href="#" class="login_white btn-block">登录查询</a></li>
+        </ul>
+    </div>
+    
+    <form action="" method="post" id="sign_form">
+		<input type="hidden" name="mobile" id="mobiles1" value=""/>
+		<input type="hidden" name="yzm" id="code1" value=""/>
+	</form>
+    
+    <div class="footer">Technology by </div>
+    <div class="footer_placeholder"></div>
+    <div class="login_tips" style="display: none;"></div>
+</div>
+
+<script type="text/javascript">
+
+	$('.btn-block').on('click',function() {
+		
+		var yzm=$('#code').val();
+        if(yzm==''){
+            $(".login_tips").css("display","block");
+            $(".login_tips").html("请输入验证码");
+            timer();
+            return false;
+        }
+		$("#sign_form").attr("action", "{php echo mobileUrl('parking/queryuserinfo/verify_reg');}");
+		$("#mobiles1").val($("#mobiles").val());
+		$("#code1").val($("#code").val());
+		$("#sign_form").submit();
+	});
+
+
+    var countdown=60;
+    $("#mobiles").bind("input propertychange",function(){
+        $("#loginVerif").removeClass("login_gray");
+    })
+    
+    function sendemail(){
+        var obj = $("#loginVerif");
+        var tel=$("#mobiles").val();
+        if(!(/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(tel))){
+            $(".login_tips").css("display","block");
+            $("#loginVerif").addClass("login_gray");
+            $(".login_tips").html("请输入正确的手机号");
+            timer();
+            return false;
+        }
+        $(".btn-block").removeClass("login_white");
+        $(".btn-block").css("color","#fff");
+        settime(obj);
+        sendAjax(tel);
+    }
+    
+    function sendAjax(t) {
+        $.get("{php echo mobileUrl('parking/queryuserinfo/code');}",{'mobile':t},function(data){
+            console.dir(data);
+        });
+    }
+    
+    function timer(){
+        setTimeout(function () {
+            $(".login_tips").css("display","none");
+        },1500);
+    }
+    
+    function settime(obj) { //发送验证码倒计时
+        if (countdown == 0) {
+            obj.attr('disabled',false);
+            obj.text("获取验证码");
+            countdown = 60;
+            return;
+        } else {
+            obj.attr('disabled',true);
+            obj.text("重新发送(" + countdown + ")");
+            countdown--;
+        }
+        setTimeout(function() {
+                settime(obj) }
+            ,1000)
+    }
+</script>
+{template 'parking/base/footer'}

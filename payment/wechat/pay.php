@@ -1,0 +1,115 @@
+<?php
+/**
+ * [WeEngine System] Copyright (c) 2014 lotodo.com
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.lotodo.com/ for more details.
+ */
+define('IN_MOBILE', true);
+require '../../framework/bootstrap.inc.php';
+require '../../app/common/bootstrap.app.inc.php';
+/*load()->app('common');
+load()->app('template');
+
+$sl = $_GPC['ps'];
+$payopenid = $_GPC['payopenid'];
+$params = @json_decode(base64_decode($sl), true);
+if($_GPC['done'] == '1') {
+	$sql = 'SELECT * FROM ' . tablename('core_paylog') . ' WHERE `plid`=:plid';
+	$pars = array();
+	$pars[':plid'] = $params['tid'];
+	$log = pdo_fetch($sql, $pars);
+	if(!empty($log) && !empty($log['status'])) {
+		if (!empty($log['tag'])) {
+			$tag = iunserializer($log['tag']);
+			$log['uid'] = $tag['uid'];
+		}
+		$site = WeUtility::createModuleSite($log['module']);
+		if(!is_error($site)) {
+			$method = 'payResult';
+			if (method_exists($site, $method)) {
+				$ret = array();
+				$ret['weid'] = $log['uniacid'];
+				$ret['uniacid'] = $log['uniacid'];
+				$ret['result'] = 'success';
+				$ret['type'] = $log['type'];
+				$ret['from'] = 'return';
+				$ret['tid'] = $log['tid'];
+				$ret['uniontid'] = $log['uniontid'];
+				$ret['user'] = $log['openid'];
+				$ret['fee'] = $log['fee'];
+				$ret['tag'] = $tag;
+				$ret['is_usecard'] = $log['is_usecard'];
+				$ret['card_type'] = $log['card_type'];
+				$ret['card_fee'] = $log['card_fee'];
+				$ret['card_id'] = $log['card_id'];
+				exit($site->$method($ret));
+			}
+		}
+	}
+}
+
+$sql = 'SELECT * FROM ' . tablename('core_paylog') . ' WHERE `plid`=:plid';
+$log = pdo_fetch($sql, array(':plid' => $params['tid']));
+if(!empty($log) && $log['status'] != '0') {
+	exit('这个订单已经支付成功, 不需要重复支付.');
+}
+$auth = sha1($sl . $log['uniacid'] . $_W['config']['setting']['authkey']);
+if($auth != $_GPC['auth']) {
+	exit('参数传输错误.');
+}
+load()->model('payment');
+$_W['uniacid'] = $log['uniacid'];
+$_W['openid'] = $log['openid'];
+$setting = uni_setting($_W['uniacid'], array('payment'));
+if(!is_array($setting['payment'])) {
+	exit('没有设定支付参数.');
+}
+$wechat = $setting['payment']['wechat'];
+$sql = 'SELECT `key`,`secret` FROM ' . tablename('account_wechats') . ' WHERE `acid`=:acid';
+$row = pdo_fetch($sql, array(':acid' => $wechat['account']));
+$wechat['appid'] = $row['key'];
+$wechat['secret'] = $row['secret'];
+$wechat['openid'] = $payopenid;
+$params = array(
+	'tid' => $log['tid'],
+	'fee' => $log['card_fee'],
+	'user' => $log['openid'],
+	'title' => urldecode($params['title']),
+	'uniontid' => $log['uniontid'],
+);
+if (intval($wechat['switch']) == 2 || intval($wechat['switch']) == 3 ) {
+	$wOpt = wechat_proxy_build($params, $wechat);
+} else {
+	unset($wechat['sub_mch_id']);
+	$wOpt = wechat_build($params, $wechat);
+}
+if (is_error($wOpt)) {
+	if ($wOpt['message'] == 'invalid out_trade_no' || $wOpt['message'] == 'OUT_TRADE_NO_USED') {
+		$id = date('YmdH');
+		pdo_update('core_paylog', array('plid' => $id), array('plid' => $log['plid']));
+		pdo_query("ALTER TABLE ".tablename('core_paylog')." auto_increment = ".($id+1).";");
+		message("抱歉，发起支付失败，系统已经修复此问题，请重新尝试支付。");
+	}
+	message("抱歉，发起支付失败，具体原因为：“{$wOpt['errno']}:{$wOpt['message']}”。请及时联系站点管理员。");
+	exit;
+}*/
+?>
+
+<script type="text/javascript">
+	document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+		WeixinJSBridge.invoke('getBrandWCPayRequest', {
+			'appId' : 'wx76d541cc3e471aeb',
+			'timeStamp': '1534732741',
+			'nonceStr' : '6559ef1aee3e46c393f351aa6fbbba3c',
+			'package' : 'prepay_id=wx201039010189372bedd052fe1683539266',
+			'signType' : 'RSA',
+			'paySign' : 'NI973a1iqvkRui+PNzvl3zbg+DAydbYv15qEUjLzZdkj2cKt8TrG0FPnuOIVK4AEpB106c8Z9WuJbEEExMvXraSl/pw8exoq+UnPg4PCIaBsPpHHPulHO4Mr/Ew2gdB9cQq8Vbxg8ya45j5GhjZ1OJcomoS1EwQrYJ+hTcQIK2ekOnkpT68SgVOMCsc5CmGKZiDnYHe4lRLLOt/Ix9AHrsHFf2JTWTpkmpY8nCTzE+CexvlC1i6HIfvGPrGPo47ecXaX2yLGwJOj4HxR9G3sl0WtQynGO3aq+OBlLt6hrfTi/xsfX0jMXC9PcuoYX2g2va7DHKOEJTr0vm/StJvqmQ=='
+		}, function(res) {
+			if(res.err_msg == 'get_brand_wcpay_request:ok') {
+				location.search += '&done=1';
+			} else {
+				alert('启动微信支付失败, 请检查你的支付参数. 详细错误为: ' + res.err_msg);
+				//history.go(-1);
+			}
+		});
+	}, false);
+</script>

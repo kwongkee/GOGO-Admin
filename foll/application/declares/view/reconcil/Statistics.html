@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{$order.title}</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+	<script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+	<style type="text/css">
+		.clear{clear: both;height: 8px;}
+		.money{color: red;font-weight: bold;font-size: 15px;}
+		.laytable-cell-1{width:100px;}
+		.laytable-cell-2{width:240px;}
+		.laytable-cell-1-0{ width: 80px;}
+		.laytable-cell-1-2{width: 200px;}
+		.laytable-cell-1-amount{width: 165px;}
+		.laytable-cell-1-4{ width: auto; }
+		
+		.laytable-cell-1-province{ width: 115px; }
+		.laytable-cell-1-city{ width: 80px; }
+		.laytable-cell-1-zone{ width: 80px; }
+		.fee{color: red;}
+	</style>
+</head>
+
+<body>
+<div style="margin-top: 10px;"></div>
+<p><h2 style="text-align: center;color: green;">{$order.title}</h2></p>
+
+<div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" style="width:auto;float: left;margin-right: 15px;">
+	<div class="layui-table-box">
+		<div class="layui-table-header">
+			<table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+				<thead>
+					<tr>
+						<th data-field="2" colspan="3"><div class="layui-table-cell laytable-cell-group" align="center"><span style="font-size: 14px;font-weight: bold;">{$order.newDate}月{$order.title}</span></div></th>
+					</tr>
+					<tr>
+						<th data-field="province"><div class="layui-table-cell laytable-cell-1-province"><span>日期</span></div></th>
+						<th data-field="city"><div class="layui-table-cell laytable-cell-1-city"><span>状态</span></div></th>
+						<th data-field="zone"><div class="layui-table-cell laytable-cell-1-zone"><span>操作</span></div></th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+		
+		<div class="layui-table-body layui-table-main">
+			<table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+				<tbody>
+					{volist name="$order.queryOk.lists" id='vo' key='index'}
+					<tr data-index="{$vo.id}">
+						<td data-field="province"><div class="layui-table-cell laytable-cell-1-province">{$vo.accountDay}</div></td>
+						
+						<td data-field="city">
+							
+							{if condition="$vo.status eq 1"}
+								<div class="layui-table-cell laytable-cell-1-city">已对账</div>
+							{elseif condition="$vo.status eq 2" /}
+								<div class="layui-table-cell laytable-cell-1-city">有误单</div>
+							{elseif condition="$vo.status eq 3" /}
+								<div class="layui-table-cell laytable-cell-1-city">未对账</div>
+							{/if}
+							
+						</td>
+						
+						<td data-field="zone">
+							<div class="layui-table-cell laytable-cell-1-zone">
+								<form class="layui-form">
+									<input type="hidden" name="startDate" id="startDates" value="{$vo.startDate}" />
+								  <input type="hidden" name="endDate" id="endDates" value="{$vo.endDate}" />
+								
+								{if condition="$vo.status eq 1"}
+									<a class="layui-btn-sm layui-btn" href="javascript:void(0);" hrs="{$vo.id}" id="Query">查看</a>
+								{elseif condition="$vo.status eq 2" /}
+									<a class="layui-btn-sm layui-btn layui-btn-disabled" href="javascript:void(0);">已提交</a>
+								{elseif (isset($vo.no) and $vo.no=='No') and $vo.status==3 /}
+									<a class="layui-btn-sm layui-btn layui-btn-danger" href="javascript:void(0);" hrs="{$vo.id}" id="checkOk">对账</a>
+								{/if}
+								</form>
+							</div>
+						</td>
+					</tr>
+					{/volist}
+					
+				</tbody>
+			</table>
+		</div>
+		<span style="margin:0px 8px;font-size: 15px;font-weight: bold;">共有:{$order.queryOk.total} 条</span>
+		<div class="layui-box layui-laypage layui-laypage-default">{$order.queryOk.pages}</div>
+	</div>
+</div>
+
+<!-- 查看对账部分结束  -->
+
+<div style="width: 10px;margin: 0px 15px;"></div>
+
+<div class="x-bodys" style="display: none;">
+    <table id="table-checkbox"  style="display: none;" lay-filter="test"></table>
+</div>
+
+
+
+<!-- 数据加载部分 -->
+<div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-2" id="duizhang" style="width: auto;float:left;display: none;">
+	<div class="layui-table-box  layui-form">
+		<div class="layui-table-header">
+			<table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+				<thead id="tabledata1">
+					<tr>
+						<th data-field="username" rowspan="2"><div class="layui-table-cell laytable-cell-1-amount"><span>订单时间</span></div></th>
+						<th data-field="amount" rowspan="2"><div class="layui-table-cell laytable-cell-1-2"><span>订单编号</span></div></th>
+						<th data-field="amount" rowspan="2"><div class="layui-table-cell laytable-cell-1"><span>订单金额</span></div></th>
+						<th data-field="amount" rowspan="2"><div class="layui-table-cell laytable-cell-2"><span>商品名称</span></div></th>
+						<th data-field="0" rowspan="3" colspan="6" data-unresize="true"><div class="layui-table-cell laytable-cell-1-0 laytable-cell-checkbox"><input type="checkbox" name="AllChoose" lay-skin="primary" lay-filter="AllChoose"><div class="layui-unselect layui-form-checkbox" id="cancelBox" lay-skin="primary"><i class="layui-icon layui-icon-ok"></i></div></div></th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+		
+		<div class="layui-table-body layui-table-main">
+			<table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+				<tbody id="tabledata">
+				</tbody>
+			</table>
+		</div>
+		
+		
+		<div class="layui-table-page" style="height: 70px;">
+			
+			<input type="hidden" id="pages" value=""/>
+			<input type="hidden" id="limits" value=""/>
+			<input type="hidden" id="startDate" value=""/>
+			<input type="hidden" id="endDate" value=""/>
+			<input type="hidden" id="count" value=""/>
+			<input type="hidden" id="remove" value=""/>
+			<input type="hidden" id="pageNum" value="" />
+			<!-- 验核人数  -->
+			<input type="hidden" id="peoples" value=""/>
+			<!-- 服务费用  -->
+			<input type="hidden" id="serverfees" value=""/>
+			<!-- 验核费用  -->
+			<input type="hidden" id="checkingfees" value=""/>
+			<!-- 应付总额  -->
+			<input type="hidden" id="totalfees" value=""/>
+			
+			<div style="float: left;height: 27px;" class="layui-hide" id="showNext">
+				<a href="javascript:void(0);" class="layui-btn layui-btn-xs layui-hide" id="prev">上一页</a>
+				<a href="javascript:void(0);" class="layui-btn layui-btn-normal layui-btn-xs " id="next">下一页</a>
+			</div>
+			
+			<span style="color: green;margin:0px 10px;font-size: 13px;" id="pagess">当前第：1 页</span>
+			
+			<span style="color: green;font-size: 13px;" id="pageNums">共有：6 页</span>
+			
+			<span style="color:silver;margin:0px 10px;font-size: 13px;">请确认对账，账单无误，请点击右上角方框全选</span>
+			
+			<div style="float: right;" class="layui-btn-group demoTable layui-hide" id="showOk">
+				
+				<a href="javascript:void(0);" class="layui-btn layui-btn-sm" id="confirm" >确认无误</a>
+				<a href="javascript:void(0);" class="layui-btn layui-btn-sm layui-btn-danger" id="Mistaken" >有误提交</a>
+				
+			</div>
+			
+			<div class="clear" style="height: 8px;"></div>
+			
+			<p style="font-size: 14px;font-weight: bold;padding: 0px 10px;">备案数量:<span id="parent" class="fee">0</span>条&nbsp;&nbsp;&nbsp;服务费用:￥<span id="serverfee" class="fee">0.00</span>元&nbsp;&nbsp;&nbsp; 备案费用:￥<span id="yhfee" class="fee">0.00</span>元&nbsp;&nbsp;&nbsp;应付总额:￥<span id="totalfee" class="fee">0.00</span>元 </p>
+			
+		</div>
+		
+		<form class="layui-form" id="CheckIds">
+		</form>
+
+	</div>
+</div>
+
+<div class="clear"></div>
+
+<script>
+layui.use(['layer','form','jquery','laypage','table','flow'],function() {
+		var $ = layui.jquery,form=layui.form,layer=layui.layer,laypage=layui.laypage,table=layui.table,element=layui.element,flow=layui.flow;
+
+		//查询对账   点击查看
+		$(document).on('click','#Query',function(vals) {
+			
+			$('.x-bodys').css('display','block');
+			$('#duizhang').css('display','none');
+			
+			var v = vals.currentTarget;//获取document
+			var val = v.attributes.hrs.value;//选中ID 记录表ID
+			var startDate = v.nextSibling.parentNode[0].defaultValue;0//查询开始时间
+			var endDate 	= v.nextSibling.parentNode[1].defaultValue;//查询结束时间
+			
+			/*$.post("{:Url('Reconcil/getStatistic')}",{'ids':val,'startDate':startDate,'endDate':endDate},function(res) {
+				
+				console.dir(res);
+				
+			});*/
+			
+			
+		  setTimeout(function () {
+			  table.render({
+	        elem:'#table-checkbox'
+	        ,url:"{:Url('Reconcil/getStatistic&ids="+val+"&startDate="+startDate+"&endDate="+endDate+"')}"
+	        ,width:750
+	        ,even:true //开启隔行背景
+	        ,size:'lg' //小尺寸的表格
+	        ,cols:[[
+	            {field:'DeclTime',title:'备案日期', width:165}
+	            ,{field:'EPortGoodsNo',title:'备案编号', width:175}
+	            ,{field:'RegPrice',title:'备案金额', width:90}
+	            ,{field:'GoodsName',title:'产品名称', width:228}
+	            ,{type:'checkbox',fixed:'right',width:80}
+	        ]]
+	        ,page:true
+	        ,limit:5
+	        ,limits:[2,5,9,10]
+	        ,done:function(resd) {
+	        	//console.dir(resd)
+	        }
+	    });
+     },100);
+			return false;
+		});
+		
+		
+		//获取对账文件  对账 2018-07-11  点击对账
+		$(document).on('click','#checkOk',function(vals){
+			
+			$('#showOk').addClass('layui-hide');//隐藏确认按钮
+			$('#showNext').addClass('layui-hide');//隐藏下一页
+			$('.layui-form-checkbox').removeClass('layui-form-checked');//去掉全选
+			
+			$('.x-bodys').css('display','none');//隐藏查看
+			$('#duizhang').css('display','block');//显示对账
+			
+			var v = vals.currentTarget;//获取document
+			var val = v.attributes.hrs.value;//选中ID 记录表ID
+			var startDate = v.nextSibling.parentNode[0].defaultValue;//查询开始时间
+			var endDate 	= v.nextSibling.parentNode[1].defaultValue;//查询结束时间
+			var tabledata = $('#tabledata');
+			var CheckIds = '';
+			setTimeout(function(){
+				$.post("{:Url('Reconcil/getStatistics')}",{'ids':val,'startDate':startDate,'endDate':endDate},function(res) {
+						
+					//console.dir(res)
+					
+					$('#tabledata').empty();
+					$('#CheckIds').empty();//清空数据
+					//有数据
+					if(res.code == 1)
+					{
+						//商品数量
+						if(res.type == 'good')
+						{
+							var trda = '';
+							$.each(res.data, function(index,val) {
+								var trdata =  '<tr data-index="'+index+'"><td><div class="layui-table-cell laytable-cell-1-amount">'+val['DeclTime']+'</div></td>';
+										trdata += '<td><div class="layui-table-cell laytable-cell-1-2">'+val['EntGoodsNo']+'</div></td>';
+										trdata += '<td><div class="layui-table-cell laytable-cell-1">'+(val['RegPrice'])+'元</div></td>';
+										trdata += '<td><div class="layui-table-cell laytable-cell-2">'+val['GoodsName']+'</div></td>';
+										trdata += '<td><div class="layui-table-cell laytable-cell-1-0 laytable-cell-checkbox"><input type="checkbox" value="'+val['id']+'" name="layCheckbox" class="ownerOther" lay-skin="primary"><div class="layui-unselect layui-form-checkbox ownerOther" lay-skin="primary"><i class="layui-icon layui-icon-ok"></i></div></div></td></tr>';
+								$('#tabledata').append(trdata);
+								//表单数据 
+								CheckIds += '<input type="hidden" name="checkId['+index+']" value="'+val["id"]+'" />';
+							
+							});
+							CheckIds += '<input type="hidden" name="start" id="start" value="'+res.startDate+'"/><input type="hidden" name="end" id="end" value="'+res.endDate+'"/>';
+						  $('#CheckIds').append(CheckIds);
+						
+						} else if(res.type=='pici') {
+							
+							var trda = '';
+							$.each(res.data, function(index,val) {
+								var trdata =  '<tr data-index="'+index+'"><td><div class="layui-table-cell laytable-cell-1-amount">'+val['DeclTime']+'</div></td>';
+										trdata += '<td><div class="layui-table-cell laytable-cell-1-2">'+val['DeclEntNo']+'</div></td>';
+										trdata += '<td><div class="layui-table-cell laytable-cell-1">'+(val['DeclEntName'])+'元</div></td>';
+										trdata += '<td><div class="layui-table-cell laytable-cell-2">'+val['CIQOrgCode']+'</div></td>';
+										trdata += '<td><div class="layui-table-cell laytable-cell-1-0 laytable-cell-checkbox"><input type="checkbox" value="'+val['id']+'" name="layCheckbox" class="ownerOther" lay-skin="primary"><div class="layui-unselect layui-form-checkbox ownerOther" lay-skin="primary"><i class="layui-icon layui-icon-ok"></i></div></div></td></tr>';
+								$('#tabledata').append(trdata);
+								//表单数据 
+								CheckIds += '<input type="hidden" name="checkId['+index+']" value="'+val["id"]+'" />';							
+							});
+							
+						}
+						
+						CheckIds += '<input type="hidden" name="start" id="start" value="'+res.startDate+'"/><input type="hidden" name="end" id="end" value="'+res.endDate+'"/>';
+						$('#CheckIds').append(CheckIds);
+						
+					//没有数据
+					} else if(res.code == 2) {
+						
+						var trdata =  '<tr data-index="0"><td><div class="layui-table-cell laytable-cell-1-amount">0000-00-00</div></td>';
+								trdata += '<td><div class="layui-table-cell laytable-cell-1-2">0</div></td>';
+								trdata += '<td><div class="layui-table-cell laytable-cell-1">0元</div></td>';
+								trdata += '<td><div class="layui-table-cell laytable-cell-2">0</div></td>';
+								trdata += '<td><div class="layui-table-cell laytable-cell-1-0 laytable-cell-checkbox"><input type="checkbox" name="layCheckbox" class="ownerOther" lay-skin="primary"><div class="layui-unselect layui-form-checkbox ownerOther" lay-skin="primary"><i class="layui-icon layui-icon-ok"></i></div></div></td></tr>';
+						$('#tabledata').append(trdata);
+						
+						CheckIds += '<input type="hidden" name="checkId[0]" value="1" />';
+						CheckIds += '<input type="hidden" name="start" id="start" value="'+res.startDate+'"/><input type="hidden" name="end" id="end" value="'+res.endDate+'"/>';
+						//加载数据
+						$('#CheckIds').append(CheckIds);
+						
+					}
+					//没有数据结束
+					
+					$('#pages').val(res.pages);//分页数
+					$('#limits').val(res.limit);//每页显示条数
+					$('#startDate').val(res.startDate);//开始时间
+					$('#endDate').val(res.endDate);//结束时间
+					$('#count').val(res.count);//总条数
+					$('#pageNum').val(res.pageNum);//总页数
+					
+					$('#pagess').html('当前第: '+res.pages+' 页')//当前页数
+					$('#pageNums').html('共有: '+res.pageNum+' 页')//共有页数
+					
+					$('#serverfee').html(res.tongji.ServerMoney);//服务费用
+					$('#yhfee').html(res.tongji.Money);//验核费用
+					$('#totalfee').html(res.tongji.Total);//应付总额
+					$('#parent').html(res.tongji.count);//总人数
+					
+					$('#serverfees').val(res.tongji.ServerMoney);//服务费用
+					$('#checkingfees').val(res.tongji.Money);//验核费用
+					$('#totalfees').val(res.tongji.Total);//应付总额
+					$('#peoples').val(res.tongji.count);//总人数
+						
+				});
+			},200);
+			return false;
+		});
+		
+		
+		
+		//下一页  Next
+		$(document).on('click','#next',function(vals) {
+			
+			$('#confirm').removeClass('layui-btn-disabled');//移除禁用
+			
+			$('#showOk').addClass('layui-hide');//隐藏确认按钮
+			$('#showNext').addClass('layui-hide');//隐藏下一页
+			$('.layui-form-checkbox').removeClass('layui-form-checked');//去掉全选
+			
+			$('#table-checkbox').css('display','none');
+			$('#duizhang').css('display','block');
+			var pageNum = $('#pageNum').val();//总页数
+			var pages = $('#pages').val();//上一页减一
+					pages = parseInt(pages);
+					pageNum = parseInt(pageNum);
+					//最后一页
+				  if(pageNum == pages) {
+				  	pages = pageNum;
+				  	CheckIds = '<input type="hidden" name="checkOk" value="ok" />';
+				  	$('#CheckIds').append(CheckIds);
+				  } else {
+				  	pages = (parseInt(pages)+1);
+				  }
+			var limit = $('#limits').val();
+			var startDate = $('#startDate').val();
+			var endDate   = $('#endDate').val();
+			var CheckIds  = '';
+			
+			$.post("{:Url('Reconcil/getStatistics')}",{'page':pages,'limit':limit,'startDate':startDate,'endDate':endDate},function(res) {
+					$('#tabledata').empty();//清空数据
+					$('#CheckIds').empty();//清空数据
+					
+					//有数据
+					if(res.code == 1)
+					{
+						//商品数量
+						if(res.type == 'good')
+						{
+							var trda = '';
+							$.each(res.data, function(index,val) {
+								var trdata =  '<tr data-index="'+index+'"><td><div class="layui-table-cell laytable-cell-1-amount">'+val['DeclTime']+'</div></td>';
+										trdata += '<td><div class="layui-table-cell laytable-cell-1-2">'+val['EntGoodsNo']+'</div></td>';
+										trdata += '<td><div class="layui-table-cell laytable-cell-1">'+(val['RegPrice'])+'元</div></td>';
+										trdata += '<td><div class="layui-table-cell laytable-cell-2">'+val['GoodsName']+'</div></td>';
+										trdata += '<td><div class="layui-table-cell laytable-cell-1-0 laytable-cell-checkbox"><input type="checkbox" value="'+val['id']+'" name="layCheckbox" class="ownerOther" lay-skin="primary"><div class="layui-unselect layui-form-checkbox ownerOther" lay-skin="primary"><i class="layui-icon layui-icon-ok"></i></div></div></td></tr>';
+								$('#tabledata').append(trdata);
+								//表单数据 
+								CheckIds += '<input type="hidden" name="checkId['+index+']" value="'+val["id"]+'" />';
+							
+							});
+							//CheckIds += '<input type="hidden" name="start" id="start" value="'+res.startDate+'"/><input type="hidden" name="end" id="end" value="'+res.endDate+'"/>';
+						  //$('#CheckIds').append(CheckIds);
+						
+						} else if(res.type=='pici') {
+							
+							var trda = '';
+							$.each(res.data, function(index,val) {
+								var trdata =  '<tr data-index="'+index+'"><td><div class="layui-table-cell laytable-cell-1-amount">'+val['DeclTime']+'</div></td>';
+										trdata += '<td><div class="layui-table-cell laytable-cell-1-2">'+val['DeclEntNo']+'</div></td>';
+										trdata += '<td><div class="layui-table-cell laytable-cell-1">'+(val['DeclEntName'])+'元</div></td>';
+										trdata += '<td><div class="layui-table-cell laytable-cell-2">'+val['CIQOrgCode']+'</div></td>';
+										trdata += '<td><div class="layui-table-cell laytable-cell-1-0 laytable-cell-checkbox"><input type="checkbox" value="'+val['id']+'" name="layCheckbox" class="ownerOther" lay-skin="primary"><div class="layui-unselect layui-form-checkbox ownerOther" lay-skin="primary"><i class="layui-icon layui-icon-ok"></i></div></div></td></tr>';
+								$('#tabledata').append(trdata);
+								//表单数据 
+								CheckIds += '<input type="hidden" name="checkId['+index+']" value="'+val["id"]+'" />';							
+							});
+							
+						}
+						
+						CheckIds += '<input type="hidden" name="start" id="start" value="'+res.startDate+'"/><input type="hidden" name="end" id="end" value="'+res.endDate+'"/>';
+						$('#CheckIds').append(CheckIds);
+						
+					//没有数据
+					} else if(res.code == 2) {
+						
+						var trdata =  '<tr data-index="0"><td><div class="layui-table-cell laytable-cell-1-amount">0000-00-00</div></td>';
+								trdata += '<td><div class="layui-table-cell laytable-cell-1-2">0</div></td>';
+								trdata += '<td><div class="layui-table-cell laytable-cell-1-amount">0元</div></td>';
+								trdata += '<td><div class="layui-table-cell laytable-cell-1-amount">0</div></td>';
+								trdata += '<td><div class="layui-table-cell laytable-cell-1-0 laytable-cell-checkbox"><input type="checkbox" name="layCheckbox" class="ownerOther" lay-skin="primary"><div class="layui-unselect layui-form-checkbox ownerOther" lay-skin="primary"><i class="layui-icon layui-icon-ok"></i></div></div></td></tr>';
+						$('#tabledata').append(trdata);
+						
+						CheckIds += '<input type="hidden" name="checkId[0]" value="1" />';
+						CheckIds += '<input type="hidden" name="start" id="start" value="'+res.startDate+'"/><input type="hidden" name="end" id="end" value="'+res.endDate+'"/>';
+						//加载数据
+						$('#CheckIds').append(CheckIds);
+						
+					}
+					
+					//console.dir(res);
+					$('#pages').val(res.pages);//分页数
+					$('#limits').val(res.limit);//每页显示条数
+					$('#startDate').val(res.startDate);//开始时间
+					$('#endDate').val(res.endDate);//结束时间
+					$('#pageNum').val(res.pageNum);//总页数
+					$('#pagess').html('当前第: '+res.pages+' 页')
+					$('#pageNums').html('共有: '+res.pageNum+' 页')
+			});
+		});
+		
+		
+		
+		//确认按钮
+		$(document).on('click','#confirm',function(vs) {
+			
+				$('#confirm').addClass('layui-btn-disabled');//禁用按钮
+				var next = $('#pages').val();//下一页页码
+				var pageNum = $('#pageNum').val();//总页码
+						next = parseInt(next);
+						pageNum = parseInt(pageNum);
+				//总页数等于当前页码，就不显示；
+				if((next == pageNum) || (pageNum==0)) {
+					
+					CheckIds = '<input type="hidden" name="checkOk" value="ok" />';//最后一页!
+					CheckIds += '<input type="hidden" name="serverfees" value="'+$('#serverfees').val()+'" />';//服务费用
+					CheckIds += '<input type="hidden" name="checkingfees" value="'+$('#checkingfees').val()+'" />';//验核费用
+					CheckIds += '<input type="hidden" name="totalfees" value="'+$('#totalfees').val()+'" />';//应付总额
+					CheckIds += '<input type="hidden" name="peoples" value="'+$('#peoples').val()+'" />';//总人数
+				  $('#CheckIds').append(CheckIds);
+				  
+					$('#showNext').addClass('layui-hide');
+					//return false;
+				} else {
+					//页码不等于总页数就显示下一页
+					$('#showNext').removeClass('layui-hide');
+				}
+				
+				
+				//确认账单
+				$.post("{:Url('Reconcil/Statisuploads')}",$('#CheckIds').serialize(),function(res) {
+					console.dir(res);
+					if(res.code == 1){
+						layer.msg(res.msg,{'icon':6});
+						if(res.checkOk == 'ok')
+						{
+							
+							setTimeout(function(){
+								window.location.reload();
+							},2000);
+							
+						}
+						
+					} else {
+						
+						layer.msg(res.msg,{'icon':5});
+						if(res.checkOk == 'ok')
+						{
+							setTimeout(function(){
+								window.location.reload();
+							},2000);
+						}
+						
+					}
+				})
+		});
+		
+		
+		
+		
+		//有误账单按钮 2018-07-13
+		$(document).on('click','#Mistaken',function(vs) {
+			
+			/*获取checkbox 选中的值*/
+			/*$("input:checkbox[name='layCheckbox']:checked").each(function(){
+				console.dir('选中的值为: '+$(this).val());
+			});*/
+			
+			$('#Mistaken').addClass('layui-btn-disabled');//禁用按钮
+			//确认账单
+			$.post("{:Url('Reconcil/Statiserror')}",$('#CheckIds').serialize(),function(res) {
+				if(res.code == 1){
+					layer.msg(res.msg,{'icon':6});
+					if(res.checkOk == 'ok')
+					{
+						setTimeout(function(){
+							window.location.reload();
+						},2000);
+					}
+				} else {
+					layer.msg(res.msg,{'icon':5});
+					if(res.checkOk == 'ok')
+					{
+						setTimeout(function(){
+							window.location.reload();
+						},2000);
+					}
+				}
+			})
+		});
+		
+		
+		//是否全选
+		form.on('checkbox(AllChoose)',function(datas){
+			var a = datas.elem.checked;
+			if(a == true){
+				$('#showOk').removeClass('layui-hide');//显示确认按钮
+				$('.ownerOther').prop("checked",true)
+				form.render("checkbox")
+			} else {
+				$('.ownerOther').prop("checked",false)
+				form.render("checkbox")
+			}
+		});
+		
+});
+</script>
+</body>
+</html>

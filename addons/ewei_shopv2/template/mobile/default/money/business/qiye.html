@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<!-- 控制浏览器缓存 -->
+		<meta http-equiv="Cache-Control" content="no-store" />
+		<!-- 优先使用 IE 最新版本和 Chrome -->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<!-- 页面描述 -->
+		<meta name="description" content="不超过150个字符" />
+		<!-- 页面关键词 -->
+		<meta name="keywords" content="" />
+		<link rel="stylesheet" href="../addons/ewei_shopv2/static/css/frozenui/css/frozen.css">
+		<link rel="stylesheet" href="../addons/ewei_shopv2/static/ydui/ydui.css">
+		<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+		<!-- 引入YDUI脚本 -->
+		<script src="../addons/ewei_shopv2/static/ydui/ydui.js"></script>
+		
+		<link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.2/style/weui.min.css">
+		<link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.0/css/jquery-weui.min.css">
+		
+		<title><?php echo $title;?></title>
+		<style>
+			* {margin: 0;padding: 0;box-sizing: border-box;}
+			
+			html,body {height: 100%;overflow: hidden;}
+			
+			.clearfix:after {content: "\200B";display: block;height: 0;clear: both;}
+			
+			.clearfix {*zoom: 1;text-align: center;display: inline-block;}
+			
+			/*IE/7/6*/
+			
+			.shuru div::-webkit-scrollbar {width: 0;height: 0;-webkit-transition: 1s;}
+			
+			.shuru div::-webkit-scrollbar-thumb {background-color: #a7afb4;background-clip: padding-box;min-height: 28px;}
+			
+			.shuru div::-webkit-scrollbar-thumb:hover {background-color: #525252;background-clip: padding-box;min-height: 28px;}
+			
+			.shuru div::-webkit-scrollbar-track-piece {background-color: #ccd0d2;}
+			
+			.wrap {position: relative;margin: auto;max-width: 640px;min-width: 320px;width: 100%;height: 100%;background: #F0EFF5;overflow: hidden;/*padding-top: 10px;*/}
+			
+			.layer-content {position: absolute;left: 50%;bottom: -200px;width: 100%;max-width: 640px;height: auto;z-index: 12;-webkit-transform: translateX(-50%);transform: translateX(-50%);}
+			
+			/* 输入表单 */
+			
+			.edit_cash {display: block;margin-top: 15px;padding: 15px;margin: 0 auto;width: 90%;border: 1px solid #CFCFCF;border-radius: 10px;background-color: #fff;}
+			
+			.edit_cash p {font-size: 14px;color: #8D8D8F;}
+			
+			.shuru {position: relative;margin-bottom: 10px;}
+			
+			.shuru div {border: none;width: 100%;height: 50px;font-size: 25px;line-height: 50px;border-bottom: 1px solid #CFCFCF;text-indent: 30px;outline: none;white-space: pre;overflow-x: scroll;}
+			
+			.shuru span {position: absolute;top: 5px;font-size: 25px;}
+			
+			.submit {display: block;margin: 10px auto 0;
+			width: 90%;height: 40px;font-size: 16px;color: #fff;background: #04BE02;/*border: 1px solid #47D14C;*/border-radius: 3px;
+			border: none;
+			}
+			
+			.submit1 {display: block;margin: 10px auto 0;
+			width: 90%;height: 40px;font-size: 16px;color: #fff;background: #18b4ed;/*border: 1px solid #47D14C;*/border: none;border-radius: 3px;}
+			
+			
+			/* 键盘 */
+			
+			.form_edit {width: 100%;background: #D1D4DD;}
+			
+			.form_edit> div {margin-bottom: 2px;margin-right: 0.5%;float: left;width: 33%;height: 45px;text-align: center;color: #333;line-height: 45px;font-size: 18px;font-weight: 600;background-color: #fff;border-radius: 5px;}
+			
+			.form_edit> div:nth-child(3n) {margin-right: 0;}
+			
+			.form_edit> div:last-child {background-color: #DEE1E9;}
+			
+			#header{width: 100%;text-align: center;
+			margin-bottom: 8px;
+			font-size: 16px;
+			border-bottom: 1px solid silver;
+			font-weight: 300;
+				background: #04BE02;
+				line-height: 40px;
+				color: white;
+			}
+			#pay{widows: 90px;text-align: center;margin: 5px auto;}
+			
+			#mone{width: 70%;height: auto;}
+			#mone>li{width: 100%;height: 25px;line-height: 25px;font-size:14px;}
+			#go{display: inline-block;width: 30%;float: right;margin-top: 25px;font-size: 16px;}
+			.show{display: none;}
+			.tops{margin-top: 0px;}
+			.tops1{margin-top: 8px;}
+			
+		</style>
+	</head>
+	<body>
+		
+		{template "money/sales/menu"}
+		
+		<!-- 用户认证 -->
+		<div id="div1" class="">
+			<form method="post" id="form1" name="form1" class="weui-cells weui-cells_form tops">
+			  <div class="tops1">
+			  	<p style="text-align: center;color: green;line-height: 35px;font-size: 26px;font-weight: bold;">企业信息</p>
+			  </div>
+			  
+			  <div class="weui-cell">
+			    <div class="weui-cell__hd"><label class="weui-label">企业名称:</label></div>
+			    <div class="weui-cell__bd">
+			      <input class="weui-input" type="text" name="userName" maxlength="6" id="userName" placeholder="请输入企业名称">
+			    </div>
+			  </div>
+			  <div class="weui-cells__title" id="userText" style="color: red;text-align: center;display: none;">表单报错</div>
+			  
+			  <div class="weui-cell">
+			    <div class="weui-cell__hd"><label class="weui-label">企业法人:</label></div>
+			    <div class="weui-cell__bd">
+			      <input class="weui-input" type="text" name="userName" maxlength="6" id="userName" placeholder="请输入企业法人">
+			    </div>
+			  </div>
+			  <div class="weui-cells__title" id="userText" style="color: red;text-align: center;display: none;">表单报错</div>
+			  
+			  <div class="weui-cell">
+			    <div class="weui-cell__hd"><label class="weui-label">法人手机:</label></div>
+			    <div class="weui-cell__bd">
+			      <input class="weui-input" type="text" name="phone" maxlength="11" id="phone" placeholder="请输入拓展员手机号码">
+			    </div>
+			  </div>
+			  <div class="weui-cells__title" id="phoneText" style="color: red;text-align: center;display: none;">表单报错</div>
+			  
+			  <div class="weui-cell">
+			    <div class="weui-cell__hd"><label class="weui-label">信用代码:</label></div>
+			    <div class="weui-cell__bd">
+			      <input class="weui-input" type="text" name="phone" maxlength="11" id="phone" placeholder="请输入企业信用代码">
+			    </div>
+			  </div>
+			  <div class="weui-cells__title" id="phoneText" style="color: red;text-align: center;display: none;">表单报错</div>
+			  
+			  <div class="weui-cell">
+			    <div class="weui-cell__bd">
+			      <input class="weui-btn weui-btn_primary" type="button" id="query" value="确认添加">
+			    </div>
+			  </div>
+			  
+			  <input type="hidden" id="ischeck" value="false"/>
+			  <input type="hidden" id="nexitUrl" value="<?php echo mobileUrl('money/salesman/nexit');?>" />
+			</form>
+		</div>
+		
+		
+		<!-- 实名验证  -->
+		<div id="div2" class="show">
+			<form method="post" id="from2" name="form2" class="weui-cells weui-cells_form tops">
+			  <div class="tops1">
+			  	<p style="text-align: center;color: green;line-height: 35px;font-size: 26px;font-weight: bold;"><?php echo $title1;?></p>
+			  </div>
+			  
+			  <div class="weui-cell">
+			    <div class="weui-cell__hd"><label class="weui-label">拓展员姓名:</label></div>
+			    <div class="weui-cell__bd"> 
+			      <input class="weui-input tuozy" type="text" disabled="disabled" value="">
+			      <input class="weui-input tuozy" type="hidden" name="uName" maxlength="6" id="uName" value="">
+			    </div>
+			  </div>
+			  
+			  <div class="weui-cell">
+			    <div class="weui-cell__hd"><label class="weui-label">身份证号码:</label></div>
+			    <div class="weui-cell__bd">
+			      <input class="weui-input" type="text" name="CardId" maxlength="18" id="CardId" placeholder="请输入拓展员身份证号码">
+			    </div>
+			  </div>
+			  <div class="weui-cells__title" id="CardIdText" style="color: red;text-align: center;display: none;">表单报错</div>
+
+			  <div class="weui-cell">
+			    <div class="weui-cell__bd">
+			      <input class="weui-btn weui-btn_primary" type="button" id="btn2" value="前往付费实名验证">
+			    </div>
+			  </div>
+			  
+			  <input type="hidden" id="ischeck2" value="false"/>
+			  <input type="hidden" id="nexitUrl2" value="<?php echo mobileUrl('money/salesman/nexitPay');?>" />
+			</form>
+		</div>
+		
+		
+		<!-- 支付验证费用 -->
+		<div id="div3" class="wrap show">
+			<div id="header">实名验证费用</div>
+			<form action="" class="edit_cash">
+				<p>实名验证费用</p>
+				<div class="shuru">
+					<span>&yen;</span>
+					<div id="div">10</div>
+				</div>
+				<p>如有疑问请咨询管理员</p>
+			</form>
+
+			<div id="pay">
+				<input type="submit" value="微信支付" class="submit" id="subt" />
+				<input type="submit" value="支付宝支付" class="submit1" id="subt1"/> 
+				
+				<input type="hidden" name="postUrl" id="postUrl" value="<?php echo mobileUrl('money/salesman/wechat');?>" />
+				<input type="hidden" name="postUrl1" id="postUrl1" value="<?php echo mobileUrl('money/salesman/alipay');?>" />
+				<input type="hidden" name="money" id="money" value="10" />
+			</div>
+		</div>
+		
+
+	</body>
+	
+	
+	<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/jquery-weui/1.2.0/js/jquery-weui.min.js"></script>
+	<script src="https://cdn.bootcss.com/jquery-weui/1.2.0/js/swiper.min.js"></script>
+	<script src="https://cdn.bootcss.com/jquery-weui/1.2.0/js/city-picker.min.js"></script>
+	
+	<script type="text/javascript">
+		//用户名验证中文
+		$('#userName').keyup(function() { 
+		 //进行相关操作 
+		 	var value = $(this).val();//当前值
+		 	var lent = value.length;//当前值的长度；
+		 	// 判断名称
+			if($.trim(value).length == 0) {
+				
+		  		$('#userText').html('请输入中文名称');
+				$('#userText').css('display','block');
+				$('#userName').val('').focus().val(value);
+				$('#ischeck').val('true');
+				
+			} else {
+			 	
+			  	if(isChinaName(value) == false) {//验证用户名；
+				   	
+				   	$('#userText').html('您输入的中文名称不合法');
+					$('#userText').css('display','block');
+					$('#userName').val('').focus().val(value);
+					$('#ischeck').val('true');
+					
+			  	}else{
+			  		
+			  		$('#userText').css('display','none');
+			  		$('#ischeck').val('false');
+			  		
+			  	}
+			}
+		});
+	
+		// 验证手机号码
+		$('#phone').bind('input propertychange', function() { 
+		 //进行相关操作 
+		 	var value = $(this).val();//当前值
+		 	var lent = value.length;//当前值的长度；
+		 	if(lent == 11){
+		 		if(checkPhone(value)){//验证手机号码通过  通过false,不通过true
+					$('#phoneText').css('display','none');
+					$('#ischeck').val('false');
+				}else{
+					$('#phoneText').html('您输入的手机号码格式不正确');
+					$('#phoneText').css('display','block');
+					$('#Phone').val('').focus().val('');
+					$('#ischeck').val('true');
+				}
+		 	}else {
+		 		$('#phoneText').css('display','none');
+		 		$('#ischeck').val('true');
+		 	}
+		});
+		
+		//提交用户认证
+		$('#btn').click(function(){
+			
+			if(checkForm1()){//如果没有空值    赵金如
+				//请求地址
+				var nexitUrl = $('#nexitUrl').val();
+				//判断标志是否为true;
+				if($('#ischeck').val() == 'false'){
+					$.ajax({
+						type:'POST',
+						url :nexitUrl,
+						async : false,
+						dataType:'json',
+		    			data:'userName='+$("#userName").val()+'&phone='+$("#phone").val(),
+		    			success : function(json) {
+		    				console.dir(json);
+		    				
+						 	if(json.status >= 1 ) {//验证通过	赵金如
+						 		
+								$('#div1').css('display','none');//关闭form1
+								$('#div2').css('display','block');//打开form2
+								$('.tuozy').val(json.result.username);
+								$.toast("用户认证通过");
+								
+						 	}else {//验证不通过
+						 		
+								$('#div1').css('display','block');//打开form1
+								$('#div2').css('display','none');//关闭form1
+								$.toast("用户认证失败", "cancel");
+						 	}
+		    			}
+				  	});
+				}else{
+					$.toast("请填写必填项", "cancel");
+				}
+			}else{//有空值
+				$.toast("请填写必填项", "cancel");
+			}
+		});
+		
+
+
+
+
+
+		// 验证身份证号码
+		$('#CardId').bind('input propertychange', function() { 
+		 //进行相关操作 
+		 	var value = $(this).val();//当前值
+		 	var lent = value.length;//当前值的长度；
+//		 	console.dir(lent);
+		 	if(lent == 18){//数据输入等于18位
+		 		if(checkCertNo(value)) {//验证通过为 false; 不通过为  true
+					$('#CardIdText').css('display','none');
+					$('#ischeck2').val('false');
+				}else{
+					
+					$('#CardIdText').html('您输入的身份证号码格式不正确');
+					$('#CardIdText').css('display','block');
+					$('#CardId').val('').focus().val(value);
+					$('#ischeck2').val('true');
+				}
+		 	}else {//不等于18位数
+		 		
+		 		$('#CardIdText').css('display','block');
+		 		$('#CardIdText').html('请输入18位数的身份证号码');
+		 		$('#ischeck2').val('true');
+		 	}
+		});
+		
+		
+		//提交实名验证
+		$('#btn2').click(function(){
+			
+			if(checkForm2()){//如果没有空值  赵金如
+				
+				//请求地址
+				var nexitUrl = $('#nexitUrl2').val();
+				//判断标志是否为true;
+				if($('#ischeck2').val() == 'false'){
+					$.ajax({
+						type:'POST',
+						url :nexitUrl,
+						async : false,
+						dataType:'json',
+		    			data: $('#from2').serialize(),
+		    			success : function(json) {
+		    				console.log(json);
+						 	if(json.status >= 1) {//验证通过
+						 		
+								$('#div2').css('display','none');//关闭form1
+								$('#div3').css('display','block');//打开form2
+								$.toast("通过，请支付验证费用");
+								//通过实名验证需交付验证费用；
+								
+						 	}else {//验证不通过
+						 		
+								$('#div2').css('display','block');//打开form1
+								$('#div3').css('display','none');//关闭form1
+								$.toast("不通过，信息有误", "cancel");
+								//
+						 	}
+		    			}
+				  	});
+				}else{
+					$.toast("请填写必填项", "cancel");
+				}
+			}else{//有空值
+				$.toast("请填写必填项", "cancel");
+			}
+		});
+		
+		
+		
+		/**
+		 * 支付验资费用 微信支付;
+		 */
+		
+		$("#subt").click(function(){
+			//支付请求地址；
+			var postUrl = $('#postUrl').val();
+			//ajax 请求
+			$.ajax({
+				type:"post",//请求方式
+				url:postUrl,//请求地址
+				async:false,//是否跨域请求
+				dataType:'json',//数据类型
+				data:'payMoney='+$('#money').val(),//参数数据
+				success:function(data){//成功返回数据；
+//					console.dir(data);
+					if(data.status == 'success'){
+						window.location.href = data.payUrl;
+					}else{
+						$.toast("支付参数错误，请重新支付", "cancel");
+					}
+				}
+			});
+			
+		});
+		
+		
+		$('#subt1').click(function(){
+			var postUrl = $('#postUrl1').val();
+			
+			$.ajax({
+				type:'post',
+				url:postUrl,
+				async:false,
+				dataType:'json',
+				data:'payMoney='+$('#money').val(),
+				success:function(data){
+//					console.dir(data);
+					if(data.status == 'success'){
+						window.location.href = data.payUrl;
+					}else{
+						$.toast("支付参数错误，请重新支付", "cancel");
+					}
+				}
+			});
+		});
+		
+		
+		
+		//判断表单是否有空值 表单一
+    	function checkForm1()
+    	{
+    		var inputs = document.form1.getElementsByTagName("input");
+			
+			for(var i = 0; i < inputs.length; i++) {
+//				console.dir(inputs[i].value);
+			    if(inputs[i].value == ''){
+			    	return false;
+			    }
+			}
+			return true;
+    	}
+    	
+    	
+    	//判断表单是否有空值 表单二
+    	function checkForm2()
+    	{
+    		var inputs = document.form2.getElementsByTagName("input");
+			
+			for(var i = 0; i < inputs.length; i++) {
+//				console.dir(inputs[i].value);
+			    if(inputs[i].value == ''){
+			    	return false;
+			    }
+			}
+			return true;
+    	}
+		
+		// 验证手机号
+		function checkPhone(phone){
+			var pattern = /^1[345678]\d{9}$/;
+			return pattern.test(phone);
+		}
+		
+		//验证中文名称
+		function isChinaName(name) {
+			var pattern = /^[\u4E00-\u9FA5]{1,6}$/;
+			return pattern.test(name);
+		}
+		
+		
+		//身份证判断正则；
+		function checkCertNo(obj)
+		{
+	        var aCity = {11: "北京", 12: "天津", 13: "河北", 14: "山西", 15: "内蒙古", 21: "辽宁", 22: "吉林", 23: "黑龙 江", 31: "上海", 32: "江苏", 33: "浙江", 34: "安徽", 35: "福建", 36: "江西", 37: "山东", 41: "河南", 42: "湖 北", 43: "湖南", 44: "广东", 45: "广西", 46: "海南", 50: "重庆", 51: "四川", 52: "贵州", 53: "云南", 54: "西 藏", 61: "陕西", 62: "甘肃", 63: "青海", 64: "宁夏", 65: "新疆", 71: "台湾", 81: "香港", 82: "澳门", 91: "国 外"};
+	        var iSum = 0;
+	        //var info = "";
+	        var strIDno = obj;
+	        var idCardLength = strIDno.length;
+//	        if (!/^\d{17}(\d|x)$/i.test(strIDno) && !/^\d{15}$/i.test(strIDno))
+	        if(!/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/.test(strIDno))
+	            return false; //非法身份证号
+	
+	        if (aCity[parseInt(strIDno.substr(0, 2))] == null)
+	            return false;// 非法地区
+	
+	        // 15位身份证转换为18位
+	        if (idCardLength == 15)
+	        {
+	            sBirthday = "19" + strIDno.substr(6, 2) + "-" + Number(strIDno.substr(8, 2)) + "-" + Number(strIDno.substr(10, 2));
+	            var d = new Date(sBirthday.replace(/-/g, "/"))
+	            var dd = d.getFullYear().toString() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+	            if (sBirthday != dd)
+	                return false; //非法生日
+	            strIDno = strIDno.substring(0, 6) + "19" + strIDno.substring(6, 15);
+	            strIDno = strIDno + GetVerifyBit(strIDno);
+	        }
+	
+	        // 判断是否大于2078年，小于1900年  1990
+	        var year = strIDno.substring(6, 10);
+	        if (year < 1900 || year > 2078)
+	            return false;//非法生日
+	
+	        //18位身份证处理
+	
+	        //在后面的运算中x相当于数字10,所以转换成a
+	        strIDno = strIDno.replace(/x$/i, "a");
+	
+	        sBirthday = strIDno.substr(6, 4) + "-" + Number(strIDno.substr(10, 2)) + "-" + Number(strIDno.substr(12, 2));
+	        var d = new Date(sBirthday.replace(/-/g, "/"))
+	        if (sBirthday != (d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate()))
+	            return false; //非法生日
+	        // 身份证编码规范验证
+	        for (var i = 17; i >= 0; i --)
+	            iSum += (Math.pow(2, i) % 11) * parseInt(strIDno.charAt(17 - i), 11);
+	        if (iSum % 11 != 1)
+	            return false;// 非法身份证号
+	
+	        // 判断是否屏蔽身份证
+	        var words = new Array();
+	        words = new Array("11111119111111111", "12121219121212121");
+	
+	        for (var k = 0; k < words.length; k++) {
+	            if (strIDno.indexOf(words[k]) != -1) {
+	                return false;;
+	            }
+	        }
+	        return true;
+    	}
+
+	</script>
+</html>

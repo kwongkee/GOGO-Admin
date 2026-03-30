@@ -1,0 +1,148 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>我的商品详情</title>
+        <script src="{$modulePublic}shop/js/template.js"></script>
+        <script src="{$modulePublic}shop/js/common.js"></script>
+        <script src="{$modulePublic}shop/js/SetSize.js"></script>
+        <meta name="screen-orientation" content="portrait/landscape">
+        <meta content="yes" name="apple-mobile-web-app-capable">
+        <meta content="yes" name="apple-touch-fullscreen">
+        <meta content="black" name="apple-mobile-web-app-status-bar-style">
+        <meta content="telephone=no" name="format-detection">
+
+        <link href="{$modulePublic}shop/css/content.css" rel="stylesheet" type="text/css">
+        <link href="{$modulePublic}shop/css/mall.css" rel="stylesheet" type="text/css">
+        <link href="{$modulePublic}shop/css/swiper.min.css" rel="stylesheet" type="text/css">
+        <style>
+            .bannerPanel_01.pdPicbaner img {
+                width: 100%;
+                height: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <script>
+            document.body.style.fontSize = SetSize.getScreenRatio() * 10 + 'px';</script>
+        <script src="{$modulePublic}shop/js/svgPackage.js"></script>
+
+        <header id="header" class="newhea noline">
+            <div class="titleField">
+                <h2>商品详情</h2>
+            </div>
+            <div class="btnField">
+                <a class="btn back" href="javascript:history.go(-1);"><i></i></a>
+                <a class="btn home" href="../integral_index"><i><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_home_1"></use></svg></i></a>
+            </div>
+        </header>
+
+        <section id="main" class="prod">
+            <div class="bannerPanel_02 mallban_2 pdPicbaner heightFourPointThree" style="height:3.2rem">
+                <div class="listField">
+                    <ul class="swiper-wrapper" style="">
+                        <li class="swiper-slide swiper-slide-duplicate swiper-slide-visible swiper-slide-active" style="width: 100%;height: 430px;">
+                            <img src="{php echo $attach_url . '/'.$award_info['img']}" alt="">
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="pro_con pro_what">
+                <h2>{$award_info['name']}</h2>
+                <div class="inner">
+                    <p><span>积分：{$award_info['credit']}</span>
+                        <!--<small class="sold">已兑换：{php echo $award_info['cashed']}件</small>-->
+                    </p>
+                    <!--<h3>原价：￥<span>1474</span></h3>-->
+                </div>
+                <!--                <ul class="wuliu">
+                                    <li class="dianpu"><i>
+                                            <svg>
+                                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_zuHuVip_1"></use>
+                                            </svg></i><span>所属店铺</span><span class="tored">{$shop_info['name']}</span></li>
+                                </ul>-->
+
+            </div>
+
+
+
+            <div class="pro_con belong hasPaddingLeft">
+                <h2 class="con_tit">配送方式</h2>
+                <div class="delivery">			
+                    <span class="svgWrap">
+                        <i class="beSvg"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_kuaidi_1"></use></svg></i><small>自提</small>
+                    </span>
+                </div>
+
+            </div>
+
+            <div class="pro_con many">
+                <p>商品积分：<span class="txtred" id="spanTotalPrice">{$award_info['credit']}</span></p>
+
+            </div>
+
+            <div class="pro_con proDetail">
+                <h2 class="con_tit">商品详情</h2>
+                <div class="procontent2">
+                    <p>
+                        {php echo htmlspecialchars_decode(preg_replace('/font-size\s*\:\s*\d*px\s*\;*/is', '', $award_info['desc']))}
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+
+                </div>
+            </div></section>
+
+<!--        <div class="shopcaranimaPic">
+            <big class="animaPic"><img src="demo/demo_product02.jpg"></big>
+        </div>-->
+        {if $log_info['status']==1}
+        <section class="pro_foot_link">
+            <div class="footin">
+                <ul>
+                    <li class="goumai">
+                        <a href="javascript:;" class="convertbtn" onclick="verification({$log_info['id']})">
+                            <span>立即兑换</span>
+                        </a>
+                    </li>
+                    <li class="duiwan" style="display: none">
+                        <a href="javascript:;" class="finished">
+                            <span>已售完</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </section>
+        {/if}
+        <script src="{$modulePublic}shop/js/PRselector.js"></script>
+        <script src="{$modulePublic}shop/js/Dialogue.js"></script>
+        <script>
+            function verification(id) {
+                var code = prompt('请输入核销码');
+                if (code) {
+                    var pars = {};
+                    pars.code = code;
+                    pars.id = id;
+                    $.ajax({
+                        url: "{php echo $this->createMobileUrl('ajax',array('sdo'=>'verification','type'=>'credit'))}",
+                        type: "post",
+                        dataType: "html",
+                        data: pars,
+                        success: function (res) {
+                            $(".submit").attr("disabled", false);
+                            if (res == "ok") {
+                                alert("兑换成功");
+                                window.location.href = "{php echo $this->createMobileUrl('user_award_list_credit')}";
+                            } else {
+                                alert(res);
+                            }
+                        }
+                    })
+                }
+            }
+        </script>
+        {template 'share'}
+    </body>
+</html>
+
+
+

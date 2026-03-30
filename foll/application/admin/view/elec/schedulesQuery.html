@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<div class="header">
+    <span>进度详细</span>
+    <!--<button class="layui-btn layui-btn-sm" onclick="add();">添加</button>-->
+    <div></div>
+</div>
+<form class="layui-form" action="post">
+
+    <div class="layui-form-item"></div>
+
+    <div class="layui-form-item">
+
+        <table class="layui-table">
+            <colgroup>
+                <col width="86">
+                <col>
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>项目名称</th>
+                    <th>信息描述</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>订单预提</td>
+                    <td>
+                        <label>已校验：{$data['btch_tj']} 条</label>&nbsp;
+                        <label>校验失败：{$data['btch_sb']} 条</label>&nbsp;
+                        <label>格式校验失败：{$data['btch_jy']} 条</label>&nbsp;
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>支付报关</td>
+                    <td>
+                        <label>已付款：{$data['pay_tj']} 条</label>&nbsp;
+                        <label>未付款：{$data['pay_sb']} 条</label>&nbsp;
+                        <label>付款失败：{$data['pay_jy']} 条</label>&nbsp;
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>订单转发</td>
+                    <td>
+                        <label>已转发：{$data['zf_tj']} 条</label>&nbsp;
+                        <label>待转发：{$data['zf_sb']} 条</label>&nbsp;
+                        <label>转发失败：{$data['zf_jy']} 条</label>&nbsp;
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>订单申报</td>
+                    <td>
+                        <label>已申报：{$data['sb_tj']} 条</label>&nbsp;
+                        <label>待申报：{$data['sb_sb']} 条</label>&nbsp;
+                        <label>申报失败：{$data['sb_jy']} 条</label>&nbsp;
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>物流申报</td>
+                    <td>
+                        <label>已申报：{$data['waybill_tj']} 条</label>&nbsp;
+                        <label>待申报：{$data['waybill_sb']} 条</label>&nbsp;
+                        <label>待校验：{$data['waybill_jy']} 条</label>&nbsp;
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</form>
+
+<script>
+    //Demo
+    layui.use(['layer','jquery','form'],function(){
+        layer = layui.layer;
+        var form = layui.form
+        $ = layui.jquery;
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            //layer.msg(JSON.stringify(data.field));
+            var batch_num = data.field.batch_num;
+            var pay_id    = data.field.pay_id;
+            $('#sub').attr('disabled',true);
+            $.ajax({
+                url:"http://39.108.11.214/api/elec/declares",
+                type:'post',
+                dataType:'json',
+                data:{'batch_num':batch_num,'pay_id':pay_id},
+                success:function(data) {
+                    if(data.code > 0) {
+                        layer.msg(data.msg,{icon:1});
+                    } else {
+                        layer.msg(data.msg,{icon:2});
+                    }
+
+                    setTimeout(function() {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        // 关闭父级窗口
+                        parent.layer.close(index);
+                        window.location.reload();
+                    },1000);
+
+                },
+                error:function(er) {
+                    //console.log(er)
+                }
+            })
+
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

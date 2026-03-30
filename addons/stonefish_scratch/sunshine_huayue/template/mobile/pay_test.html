@@ -1,0 +1,138 @@
+{template 'header'}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-info btn-sm form-control" id="topay">submit</button>
+    </div>
+</div>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js" type="text/javascript"></script>
+<script>
+    var appid = '{$_W['account']['jssdkconfig']['appId']}';
+    var timestamp = '{$_W['account']['jssdkconfig']['timestamp']}';
+    var nonceStr = '{$_W['account']['jssdkconfig']['nonceStr']}';
+    var signature = '{$_W['account']['jssdkconfig']['signature']}';
+
+    wx.config({
+        debug: false,
+        appId: appid,
+        timestamp: timestamp,
+        nonceStr: nonceStr,
+        signature: signature,
+        jsApiList: [
+            'checkJsApi',
+            'onMenuShareTimeline',
+            'onMenuShareAppMessage',
+            'showOptionMenu',
+            'chooseWXPay',
+        ]
+    });
+
+    wx.ready(function () {
+        wx.showOptionMenu();
+
+
+        $("#topay").click(function() {
+
+            //tips('信息正确，支付后即可预约');
+            var themeid = $("#themeid").val().trim();
+            var groupid = $("#groupid").val().trim();
+
+            var workerid = $("#workerid").val().trim();
+            var payewmid = $("#payewmid").val().trim();
+            if(payewmid == "no"){
+                $.ajax({
+                    type:'POST',
+                    data:{fname : username,fmobile:mobile,themeid:themeid,groupid:groupid,workerid:workerid,typeid:typeid},
+                    url:'{php echo $this->createMobileUrl("GetPrepay");}',
+                    success:function(data){
+                        var json = eval("("+data+")");
+                        //alert(json.orderno);
+                        if(json.errcode == 0){
+                            $("#orderno").val(json.orderno);
+                            $("#orderid").val(json.orderid);
+                            $("#tijiao").val("0");
+
+                            if(json.type == 1){
+                                alertToUrl(json.msg,json.url);
+                            }else{
+
+                                if(json.auth == 0){
+                                    wx.chooseWXPay({
+                                        timestamp: json.timeStamp,
+                                        nonceStr: json.nonceStr,
+                                        package: json.package,
+                                        signType: json.signType,
+                                        paySign: json.paySign,
+                                        success: function (res) {
+                                            // 支付成功后的回调函数
+                                            var str = JSON.stringify(res);
+                                            checkorder();
+                                        }
+                                    });
+                                }else{
+                                    tips('长按二维码即可完成支付');
+                                    $('#dialog').show()
+                                    $("#payewm").attr('src',json.code_url);
+                                    $("#payewmid").val(json.code_url);
+                                    checkorder();
+
+                                    // alert(json.code_url);
+                                }
+                            }
+
+
+                        }else{
+                            if(json.type == 1){
+                                alertToUrl(json.errmsg,json.url);
+                            } else{
+                                tips(json.errmsg);
+
+                            }
+                        }
+                    }
+                });
+
+            }else{
+                tips('长按二维码即可完成支付');
+                $('#dialog').show()
+                $("#payewm").attr('src',json.code_url);
+                $("#payewmid").val(json.code_url);
+                checkorder();
+            }
+
+        });
+
+
+        function checkorder(){
+            var orderno =  $("#orderno").val();
+            var orderid =  $("#orderid").val();
+            if(orderno.length == 0){
+                alert('订单号为空');
+            }
+            $.ajax({
+                type:'POST',
+                data:{orderid:orderid},
+                url:'{php echo $this->createMobileUrl("CheckJsPayResult");}',
+                success:function(data){
+                    var json = eval("("+data+")");
+                    if(json.errcode == 0){
+                        alertToUrl(json.msg,json.url);
+                    }else{
+                        //alert(json.errmsg);
+                        //clearInterval(run)
+                        checkorder();
+                    }
+                }
+            });
+        }
+
+
+
+    });
+
+    wx.error(function (res) {
+    });
+
+
+
+</script>
+{template 'footer'}

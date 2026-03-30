@@ -1,0 +1,170 @@
+{include file="public/header"}
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">新闻标题</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" lay-verify="required" name="title" id="title" value="{$data['title']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">新闻分类</div>
+                            <div class="layui-input-block">
+                                <select name="category_id" id="category_id" lay-verify="required">
+                                    <option value="">请选择新闻分类</option>
+                                    {foreach $news_category as $val}
+                                        <option value="{$val['id']}" {if $data['category_id']==$val['id']}selected{/if}>{$val['name']}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">封面图</div>
+                            <div class="layui-input-block">
+                                <div class="layui-upload" id="contract_type" style="margin-top: 10px;">
+                                    <button type="button" class="layui-btn" id="img_file-upload">上传封面图(一张)</button>
+                                    <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                                        预览图：
+                                        <div class="layui-upload-list" id="img_file-upload-list">
+                                            {if isset($data['img'])}
+                                            <div style="display: inline-block;">
+                                                <img onclick="seePic(this);" src="/{$data['img']}" class="layui-upload-img" style="width:80px;height:80px;">
+                                                <button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button>
+                                                <input type="hidden" name="img_file[]" value="{$data['img']}">
+                                            </div>
+                                            {/if}
+                                        </div>
+                                    </blockquote>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">新闻内容</div>
+                            <div class="layui-input-block">
+                                <script id="content" type="text/plain" style="width:100%;height:400px;">
+                                    {if isset($data['content'])}
+                                    {$data['content']|htmlspecialchars_decode|stripslashes}
+                                    {/if}
+                                </script>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+
+        var ue = UE.getEditor('content', {
+            initialFrameHeight: 400,
+            serverUrl: 'static/cklein/plugins/ueditor/php/controller.php'
+        });
+
+
+        laydate.render({
+            elem: '#pay_time' //指定元素
+            ,format: 'yyyy-MM-dd HH:mm:ss'
+            ,type:'datetime'
+        });
+
+        form.on('submit(component-form-element)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            if( $('#img_file-upload-list').children().length == 0 )
+            {
+                layer.msg('请上传新闻封面图！');
+                return false;
+            }
+
+            if(data.field['editorValue']==''){
+                layer.msg('请输入新闻内容！');
+                return false;
+            }
+
+            $.ajax({
+                url:"{:Url('centralize/index/news_save')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+        // 封面图文件
+        upload.render({
+            elem: '#img_file-upload'
+            ,url: '{:Url("admin/defaultInfo/upload_file")}'
+            ,accept: 'image'
+            ,data: { folder: 'centralize', type: 'news_file'}
+            ,multiple: true
+            ,number:1
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+
+                    $('#img_file-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="img_file[]" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+</script>
+</body>
+</html>

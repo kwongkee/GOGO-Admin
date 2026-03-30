@@ -1,0 +1,167 @@
+{include file="public/header_new"}
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+
+                <div id="toolbar" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;">
+                    <!--<button type="button" href="javascript:;" onclick="add();" class="btn btn-default">-->
+                    <!--添加主体-->
+                    <!--</button>-->
+                </div>
+                <table id="table"
+
+                /*默认排序项*/
+                data-sort-name="createtime"
+                data-sort-order="desc"
+                /*工具栏相关*/
+                data-toolbar="#toolbar"
+                data-search="false"          /*搜索框*/
+                data-search-on-enter-key="false"
+                data-show-refresh="true"    /*刷新按钮*/
+                /*分页相关*/
+                data-side-pagination="server"
+                data-pagination="true"      /*显示分页*/
+                data-page-size="15"         /*每页显示条数*/
+                /*移动端相关*/
+                data-mobile-responsive="true"
+                data-card-view="true"
+                data-show-columns="true"
+                /*radio or checkbox字段名称*/
+                data-select-item-name="tids" >
+
+                <thead>
+                <tr>
+                    <th data-field="checkbox"
+                        data-align="center"
+                        data-checkbox="true"></th>
+                    <th data-field="id"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="false">ID</th>
+                    <th data-field="ordersn"
+                        data-align="center"
+                        data-sortable="true">关联订单号</th>
+                    <th data-field="createtime"
+                        data-align="center"
+                        data-sortable="true">绑定时间</th>
+                    <th data-field="user_name"
+                        data-align="center"
+                        data-sortable="true">商家名称</th>
+                    <th data-field="user_tel"
+                        data-align="center"
+                        data-sortable="true">商家电话</th>
+                    <th data-field="status"
+                        data-align="center"
+                        data-sortable="true">状态</th>
+                    <th data-field="manage"
+                        data-align="center"
+                        class="td-manage">操作</th>
+                </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    var table;
+
+    $(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:Url('admin/elec/document_approve')}",
+            queryParams: queryParams,
+
+        });
+        // $('.form-control').attr('placeholder','搜索银行账户名称');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+
+        };
+        return temp;
+    };
+
+    // 申报
+    function add()
+    {
+        layer.open({
+            type: 2,
+            title: '添加平台主体。tips:非单一窗口请填写海关十位数编号',
+            shadeClose: true,
+            shade: 0.3,
+            area: ['800px', '550px'],
+            content: "{:Url('main/add')}", //iframe的url
+            yes:function(){
+                //setTimeout(function(){window.location.reload();},800);
+            },
+            end:function() {
+                setTimeout(function () {
+                    //window.location.reload();
+                }, 800);
+            }
+        });
+    }
+
+    // 申报
+    function Edit(id)
+    {
+        layer.open({
+            type: 2,
+            title: '单证主体关联审核',
+            shadeClose: true,
+            shade: 0.3,
+            area: ['800px', '550px'],
+            content: "{:Url('admin/elec/document_approve_edit')}&id="+id, //iframe的url
+            yes:function(){
+                //setTimeout(function(){window.location.reload();},800);
+            },
+            end:function() {
+                setTimeout(function () {
+                    //window.location.reload();
+                }, 800);
+            }
+        });
+    }
+
+
+    // 删除操作
+    function Del(ids) {
+        layer.confirm('确定要删除吗?',{
+            icon:3,
+            btn:['确定','取消']
+        },function(){
+            $.ajax({
+                url:"{:url('main/del')}",
+                type:'post',
+                dataType:'json',
+                data:{'id':ids},
+                success:function(data) {
+                    var res = JSON.parse(data);
+                    if(res.code <= 0) {
+                        layer.msg(res.msg,{icon:2});
+                    }
+                    layer.msg(res.msg,{icon:1});
+                    setTimeout(function(){window.location.reload();},1000);
+                }
+            })
+        })
+    }
+
+
+</script>
+
+</body>
+</html>
+

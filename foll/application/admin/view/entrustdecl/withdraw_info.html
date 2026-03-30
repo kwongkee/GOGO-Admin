@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>提现审核</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <style>
+        form{
+            margin-top: 47px;
+            margin-right: 32px;
+        }
+        .layui-upload-img{width: 92px; height: 92px; margin: 0 10px 10px 0;}
+    </style>
+</head>
+<body>
+<form class="layui-form" action="">
+    <input type="hidden" name="id" value="{$data['id']}">
+    <div class="layui-form-item" style="display: none;">
+        <label class="layui-form-label">账户信息</label>
+        <div class="layui-input-block">
+            <table class="layui-table">
+                <colgroup>
+                  <col width="150">
+                  <col width="150">
+                  <col width="200">
+                  <col>
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>人民币(CNY)</th>
+                    <th>美元(USD)</th>
+                    <th>港币(HKD)</th>
+                    <th>瑞士法郎(CHF)</th>
+                  </tr> 
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{$user_money['cny']}</td>
+                    <td>{$user_money['usd']}</td>
+                    <td>{$user_money['hkd']}</td>
+                    <td>{$user_money['chf']}</td>
+                  </tr>
+                </tbody>
+                <thead>
+                    <tr>
+                      <th>丹麦克朗(DKK)</th>
+                      <th>欧元(EUR)</th>
+                      <th>英镑(GBP)</th>
+                      <th>日元(JPY)</th>
+                    </tr> 
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{$user_money['dkk']}</td>
+                      <td>{$user_money['eur']}</td>
+                      <td>{$user_money['gbp']}</td>
+                      <td>{$user_money['jpy']}</td>
+                    </tr>
+                  </tbody>
+                  <thead>
+                    <tr>
+                      <th>澳元(AUD)</th>
+                      <th>加拿大元(CAD)</th>
+                      <th>挪威克朗(NOK)</th>
+                      <th>瑞典克朗(SEK)</th>
+                    </tr> 
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{$user_money['aud']}</td>
+                      <td>{$user_money['cad']}</td>
+                      <td>{$user_money['nok']}</td>
+                      <td>{$user_money['sek']}</td>
+                    </tr>
+                  </tbody>
+                  <thead>
+                    <tr>
+                      <th>新加坡元(SGD)</th>
+                      <th>新西兰元(NZD)</th>
+                    </tr> 
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{$user_money['sgd']}</td>
+                      <td>{$user_money['nzd']}</td>
+                    </tr>
+                  </tbody>
+              </table>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+      <label class="layui-form-label">当前状态</label>
+      <div class="layui-input-inline">
+      </div>
+      <div class="layui-form-mid layui-word-aux" style="color: red!important">{$data['status_text']}</div>
+    </div>
+
+    <div class="layui-form-item">
+      <label class="layui-form-label">是否确认</label>
+      <div class="layui-input-inline">
+      </div>
+      <div class="layui-form-mid layui-word-aux" style="color: red!important">{$data['is_confirm'] == 0 ? '未确认' : '已确认'}</div>
+    </div>
+  
+    <div class="layui-form-item">
+        <label class="layui-form-label">提现金额</label>
+        <div class="layui-input-inline">
+        </div>
+        <div class="layui-form-mid layui-word-aux" style="color: red!important">{$data['withdraw_money']} ({$data['money_type']})</div>
+        <input type="hidden" name="money_type" value="{$data['money_type']}">
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">账户信息</label>
+        <div class="layui-input-block">
+            <div class="layui-form-mid layui-word-aux" style="color: red!important">账户名称：{$withdraw_account['account_name']} 银行：{$withdraw_account['bank_name']} 账号：{$withdraw_account['account']} 币种：{$withdraw_account['money_type']}</div> <button class="layui-btn" type="button" onclick="copyInfo();">复制信息</button>
+        </div>
+	</div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">申请信息</label>
+        <div class="layui-input-block">
+            <div class="layui-form-mid layui-word-aux">
+                {if $data['logistics_status']=='未发货'}
+                    <table class="layui-table">
+                        <tr>
+                            <td>货运状态</td>
+                            <td>新老买家</td>
+                            {if $data['buyer_type']=='新买家'}
+                                <td>预计发货时间</td>
+                                <td>大致发货方式</td>
+                                <td>收货人信息</td>
+                                <td>发货人信息</td>
+                            {/if}
+                        </tr>
+                        <tr>
+                            <td>{$data['logistics_status']}</td>
+                            <td>{$data['buyer_type']}</td>
+                            {if $data['buyer_type']=='新买家'}
+                                <td>{$data['deliver_time']}</td>
+                                <td>{$data['deliver_type']}</td>
+                                <td>姓名：{$data['consignor_name']}，电话：{$data['consignor_tel']},地址：{$data['consignor_address']}</td>
+                                <td>姓名：{$data['consignee_name']}，电话：{$data['consignee_tel']},地址：{$data['consignee_address']}</td>
+                            {/if}
+                        </tr>
+                    </table>
+                    <br>
+                    {if $data['buyer_type']=='新买家'}
+                        沟通记录：
+                        {foreach $data['communicate_log_file'] as $k=>$v}
+                        <a href="https://decl.gogo198.cn/public/{$v}">文件{$k+1}</a>
+                        {/foreach}
+                        <br>
+                    {elseif($data['buyer_type']=='老买家')}
+                        过往物流单据：
+                        {foreach $data['logistics_log_file'] as $k=>$v}
+                        <a href="https://decl.gogo198.cn/public/{$v}">文件{$k+1}</a>
+                        {/foreach}
+                        <br>
+                    {/if}
+                        商业合同：
+                        {foreach $data['no_deliver_contract'] as $k=>$v}
+                        <a href="https://decl.gogo198.cn/public/{$v}">文件{$k+1}</a>
+                        {/foreach}
+                        <br>
+                        形式发票：
+                        {foreach $data['no_deliver_invoice'] as $k=>$v}
+                        <a href="https://decl.gogo198.cn/public/{$v}">文件{$k+1}</a>
+                        {/foreach}
+                        <br>
+                {else}
+                    发货方式：{$data['delivery_type']}<br>
+                    {if $data['delivery_type']=='直接发货'}
+                        物流运单：
+                        {foreach $data['waybill_file'] as $k=>$v}
+                            <a href="https://decl.gogo198.cn/public/{$v}">文件{$k+1}</a>
+                        {/foreach}
+                        <br>
+                        物流提单：
+                        {foreach $data['waylading_file'] as $k=>$v}
+                        <a href="https://decl.gogo198.cn/public/{$v}">文件{$k+1}</a>
+                        {/foreach}
+                        <br>
+                        快递面单：
+                        {foreach $data['expressbill_file'] as $k=>$v}
+                        <a href="https://decl.gogo198.cn/public/{$v}">文件{$k+1}</a>
+                        {/foreach}
+                        <br>
+                        订舱单：
+                        {foreach $data['bookinglist_file'] as $k=>$v}
+                        <a href="https://decl.gogo198.cn/public/{$v}">文件{$k+1}</a>
+                        {/foreach}
+                        <br>
+                        入舱单：
+                        {foreach $data['manifest_file'] as $k=>$v}
+                        <a href="https://decl.gogo198.cn/public/{$v}">文件{$k+1}</a>
+                        {/foreach}
+                        <br>
+                        报关单：
+                        {foreach $data['declare_file'] as $k=>$v}
+                        <a href="https://decl.gogo198.cn/public/{$v}">文件{$k+1}</a>
+                        {/foreach}
+                        <br>
+                    {elseif($data['delivery_type']=='货代转运')}
+                        运费证明：
+                        {foreach $data['freight_file'] as $k=>$v}
+                        <a href="https://decl.gogo198.cn/public/{$v}">文件{$k+1}</a>
+                        {/foreach}
+                        <br>
+                        通关证明：
+                        {foreach $data['clearance_file'] as $k=>$v}
+                        <a href="https://decl.gogo198.cn/public/{$v}">文件{$k+1}</a>
+                        {/foreach}
+                        <br>
+                    {elseif($data['delivery_type']=='国内交货')}
+                        收发货证明：
+                        {foreach $data['re_delivery_file'] as $k=>$v}
+                        <a href="https://decl.gogo198.cn/public/{$v}">文件{$k+1}</a>
+                        {/foreach}
+                        <br>
+                        送货单：
+                        {foreach $data['delivery_note_file'] as $k=>$v}
+                        <a href="https://decl.gogo198.cn/public/{$v}">文件{$k+1}</a>
+                        {/foreach}
+                        <br>
+                        装箱单：
+                        {foreach $data['packinglist_file'] as $k=>$v}
+                        <a href="https://decl.gogo198.cn/public/{$v}">文件{$k+1}</a>
+                        {/foreach}
+                        <br>
+                        快递单：
+                        {foreach $data['express_file'] as $k=>$v}
+                        <a href="https://decl.gogo198.cn/public/{$v}">文件{$k+1}</a>
+                        {/foreach}
+                        <br>
+                    {/if}
+                        商业合同PO：
+                        {foreach $data['deliver_contract'] as $k=>$v}
+                        <a href="https://decl.gogo198.cn/public/{$v}">文件{$k+1}</a>
+                        {/foreach}
+                        <br>
+                        商业发票CI：
+                        {foreach $data['deliver_invoice'] as $k=>$v}
+                        <a href="https://decl.gogo198.cn/public/{$v}">文件{$k+1}</a>
+                        {/foreach}
+                        <br>
+                <br>
+                    发货人是否平台：{$data['consignor_platform']}<br>
+                    {if $data['consignor_platform']=='不是'}
+                        货运代理合同:
+                        {foreach $data['transport_contract'] as $k=>$v}
+                        <a href="https://decl.gogo198.cn/public/{$v}">文件{$k+1}</a>
+                        {/foreach}
+                        <br>
+                    {/if}
+                    收货人是否买家：{$data['consignee_buyer']}<br>
+                    {if $data['consignee_buyer']=='不是'}
+                        买家委托代付款/收货文件:
+                        {foreach $data['receiving_file'] as $k=>$v}
+                        <a href="https://decl.gogo198.cn/public/{$v}">文件{$k+1}</a>
+                        {/foreach}
+                        <br>
+                    {/if}
+                    付款人是否买家：{$data['payer_buyer']}，买家类别：{$data['buyer_type2']}<br>
+                    {if $data['payer_buyer']=='不是' && $data['buyer_type2']=='买家是中介，付款人为终端买家' && $data['is_consignee']=='不是'}
+                        提供付款人知晓关于此次付款目的以及收货安排的证明材料:
+                        {foreach $data['is_consignee_file'] as $k=>$v}
+                        <a href="https://decl.gogo198.cn/public/{$v}">文件{$k+1}</a>
+                        {/foreach}
+                        <br>
+                    {/if}
+                {/if}
+            </div>
+        </div>
+    </div>
+	
+	<div class="layui-form-item">
+        <label class="layui-form-label">红包使用</label>
+        <div class="layui-input-block">
+			{if $data['red_pack_id']}
+                <div class="layui-form-mid layui-word-aux" style="color: red!important">
+                    <p>红包类型：{$data['red_pack_type']}</p>
+                    <p>应付金额：{$data['yingfu_money']}</p>
+                    <p>抵扣金额：{$data['red_pack_money']}</p>
+                    <p>实付金额：{$data['shifu_money']}</p>
+                </div>
+            {else}
+                <div class="layui-form-mid layui-word-aux">未使用</div>
+            {/if}
+        </div>
+    </div>
+
+	<!--<div class="layui-form-item">-->
+        <!--<label class="layui-form-label">转账手续费</label>-->
+        <!--<div class="layui-input-inline">-->
+          <!--<select name="withdrawal_expenses_currency" lay-verify="required" lay-search="" disabled>-->
+            <!--<option value="">请选择</option>-->
+            <!--<option value="CNY" data-money_type="CNY" {if $data['money_type'] == 'CNY'} selected {/if}>CNY</option>-->
+            <!--<option value="USD" data-money_type="USD" {if $data['money_type'] == 'USD'} selected {/if}>USD</option>-->
+            <!--<option value="HKD" data-money_type="HKD" {if $data['money_type'] == 'HKD'} selected {/if}>HKD</option>-->
+            <!--<option value="CHF" data-money_type="CHF" {if $data['money_type'] == 'CHF'} selected {/if}>CHF</option>-->
+            <!--<option value="DKK" data-money_type="DKK" {if $data['money_type'] == 'DKK'} selected {/if}>DKK</option>-->
+            <!--<option value="EUR" data-money_type="EUR" {if $data['money_type'] == 'EUR'} selected {/if}>EUR</option>-->
+            <!--<option value="GBP" data-money_type="GBP" {if $data['money_type'] == 'GBP'} selected {/if}>GBP</option>-->
+            <!--<option value="JPY" data-money_type="JPY" {if $data['money_type'] == 'JPY'} selected {/if}>JPY</option>-->
+            <!--<option value="ADU" data-money_type="ADU" {if $data['money_type'] == 'AUD'} selected {/if}>AUD</option>-->
+            <!--<option value="CAD" data-money_type="CAD" {if $data['money_type'] == 'CAD'} selected {/if}>CAD</option>-->
+            <!--<option value="NOK" data-money_type="NOK" {if $data['money_type'] == 'NOK'} selected {/if}>NOK</option>-->
+            <!--<option value="SEK" data-money_type="SEK" {if $data['money_type'] == 'SEK'} selected {/if}>SEK</option>-->
+            <!--<option value="SGD" data-money_type="SGD" {if $data['money_type'] == 'SGD'} selected {/if}>SGD</option>-->
+            <!--<option value="NZD" data-money_type="NZD" {if $data['money_type'] == 'NZD'} selected {/if}>NZD</option>-->
+          <!--</select>-->
+        <!--</div>-->
+        <!--<div class="layui-input-inline">-->
+			    <!--<input type="number" class="layui-input" name="withdrawal_expenses_rate" id="withdrawal_expenses_rate" placeholder="费率" value="{$data['withdrawal_expenses_rate']}">-->
+		    <!--</div>-->
+        <!--<div class="layui-input-inline">-->
+          <!--<input type="number" class="layui-input" name="withdrawal_expenses" id="withdrawal_expenses" placeholder="费用" value="{$data['withdrawal_expenses']}">-->
+		    <!--</div>-->
+  <!--</div>-->
+  
+  <div class="layui-form-item">
+    <label class="layui-form-label">代缴税费</label>
+    <div class="layui-input-inline">
+      <select name="withdrawal_taxation_currency" lay-verify="required" lay-search="" disabled>
+          <option value="">请选择</option>
+          <option value="CNY" data-money_type="CNY" {if $data['money_type'] == 'CNY'} selected {/if}>CNY</option>
+            <option value="USD" data-money_type="USD" {if $data['money_type'] == 'USD'} selected {/if}>USD</option>
+            <option value="HKD" data-money_type="HKD" {if $data['money_type'] == 'HKD'} selected {/if}>HKD</option>
+            <option value="CHF" data-money_type="CHF" {if $data['money_type'] == 'CHF'} selected {/if}>CHF</option>
+            <option value="DKK" data-money_type="DKK" {if $data['money_type'] == 'DKK'} selected {/if}>DKK</option>
+            <option value="EUR" data-money_type="EUR" {if $data['money_type'] == 'EUR'} selected {/if}>EUR</option>
+            <option value="GBP" data-money_type="GBP" {if $data['money_type'] == 'GBP'} selected {/if}>GBP</option>
+            <option value="JPY" data-money_type="JPY" {if $data['money_type'] == 'JPY'} selected {/if}>JPY</option>
+            <option value="ADU" data-money_type="ADU" {if $data['money_type'] == 'AUD'} selected {/if}>AUD</option>
+            <option value="CAD" data-money_type="CAD" {if $data['money_type'] == 'CAD'} selected {/if}>CAD</option>
+            <option value="NOK" data-money_type="NOK" {if $data['money_type'] == 'NOK'} selected {/if}>NOK</option>
+            <option value="SEK" data-money_type="SEK" {if $data['money_type'] == 'SEK'} selected {/if}>SEK</option>
+            <option value="SGD" data-money_type="SGD" {if $data['money_type'] == 'SGD'} selected {/if}>SGD</option>
+            <option value="NZD" data-money_type="NZD" {if $data['money_type'] == 'NZD'} selected {/if}>NZD</option>
+      </select>
+    </div>
+    <div class="layui-input-inline">
+      <input type="number" class="layui-input" name="withdrawal_taxation_rate" id="withdrawal_taxation_rate" placeholder="费率" value="{$data['withdrawal_taxation_rate']}">
+    </div>
+    <div class="layui-input-inline">
+      <input type="number" class="layui-input" name="withdrawal_taxation" id="withdrawal_taxation" placeholder="税费" value="{$data['withdrawal_taxation']}">
+</div>
+  
+  
+</div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">提现手续费</label>
+        <div class="layui-input-inline">
+            <select name="withdrawal_fee_currency" lay-verify="required" lay-search="" disabled>
+                <option value="">请选择</option>
+                <option value="CNY" data-money_type="CNY" {if $data['money_type'] == 'CNY'} selected {/if}>CNY</option>
+                <option value="USD" data-money_type="USD" {if $data['money_type'] == 'USD'} selected {/if}>USD</option>
+                <option value="HKD" data-money_type="HKD" {if $data['money_type'] == 'HKD'} selected {/if}>HKD</option>
+                <option value="CHF" data-money_type="CHF" {if $data['money_type'] == 'CHF'} selected {/if}>CHF</option>
+                <option value="DKK" data-money_type="DKK" {if $data['money_type'] == 'DKK'} selected {/if}>DKK</option>
+                <option value="EUR" data-money_type="EUR" {if $data['money_type'] == 'EUR'} selected {/if}>EUR</option>
+                <option value="GBP" data-money_type="GBP" {if $data['money_type'] == 'GBP'} selected {/if}>GBP</option>
+                <option value="JPY" data-money_type="JPY" {if $data['money_type'] == 'JPY'} selected {/if}>JPY</option>
+                <option value="ADU" data-money_type="ADU" {if $data['money_type'] == 'AUD'} selected {/if}>AUD</option>
+                <option value="CAD" data-money_type="CAD" {if $data['money_type'] == 'CAD'} selected {/if}>CAD</option>
+                <option value="NOK" data-money_type="NOK" {if $data['money_type'] == 'NOK'} selected {/if}>NOK</option>
+                <option value="SEK" data-money_type="SEK" {if $data['money_type'] == 'SEK'} selected {/if}>SEK</option>
+                <option value="SGD" data-money_type="SGD" {if $data['money_type'] == 'SGD'} selected {/if}>SGD</option>
+                <option value="NZD" data-money_type="NZD" {if $data['money_type'] == 'NZD'} selected {/if}>NZD</option>
+            </select>
+        </div>
+        <div class="layui-input-inline">
+            <input type="number" class="layui-input" name="withdrawal_fee_rate" id="withdrawal_fee_rate" placeholder="费率" value="{$data['withdrawal_fee_rate']}">
+        </div>
+        <div class="layui-input-inline">
+            <input type="number" class="layui-input" name="withdrawal_fee" id="withdrawal_fee" placeholder="费用" value="{$data['withdrawal_fee']}">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">到账金额</label>
+        <div class="layui-input-inline">
+          <select name="true_currency" lay-verify="required" lay-search="" disabled>
+            <option value="">请选择</option>
+            <option value="CNY" data-money_type="CNY" {if $data['money_type'] == 'CNY'} selected {/if}>CNY</option>
+            <option value="USD" data-money_type="USD" {if $data['money_type'] == 'USD'} selected {/if}>USD</option>
+            <option value="HKD" data-money_type="HKD" {if $data['money_type'] == 'HKD'} selected {/if}>HKD</option>
+            <option value="CHF" data-money_type="CHF" {if $data['money_type'] == 'CHF'} selected {/if}>CHF</option>
+            <option value="DKK" data-money_type="DKK" {if $data['money_type'] == 'DKK'} selected {/if}>DKK</option>
+            <option value="EUR" data-money_type="EUR" {if $data['money_type'] == 'EUR'} selected {/if}>EUR</option>
+            <option value="GBP" data-money_type="GBP" {if $data['money_type'] == 'GBP'} selected {/if}>GBP</option>
+            <option value="JPY" data-money_type="JPY" {if $data['money_type'] == 'JPY'} selected {/if}>JPY</option>
+            <option value="ADU" data-money_type="ADU" {if $data['money_type'] == 'AUD'} selected {/if}>AUD</option>
+            <option value="CAD" data-money_type="CAD" {if $data['money_type'] == 'CAD'} selected {/if}>CAD</option>
+            <option value="NOK" data-money_type="NOK" {if $data['money_type'] == 'NOK'} selected {/if}>NOK</option>
+            <option value="SEK" data-money_type="SEK" {if $data['money_type'] == 'SEK'} selected {/if}>SEK</option>
+            <option value="SGD" data-money_type="SGD" {if $data['money_type'] == 'SGD'} selected {/if}>SGD</option>
+            <option value="NZD" data-money_type="NZD" {if $data['money_type'] == 'NZD'} selected {/if}>NZD</option>
+          </select>
+        </div>
+        <div class="layui-input-inline">
+            <input type="number" name="true_money" id="true_money" required  lay-verify="required" placeholder="到账金额" autocomplete="off" class="layui-input" value="{$data['true_money']}">
+	    	</div>
+        
+    </div>
+
+    <div class="layui-form-item">
+      <label class="layui-form-label">到账时间</label>
+      <div class="layui-input-inline">
+          <input type="text" class="layui-input" name="money_date" lay-verify="required" id="money_date" placeholder="yyyy-MM-dd" value="{$data['money_date']}">
+      </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">结汇机构</label>
+        <div class="layui-input-inline">
+            <select name="foreign_exchange_id" id="foreign_exchange_id" lay-verify="required">
+                <option value="">请选择</option>
+                {foreach $foreign_exchange as $k => $v}
+                    <option value="{$v['id']}" {if $data['foreign_exchange_id']==$v['id']}selected{/if}>{$v['name']}</option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+
+    {if (!empty($data['diy_file']))}
+    <div class="layui-form-item">
+        <label class="layui-form-label">文件</label>
+        <div class="layui-input-block">
+            {foreach $data['diy_file'] as $key => $val}
+            <a href="http://declare.gogo198.cn/{$val}" target="_blank" style="color:#FF5555;" title="{$val}">
+                <!--[文件{$key+1}下载]-->
+                [<?php echo str_replace('diy_file/','',strstr($val,'diy_file/'));?>]
+            </a>
+            {/foreach}
+        </div>
+    </div>
+    {/if}
+    <div class="layui-form-item">
+      <label class="layui-form-label">审核结果</label>
+      <div class="layui-input-inline">
+          <select name="status" lay-verify="required" lay-search="" lay-filter="check_status">
+              <option value="">请选择</option>
+              <option value="1">提现已确认，操作已完成</option>
+              <option value="2">审核不通过，拒绝申请</option>
+              <option value="3">提现已审核，正在提现中</option>
+              <option value="5">审核不通过，退回申请中</option>
+              <option value="4">提现已完成，正在确认中</option>
+          </select>
+      </div>
+      <input type="hidden" name="status_texts" id="status_texts">
+    </div>
+
+  <!-- 审核不通过原因 -->
+  <div class="layui-form-item layui-form-text" id="remark_div" style="display: none;">
+    <label class="layui-form-label">原因</label>
+    <div class="layui-input-block">
+      <textarea name="remark" placeholder="请输入拒绝原因" class="layui-textarea"></textarea>
+    </div>
+</div> 
+
+    <!-- <div class="layui-form-item">
+        <label class="layui-form-label">是否通过</label>
+        <div class="layui-input-block">
+          <input type="radio" name="status" value="1" title="通过" checked>
+          <input type="radio" name="status" value="2" title="不通过">
+        </div>
+      </div>
+      <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">不通过原因</label>
+        <div class="layui-input-block">
+          <textarea name="remark" placeholder="请输入不通过原因" class="layui-textarea"></textarea>
+        </div>
+      </div>  -->
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+        </div>
+    </div>
+</form>
+
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+
+<script>
+
+    layui.use(['form','laydate','upload'], function(){
+        var form = layui.form
+        ,laydate = layui.laydate
+        ,upload = layui.upload;
+
+        var withdraw_money = Math.abs("{$data['withdraw_money']}");
+
+        laydate.render({
+      elem: '#money_date'
+    });
+
+        upload.render({
+            elem: '#transfer-upload'
+            ,url: '{:Url("admin/entrustDecl/withdraw_upload")}'
+            ,accept: 'image'
+            ,multiple: false
+            ,before: function(obj){
+                layer.load();
+            }
+            ,done: function(res){
+                layer.closeAll('loading');
+                if(res.code == 1)
+                {
+                    $('#transfer-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="'+ res.path +'" class="layui-upload-img"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="transfer_pic[]" value="'+res.path+'"></div>')
+                }
+            }
+        });
+
+        form.on('select(check_status)', function (data) {
+            $("#status_texts").val( $(this).text() );
+            switch (data.value) {
+                case "1" :
+                    $("#remark_div").hide();
+                break;
+                case "2" :
+                    $("#remark_div").hide();
+                break;
+                case "3" :
+                    $("#remark_div").hide();
+                break;
+                case "4" :
+                    $("#remark_div").hide();
+                break;
+                case "5" :
+                    $("#remark_div").show();
+                break;
+            }
+        });
+
+        // 监听提现费率
+        $("#withdrawal_expenses_rate").on("input",function(e){
+          var val = e.delegateTarget.value ? e.delegateTarget.value : "0";
+          var res = withdraw_money * val;
+          $("#withdrawal_expenses").val( res.toFixed(2));
+          changeMoney(withdraw_money,$("#withdrawal_expenses").val(),$("#withdrawal_taxation").val());
+        });
+
+        $("#withdrawal_taxation_rate").on("input",function(e){
+          var val = e.delegateTarget.value ? e.delegateTarget.value : "0";
+          var res = withdraw_money * val;
+          $("#withdrawal_taxation").val( res.toFixed(2));
+          changeMoney(withdraw_money,$("#withdrawal_expenses").val(),$("#withdrawal_taxation").val());
+        });
+
+        $("#withdrawal_expenses").on("input",function(e){
+          var val = e.delegateTarget.value ? e.delegateTarget.value : "0";
+          changeMoney(withdraw_money,$("#withdrawal_expenses").val(),$("#withdrawal_taxation").val());
+        });
+
+        $("#withdrawal_taxation").on("input",function(e){
+          var val = e.delegateTarget.value ? e.delegateTarget.value : "0";
+          changeMoney(withdraw_money,$("#withdrawal_expenses").val(),$("#withdrawal_taxation").val());
+        });
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            
+            $.ajax({
+                url:'{:Url("admin/entrustDecl/withdraw_info")}',
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (res) {
+                    layer.msg(res.message, {
+                                    icon: 1,
+                                    time: 2000
+                                }, function(){
+									if(res.code == 1)
+									{
+										parent.window.location.reload();
+                                    var index = parent.layer.getFrameIndex(window.name);
+                                    parent.layer.close(index);
+									}
+                                    
+                                });
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            return false;
+        });
+    });
+
+    function copyInfo() {
+      var layer = layui.layer,$ = layui.$;
+      var text = document.createElement('textarea')
+            text.value = "账户名称：{$withdraw_account['account_name']} 银行：{$withdraw_account['bank_name']} 账号：{$withdraw_account['account']} 币种：{$withdraw_account['money_type']} 到账金额：{$data['true_money']}";
+            document.body.appendChild(text)
+            text.select()
+            document.execCommand('copy')
+            text.remove()
+            layer.msg('复制成功')
+    }
+
+    function changeMoney(withdraw_money,withdrawal_expenses,withdrawal_taxation) {
+      var true_money = withdraw_money - withdrawal_expenses - withdrawal_taxation;
+      $("#true_money").val(true_money.toFixed(2));
+    }
+
+    function seePic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.open({
+            type: 1,
+            title: false,
+            closeBtn: 1,
+            area: ['auto'],
+            skin: 'layui-layer-nobg',
+            shadeClose: true,
+            content: '<img src="' + $(obj)[0].src + '" />'
+        });
+    }
+
+  function delPic(obj)
+  {
+    var layer = layui.layer,$ = layui.$;
+    layer.confirm('确认要删除该附件？', {
+      btn: ['删除','取消']
+    }, function(){
+      $(obj).parent().remove();
+      layer.closeAll();
+    }, function(){
+
+    });
+  }
+</script>
+</html>

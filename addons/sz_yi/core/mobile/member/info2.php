@@ -1,0 +1,60 @@
+<?php
+// 模块LTD提供
+if (!defined('IN_IA')) {
+	exit('Access Denied');
+}
+
+global $_W;
+global $_GPC;
+$openid = m('user')->getOpenid();
+$member = m('member')->getInfo($openid);
+$template_flag = 0;
+$diyform_plugin = p('diyform');
+
+
+if ($_W['isajax']) {
+	if ($_W['ispost']) {
+		$memberdata = $_GPC['memberdata'];
+
+		if ($template_flag == 1) {
+			$data = array();
+			$m_data = array();
+			$mc_data = array();
+			$insert_data = $diyform_plugin->getInsertData($fields, $memberdata);
+			$data = $insert_data['data'];
+			$m_data = $insert_data['m_data'];
+			$mc_data = $insert_data['mc_data'];
+			$m_data['diymemberid'] = $diyform_id;
+			$m_data['diymemberfields'] = iserializer($fields);
+			$m_data['diymemberdata'] = $data;
+			pdo_update('sz_yi_member', $m_data, array('openid' => $openid, 'uniacid' => $_W['uniacid']));
+		}
+		else {
+			pdo_update('sz_yi_member', $memberdata, array('openid' => $openid, 'uniacid' => $_W['uniacid']));
+
+			if (!empty($member['uid'])) {
+				$mcdata = $_GPC['mcdata'];
+				load()->model('mc');
+				mc_update($member['uid'], $mcdata);
+			}
+
+			if (p('discuz') && !empty($member['uid'])) {
+				$dzdata = array('realname' => $memberdata['realname'], 'mobile' => $memberdata['membermobile'], 'gender' => $memberdata['gender'], 'birthyear' => $memberdata['birthyear'], 'birthmonth' => $memberdata['birthmonth'], 'birthday' => $memberdata['birthday']);
+				p('discuz')->updateUserInfo($member['uid'], $dzdata);
+			}
+		}
+
+		show_json(1);
+	}
+
+	show_json(1, array('member' => $member));
+}
+
+if ($template_flag == 1) {
+	include $this->template('diyform/info');
+	return 1;
+}
+
+include $this->template('member/info2');
+
+?>

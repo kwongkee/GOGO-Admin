@@ -1,0 +1,489 @@
+{include file="common/header"}
+
+<body>
+<div class="x-nav">
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+
+<div class="demoTable">
+    订单号：
+    <div class="layui-inline" style="width: 205px;">
+        <input class="layui-input" name="orderid" id="orderid" value="" autocomplete="off" placeholder="请输入订单号">
+    </div>
+
+
+    手机号:
+    <div class="layui-inline" style="">
+        <input class="layui-input" name="mobile" id="mobile" value="" autocomplete="off" placeholder="请输入用户手机号">
+    </div>
+
+    泊位查询：
+    <div class="layui-inline" style="width: 135px;">
+        <input class="layui-input" name="parkCode" id="parkCode" value="" autocomplete="off" placeholder="泊位号">
+    </div>
+
+
+    车牌查询：
+    <div class="layui-inline" style="width: 135px;">
+        <input class="layui-input" name="cardNo" id="cardNo" value="" autocomplete="off" placeholder="车牌号">
+    </div>
+
+
+    <div class="layui-inline" style="margin-left: -34px;">
+        <label class="layui-form-label">支付时间</label>
+        <div class="layui-input-inline" style="width: 294px;">
+            <input type="text" class="layui-input" id="time" value="" placeholder="开始 到 结束">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item" style="margin-left:-34px;margin-top: 9px;">
+
+        <div class="layui-inline">
+            <label class="layui-form-label">入场时间</label>
+            <div class="layui-input-inline" style="width: 135px;">
+                <input type="text" name="st" id="st" placeholder="开始" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid">-</div>
+            <div class="layui-input-inline" style="width: 135px;">
+                <input type="text" name="et" id="sts" placeholder="结束" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item" style="margin-left: -33px;">
+
+        <div class="layui-inline">
+            <label class="layui-form-label">离场时间</label>
+            <div class="layui-input-inline" style="width: 135px;">
+                <input type="text" name="st" id="et" placeholder="开始" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid">-</div>
+            <div class="layui-input-inline" style="width: 135px;">
+                <input type="text" name="et" id="ets" placeholder="结束" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        商户单号：
+        <div class="layui-inline" style="width: 205px;">
+            <input class="layui-input" name="upOrderId" id="upOrderId" value="" autocomplete="off" placeholder="">
+        </div>
+    </div>
+
+
+    <select name="pay" id="pay" lay-verify="" style="width:172px;height: 38px;">
+        <option value="">请选择订单状态</option>
+        <option value="0">未离场</option>
+        <option value="1">已付款</option>
+        <option value="2">已离场未付款</option>
+        <!--<option value="3">全部数据</option>-->
+    </select>
+    <select name="pay" id="parkType" lay-verify="" style="width:172px;height: 38px;">
+        <option value="">请选择停车类型</option>
+        <option value="0">预付费</option>
+        <option value="1">后付费</option>
+    </select>
+    <select name="pay" id="PayType" lay-verify="" style="width:172px;height: 38px;">
+        <option value="">请选择支付方式</option>
+        <option value="Fwechat">微信免密</option>
+        <option value="FAgro">农商免密</option>
+        <option value="Parks">银联无感</option>
+        <option value="wechat">聚合支付--微信</option>
+        <option value="alipay">聚合支付--支付宝</option>
+        <option value="other">其他</option>
+    </select>
+    <select name="pay" id="ExcepOrder" lay-verify="" style="width:172px;height: 38px;">
+        <option value="">是否异常</option>
+        <option value="0">是</option>
+        <option value="1">否</option>
+    </select>
+    <select name="pay" id="vioOrder" lay-verify="" style="width:172px;height: 38px;">
+        <option value="">是否违规</option>
+        <option value="0">否</option>
+        <option value="1">是</option>
+    </select>
+    <select name="pay" id="monthCard" lay-verify="" style="width:172px;height: 38px;">
+        <option value="">是否月卡</option>
+        <option value="1">是</option>
+        <option value="0">否</option>
+    </select>
+    <button class="layui-btn" data-type="reload" id="search">开始查找</button>
+    <!--<a class="layui-btn" onclick="countMoney();">统计金额</a>-->
+    <a class="layui-btn" onclick="exprOrder();">导出</a>
+    <a class="layui-btn layui-btn-danger" onclick="delOrder();">删除</a>
+</div>
+
+<table class="layui-hide" id="LAY_table_user" lay-filter="user"   ></table>
+<form class="layui-form layui-form-pane" action="" style="display: none;" id="yzm">
+    <div class="layui-form-item">
+        <label class="layui-form-label">验证码</label>
+        <div class="layui-input-block">
+            <input type="text" name="code" id="code" required  lay-verify="required" placeholder="请输入验证码" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo3">立即提交</button>
+        </div>
+    </div>
+</form>
+</body>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn  layui-btn-sm layui-btn-normal" lay-event="userDetail" index="{{d.user_id}}" style="line-height:30px;">用户信息</a>
+    <a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="OrderModify" index="{{d.ordersn}}" style="line-height:30px;">修改</a>
+</script>
+<script>
+    var table = null;
+    var type =null;
+    var open =null;
+    var data =null;
+    var list = [];
+    var isMsg = false;
+    layui.use(['table','laydate','form'], function(){
+        table = layui.table;
+        laydate = layui.laydate;
+        var form = layui.form;
+        laydate.render({
+            elem: '#time'
+            ,type: 'datetime'
+            ,range: '/'
+            ,theme:'grid'
+            ,height:1200
+            ,width:90
+        });
+        laydate.render({
+            elem: '#st'
+            ,type: 'datetime'
+            ,theme:'grid'
+            ,height:1200
+            ,width:90
+        });
+        laydate.render({
+            elem: '#sts'
+            ,type: 'datetime'
+            ,theme:'grid'
+            ,height:1200
+            ,width:90
+        });
+        laydate.render({
+            elem: '#et'
+            ,type: 'datetime'
+            ,theme:'grid'
+            ,height:1200
+            ,width:90
+        });
+        laydate.render({
+            elem: '#ets'
+            ,type: 'datetime'
+            ,theme:'grid'
+            ,height:1200
+            ,width:90
+        });
+        //方法级渲染
+        var dt = new Date();
+        dt  = dt.getFullYear()+'-'+(dt.getMonth()+1)+'-'+dt.getDate();
+        table.render({
+            elem: '#LAY_table_user'
+            ,url: '{:Url("index/search_order")}'
+            // ,where:{'orderid':'','time':dt+' 00:00:00'+'/'+dt+' 23:59:00'}
+            ,where:{}
+            ,text:{
+                none:'暂无相关数据'
+            }
+            ,cols: [
+                [
+                    { checkbox:true},
+                    {field:'id', title:'ID', width:80},
+                    {field: 'create_time', title: '创建时间',width:180}
+                    ,{field: 'ordersn', title: '平台订单',width:200}
+                    ,{field: 'devs_ordersn', title: '设备订单',width:180}
+                    ,{field: 'upOrderId', title: '商户单号',width:160}
+                    ,{field: 'CarNo', title: '车牌号',width:100}
+                    , {field: 'starttime', title: '进入时间',width:180}
+                    , {field: 'endtime', title: '离开时间',width:180}
+                    , {field: 'totalMinute', title: '总停时长', width: 80}
+                    , {field: 'card_time', title: '月卡抵扣', width: 80}
+                    , {field: 'duration', title: '实计时长', width: 80}
+                    , {field: 'total', title: '应付', width: 80}
+                    , {field: 'freeMoney', title: '优惠', width: 80}
+                    , {field: 'pay_account', title: '应付', width: 80}
+                    , {field: 'pay_time', title: '支付时间'}
+                    , {field: 'pay_status', title: '支付状态', width: 80}
+                    ,{field:'status',title:'订单状态',width:80}
+                    , {field: 'pay_type', title: '支付方式', width: 80}
+                    , {field: 'addr', title: '路段',width:200}
+                    , {field: 'number', title: '泊位编号', width: 80}
+                    , {field: 'numbers', title: '设备编号', width: 80}
+                    ,{field:'parkType', title: '停车方式', width:80}
+                    ,{field:'isError', title: '是否异常', width:80}
+                    ,{field:'is_violation', title: '违规订单', width:80}
+                    , {fixed: 'right', width: 220, align: 'center', toolbar: '#barDemo'}
+                ]
+            ]
+            ,id: 'testReload'
+            ,page: true
+            ,height: 780
+        });
+
+        $('#search').on('click', function(){
+            var ordersn = $("#orderid").val();
+            var tim = $('#time').val();
+            var status =$("#pay").val();
+            var parkCode =  $("#parkCode").val();
+            var st  = $('#st').val();
+            var sts = $('#sts').val();
+            var et = $("#et").val();
+            var ets = $('#ets').val();
+            var parkType = $('#parkType').val();
+            var PayType = $('#PayType').val();
+            var ExcepOrder=$('#ExcepOrder').val();
+            var vioOrder = $('#vioOrder').val();
+            var monthCard= $('#monthCard').val();
+            var cardNo = $('#cardNo').val();
+            var mobile = $('#mobile').val();
+            var upOrderId = $("#upOrderId").val();
+            // if (ordersn==''&&tim==''&&status==''){
+            //     layer.msg('条件为空');
+            //     return false;
+            // }
+
+            var index = layer.load(1); //换了种风格
+            table.render({
+                elem: '#LAY_table_user'
+                ,url: '{:Url("index/search_order")}'
+                ,where:{
+                    'orderid':ordersn,
+                    'time':tim,
+                    'pay_status':status,
+                    'parkCode':parkCode,
+                    'st':st,
+                    'sts':sts,
+                    'et':et,
+                    'ets':ets,
+                    'parkType':parkType,
+                    'PayType':PayType,
+                    'ExcepOrder':ExcepOrder,
+                    'vioOrder':vioOrder,
+                    'monthCard':monthCard,
+                    'cardNo':cardNo,
+                    'mobile':mobile,
+                    'upOrderId':upOrderId
+                }
+                ,cols: [[
+                    { checkbox:true},
+                    {field:'id', title:'ID', width:80},
+                    {field:'create_time', title: '创建时间',width:180}
+                    ,{field:'ordersn', title: '平台订单',width:200}
+                    ,{field:'devs_ordersn', title: '设备订单',width:180}
+                    ,{field: 'upOrderId', title: '商户单号',width:160}
+                    ,{field: 'CarNo', title: '车牌号',width:100}
+                    ,{field:'starttime', title: '进入时间',width:120}
+                    ,{field:'endtime', title: '离开时间',width:120}
+                    ,{field:'totalMinute', title: '总停时长' ,width:80}
+                    ,{field:'card_time', title: '月卡抵扣', width:80}
+                    ,{field:'duration', title: '实计时长', width:80}
+                    ,{field:'total', title: '应付费用', width:80}
+                    ,{field:'freeMoney', title: '优惠费用', width:80}
+                    ,{field:'pay_account', title: '实付费用', width:80}
+                    ,{field:'pay_time', title: '支付时间',width:120}
+                    ,{field:'pay_status', title: '支付状态', width:80}
+                    ,{field:'status',title:'订单状态',width:80}
+                    ,{field:'pay_type', title: '支付方式', width:80}
+                    ,{field:'addr', title: '路段',width:180}
+                    ,{field:'number', title: '泊位编号', width:80}
+                    ,{field:'numbers', title: '设备编号', width:80}
+                    ,{field:'parkType', title: '停车方式', width:80}
+                    ,{field:'isError', title: '是否异常', width:80}
+                    ,{field:'is_violation', title: '违规订单', width:80}
+                    ,{fixed: 'right', width:220, align:'center', toolbar: '#barDemo'}
+                ]]
+                ,id: 'testReload'
+                ,page: true
+                ,height: 780
+                ,done:function () {
+                },
+                loading:true
+            });
+            layer.close(index);
+
+        });
+
+
+        table.on('tool(user)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+            // sendAuthCode();
+            if(layEvent === 'userDetail'){
+                if (data.user_id==''||data.user_id=='0'){
+                    layer.msg('不存在用户');
+                    return false;
+                }
+                type = 1;
+                layer.open({
+                    type: 2,
+                    area:['1085px','307px'],
+                    // content:"{:Url('index/member_list')}&page=1&limit=30&name=&card=&tel="+data.user_id
+                    content: '{:Url("index/userDeteil")}&user_id='+data.user_id //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                });
+               // open= layer.open({
+               //      type: 1,
+               //      area:['493px','181px'],
+               //      content: '<form class="layui-form" >\n' +
+               //      '    <div class="layui-form-item">\n' +
+               //      '        <label class="layui-form-label">输入授权码</label>\n' +
+               //      '        <div class="layui-input-block">\n' +
+               //      '            <input type="text" name="authCode" id="authCode" value="" placeholder="请输入" autocomplete="off" class="layui-input">\n' +
+               //      '        </div>\n' +
+               //      '    </div>\n' +
+               //      '    <div class="layui-form-item">\n' +
+               //      '        <div class="layui-input-block">\n' +
+               //      '            <button class="layui-btn" lay-submit lay-filter="*" onclick="butt();return false;">立即提交</button>\n' +
+               //      '        </div>\n' +
+               //      '    </div>\n' +
+               //      '</form>'
+               //  });
+                //do somehing
+
+            }else if (layEvent === 'OrderModify') {
+                console.log('修改');
+                layer.open({
+                    type: 2,
+                    area:['1085px','507px'],
+                    content: '{:Url("order/modifyOrder")}&order_id='+data.ordersn //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                });
+            }
+        });
+        form.on('submit(formDemo3)', function(data){
+            // layer.msg(JSON.stringify(data.field));
+            var load = layer.load(1);
+            axios.post("{:Url('order/delOrder')}",{
+                data:JSON.stringify(list),
+                code:data.field.code
+            }).then(function (value) {
+                layer.close(load);
+                if (value.data.code<0){
+                    layer.msg(value.data.msg);
+                } else{
+                    layer.closeAll();
+                    setTimeout(function () {
+                        layer.msg(value.data.msg);
+                    },1300);
+                    setTimeout(function () {
+                        location.reload(true);
+                    },1500);
+                }
+
+            }).catch(function (reason) {
+                layer.close(load);
+                setTimeout(function () {
+                    layer.msg(reason);
+                },1300);
+            });
+            return false;
+        });
+
+        return false;
+    });
+    // function sendAuthCode() {
+    //     axios.get("{:Url('index/send_auth_code')}",{}).then(function (reason) {
+    //         console.log(reason);
+    //     }).catch(function (err) {
+    //         layui.layer.msg(err);
+    //     })
+    // }
+
+    // function butt() {
+    //     layer.close(open);
+    //     var html =null;
+    //     if (type==1){
+    //         axios.get('{:Url("index/order_userinfo")}&uid='+data.user_id+"&code="+$("#authCode").val()).then(function (value) {
+    //             console.log(value);
+    //             if (value.data.code<0){
+    //                 layui.layer.msg(value.data.msg);
+    //             }else{
+    //                 html='<table class="layui-table"><colgroup><col><col><col></colgroup><thead><tr><th>姓名</th><th>电话</th><th>身份证</th><th>关联车票</th><th>授权信息</th></tr> </thead><tbody>';
+    //
+    //                 html+=' <tr>\n' +
+    //                     '      <td>'+value.data.data.uname+'</td>\n' +
+    //                     '      <td>'+value.data.data.mobile+'</td>\n' +
+    //                     '      <td>'+value.data.data.idcard+'</td>\n' +
+    //                         '<td>'+value.data.data.license+'</td><td>'+value.data.data.auth+'</td></tr>';
+    //                 html+='</tbody></table>';
+    //                 layer.open({
+    //                     type: 1,
+    //                     area:['890px','293px'],
+    //                     content: html
+    //                 });
+    //             }
+    //         }).catch(function (reason) {
+    //             layui.layer.msg(reason);
+    //         })
+    //
+    //     }
+    //     return false;
+    // }
+
+
+    function exprOrder() {
+       var ins= layer.load(1);
+        var tim = $('#time').val();
+        var status =$("#pay").val();
+        var parkCode =  $("#parkCode").val();
+        var st  = $('#st').val();
+        var sts = $('#sts').val();
+        var et = $("#et").val();
+        var ets=$('#ets').val();
+        var parkType = $('#parkType').val();
+        var PayType = $('#PayType').val();
+        var ExcepOrder=$('#ExcepOrder').val();
+        var vioOrder = $('#vioOrder').val();
+        var monthCard= $('#monthCard').val();
+        var cardNo = $('#cardNo').val();
+        var mobile = $('#mobile').val();
+       window.location.href="{:Url('index/order_expro')}&time="+tim+'&pay_status='+status+'&parkCode='+parkCode+"&st="+st+'&sts='+sts+"&et="+et+'&ets='+ets+'&parkType='+parkType+'&PayType='+PayType+'&ExcepOrder='+ExcepOrder+'&vioOrder='+vioOrder+'&monthCard='+monthCard+'&cardNo='+cardNo+'&mobile='+mobile;
+        layer.close(ins);
+    }
+
+    function delOrder() {
+       var checkStatus=table.checkStatus("testReload");
+       console.dir(checkStatus);
+       if (checkStatus.data.length==0){
+           layer.msg('请选择订单');
+           return false;
+       }
+
+
+
+       for (var i=0;i<checkStatus.data.length;i++){
+           list.push(checkStatus.data[i].ordersn);
+       }
+
+        if (!isMsg){
+            sendYzm();
+        }
+        layer.open({
+            type: 1,
+            area:['446px','157px'],
+            content: $('#yzm') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+        });
+        return false;
+    }
+
+    function sendYzm() {
+        axios.get("{:Url('trial_order/send_code')}").then(function (reason) {
+            console.log(reason);
+            isMsg = true;
+        }).catch(function (reason) {
+            console.log(reason);
+        });
+        return false;
+    }
+
+    // function countMoney() {
+    //     return false;
+    // }
+
+</script>
+</html>

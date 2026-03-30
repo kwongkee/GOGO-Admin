@@ -1,0 +1,89 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template("common/easy_delivery_header", TEMPLATE_INCLUDEPATH)) : (include template("common/easy_delivery_header", TEMPLATE_INCLUDEPATH));?>
+<body>
+<header>
+    <div class="logo"><img src="../addons/sz_yi/static/images/logo.png" alt=""></div>
+    <div class="plane"><img src="../addons/sz_yi/static/images/plane.png" alt=""></div>
+</header>
+<div class="warp">
+    <div class="content">
+        <div class="warp-con">
+            <div class="order-pay">
+                <div class="pay-left">
+                    <img src="../addons/sz_yi/static/images/pay_01.png" alt="">
+                    <h2>商品订购成功</h2>
+                </div>
+                <div class="pay-right">
+                    <p style="position: relative; left: -65px;">您可继续：</p>
+<!--                    <button class="but t-blue">扫码选购 <img src="../addons/sz_yi/static/images/icon_07.png" alt=""></button>-->
+                    <button class="but t-orange" onclick="locaCart();">支付订购 <img src="../addons/sz_yi/static/images/icon_07.png" alt=""></button>
+                    <button class="but t-red" onclick="locaPack();return false;">打包直邮 <img src="../addons/sz_yi/static/images/icon_07.png" alt=""></button>
+                </div>
+            </div>
+            <div class="pay-line"><span class="pay-title">订购概要</span></div>
+            <div class="pay-num">
+                <p>订购编号：<?php  echo $order['ordersn'];?></p>
+                <p>订购金额：<span class="t-deepred">¥ <?php  echo $order['price'];?></span> </p>
+                <p><span style="padding-left: 28px;">其中：</span>在线支付 <span class="t-deepred">¥ <?php  echo $order['price'];?></span> + 线下支付 <span class="t-deepred">¥ <?php  echo $order['offline_pay_price'];?></span> </p>
+                <p>订购时间：<?php  echo date('Y-m-d H:i:s',$order['createtime'])?></p>
+            </div>
+            <div class="pay-but">
+                <ul>
+                    <li><button class="but-orange" onclick="locaDetail();"><img src="../addons/sz_yi/static/images/icon_08.png" alt="">查详情</button></li>
+                    <li><button class="but-blue" onclick="locaHome();"><img src="../addons/sz_yi/static/images/icon_09.png" alt="">回首页</button></li>
+                    <li><button class="but-red" onclick="locaPack();return false;"><img src="../addons/sz_yi/static/images/icon_10.png" alt="">去打包</button></li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="pack-bg" style="display: none;"></div>
+<div class="pack-con" class="animated" style="display: none;">
+    <img class="dialogIco" src="../addons/sz_yi/static/images/pack.png" alt="" />
+    <div class="dialogTop">
+        <a href="javascript:;" class="claseDialogBtn" style="margin-right: -7px;">关闭</a>
+    </div>
+    <!-- <form action="" method="post" id="editForm"> -->
+    <h2 class="pack-title">请选择打包方式</h2>
+    <ul class="editInfos">
+        <li>
+            <a href="<?php  echo $this->createMobileUrl('order/easy_deliver_locallypack')?>&oid=<?php  echo $order['ordersn'];?>" class="locallyBtn" >就地打包</a>
+        </li>
+        <li>
+            <a href="<?php  echo $this->createMobileUrl('order/easy_deliver_centralizedpackage')?>&a=main" class="focusBtn">集中打包</a>
+        </li>
+    </ul>
+    <!-- </form> -->
+    <div class="inf">
+        <h3 class="inf-title">打包说明</h3>
+        <div class="pack-sor">
+            <p>就地打包：在购买该商品的店铺内打包及寄出</p>
+            <p>集中打包：选择在指定地点内打包及寄出</p>
+        </div>
+    </div>
+</div>
+<?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template("common/easy_deliver_footer", TEMPLATE_INCLUDEPATH)) : (include template("common/easy_deliver_footer", TEMPLATE_INCLUDEPATH));?>
+</body>
+<script>
+    function locaCart() {
+        window.location.href="<?php  echo $this->createMobileUrl('shop/easy_deliver_cart')?>";
+    }
+    function locaDetail() {
+        window.location.href="<?php  echo $this->createMobileUrl('order/easy_deliver_orderdetail')?>&oid=<?php  echo $_GPC['oid'];?>";
+    }
+
+    function locaHome() {
+        window.location.href="<?php  echo $this->createMobileUrl('member/easy_deliver_index')?>";
+    }
+    function locaPack() {
+        $('.pack-bg').css('display','block');
+        $('.pack-con').css('display','block');
+        return false;
+    }
+    $('.claseDialogBtn').bind('click',function () {
+        $('.pack-bg').css('display','none');
+        $('.pack-con').css('display','none');
+        return false;
+    });
+</script>
+</html>

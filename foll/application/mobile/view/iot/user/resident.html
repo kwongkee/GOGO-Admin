@@ -1,0 +1,92 @@
+{include file='iot/header'}
+<body style="background-color: #fff;">
+<style>
+    .tip {
+        display: none;
+        font-size: 14px;
+        position: absolute;
+        top: 45%;
+        left: 5%;
+        background: #000;
+        opacity: .5;
+        width: 90%;
+        color: #fff;
+        text-align: center;
+        padding: 5% 0;
+    }
+</style>
+<div class="whole">
+    <div class="header">
+        <div class="toplogo"><img src="./static/iot/images/top-logo.png" alt=""></div>
+        <h2 class="title">常驻人员邀请</h2>
+    </div>
+    <form action="">
+        <div class="content">
+            <!--<div class="register_icon"><img src="./static/iot/images/icon_big02.png" alt=""></div>-->
+            <div class="box">
+                <img src="./static/iot/images/icon_01.png" alt="" class="icon">
+                <input type="text" value="" placeholder="请输入手机号码" class="box_input" id="phone">
+                <div class="tip" id="tip"></div>
+            </div>
+            <div class="box">
+                <img src="./static/iot/images/icon_03.png" alt="" class="icon">
+                <input type="text" value="" id="name" placeholder="请输入人员姓名" class="box_input">
+            </div>
+            <div class="box">
+                <img src="./static/iot/images/icon_04.png" alt="" class="icon">
+                <input type="text" value="" id="unit" placeholder="请输入所属单位" class="box_input">
+            </div>
+            <div class="box">
+                <img src="./static/iot/images/icon_08.png" alt="" class="icon">
+                <span style="width: 40%;">
+			<input type="text" value="" id="expire_time" placeholder="请输入数字" class="box_input" style="width: 30%;">
+			</span>
+                <span style="width: 40%;">
+			<select name="" id="expire_type" placeholder="请选择来访时限" class="box_input" style="width: 30%;">
+				<option value="week" selected>周</option>
+				<option value="month">月</option>
+				<option value="year">年</option>
+			</select>
+			</span>
+            </div>
+            <div class="btn" id="btns"><a href="#">提交</a></div>
+            <!-- <div class="remark">
+                <p>注：请输入有效的手机号码</p>
+                <p class="remark_p">请输入有效的身份证号码</p>
+            </div> -->
+        </div>
+    </form>
+    <div class="login_bottom"><img src="./static/iot/images/bottom.jpg" alt=""></div>
+</div>
+</body>
+<script src="./static/iot/js/jquery-1.11.0.min.js"></script>
+<script>
+    $("#btns").bind("click",function () {
+        $.ajax({
+            url:"{:Url('iot/storeinvit')}",
+            type:'POST',
+            dataType:'json',
+            data:{
+                tel:$('#phone').val(),
+                name:$("#name").val(),
+                unit:$("#unit").val(),
+                expire_time:$('#expire_time').val(),
+                expire_type:$('#expire_type').val(),
+            },
+            success:function (res) {
+                // console.dir(res);
+                showMsg(res.message);
+                if (res.code==0){
+                    setTimeout(function () {
+                        window.location.reload();
+                    },2000);
+                }
+            },
+            error:function (xhr) {
+                showMsg('链接错误');
+            }
+
+        });
+    });
+</script>
+</html>

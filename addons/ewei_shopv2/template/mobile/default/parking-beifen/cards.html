@@ -1,0 +1,151 @@
+{template "parking/_header"}
+<link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.2/style/weui.min.css">
+<link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.0/css/jquery-weui.min.css">
+<div class="weui-cells weui-cells_form">
+    <div class="weui-cell">
+        <div class="weui-cell__bd">
+            <div class="weui-uploader">
+                <div class="weui-uploader__hd">
+                    <p class="weui-uploader__title"></p>
+                    <div class="weui-uploader__info">0/5</div>
+                </div>
+                <div class="weui-uploader__bd">
+                    <ul class="weui-uploader__files" id="uploaderFiles">
+                    </ul>
+                    <div class="weui-uploader__input-box">
+                        <input id="uploaderInput" class="weui-uploader__input" type="file" accept="image/*"   capture="camera">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<a href="javascript:;" class="weui-btn weui-btn_primary" id="btn"  onclick="ti()" style="background-color:#0099FF;">提交审核</a>
+<span style="font-size: 12px;color:#0099FF;">上传所需文件:{$lists}</span>
+
+<script src="https://cdn.bootcss.com/jquery-weui/1.2.0/js/jquery-weui.min.js"></script>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<script type="text/javascript">
+    $(function () {
+        //解决上传图片时capture="camera"在安卓与IOS的兼容性问题（在IOS只能拍照，不能选相册）
+        var ua = navigator.userAgent.toLowerCase();//获取浏览器的userAgent,并转化为小写——注：userAgent是用户可以修改的
+        var isIos = (ua.indexOf('iphone') != -1) || (ua.indexOf('ipad') != -1);//判断是否是苹果手机，是则是true
+        if (isIos) {
+            $("input:file").removeAttr("capture");
+        };
+    })
+    $(function () {
+        // 允许上传的图片类型
+        var allowTypes = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'];
+        // 1024KB，也就是 1MB
+        var maxSize = 2048 * 2048;
+        // 图片最大宽度
+        var maxWidth = 10000;
+        var n=1;
+        // 最大上传图片数量
+        var maxCount = 5;
+        $('#uploaderInput').on('change', function (event) {
+            var files = event.target.files;
+            //console.log(files);return false;
+            // 如果没有选中文件，直接返回
+            if (files.length === 0) {
+                return;
+            }
+
+            for (var i = 0, len = files.length; i < len; i++) {
+                var file = files[i];
+                var reader = new FileReader();
+
+                // 如果类型不在允许的类型范围内
+                if (allowTypes.indexOf(file.type) === -1) {
+
+                    $.alert("该类型不允许上传！", "警告！");
+                    continue;
+                }
+                if (file.size > maxSize) {
+                    //$.weui.alert({text: '图片太大，不允许上传'});
+                    $.alert("图片太大，不允许上传", "警告！");
+                    continue;
+                }
+                if ($('.weui-uploader__file').length >= maxCount) {
+                    $.alert({
+                        text: '最多只能上传' + maxCount + '张图片'
+                    });
+                    return;
+                }
+                reader.readAsDataURL(file);
+                reader.onload = function (e) {
+                    //console.log(e);
+                    var img = new Image();
+                    img.src = e.target.result;
+                    img.onload = function () {
+                        // 不要超出最大宽度
+                        var w = Math.min(maxWidth, img.width);
+                        // 高度按比例计算
+                        var h = img.height * (w / img.width);
+                        var canvas = document.createElement('canvas');
+                        var ctx = canvas.getContext('2d');
+                        // 设置 canvas 的宽度和高度
+                        canvas.width = w;
+                        canvas.height = h;
+                        ctx.drawImage(img, 0, 0, w, h);
+
+                        var base64 = canvas.toDataURL('image/jpeg',0.8);
+                        // 插入到预览区
+                        var $preview = $('<li class="weui-uploader__file weui-uploader__file_status" style="background-image:url(' + img.src + ')"><div class="weui-uploader__file-content">0%</div></li>');
+                        $('#uploaderFiles').append($preview);
+                        var num = $('.weui-uploader__file').length;
+                        $('.weui-uploader__info').text(num + '/' + maxCount);
+                        var formData = new FormData();
+                        formData.append("images", base64);
+                        $.ajax({
+                            url: "{php echo mobileUrl('parking/cards/UploadImageSave')}",
+                            type: 'POST',
+                            data: formData,
+                            contentType:false,
+                            processData:false,
+                            success: function(data){
+                                var datas=JSON.parse(data);
+                                if(datas.status==1){
+                                    $preview.removeClass('weui-uploader__file_status');
+                                    $.toast("上传成功",2000);
+                                    setTimeout(function () {
+                                        $('.weui-toast').css('display','none');
+                                    },1000);
+                                }else{
+                                    $.toast("上传失败,稍后重试",2000);
+                                    setTimeout(function () {
+                                        location.reload();
+                                    },3000);
+                                }
+                            },
+                            error: function(xhr, type){
+                                $.toast("服务错误,稍后重试..");
+                            }
+                        });
+                    };
+                };
+            }
+        });
+    });
+function ti(){
+    $.get("{php echo mobileUrl('parking/cards/inserData')}&mid={$_GPC['type_id']}",[],function (data) {
+        var datas=JSON.parse(data);
+        if(datas.status==1){
+            // alert('请等待微信通知审核抽签结果');
+            $.toast("成功，请等待审核",3000);
+            setTimeout(function () {
+                wx.closeWindow();
+            },4000);
+        }else{
+            $.toast("失败",3000);
+            setTimeout(function () {
+                location.reload();
+            },4000);
+        }
+      
+    })
+}
+</script>
+
+{template "parking/_footer"}

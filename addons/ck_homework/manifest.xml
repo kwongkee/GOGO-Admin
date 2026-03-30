@@ -1,0 +1,629 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<manifest xmlns="http://www.we7.cc" versionCode="0.8,1.0">
+
+	<application setting="false">
+		<name><![CDATA[诚客_在线作业]]></name>
+		<identifie><![CDATA[ck_homework]]></identifie>
+		<version><![CDATA[1.0.81]]></version>
+		<type><![CDATA[other]]></type>
+		<ability><![CDATA[提供教师在线发布批改作业，学生在线学习做作业服务。]]></ability>
+		<description><![CDATA[提供教师在线发布批改作业，学生在线学习做作业服务。]]></description>
+		<author><![CDATA[QQ:978987198]]></author>
+		<url><![CDATA[http://www.we7.cc/]]></url>
+	</application>
+
+	<platform>
+		<subscribes>
+		</subscribes>
+
+		<handles>
+			<message type="text" />
+		</handles>
+
+		<rule embed="false" />
+		<card embed="false" />
+		
+		<supports>
+			<item type="app" />
+		</supports>
+        <plugins></plugins> 
+        <plugin-main name="" />
+
+	</platform>
+
+	<bindings>
+		<cover>
+			<entry title="会员中心" do="m_index" state="" direct="false"/>
+			<entry title="做作业" do="m_homework" state="" direct="false"/>
+			<entry title="老师中心" do="t_index" state="" direct="false"/>
+			<entry title="加入班级" do="theclass" state="" direct="false"/>
+			<entry title="知识点" do="knowledge" state="" direct="false"/>
+			<entry title="帮助中心" do="help" state="" direct="false"/>
+			<entry title="首页" do="index" state="" direct="false"/>
+		</cover>
+		<menu>
+			<entry title="账目管理" do="accounts" state="" direct="false"/>
+			<entry title="文章管理" do="article" state="" direct="false"/>
+			<entry title="班级管理" do="theclass_list" state="" direct="false"/>
+			<entry title="知识点管理" do="knowledge" state="" direct="false"/>
+			<entry title="会员管理" do="user_list" state="" direct="false"/>
+			<entry title="基本设置" do="config" state="" direct="false"/>
+		</menu>
+
+	</bindings>
+
+	<permissions>
+	</permissions>
+
+	<install><![CDATA[
+CREATE TABLE IF NOT EXISTS `ims_onljob_accounts` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `weid` int(11) NOT NULL,
+  `uid` int(11) NOT NULL,
+  `name` varchar(150) NOT NULL,
+  `moneytype` varchar(100) DEFAULT NULL COMMENT '支付类型 zsd.知识点',
+  `moneydesc` text NOT NULL,
+  `accounttype` tinyint(1) NOT NULL DEFAULT '0' COMMENT '类型',
+  `money` decimal(10,2) NOT NULL,
+  `dateline` int(10) NOT NULL,
+  `orderid` varchar(150) NOT NULL COMMENT '订单号',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_class` (
+  `cid` mediumint(8) NOT NULL AUTO_INCREMENT,
+  `weid` int(10) NOT NULL,
+  `uid` int(30) NOT NULL,
+  `name` varchar(150) NOT NULL,
+  `iconimg` varchar(255) NOT NULL,
+  `pid` int(10) NOT NULL DEFAULT '0',
+  `listorder` int(10) NOT NULL DEFAULT '0',
+  `type` varchar(30) NOT NULL COMMENT '类型',
+  PRIMARY KEY (`cid`),
+  KEY `idx_weid` (`weid`),
+  KEY `idx_type` (`type`),
+  KEY `idx_pid` (`pid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_config` (
+  `id` mediumint(8) NOT NULL AUTO_INCREMENT,
+  `weid` int(10) NOT NULL,
+  `webtitle` text NOT NULL COMMENT '站点名称',
+  `copyright` text NOT NULL COMMENT '版权',
+  `sms_open` tinyint(1) NOT NULL DEFAULT '0' COMMENT '短信开关',
+  `sms_name` varchar(200) NOT NULL COMMENT '短信账号',
+  `sms_password` varchar(300) NOT NULL COMMENT '短信密码',
+  `sms_signsame` varchar(300) NOT NULL COMMENT '短信签名',
+  `sms_templatecode` varchar(300) NOT NULL COMMENT '短信模板Code',
+  `audio_open` tinyint(1) NOT NULL DEFAULT '0',
+  `audio_accesskey` varchar(255) NOT NULL,
+  `audio_secretkey` varchar(255) NOT NULL,
+  `audio_bucket` varchar(100) NOT NULL,
+  `audio_bucket_type` tinyint(1) NOT NULL DEFAULT '0',
+  `audio_pipeline` varchar(255) NOT NULL,
+  `audio_urlt` varchar(255) NOT NULL,
+  `ckid` int(1) NOT NULL DEFAULT '0',
+  `modular_key` varchar(40) NOT NULL,
+  `logo` varchar(255) NOT NULL,
+  `logo2` varchar(255) NOT NULL,
+  `telephone` varchar(100) NOT NULL,
+  `email` varchar(150) NOT NULL,
+  `vipfwxieyi` text NOT NULL COMMENT 'VIP服务协议',
+  `reward_type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '奖励类型 0.积分 1.金额',
+  `reward_money` int(10) NOT NULL COMMENT '金额/积分',
+  `reward_content` text NOT NULL COMMENT '奖励说明',
+  `registerxy` text NOT NULL COMMENT '注册协议',
+  `register_open` tinyint(1) NOT NULL DEFAULT '0',
+  `bjtc` decimal(3,2) NOT NULL DEFAULT '0.00' COMMENT '收费班级提成',
+  `mb_open` tinyint(1) NOT NULL DEFAULT '0' COMMENT '模版消息开关',
+  `mbid1` varchar(250) NOT NULL COMMENT '模版消息1',
+  `mbid2` varchar(250) NOT NULL COMMENT '模版消息2',
+  `mbid3` varchar(250) NOT NULL COMMENT '模版消息3',
+  `mbid4` varchar(250) NOT NULL COMMENT '模版消息4',
+  `mbid5` varchar(250) NOT NULL COMMENT '模版消息5',
+  `mbid6` varchar(250) NOT NULL COMMENT '模版消息6',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_knowledge` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `weid` int(10) NOT NULL DEFAULT '0',
+  `titlename` varchar(255) NOT NULL,
+  `craid1` int(10) NOT NULL COMMENT '分类1',
+  `craid2` int(10) NOT NULL COMMENT '分类2',
+  `craid3` int(10) NOT NULL COMMENT '分类3',
+  `craid4` int(10) NOT NULL COMMENT '分类4',
+  `craid5` int(10) NOT NULL COMMENT '分类5',
+  `imgurl` varchar(255) NOT NULL,
+  `paymoney` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '金额',
+  `state` int(5) NOT NULL DEFAULT '0' COMMENT '状态',
+  `tj` tinyint(1) NOT NULL DEFAULT '0',
+  `listorder` int(10) NOT NULL DEFAULT '0',
+  `readnum` int(10) NOT NULL COMMENT '阅读次数',
+  `vipview` text NOT NULL,
+  `dateline` int(10) NOT NULL DEFAULT '0' COMMENT '录入时间',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_knowledge_message` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `weid` int(11) NOT NULL COMMENT '公众号id',
+  `uid` int(20) NOT NULL,
+  `parentid` int(11) NOT NULL COMMENT '知识点id',
+  `type` tinyint(1) NOT NULL COMMENT '类型',
+  `content` text COMMENT '内容',
+  `addtime` int(10) NOT NULL COMMENT '添加时间',
+  `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态 0.未审核 1.已审核',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_knowledge_son` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `weid` int(11) NOT NULL COMMENT '公众号id',
+  `parentid` int(11) NOT NULL COMMENT '知识点id',
+  `title` varchar(255) NOT NULL COMMENT '章节名称',
+  `savetype` tinyint(1) NOT NULL COMMENT '存储方式 0.其他存储方式 1.内嵌代码方式',
+  `videourl` text COMMENT '章节视频url',
+  `videotime` varchar(100) NOT NULL COMMENT '视频时长',
+  `content` text COMMENT '章节内容',
+  `displayorder` int(4) NOT NULL DEFAULT '0',
+  `is_free` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否为试听章节 0.否 1.是',
+  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示 0.隐藏 1.显示',
+  `addtime` int(10) NOT NULL COMMENT '添加时间',
+  `sectiontype` tinyint(1) NOT NULL DEFAULT '1' COMMENT '章节类型 1.视频章节 2.图文章节 3.音频章节',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_menu` (
+  `id` int(7) NOT NULL AUTO_INCREMENT,
+  `weid` mediumint(8) NOT NULL DEFAULT '0',
+  `lx_type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '类型',
+  `titlename` varchar(200) NOT NULL COMMENT '名称',
+  `icon_img` varchar(300) NOT NULL COMMENT '图标',
+  `turl` varchar(300) NOT NULL COMMENT '地址',
+  `listorder` int(10) NOT NULL DEFAULT '0' COMMENT '序号',
+  `showt` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否显示',
+  `message` text NOT NULL COMMENT '内容',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_message` (
+  `lid` int(30) NOT NULL AUTO_INCREMENT,
+  `weid` int(10) NOT NULL DEFAULT '0',
+  `uid` int(30) NOT NULL COMMENT '提问者',
+  `name` varchar(200) NOT NULL COMMENT '提问者',
+  `lsuid` int(30) NOT NULL COMMENT '老师',
+  `lsname` varchar(300) NOT NULL COMMENT '老师',
+  `showt` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否新',
+  `showls` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否新',
+  `addtime` int(10) NOT NULL COMMENT '更新时间',
+  PRIMARY KEY (`lid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_message_content` (
+  `lid` int(30) NOT NULL COMMENT '留言ID',
+  `weid` int(10) NOT NULL COMMENT '公众号id',
+  `uid` int(30) NOT NULL COMMENT '回复者',
+  `content` text COMMENT '内容',
+  `addtime` int(10) NOT NULL COMMENT '添加时间'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_news` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `weid` int(11) NOT NULL DEFAULT '0',
+  `titlename` varchar(255) NOT NULL COMMENT '标题',
+  `type` varchar(30) NOT NULL COMMENT '类型',
+  `craid` int(10) NOT NULL COMMENT '分类ID',
+  `messagejj` text NOT NULL COMMENT '简介',
+  `message` text NOT NULL COMMENT '内容',
+  `dateline` int(10) NOT NULL DEFAULT '0' COMMENT '发布时间',
+  `hot` int(10) NOT NULL DEFAULT '0' COMMENT '阅读次数',
+  `listorder` int(10) NOT NULL DEFAULT '0' COMMENT '序号',
+  `typeid` int(5) NOT NULL COMMENT '类型ID',
+  `xkid` int(10) NOT NULL COMMENT '学科ID',
+  `njid` int(10) NOT NULL COMMENT '年级ID',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_notice` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `weid` int(11) NOT NULL DEFAULT '0',
+  `titlename` varchar(255) NOT NULL COMMENT '公告标题',
+  `message` text NOT NULL COMMENT '公告内容',
+  `dateline` int(10) NOT NULL DEFAULT '0' COMMENT '发布时间',
+  `hot` int(10) NOT NULL DEFAULT '0' COMMENT '阅读次数',
+  `listorder` int(10) NOT NULL DEFAULT '0' COMMENT '序号',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_pay_order` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `weid` int(11) NOT NULL COMMENT '公众号id',
+  `parentid` int(11) NOT NULL COMMENT '知识点编号、VIP编号',
+  `uid` int(11) NOT NULL DEFAULT '0' COMMENT '会员uid',
+  `type` varchar(100) DEFAULT NULL COMMENT '支付类型 zsd.知识点 topup.充值 vip.VIP',
+  `paymoney` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '支付金额',
+  `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '支付状态 0.未 1.已',
+  `orderid` varchar(150) DEFAULT NULL COMMENT '支付ID',
+  `addtime` int(10) NOT NULL COMMENT '下单时间',
+  `moneydesc` text NOT NULL,
+  `vipdate` int(10) NOT NULL COMMENT 'VIP天数',
+  `vipnumberd` int(10) NOT NULL COMMENT 'VIP数量',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_practice_answer` (
+  `fid` int(30) NOT NULL COMMENT '分数ID',
+  `weid` int(10) NOT NULL DEFAULT '0',
+  `uid` int(30) NOT NULL,
+  `qid` int(10) NOT NULL COMMENT '题目ID',
+  `wid` int(10) NOT NULL COMMENT '作业ID',
+  `bjid` int(10) NOT NULL COMMENT '班级ID',
+  `numberbh` int(10) NOT NULL COMMENT '答题编号',
+  `zqanswer` text NOT NULL COMMENT '正确答案',
+  `answer` text NOT NULL COMMENT '回答',
+  `dateline` int(10) NOT NULL DEFAULT '0' COMMENT '录入时间',
+  `stateh` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态 0.正确 1.错误',
+  `scorepf` varchar(100) NOT NULL COMMENT '评分',
+  `pgstast` tinyint(1) NOT NULL DEFAULT '0' COMMENT '批改 0.未 1.已',
+  KEY `idx_fid` (`fid`),
+  KEY `idx_weid` (`weid`),
+  KEY `idx_uid` (`uid`),
+  KEY `idx_qid` (`qid`),
+  KEY `idx_wid` (`wid`),
+  KEY `idx_bjid` (`bjid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_practice_answer_pz` (
+  `id` int(30) NOT NULL AUTO_INCREMENT,
+  `weid` int(10) NOT NULL DEFAULT '0',
+  `uid` int(30) NOT NULL,
+  `fid` int(30) NOT NULL COMMENT '分数ID',
+  `qid` int(10) NOT NULL COMMENT '题目ID',
+  `wid` int(10) NOT NULL COMMENT '作业ID',
+  `bjid` int(10) NOT NULL COMMENT '班级ID',
+  `infotext` text NOT NULL COMMENT '内容',
+  `xtag` int(10) NOT NULL COMMENT 'x坐标',
+  `ytag` int(10) NOT NULL COMMENT 'y坐标',
+  `tuxing` varchar(100) NOT NULL COMMENT '图标样式',
+  `yanse` varchar(100) NOT NULL COMMENT '颜色',
+  `audio` varchar(255) NOT NULL,
+  `audio_time` int(10) NOT NULL DEFAULT '0',
+  `audio_local` varchar(255) NOT NULL,
+  `amrurl` varchar(255) NOT NULL COMMENT '音频地址1',
+  `qnmp3url` varchar(255) NOT NULL COMMENT '音频地址2',
+  `mp3url` varchar(255) NOT NULL COMMENT '音频地址3',
+  `dateline` int(10) NOT NULL DEFAULT '0' COMMENT '录入时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_fid` (`fid`),
+  KEY `idx_weid` (`weid`),
+  KEY `idx_uid` (`uid`),
+  KEY `idx_wid` (`wid`),
+  KEY `idx_bjid` (`bjid`),
+  KEY `idx_qid` (`qid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_practice_fen` (
+  `fid` int(30) NOT NULL AUTO_INCREMENT,
+  `weid` int(10) NOT NULL DEFAULT '0',
+  `uid` int(30) NOT NULL,
+  `wid` int(10) NOT NULL COMMENT '作业ID',
+  `bjid` int(10) NOT NULL COMMENT '班级ID',
+  `titlename` varchar(200) NOT NULL COMMENT '名称',
+  `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '类型',
+  `state` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态',
+  `stratimes` int(10) NOT NULL DEFAULT '0' COMMENT '开始时间',
+  `dateline` int(10) NOT NULL DEFAULT '0' COMMENT '录入时间',
+  PRIMARY KEY (`fid`),
+  KEY `idx_weid` (`weid`),
+  KEY `idx_uid` (`uid`),
+  KEY `idx_wid` (`wid`),
+  KEY `idx_bjid` (`bjid`),
+  KEY `idx_state` (`state`),
+  KEY `idx_stratimes` (`stratimes`),
+  KEY `idx_dateline` (`dateline`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_problem` (
+  `id` int(30) NOT NULL AUTO_INCREMENT,
+  `uid` mediumint(10) NOT NULL DEFAULT '0',
+  `weid` mediumint(10) NOT NULL DEFAULT '0',
+  `twuid` int(30) NOT NULL DEFAULT '0' COMMENT '提问UID',
+  `titlename` varchar(200) NOT NULL COMMENT '标题',
+  `message` text NOT NULL COMMENT '内容',
+  `dateline` int(10) NOT NULL DEFAULT '0' COMMENT '发布时间',
+  `state` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态',
+  `hfcontent` text NOT NULL COMMENT '回复',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_questions` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `weid` int(11) NOT NULL COMMENT '公众号id',
+  `uid` int(20) NOT NULL,
+  `parentid` int(11) NOT NULL COMMENT '知识点id',
+  `type` tinyint(1) NOT NULL COMMENT '类型',
+  `level` tinyint(1) NOT NULL COMMENT '难度级别',
+  `addtime` int(10) NOT NULL COMMENT '添加时间',
+  `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态',
+  `titlename` text COMMENT '题目',
+  `answer` text COMMENT '选项',
+  `zqanswer` text COMMENT '正确答案',
+  `content` text COMMENT '答案解析',
+  `message` text COMMENT '审核说明',
+  PRIMARY KEY (`id`),
+  KEY `idx_weid` (`weid`),
+  KEY `idx_uid` (`uid`),
+  KEY `idx_parentid` (`parentid`),
+  KEY `idx_status` (`status`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_slide` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `weid` int(11) NOT NULL,
+  `titlename` varchar(255) NOT NULL,
+  `urlt` varchar(255) NOT NULL,
+  `imgurl` varchar(255) NOT NULL,
+  `dateline` int(10) NOT NULL,
+  `sort` int(10) NOT NULL,
+  `status` int(5) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_theclass` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `weid` int(10) NOT NULL DEFAULT '0',
+  `uid` int(30) NOT NULL,
+  `numberid` int(10) NOT NULL COMMENT '编号',
+  `titlename` varchar(255) NOT NULL COMMENT '标题',
+  `njid` int(30) NOT NULL COMMENT '年级id',
+  `xkid` int(30) NOT NULL COMMENT '科目id',
+  `imgurl` varchar(255) NOT NULL COMMENT '头像',
+  `dateline` int(10) NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `state` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态',
+  `zuid` int(30) NOT NULL COMMENT '转让UID',
+  `qrcode` varchar(255) NOT NULL COMMENT '二维码',
+  `kxtimes` int(10) NOT NULL,
+  `number` int(8) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_weid` (`weid`),
+  KEY `idx_uid` (`uid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_theclass_apply` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `weid` int(10) NOT NULL DEFAULT '0',
+  `uid` int(30) NOT NULL,
+  `bjid` int(10) NOT NULL COMMENT '班级ID',
+  `tuid` int(30) NOT NULL COMMENT '老师ID',
+  `dateline` int(10) NOT NULL DEFAULT '0' COMMENT '申请时间',
+  `state` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态',
+  PRIMARY KEY (`id`),
+  KEY `idx_weid` (`weid`),
+  KEY `idx_uid` (`uid`),
+  KEY `idx_bjid` (`bjid`),
+  KEY `idx_tuid` (`tuid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_theclass_notice` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `weid` int(10) NOT NULL DEFAULT '0',
+  `uid` int(30) NOT NULL,
+  `bjid` int(10) NOT NULL COMMENT '班级ID',
+  `titlename` varchar(255) NOT NULL COMMENT '标题',
+  `infotext` text NOT NULL COMMENT '内容',
+  `dateline` int(10) NOT NULL DEFAULT '0' COMMENT '发布时间',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_user` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `uid` int(10) NOT NULL DEFAULT '0',
+  `weid` int(10) NOT NULL DEFAULT '0',
+  `usernumber` int(10) NOT NULL COMMENT '编号',
+  `headimg` varchar(255) NOT NULL COMMENT '头像',
+  `groupsid` int(10) NOT NULL DEFAULT '0' COMMENT '用户组',
+  `endtime` int(10) NOT NULL COMMENT 'VIP结束时间',
+  `name` varchar(200) NOT NULL COMMENT '姓名',
+  `phone` varchar(200) NOT NULL COMMENT '电话',
+  `phone_rz` tinyint(1) NOT NULL DEFAULT '0' COMMENT '手机认证',
+  `type` int(10) NOT NULL DEFAULT '0' COMMENT '类型',
+  `jianjie` text NOT NULL COMMENT '简介',
+  `sex` tinyint(5) NOT NULL DEFAULT '0' COMMENT '性别',
+  `age` int(5) NOT NULL DEFAULT '0' COMMENT '年龄',
+  `address` varchar(200) NOT NULL COMMENT '住址',
+  `birthday` varchar(100) NOT NULL COMMENT '生日',
+  `email` varchar(200) NOT NULL COMMENT '邮箱',
+  `qq` varchar(100) NOT NULL,
+  `subjectid` int(10) NOT NULL COMMENT '学科',
+  `idcard` varchar(255) NOT NULL COMMENT '身份证',
+  `idcard_img` varchar(200) NOT NULL COMMENT '身份证图',
+  `audit` tinyint(1) NOT NULL DEFAULT '0',
+  `password` varchar(200) NOT NULL,
+  `salt` varchar(20) NOT NULL,
+  `hzuid` text NOT NULL COMMENT '孩子UID',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_vip_level` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `weid` int(11) unsigned NOT NULL COMMENT '公众号id',
+  `level_name` varchar(100) DEFAULT NULL COMMENT 'vip等级名称',
+  `level_validity` int(11) DEFAULT NULL COMMENT '有效期',
+  `level_price` decimal(10,2) DEFAULT NULL COMMENT '价格',
+  `discount` int(4) unsigned NOT NULL DEFAULT '0' COMMENT '购买课程折扣 0.没有折扣',
+  `sort` int(4) DEFAULT '0' COMMENT '排序',
+  `is_show` tinyint(1) NOT NULL DEFAULT '1' COMMENT '显示状态 0.隐藏  1.显示',
+  `addtime` int(11) NOT NULL COMMENT '添加时间',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_work` (
+  `wid` int(10) NOT NULL AUTO_INCREMENT,
+  `weid` int(10) NOT NULL DEFAULT '0',
+  `uid` int(30) NOT NULL,
+  `bjid` int(10) NOT NULL COMMENT '班级ID',
+  `titlename` varchar(255) NOT NULL COMMENT '标题',
+  `typeid` text NOT NULL COMMENT '题目类型id',
+  `levelid` text NOT NULL COMMENT '题目难度级别id',
+  `parentid` text NOT NULL COMMENT '知识点id',
+  `releaset` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否发布',
+  `state` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态',
+  `dateline` int(10) NOT NULL DEFAULT '0' COMMENT '发布时间',
+  `endtimes` int(10) NOT NULL DEFAULT '0' COMMENT '截止时间',
+  PRIMARY KEY (`wid`),
+  KEY `idx_weid` (`weid`),
+  KEY `idx_uid` (`uid`),
+  KEY `idx_bjid` (`bjid`),
+  KEY `idx_releaset` (`releaset`),
+  KEY `idx_state` (`state`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_work_answer` (
+  `fid` int(30) NOT NULL COMMENT '分数ID',
+  `weid` int(10) NOT NULL DEFAULT '0',
+  `uid` int(30) NOT NULL,
+  `qid` int(10) NOT NULL COMMENT '题目ID',
+  `wid` int(10) NOT NULL COMMENT '作业ID',
+  `bjid` int(10) NOT NULL COMMENT '班级ID',
+  `numberbh` int(10) NOT NULL COMMENT '答题编号',
+  `zqanswer` text NOT NULL COMMENT '正确答案',
+  `answer` text NOT NULL COMMENT '回答',
+  `dateline` int(10) NOT NULL DEFAULT '0' COMMENT '录入时间',
+  `stateh` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态 0.正确 1.错误',
+  `scorepf` varchar(100) NOT NULL COMMENT '评分',
+  `pgstast` tinyint(1) NOT NULL DEFAULT '0' COMMENT '批改 0.未 1.已',
+  `teacher_comment` text NOT NULL,
+  `student_comment` text NOT NULL,
+  KEY `idx_fid` (`fid`),
+  KEY `idx_weid` (`weid`),
+  KEY `idx_uid` (`uid`),
+  KEY `idx_qid` (`qid`),
+  KEY `idx_wid` (`wid`),
+  KEY `idx_bjid` (`bjid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_work_answer_pz` (
+  `id` int(30) NOT NULL AUTO_INCREMENT,
+  `weid` int(10) NOT NULL DEFAULT '0',
+  `uid` int(30) NOT NULL,
+  `fid` int(30) NOT NULL COMMENT '分数ID',
+  `qid` int(10) NOT NULL COMMENT '题目ID',
+  `wid` int(10) NOT NULL COMMENT '作业ID',
+  `bjid` int(10) NOT NULL COMMENT '班级ID',
+  `infotext` text NOT NULL COMMENT '内容',
+  `xtag` int(10) NOT NULL COMMENT 'x坐标',
+  `ytag` int(10) NOT NULL COMMENT 'y坐标',
+  `tuxing` varchar(100) NOT NULL COMMENT '图标样式',
+  `yanse` varchar(100) NOT NULL COMMENT '颜色',
+  `audio` varchar(255) NOT NULL,
+  `audio_time` int(10) NOT NULL DEFAULT '0',
+  `audio_local` varchar(255) NOT NULL,
+  `amrurl` varchar(255) NOT NULL COMMENT '音频地址1',
+  `qnmp3url` varchar(255) NOT NULL COMMENT '音频地址2',
+  `mp3url` varchar(255) NOT NULL COMMENT '音频地址3',
+  `dateline` int(10) NOT NULL DEFAULT '0' COMMENT '录入时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_fid` (`fid`),
+  KEY `idx_weid` (`weid`),
+  KEY `idx_uid` (`uid`),
+  KEY `idx_wid` (`wid`),
+  KEY `idx_bjid` (`bjid`),
+  KEY `idx_qid` (`qid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_work_fen` (
+  `fid` int(30) NOT NULL AUTO_INCREMENT,
+  `weid` int(10) NOT NULL DEFAULT '0',
+  `uid` int(30) NOT NULL,
+  `wid` int(10) NOT NULL COMMENT '作业ID',
+  `bjid` int(10) NOT NULL COMMENT '班级ID',
+  `state` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态',
+  `stratimes` int(10) NOT NULL DEFAULT '0' COMMENT '开始时间',
+  `dateline` int(10) NOT NULL DEFAULT '0' COMMENT '录入时间',
+  PRIMARY KEY (`fid`),
+  KEY `idx_weid` (`weid`),
+  KEY `idx_uid` (`uid`),
+  KEY `idx_wid` (`wid`),
+  KEY `idx_bjid` (`bjid`),
+  KEY `idx_state` (`state`),
+  KEY `idx_stratimes` (`stratimes`),
+  KEY `idx_dateline` (`dateline`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_onljob_work_questions` (
+  `qid` int(10) NOT NULL COMMENT '题目ID',
+  `weid` int(10) NOT NULL DEFAULT '0',
+  `uid` int(30) NOT NULL,
+  `wid` int(10) NOT NULL COMMENT '作业ID',
+  `bjid` int(10) NOT NULL COMMENT '班级ID',
+  `errornumb` int(10) NOT NULL DEFAULT '0' COMMENT '错误次数',
+  KEY `idx_qid` (`qid`),
+  KEY `idx_weid` (`weid`),
+  KEY `idx_uid` (`uid`),
+  KEY `idx_wid` (`wid`),
+  KEY `idx_bjid` (`bjid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+]]></install>
+	<uninstall><![CDATA[DROP TABLE IF EXISTS `ims_onljob_accounts`;
+DROP TABLE IF EXISTS `ims_onljob_class`;
+DROP TABLE IF EXISTS `ims_onljob_config`;
+DROP TABLE IF EXISTS `ims_onljob_knowledge`;
+DROP TABLE IF EXISTS `ims_onljob_knowledge_message`;
+DROP TABLE IF EXISTS `ims_onljob_knowledge_son`;
+DROP TABLE IF EXISTS `ims_onljob_menu`;
+DROP TABLE IF EXISTS `ims_onljob_message`;
+DROP TABLE IF EXISTS `ims_onljob_message_content`;
+DROP TABLE IF EXISTS `ims_onljob_news`;
+DROP TABLE IF EXISTS `ims_onljob_notice`;
+DROP TABLE IF EXISTS `ims_onljob_pay_order`;
+DROP TABLE IF EXISTS `ims_onljob_practice_answer`;
+DROP TABLE IF EXISTS `ims_onljob_practice_answer_pz`;
+DROP TABLE IF EXISTS `ims_onljob_practice_fen`;
+DROP TABLE IF EXISTS `ims_onljob_problem`;
+DROP TABLE IF EXISTS `ims_onljob_questions`;
+DROP TABLE IF EXISTS `ims_onljob_slide`;
+DROP TABLE IF EXISTS `ims_onljob_theclass`;
+DROP TABLE IF EXISTS `ims_onljob_theclass_apply`;
+DROP TABLE IF EXISTS `ims_onljob_theclass_notice`;
+DROP TABLE IF EXISTS `ims_onljob_user`;
+DROP TABLE IF EXISTS `ims_onljob_vip_level`;
+DROP TABLE IF EXISTS `ims_onljob_work`;
+DROP TABLE IF EXISTS `ims_onljob_work_answer`;
+DROP TABLE IF EXISTS `ims_onljob_work_answer_pz`;
+DROP TABLE IF EXISTS `ims_onljob_work_fen`;
+DROP TABLE IF EXISTS `ims_onljob_work_questions`;
+]]></uninstall>
+	<upgrade><![CDATA[upgrade.php]]></upgrade>
+
+</manifest>

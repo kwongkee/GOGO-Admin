@@ -1,0 +1,131 @@
+{include file="common/header_inner_new"}
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+<style>
+    .disf{display:flex;align-items: center;}
+    .disf .format_seldiv{width:200px;}
+    .disf .format_div{width:300px;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .other_link,.other_navbar,.other_pic,.other_msg{display:none;}
+    .f15{font-size: 15px;}
+    .f20{font-size: 20px;}
+    .f25{font-size: 25px;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item back_img">
+                            <div class="layui-form-label">背景图(200*200)</div>
+                            <div class="layui-input-block">
+                                <div class="layui-upload" style="margin-top: 10px;">
+                                    <button type="button" class="layui-btn" id="img_file-upload">上传图片(JPG)</button>
+                                    <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                                        预览图：
+                                        <div class="layui-upload-list" id="img_file2-upload-list">
+
+                                        </div>
+                                    </blockquote>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;display: none;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script src="./static/hadmin/assets/layui/xm-select.js"></script>
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload','colorpicker'],function(){
+        var laydate = layui.laydate,
+            layer = layui.layer,
+            form  = layui.form,
+            $ = layui.jquery,
+            upload = layui.upload,
+            colorpicker = layui.colorpicker;
+
+        form.render(null,'component-form-element');
+
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            if( $('#img_file2-upload-list').children().length == 0 )
+            {
+                layer.msg('请上传节日背景图！');
+                return false;
+            }
+            layer.load();
+            $.ajax({
+                url:"{:Url('admin/shopping/save_festival_img')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.closeAll('loading');
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+        // 轮播图文件
+        upload.render({
+            elem: '#img_file-upload'
+            ,url: '{:Url("admin/basic/upload_file")}'
+            ,accept: 'image'
+            ,data: { folder: 'centralize', type: 'website_index',is_file_name:1}
+            ,multiple: true
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+
+                    $('#img_file2-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="back_img[]" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+    });
+
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+
+</script>
+</body>
+</html>

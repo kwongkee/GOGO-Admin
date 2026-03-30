@@ -1,0 +1,84 @@
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>{include file="common/header"}</title>
+</head>
+<link rel="stylesheet" href="./static/hadmin/css/cardvoucher.css">
+<link rel="stylesheet" href="./static/hadmin/css/jquery.datetimepicker.css">
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/js/jquery.datetimepicker.full.js"></script>
+<link rel="stylesheet" href="./static/index/xadmin/css/laydate.css">
+<script src="./static/index/xadmin/js/laydate.js" charset="utf-8"></script>
+<body>
+	<div class="warp">
+		<form action="{:Url('Advertising/invoice_apply')}" method="post">
+			<input type="hidden" name="order_id" value="{$order_id}"/>
+			<div class="warp-input">
+				订单号：
+					{volist name="data" id="vo"}
+					<input type="text"  value="{$vo.ordersn}"/><br />
+					<!--<option value="{$vo.id}" {if $order_id eq $vo.id}selected="selected"{/if}>{$vo.ordersn}</option>-->
+					{/volist}
+			</div>
+			<div class="warp-input">
+				发票类型：
+				<select name="type" id="type">
+					<option>请选择...</option>
+					<option value="1">普通纸质发票</option>
+					<option value="2">电子发票</option>
+				</select>
+			</div>
+			<div class="warp-input">
+				发票抬头：				
+				<select name="title" id="title">
+					<option>请选择...</option>
+					<option value="1">个人</option>
+					<option value="2">企业</option>
+				</select>
+			</div>
+			<div class="warp-input tax_number" style="display: none;">
+				企业税号：<input type="text" style="margin-left:8px!important" name="tax_number" value="" id="tax_number" placeholder="必填，请填入企业纳税人识别号"/>
+			</div>
+			<div class="warp-input bank_account" style="display: none;">
+				开户行及账号：<input type="text" style="margin-left:8px!important" name="bank_account" value="" id="bank_account"/>
+			</div>
+			<div class="warp-input">
+				收货人：<input type="text" style="margin-left:8px!important" name="consignee" value="" id="consignee"/>
+			</div>
+			<div class="warp-input">
+				手机号码：<input type="text" style="margin-left:8px!important" name="telephone" value="" id="telephone"/>
+			</div>
+			<div class="warp-input">
+				收票地址：<input type="text" style="margin-left:8px!important" name="address" value="" id="address"/>
+			</div>
+			<div class="warp-input">
+				备注：<input type="text" style="margin-left:8px!important" name="remark" value="" id="remark"/>
+			</div>
+			<div>
+				<input type="submit" value="提交申请" class="sub" />
+			</div>
+		</form>
+	</div>
+</body>
+<script>
+ $('#title').change(function(){
+ 	var title_id = $(this).val();
+ 	//发票抬头是个人,否则是企业
+ 	if(title_id == '1'){
+ 		$('.tax_number').hide();
+ 		$('.bank_account').hide();
+ 		$('#tax_number').val('');
+ 		$('#bank_account').val('');
+ 	}else{
+ 		$('.tax_number').show();
+ 		$('.bank_account').show();
+ 	}
+ })
+ 
+ $('.sub').click(function(){
+ 	$('.warp-input').children('input[type="text"]').each(function(){
+ 		console.log($(this))
+ 	})
+ })
+</script>
+</html>

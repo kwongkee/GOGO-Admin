@@ -1,0 +1,85 @@
+{template 'header'}
+<style type="text/css">
+	.ui-reddot {
+		padding:0px;
+	}
+</style>
+<div class="ui-container">
+	<ul class="ui-list  ui-list-cover ui-border-tb">
+		{loop $list $key $item}
+		{if $item['is_approve'] == 'allow'}
+		<li class="ui-row-flex ui-whitespace ui-border-tb" style="margin:5px 0px;" onclick="showMenu('{$item['id']}')">	
+		{else}
+		<li class="ui-row-flex ui-whitespace ui-border-tb" style="margin:5px 0px;">
+		{/if}
+		
+			<div class="ui-col ui-col-2 ui-flex ui-flex-ver ui-flex-pack-center ui-flex-align-start">
+				<div class="ui-list-img ui-badge-wrap" style="margin:0px 10px 0px 0px;">
+					<span style="background-image:url({media $item['room_logo']});border-radius:2px;"></span>
+				</div>
+			</div>
+			<div class="ui-col ui-col-3 ui-flex ui-flex-ver ui-flex-pack-center ui-flex-align-start">
+				<p class="ui-nowrap" style="color:#483D8B">{$item['room_name']}</p>
+				<div class="ui-label-list">
+					{if $item['is_approve'] != 'allow'}<label class="ui-label-me ui-label-s-2">{if $item['is_approve'] == 'deny'}审核未通过{else}待审核{/if}</label>{/if}
+					{if $item['room_type'] == 'lvb' || $item['room_type'] == 'letv'}
+					<label class="ui-label-me ui-label-s-lvb">视频直播间</label>
+					{/if}
+					{if $item['in_type'] == 'secret'}<label class="ui-label-me ui-label-s-1">加密</label>{/if}
+					{if $item['in_type'] == 'money'}<label class="ui-label-me ui-label-s-1">付费房</label>{/if}
+					<label class="ui-label-me ui-label-s-3">{if $item['is_public'] == 'n'}会员房{else}公开房{/if}</label>
+				</div>
+				{if $item['in_type'] == 'secret'}
+				<p  style="font-size:12px;width:100%;overflow:hidden;">房间口令：{$item['room_secret']}</p>
+				{/if}
+				<p id="chatroom_desc_{php echo $key}" style="font-size:12px;width:100%;overflow:hidden;">{$item['room_desc']}</p>
+			</div>
+		</li>
+		<script type="text/javascript">
+            $(function() {
+                var m = new XX.Fx.Marquee(document.getElementById('chatroom_desc_{php echo $key}'), {direction:'left',speed:20, step:1});
+                m.start();
+            })
+        </script>
+		{/loop}
+	</ul>
+	{template 'chatroom_menu'}
+</div>
+<!-- 弹窗，提示查看信息，还是进入聊天室 -->
+<div class="weui_dialog_confirm" id="dialog1" style="display:none">
+    <div class="weui_mask"></div>
+    <div class="weui_dialog">
+        <div class="weui_dialog_hd"><strong class="weui_dialog_title">操作</strong></div>
+        <div class="weui_dialog_bd">查看详情：可以查看直播间的详细配置信息。</div>
+        <div class="weui_dialog_ft">
+        	<a href="javascript:;" class="weui_btn_dialog default">取消</a>
+            <a href="javascript:;" class="weui_btn_dialog default" onclick="jumpDetail()">查看详情</a>
+            <a href="javascript:;" class="weui_btn_dialog primary" onclick="openRoom()">进入房间</a>
+        </div>
+    </div>
+    <input type="hidden" value="" id="layer_hide_field">
+</div>
+<script>
+function myChatRoom() {
+	window.location.href="{php echo $this->createMobileUrl('chatroomapply')}";	
+}
+
+function showMenu(rid) {
+	$("#layer_hide_field").val(rid);
+	$('#dialog1').show().on('click', '.weui_btn_dialog', function () {
+        $('#dialog1').off('click').hide();
+    });
+}
+
+function jumpDetail() {
+	var rid = $("#layer_hide_field").val();
+	window.location.href="{php echo $this->createMobileUrl('myChatroomDetail')}&room_id="+rid;
+}
+
+function openRoom() {
+	var rid = $("#layer_hide_field").val();
+	window.location.href="{php echo $this->createMobileUrl('chatroom')}&room_id="+rid;
+}
+
+</script>
+{template 'footer'}

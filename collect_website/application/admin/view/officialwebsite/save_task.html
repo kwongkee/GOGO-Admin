@@ -1,0 +1,244 @@
+{include file="common/header_inner_new"}
+
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .anshi,.everyHour,.everyDay,.everyWeek,.everyMonth,.timeCrawl{display: none;}
+    .show{display:block;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" lay-filter="component-form-element">
+            <input type="number" name="id" value="{$id}" style="display: none;">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">任务名称</div>
+                            <div class="layui-input-inline layui-select-fscon" style="width:400px;">
+                                <input type="text" class="layui-input" name="name" value="{$data['name']}" placeholder="请输入任务名称" lay-verify="required">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">爬取方式</div>
+                            <div class="layui-input-inline layui-select-fscon" style="width:400px;">
+                                <select name="crawl_method" id="crawl_method" lay-filter="crawl_method" lay-verify="">
+                                    <option value="">请选择爬取方式</option>
+                                    <option value="1" {if $data['crawl_method']==1}selected{/if}>按时爬取</option>
+                                    <option value="2" {if $data['crawl_method']==2}selected{/if}>定时爬取</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item anshi {if $data['crawl_method']==1}show{/if}">
+                            <div class="layui-form-label">爬取周期</div>
+                            <div class="layui-input-inline layui-select-fscon" style="width:400px;">
+                                <select name="crawl_cycel" id="crawl_cycel" lay-filter="crawl_cycel">
+                                    <option value="">请选择爬取周期</option>
+<!--                                    <option value="1" {if $data['crawl_cycel']==1}selected{/if}>每时</option>-->
+<!--                                    <option value="2" {if $data['crawl_cycel']==2}selected{/if}>每日</option>-->
+                                    <option value="3" {if $data['crawl_cycel']==3}selected{/if}>每周</option>
+                                    <option value="4" {if $data['crawl_cycel']==4}selected{/if}>每月</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item everyHour {if $data['crawl_cycel']==1}show{/if}">
+                            <label class="layui-form-label">每x时爬</label>
+                            <div class="layui-input-inline layui-select-fscon" style="width:400px;">
+                                <input type="text" name="every_hour" id="everyHour" class="layui-input" lay-verify="datetime" value="{$data['every_hour']}" placeholder="请选择每x时爬取">
+                            </div>
+                        </div>
+                        <div class="layui-form-item everyDay {if $data['crawl_cycel']==2}show{/if}">
+                            <label class="layui-form-label">每x日爬</label>
+                            <div class="layui-input-inline layui-select-fscon disf" style="width:400px;">
+                                <input type="text" name="appoint_day" id="appointDay" class="layui-input" value="{$data['appoint_day']}" placeholder="请选择每x日爬取">
+                                <input type="text" name="every_day" id="everyDay" class="layui-input" lay-verify="datetime" value="{$data['every_day']}" placeholder="请选择每x日爬取时间">
+                            </div>
+                        </div>
+                        <div class="layui-form-item everyWeek {if $data['crawl_cycel']==3}show{/if}">
+                            <label class="layui-form-label">每周x爬</label>
+                            <div class="layui-input-inline layui-select-fscon disf" style="width:400px;">
+                                <select name="week">
+                                    <option value="1" {if $data['week']==1}selected{/if}>周一</option>
+                                    <option value="2" {if $data['week']==2}selected{/if}>周二</option>
+                                    <option value="3" {if $data['week']==3}selected{/if}>周三</option>
+                                    <option value="4" {if $data['week']==4}selected{/if}>周四</option>
+                                    <option value="5" {if $data['week']==5}selected{/if}>周五</option>
+                                    <option value="6" {if $data['week']==6}selected{/if}>周六</option>
+                                    <option value="7" {if $data['week']==7}selected{/if}>周日</option>
+                                </select>
+                                <input type="text" name="every_week" id="everyWeek" lay-verify="datetime" class="layui-input" value="{$data['every_week']}" placeholder="请选择每周爬取时间">
+                            </div>
+                        </div>
+                        <div class="layui-form-item everyMonth {if $data['crawl_cycel']==4}show{/if}">
+                            <label class="layui-form-label">每月x日爬</label>
+                            <div class="layui-input-inline layui-select-fscon disf" style="width:400px;">
+                                <select name="month">
+                                    <option value="1" {if $data['month']==1}selected{/if}>一号</option>
+                                    <option value="2" {if $data['month']==2}selected{/if}>二号</option>
+                                    <option value="3" {if $data['month']==3}selected{/if}>三号</option>
+                                    <option value="4" {if $data['month']==4}selected{/if}>四号</option>
+                                    <option value="5" {if $data['month']==5}selected{/if}>五号</option>
+                                    <option value="6" {if $data['month']==6}selected{/if}>六号</option>
+                                    <option value="7" {if $data['month']==7}selected{/if}>七号</option>
+                                    <option value="8" {if $data['month']==8}selected{/if}>八号</option>
+                                    <option value="9" {if $data['month']==9}selected{/if}>九号</option>
+                                    <option value="10" {if $data['month']==10}selected{/if}>十号</option>
+                                    <option value="11" {if $data['month']==11}selected{/if}>十一号</option>
+                                    <option value="12" {if $data['month']==12}selected{/if}>十二号</option>
+                                    <option value="13" {if $data['month']==13}selected{/if}>十三号</option>
+                                    <option value="14" {if $data['month']==14}selected{/if}>十四号</option>
+                                    <option value="15" {if $data['month']==15}selected{/if}>十五号</option>
+                                    <option value="16" {if $data['month']==16}selected{/if}>十六号</option>
+                                    <option value="17" {if $data['month']==17}selected{/if}>十七号</option>
+                                    <option value="18" {if $data['month']==18}selected{/if}>十八号</option>
+                                    <option value="19" {if $data['month']==19}selected{/if}>十九号</option>
+                                    <option value="20" {if $data['month']==20}selected{/if}>二十号</option>
+                                    <option value="21" {if $data['month']==21}selected{/if}>二十一号</option>
+                                    <option value="22" {if $data['month']==22}selected{/if}>二十二号</option>
+                                    <option value="23" {if $data['month']==23}selected{/if}>二十三号</option>
+                                    <option value="24" {if $data['month']==24}selected{/if}>二十四号</option>
+                                    <option value="25" {if $data['month']==25}selected{/if}>二十五号</option>
+                                    <option value="26" {if $data['month']==26}selected{/if}>二十六号</option>
+                                    <option value="27" {if $data['month']==27}selected{/if}>二十七号</option>
+                                    <option value="28" {if $data['month']==28}selected{/if}>二十八号</option>
+                                    <option value="29" {if $data['month']==29}selected{/if}>二十九号</option>
+                                    <option value="30" {if $data['month']==30}selected{/if}>三十号</option>
+                                    <option value="31" {if $data['month']==31}selected{/if}>三十一号</option>
+                                </select>
+                                <input type="text" name="every_month" id="everyMonth" lay-verify="datetime" class="layui-input" value="{$data['every_month']}" placeholder="请选择每月爬取时间">
+                            </div>
+                        </div>
+                        <!--定时爬取-->
+                        <div class="layui-form-item timeCrawl {if $data['crawl_method']==2}show{/if}">
+                            <label class="layui-form-label">选择时间</label>
+                            <div class="layui-input-inline layui-select-fscon" style="width:400px;">
+                                <input type="text" name="every_time" id="everyTime" class="layui-input resetButton" value="{$data['every_time']}" placeholder="请选择定时时间">
+
+                                <div style="color:#ff2222;">注：当天产生爬取记录后，再设置当天任意爬取时间，爬虫执行不会生效。</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+<!--<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>-->
+<script>
+    layui.use(['layer','form','laydate','upload','element'],function(){
+        var $ = layui.$;
+        var layer = layui.layer;
+        var form  = layui.form;
+        var element = layui.element;
+        var upload = layui.upload;
+        var laydate =layui.laydate;
+
+        laydate.render({
+            elem: '#everyDay',
+            type: 'time'
+        });
+        laydate.render({
+            elem: '#everyWeek',
+            type: 'time'
+        });
+        laydate.render({
+            elem: '#everyMonth',
+            type: 'time'
+        });
+        laydate.render({
+            elem: '#everyTime',
+            type:'datetime'
+        });
+        form.render(null, 'component-form-element');
+
+        form.on('select(crawl_method)',function(data){
+            let val = data.value;
+            if(val==1){
+                $('.anshi').show();
+                $('.timeCrawl').hide();
+            }else if(val==2){
+                $('.anshi').hide();
+                $('.timeCrawl').show();
+            }
+            $('.everyHour').hide();
+            $('.everyDay').hide();
+            $('.everyWeek').hide();
+            $('.everyMonth').hide();
+            form.render(null, 'component-form-element');
+        });
+
+        form.on('select(crawl_cycel)',function(data) {
+            let val = data.value;
+            if (val == 1) {
+                $('.everyHour').show();
+                $('.everyDay').hide();
+                $('.everyWeek').hide();
+                $('.everyMonth').hide();
+            }else if(val == 2){
+                $('.everyHour').hide();
+                $('.everyDay').show();
+                $('.everyWeek').hide();
+                $('.everyMonth').hide();
+            }else if(val == 3){
+                $('.everyHour').hide();
+                $('.everyDay').hide();
+                $('.everyWeek').show();
+                $('.everyMonth').hide();
+            }else if(val == 4){
+                $('.everyHour').hide();
+                $('.everyDay').hide();
+                $('.everyWeek').hide();
+                $('.everyMonth').show();
+            }
+            form.render(null, 'component-form-element');
+        });
+
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            $.ajax({
+                url:"{:Url('admin/officialwebsite/save_task')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+
+</script>
+</body>
+</html>

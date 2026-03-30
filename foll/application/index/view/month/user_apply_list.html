@@ -1,0 +1,72 @@
+{include file="common/header"}
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<body>
+<div class="x-nav">
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+
+<div class="x-body">
+    <a href="{:Url('month_card/exprotUserApply')}" class="layui-btn" data-type="getCheckData">导出资料</a>
+</div>
+<table class="layui-table">
+    <thead>
+    <tr>
+        <th>申请日期</th>
+        <th>用户姓名</th>
+        <th>手机号</th>
+        <th>受理编号</th>
+        <th>申请方案</th>
+        <th>受理状态</th>
+        <th>审核状态</th>
+        <th>是否中签</th>
+    </thead>
+    <tbody>
+    {volist name='list' id='vo' empty='暂无数据'}
+    <tr>
+        <td>{$vo.create_at|date='Y-m-d H:i:s',###}</td>
+        <td>{$vo.user_name}</td>
+        <td>{$vo.mobile}</td>
+        <td>{$vo['flag_id']}</td>
+        <td>{$vo.scheme_name}</td>
+        <td>{$aStatus[$vo['is_accept']]}</td>
+        <td>{$rStatus[$vo['is_review']]}</td>
+        <td>{$isWin[$vo['is_win']]}</td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+<div class="page">
+    <div>
+        {$page}
+    </div>
+</div>
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    layui.use(['laydate','layer','form'], function(){
+        var laydate = layui.laydate;
+        layer = layui.layer;
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#start' //指定元素
+        });
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#end' //指定元素
+        });
+
+        layer.photos({
+            photos: '#layer-photos-demo'
+            ,anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+        });
+    });
+
+    function expro() {
+        var index = layer.load(1);
+    }
+
+</script>
+</body>
+</html>

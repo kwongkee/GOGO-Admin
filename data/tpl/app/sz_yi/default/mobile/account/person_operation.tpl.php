@@ -1,0 +1,221 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/header', TEMPLATE_INCLUDEPATH)) : (include template('common/header', TEMPLATE_INCLUDEPATH));?>
+<!--<title>自定义收款</title>-->
+<style type="text/css">
+    body {margin:0px; background:#efefef; font-family:'微软雅黑'; -moz-appearance:none;}
+    .info_main {height:auto;  background:#fff; margin-top:14px; border-bottom:1px solid #e8e8e8; border-top:1px solid #e8e8e8;}
+    .info_main .line {margin:0 10px; height:40px; border-bottom:1px solid #e8e8e8; line-height:40px; color:#999;font-size:15px;}
+    .info_main .line .title {height:40px; width:80px; line-height:40px; color:#444; float:left; font-size:15px;}
+    .info_main .line .info { width:100%;float:right;margin-left:-80px; overflow: auto;white-space: nowrap;}
+    .info_main .line .inner { margin-left:80px; }
+    .info_main .line .inner input {height:39px; width:100%;display:block; padding:0px; margin:0px; border:0px; float:left; font-size:14px;}
+    .info_main .line .inner .user_sex {line-height:40px;}
+    .info_sub {height:44px; margin:14px 5px; background:#1E9FFF !important; border-radius:4px; text-align:center; font-size:16px; line-height:44px; color:#fff;}
+    .select { border:1px solid #ccc;height:25px;}
+    .disf{display:flex;}
+    /**合同文件**/
+    .info_main .images {float: left; width:auto;height:30px;margin-top:7px;}
+    .info_main .images .img { float:left; position:relative;width:30px;height:30px;border:1px solid #e9e9e9;margin-right:5px;}
+    .info_main .images .img img { position:absolute;top:0; width:100%;height:100%;}
+    .info_main .images .img .minus { position:absolute;color:red;width:8px;height:12px;top:-18px;right:-1px;}
+    .info_main .plus { float:left; width:30px;height:30px;border:1px solid #e9e9e9; color:#dedede;; font-size:18px;line-height:30px;text-align:center;margin-top:4px;}
+    .info_main .plus i { left:7px;top:7px;}
+
+    .bigautocomplete-layout{background:#fff;position:absolute;height: 200px;overflow: scroll;border:1px solid #000;}
+    .bigautocomplete-layout table tr td div{height: 30px;line-height: 30px;}
+    button, input, optgroup, select, textarea{font:unset !important;color:black !important;line-height:1.5 !important;}
+    .sel{box-sizing: border-box;padding: 4px 10px;font-size: 14px;color: #fff;background: #1E9FFF;text-align:center;width: fit-content;margin: 0 auto;}
+    a{text-decoration: none;text-underline: none;}
+</style>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.core-2.5.2.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.core-2.5.2-zh.js" type="text/javascript"></script>
+<link href="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.core-2.5.2.css" rel="stylesheet" type="text/css" />
+<link href="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.animation-2.5.2.css" rel="stylesheet" type="text/css" />
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.datetime-2.5.1.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.datetime-2.5.1-zh.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.android-ics-2.5.2.js" type="text/javascript"></script>
+<link href="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.android-ics-2.5.2.css" rel="stylesheet" type="text/css" />
+
+<link href="../addons/sz_yi/template/mobile/default/static/js/star-rating.css" media="all" rel="stylesheet" type="text/css"/>
+<script src="../addons/sz_yi/template/mobile/default/static/js/star-rating.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/ajaxfileupload.js" type="text/javascript"></script>
+
+<!--<script src="../addons/sz_yi/static/js/jquery.bigautocomplete.js"></script>-->
+<link type="text/css" rel="stylesheet" href="../addons/sz_yi/template/pc/default/static/css/bootstrap.min.css" />
+
+<div id="container">
+    <div class="page_topbar">
+        <div class="title"><?php  if($type==1) { ?>社保增减<?php  } ?><?php  if($type==2) { ?>个税增减<?php  } ?></div>
+    </div>
+    <div class="info_main">
+        <!--收款状态-->
+        <div class="line">
+            <div class="title">增减类别</div>
+            <div class="info"><div class="inner">
+                <select name="opera_type" id="opera_type">
+                    <option value="">请选择增减类别</option>
+                    <option value="1">增员</option>
+                    <option value="2">减员</option>
+                </select>
+            </div></div>
+        </div>
+        <!--增减月份-->
+        <div class="line">
+            <div class="title">增减月份</div>
+            <div class="info"><div class="inner">
+                <input type="text" id="opera_date" placeholder="点击选择日期" readonly value=''/>
+            </div></div>
+        </div>
+
+        <div class="line"><div class="title">信息表</div><div class='info'><div class='inner'>
+            <div class="pic img_info" data-ogid='0' data-max='10'>
+                <div class="images">
+                    <!--<div data-img="" class="img">-->
+                    <!--<img src="">-->
+                    <!--<div class="minus minus_del">-->
+                    <!--<i class="fa fa-minus-circle"></i>-->
+                    <!--</div>-->
+                    <!--</div>-->
+                </div>
+
+                <div class="plus" style="position:relative;" ><i class="fa fa-plus" style="position:absolute;"></i>
+                    <input type="file" name='imgFile0' id='imgFile0'  style="position:absolute;width:30px;height:30px;-webkit-tap-highlight-color: transparent;filter:alpha(Opacity=0); opacity: 0;" />
+                </div>
+            </div>
+        </div></div></div>
+    </div>
+    <div class="info_sub" style="margin-bottom:10px;">提交</div>
+    <div class="button back" onclick="javascript:history.back(-1);" style="height: 44px;margin: 14px 2%;width:96%;background: #aaa;border-radius: 4px;text-align: center;font-size: 16px;line-height: 44px;color: #fff;">返回</div>
+</div>
+
+<script id="tpl_img" type="text/html">
+    <div class='img' data-img='<%filename%>'>
+        <img src='<%url%>' onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png" />
+        <div class='minus'><i class='fa fa-minus-circle'></i></div>
+    </div>
+</script>
+<script language="javascript">
+    $(function(){
+
+    });
+
+    require(['tpl', 'core'], function(tpl, core) {
+        //时间
+        var currYear = (new Date()).getFullYear();
+        var opt = {};
+        opt.date = {preset: 'date'};
+        opt.datetime = {preset: 'date'};
+        opt.time = {preset: 'time'};
+        opt.default = {
+            theme: 'android-ics light', //皮肤样式
+            display: 'modal', //显示方式
+            mode: 'scroller', //日期选择模式
+            dateFormat: 'yyyy-mm',
+            dateOrder : 'yyyymm',
+            lang: 'zh',
+            showNow: true,
+            nowText: "今天",
+            startYear: currYear - 10, //开始年份
+            endYear: currYear + 10 //结束年份
+        };
+        $("#opera_date").scroller('destroy').scroller($.extend(opt['datetime'], opt['default']));
+
+        //增减员信息文件
+        $('.minus_del').click(function() {
+            $(this).parent().remove();
+            core.json('util/uploader', {op: 'remove', file: $(this).parent().data('img')}, function(rjson) {
+                if (rjson.status == 1) {
+
+                }
+                $('.plus').show();
+            }, false, true);
+        });
+
+        $('.plus input').change(function() {
+            core.loading('正在上传');
+
+            var comment =$(this).closest('.img_info');
+            var ogid = comment.data('ogid');
+            var max = comment.data('max');
+
+            $.ajaxFileUpload({
+                url: core.getUrl('util/uploader'),
+                data: {file: "imgFile" + ogid,'op':'uploadFile'},
+                secureuri: false,
+                fileElementId: 'imgFile' + ogid,
+                dataType: 'json',
+                success: function(res, status) {
+                    core.removeLoading();
+                    var obj = $(tpl('tpl_img', res));
+                    $('.images',comment).append(obj);
+
+                    $('.minus',comment).click(function() {
+                        let t = $(this);
+                        let del_img = $(this).parent()[0].dataset.img;
+                        // $(obj).data('img')
+                        core.json('util/uploader', {op: 'remove', file: del_img}, function(rjson) {
+                            if (rjson.status == 1) {
+                                t.parent().remove();
+                                // $(obj).remove();
+                            }
+                            $('.plus',comment).show();
+                        }, false, true);
+                    });
+
+                    if ($('.img',comment).length >= max) {
+                        $('.plus',comment).hide();
+
+                    }
+                }, error: function(data, status, e) {
+                    core.removeLoading();
+                    core.tip.show('上传失败!');
+                }
+            });
+        });
+    });
+    $(function(){
+        $('.info_sub').click(function(){
+            let type = "<?php  echo $type;?>";
+            let opera_type = $('#opera_type').val();
+            let opera_date = $('#opera_date').val();
+
+            var info_file = [];//增/减员信息表
+            $('.img_info[data-ogid=0]').find('.img').each(function(){
+                info_file.push($(this).data('img'));
+            });
+
+            if( $('#opera_type').isEmpty()){
+                alert('请选择增减类别!');
+                return;
+            }
+            if( $('#opera_date').isEmpty()){
+                alert('请选择增减月份!');
+                return;
+            }
+
+            if( info_file.length=='' || info_file.length==0){
+                alert('请上传增/减员信息表!');
+            }
+
+            $.ajax({
+                url:"<?php  echo $this->createMobileUrl('account/register');?>",
+                type:'POST',
+                dataType:'json',
+                data:{'op':'person_operation','type':type,'opera_type':opera_type,'opera_date':opera_date,'info_file':info_file},
+                success:function(json) {
+                    if(json.status==-1){
+                        alert(json.result.msg);
+                    }else{
+                        alert(json.result.msg);
+                        setTimeout(function(){
+                            window.location.reload();
+                        },2000)
+                    }
+                },error:function(json){
+                    alert('数据出错！');
+                }
+            });
+        });
+    });
+</script>
+
+<?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/footer', TEMPLATE_INCLUDEPATH)) : (include template('common/footer', TEMPLATE_INCLUDEPATH));?>

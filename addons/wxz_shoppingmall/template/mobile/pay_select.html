@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>选择支付方式</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=11" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+        <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,minimal-ui" />
+        <meta content="yes" name="apple-mobile-web-app-capable" /> 
+        <meta content="black" name="apple-mobile-web-app-status-bar-style" /> 
+        <meta content="telephone=no" name="format-detection" /> 
+        <style>
+            dl,dd,dt{margin: 0; padding: 0}
+            body{
+                margin: 0px auto;
+                padding:0px;
+                background-color: #f0eff5;
+            }
+            .container dt{
+                padding-left: 10px;
+                line-height: 54px;
+                color: #8F8E94;
+                background-color: #f0eff5;
+            }
+            .container dd{
+                line-height: 54px;
+                background-color: #fff;
+                border-bottom: 1px solid #c8c8c8;
+                padding-left: 10px;
+            }
+            .container dt.first{
+                border-bottom: 1px solid #e1e0e5;
+            }
+            .container dd span.price{
+                color: #4caf42;
+            }
+            .container dd.wzys01{ color: #98979d; background-color: #f0eff5}
+            .jiange{ margin: 20px 0 0 0;}
+            .container dd span{
+                float: right; margin-right: 10px; color: #8F8E94;
+
+            }
+            .header{
+                background: #f0eff5;
+                height:50px;
+            }
+            .header .title{
+                color: #8F8E94;
+            }
+            .fl{
+                float: left;
+            }
+            .fr{
+                float: right;
+            }
+            .select_pay dd{
+                line-height: 70px;
+            }
+            .container dl.select_pay span{
+                float: none;
+            }
+            .select_pay {
+                position: relative;
+            }
+            .select_pay dd .title{
+                position: absolute;
+                top: -15px;
+            }
+            .select_pay dd .desc{
+                position: absolute;
+                bottom: -10px;
+            }
+            .select_pay dd.right{
+                text-align:right;
+            } 
+            .select_pay dd.right span {
+                font-size: 12px;
+                color: #DCDCDC;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <dl>
+                <dt class="first">订单详情</dt>
+                <!--<dd>商品名称<span>111</span></dd>-->
+                <!--<dd>订单编号<span>111</span></dd>-->
+                <dd>商家名称<span>{php echo $this->module['config']['name'];}</span></dd>
+                <dd>商品价格<span class="price">￥{php echo sprintf('%.2f',($pay_money/100))} 元</span></dd>
+                <dd class="jiange">还需支付<span class="price">￥{php echo sprintf('%.2f',($pay_money/100))} 元</span></dd>
+                <dd class="wzys01">选择支付方式</dd>
+            </dl>
+
+            <dl class="select_pay" onclick="location.href = '{php echo $this->createMobileUrl('do_pay',array('money'=>$pay_money,'type'=>1))}'">
+                <dd class="fl" style="border:none;padding-top: 7px;">
+                    <img style="height: 50px; width: 50px;display: block;" src="{$modulePublic}shop/img/yen_coin.png" title="余额支付"/>
+                </dd>
+                <dd class="fl" style="border:none;">
+                    <strong class="title">余额</strong>
+                    <span class="desc">￥{php echo sprintf('%.2f',$user['account']/100)}</span>
+                </dd>
+                <dd class="right">
+                    <span>></span>
+                </dd>
+            </dl>
+            <dl class="select_pay" onclick="do_wx_pay()" >
+                <dd class="fl" style="border:none;padding-top: 7px;">
+                    <img style="height: 50px; width: 50px;display: block;" src="{$modulePublic}shop/img/wechat.png" title="微信支付"/>
+                </dd>
+                <dd class="fl" style="border:none;">
+                    <strong class="title">微信支付</strong>
+                    <span class="desc">微信支付,安全快捷(必须使用微信内置浏览器)</span>
+                </dd>
+                <dd class="right">
+                    <span>></span>
+                </dd>
+            </dl>
+        </div>
+        <input type="hidden" id="money" value="{$pay_money}" />
+        <script src="{$modulePublic}shop/js/jquery-1.8.3.min.js"></script>
+        <script src="{$modulePublic}shop/js/PRselector.js"></script>
+        <script src="{$modulePublic}shop/js/Dialogue.js"></script>
+
+        <script src="{$modulePublic}shop/js/jquery-1.8.3.min.js"></script>
+        <script src="{$modulePublic}shop/js/PRselector.js"></script>
+        <script src="{$modulePublic}shop/js/Dialogue.js"></script>
+
+        <script type="text/javascript">
+                function do_wx_pay() {
+                    var pars = {};
+                    pars.money = $("#money").val() * 1;
+                    $.ajax({
+                        url: "{php echo $this->createMobileUrl('ajax_web',array('sdo'=>'do_pay'))}",
+                        type: "post",
+                        dataType: "json",
+                        data: pars,
+                        success: function (res) {
+                            if (res.error_code == 1) {
+                                location.href = "{php echo $this->createMobileUrl('do_recharge')}" + "&order_id=" + res.data.order_id;
+                            } else {
+                                alert('生成订单失败: ' + res.error_msg);
+                            }
+                        }
+                    })
+                }
+        </script>
+    </body>
+</html>

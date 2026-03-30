@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 14px;color: #fff;
+            font-size: 16px;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<div class="header">
+    <span>周期结算列表</span>
+    <button class="layui-btn" style="margin-right: 3%;" onclick="add(1);">新增结算</button>
+    <a class="layui-btn" style="margin-right: 10%;" href="javascript:void(0);" onclick="black()">返回上一页</a>
+    <div></div>
+</div>
+
+<table class="layui-table">
+    <thead>
+    <tr class="ths">
+        <th>序号</th>
+        <th>商户</th>
+        <th>提单编号</th>
+        <th>批次编号</th>
+        <th>执行状态</th>
+        <th>添加日期</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    {volist name="list" id="vo" key="k"}
+    <tr class="boys">
+        <td>{$k}</td>
+        <td>{$vo.uid|getDecls}</td>
+        <td>{$vo.bill}</td>
+        <td>{$vo.batch}</td>
+        <td>
+            {switch name="$vo.mark"}
+                {case value="1"}
+                    <button class="layui-btn layui-btn-sm layui-btn-normal">已完成</button>
+                {/case}
+
+                {case value="2"}
+                    <button class="layui-btn layui-btn-sm">待执行</button>
+                {/case}
+
+                {case value="3"}
+                    <button class="layui-btn layui-btn-sm layui-btn-warm">执行中</button>
+                {/case}
+            {/switch}
+        </td>
+
+        <td>{$vo.atime|date="Y-m-d H:i:s",###}</td>
+
+        <td>
+            <button class="layui-btn layui-btn-normal layui-btn-sm" ids="{$vo.relid}" onclick="Edit(this)">查看结算项目</button>
+            <button class="layui-btn layui-btn-sm layui-btn-danger" onclick="Del({$vo.id})">删除</button>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<div class="layui-box layui-laypage layui-laypage-default">
+    list->render()
+</div>
+
+<script type="text/javascript">
+    layui.use(['layer','jquery'],function(){
+        layer = layui.layer;
+        $ = layui.jquery;
+    });
+
+    // 添加
+    function add(ids)
+    {
+        layer.open({
+            type: 2,
+            title: '新增结算',
+            shadeClose: true,
+            shade: 0.3,
+            area: ['600px', '560px'],
+            content: "{:Url('settlement/add')}&uid="+ids, //iframe的url
+            yes:function(){
+                //setTimeout(function(){window.location.reload();},800);
+            },
+            end:function() {
+                setTimeout(function () {
+                    //window.location.reload();
+                }, 1200);
+            }
+        });
+    }
+
+
+    // 查看计费项目
+    function Edit(obj) {
+        var ids = $(obj).attr('ids');
+        window.location.href = "{:Url('settlement/setinfo')}&ids="+ids;
+    }
+
+
+    // 编辑
+    function Edits(id,uid)
+    {
+        layer.open({
+            type: 2,
+            title: '编辑额外费用',
+            shadeClose: true,
+            shade: 0.3,
+            area: ['600px', '560px'],
+            content: "{:Url('additional/edit')}&id="+id+'&uid='+uid, //iframe的url
+            yes:function(){
+                //setTimeout(function(){window.location.reload();},800);
+            },
+            end:function() {
+                setTimeout(function () {
+                    //window.location.reload();
+                }, 800);
+            }
+        });
+    }
+
+
+    // 删除操作
+    function Del(ids) {
+        layer.confirm('确定要删除整个收费项目吗?',{
+            icon:3,
+            btn:['确定','取消']
+        },function(){
+            $.ajax({
+                url:"{:url('settlement/del')}",
+                type:'post',
+                dataType:'json',
+                data:{'id':ids},
+                success:function(res) {
+                    if(res.code <= 0) {
+                        layer.msg(res.msg);
+                        return false;
+                    }
+                    layer.msg(res.msg,{icon:1});
+                    setTimeout(function(){window.location.reload();},1000);
+                }
+            })
+        })
+    }
+
+    // 返回上一页
+    function black() {
+        window.history.go(-1);
+    }
+
+</script>
+</body>
+</html>

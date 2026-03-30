@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {include file="common/meta"}
+    <link rel="stylesheet" href="./static/hadmin/layui/css/layui.css"></link>
+</head>
+<body class="gray-bg">
+<div class="demoTable" style="margin-top: 8px;margin-bottom: -6px;margin-left: 12px;">
+    <button class="layui-btn" onclick="add();return false;">添加</button>
+</div>
+<table class="layui-hide" id="list" lay-filter="list_filter"></table>
+</body>
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/layui/layui.all.js"></script>
+<script type="text/html" id="list_filter">
+    <!--<a class="layui-btn layui-btn-xs" lay-event="addLicense">添加车牌</a>-->
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script>
+
+    layui.use(['upload','form','table','layer'], function () {
+        layer = layui.layer;
+        upload = layui.upload;
+        form = layui.form;
+        table = layui.table;
+
+        //第一个实例
+        table.render({
+            elem: '#list'
+            ,id: 'listReload'
+            ,height: 512
+            ,url: "{:url('admin/WaybillDeclaredsEnterprisesManagement/select')}" //数据接口
+            ,page: true //开启分页
+            // ,toolbar: '#toolbar' //开启头部工具栏，并为其绑定左侧模板
+            ,defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示'
+                ,layEvent: 'LAYTABLE_TIPS'
+                ,icon: 'layui-icon-tips'
+            }]
+            ,loading:true
+            ,cols: [[ //表头
+                {field: 'id', title: 'id'},
+                {field: 'decl_enter_name', title: '申报企业名称',}
+                ,{field: 'decl_enter_code', title: '申报企业编号'}
+                ,{field: 'decl_edi', title: '申报企业EDI'}
+                ,{field: 'decl_api_key', title: '申报企业apikey'}
+                ,{field:'decl_type',title:'支持申报操作'}
+                ,{field: 'public_key_path', title: '公钥key路径'}
+                ,{field: 'private_key_path', title: '私钥key路径'}
+                ,{field: 'create_time', title: '时间'}
+                ,{fixed: 'right',title:'操作' ,width: 165, align:'center', toolbar: '#list_filter'}
+            ]]
+        });
+        form.render();
+    });
+
+
+
+    table.on('tool(list_filter)', function(obj){
+        var data = obj.data,layEvent = obj.event; //获得 lay-event 对应的值
+        if(layEvent === 'del'){
+            layer.confirm('真的删除么', function(index){
+                obj.del(); //删除对应行（tr）的DOM结构
+                layer.close(index);
+                req('POST',JSON.stringify(data),"{:Url('admin/WaybillDeclaredsEnterprisesManagement/delete')}&id="+data.id);
+                //向服务端发送删除指令
+            });
+        } else if(layEvent === 'edit'){
+            edit(data);
+        } else if(layEvent == 'addLicense'){
+            addLicense(data);
+        }
+
+    });
+
+    function search() {
+        //执行重载
+        table.reload('listReload', {
+            page: {curr: 1}
+            ,where: {
+                code: $('#code').val(),
+                cate:$('#cate').val()
+            }
+        }, 'data');
+        return false;
+    }
+
+
+
+    function add() {
+        layer.open({
+            type: 1,
+            title:"新增",
+            area: ['789px','480px'],
+            content: '<form class="layui-form layui-form-pane" method="post">\n' +
+                '  <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label" style="width:123px">*申报企业名称</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="text" name="decl_enter_name" style="width: 86%;margin-left: 13px;" required  lay-verify="required" placeholder=""  class="layui-input">\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                '  <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label"  style="width:123px">*申报企业编号</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="text" name="decl_enter_code"  style="width: 86%;margin-left: 13px;" required  lay-verify="required" placeholder=""  class="layui-input">\n' +
+                '    </div>\n' +
+                '  </div>' +
+                ' <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label"  style="width:123px">*申报企业edi</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="text" name="decl_edi"  style="width: 86%;margin-left: 13px;" required  lay-verify="required"   class="layui-input">\n' +
+                '    </div>\n' +
+                '  </div>' +
+                ' <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label"  style="width:123px">*申报接口key</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="text" name="decl_api_key"  style="width: 86%;margin-left: 13px;" value="12345678" required  lay-verify="required" placeholder="" class="layui-input">\n' +
+                '    </div>\n' +
+                '  </div>' +
+                '<div class="layui-form-item">\n' +
+                '    <label class="layui-form-label"  style="width:123px">*DXPID</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="text" name="dxp_id"  style="width: 86%;margin-left: 13px;" value="" required  lay-verify="required" placeholder="" class="layui-input">\n' +
+                '    </div>\n' +
+                '  </div>' +
+                ' <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label"  style="width:123px">公钥key路径</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="file" name="public_key_path"  style="width: 86%;margin-left: 13px;"    autocomplete="off" class="layui-input">\n' +
+                '    </div>\n' +
+                '  </div>' +
+                ' <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label"  style="width:123px">私钥key路径</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="file" name="private_key_path"  style="width: 86%;margin-left: 13px;" autocomplete="off" class="layui-input">\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                '  <div class="layui-form-item">\n' +
+                '             <label class="layui-form-label"  style="width:123px">支持申报方式</label>\n' +
+                '          <div class="layui-input-block" style="width:72%;margin-left:124px">\n' +
+                '              <select name="decl_type" ><option value="1">在线申报</option><option value="2">接口申报</option><option value="3">支持联合</option></select>\n' +
+                '                 </div>\n' +
+                '                </div><div class="layui-form-item">\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <button class="layui-btn" lay-submit lay-filter="form">立即提交</button>\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                '</form>',
+        });
+        form.render();
+        //监听提交
+        form.on('submit(form)', function(data){
+            var formData = new FormData(data.form);
+            req('POST',formData,"{:url('admin/WaybillDeclaredsEnterprisesManagement/create')}");
+            return false;
+        });
+    }
+
+
+    function edit(data) {
+        layer.open({
+            type: 1,
+            title:"编辑",
+            area: ['780px','480px'],
+            content: '<form class="layui-form layui-form-pane" method="post"><input type="hidden" name="id" value="'+data.id+'">\n' +
+                '  <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label" style="width:123px">*申报企业名称</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="text" name="decl_enter_name" value="'+data.decl_enter_name+'" style="width: 86%;margin-left: 13px;" required  lay-verify="required" placeholder=""  class="layui-input">\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                '  <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label"  style="width:123px">*申报企业编号</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="text" name="decl_enter_code" value="'+data.decl_enter_code+'" style="width: 86%;margin-left: 13px;" required  lay-verify="required" placeholder=""  class="layui-input">\n' +
+                '    </div>\n' +
+                '  </div>' +
+                ' <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label"  style="width:123px">*申报企业edi</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="text" name="decl_edi" value="'+data.decl_edi+'" style="width: 86%;margin-left: 13px;" required  lay-verify="required"   class="layui-input">\n' +
+                '    </div>\n' +
+                '  </div>' +
+                ' <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label"  style="width:123px">*申报接口key</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="text" name="decl_api_key"  style="width: 86%;margin-left: 13px;" value="'+data.decl_api_key+'" required  lay-verify="required" placeholder="" class="layui-input">\n' +
+                '    </div>\n' +
+                '  </div>' +
+                '<div class="layui-form-item">\n' +
+                '    <label class="layui-form-label"  style="width:123px">*DXPID</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="text" name="dxp_id"  style="width: 86%;margin-left: 13px;" value="'+data.dxp_id+'" required  lay-verify="required" placeholder="" class="layui-input">\n' +
+                '    </div>\n' +
+                '  </div>' +
+                ' <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label"  style="width:123px">公钥key路径</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="file" name="public_key_path"  style="width: 86%;margin-left: 13px;"    autocomplete="off" class="layui-input">\n' +
+                '    </div>\n' +
+                '  </div>' +
+                ' <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label"  style="width:123px">私钥key路径</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="file" name="private_key_path"  style="width: 86%;margin-left: 13px;" autocomplete="off" class="layui-input">\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                '  <div class="layui-form-item">\n' +
+                '             <label class="layui-form-label"  style="width:123px">支持申报方式</label>\n' +
+                '          <div class="layui-input-block" style="width:72%;margin-left:124px">\n' +
+                '              <select name="decl_type"><option value="1" '+(data.decl_type=="1"?"selected":"")+'>在线申报</option><option value="2" '+(data.decl_type=="2"?"selected":"")+'>接口申报</option><option value="3" '+(data.decl_type=="3"?"selected":"")+'>支持联合</option></select>\n' +
+                '                 </div>\n' +
+                '                </div><div class="layui-form-item">\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <button class="layui-btn" lay-submit lay-filter="form2">立即提交</button>\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                '</form>',
+        });
+        form.render();
+        //监听提交
+        form.on('submit(form2)', function(data){
+            var formData = new FormData(data.form);
+            req('POST',formData,"{:url('admin/WaybillDeclaredsEnterprisesManagement/create')}");
+            return false;
+        });
+    }
+
+    function addLicense(data){
+        let url = "{:url('admin/WaybillDeclaredsEnterprisesManagement/add_license')}&waybill_id="+data.id;
+        layer.open({
+            type: 2,
+            title: "添加 "+data.decl_enter_name+" 车牌信息",
+            area: ['100%', '100%'],
+            content:url
+        });
+    }
+
+    function req(method='POST',data,url) {
+        $.ajax({
+            url:url,
+            type:method,
+            dataType:"json",
+            processData: false,
+            contentType: false,
+            data:data,
+            success:function (res) {
+                layer.msg(res.msg);
+                reload();
+            }
+        });
+    }
+
+    function reload() {
+        //执行重载
+        table.reload('listReload', {
+            page: {curr: 1}
+            ,where: {
+                code: $('#code').val(),
+                cate:$('#cate').val()
+            }
+
+        }, 'data');
+    }
+
+</script>
+</html>
+

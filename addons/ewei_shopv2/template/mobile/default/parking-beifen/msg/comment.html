@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="telephone=no" name="format-detection" />
+    <meta http-equiv="cache-control" content="no-cache">
+    <title>智能路内停车服务评价</title>
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+	
+    <!--<link rel="stylesheet" href="http://res.wx.qq.com/open/libs/weui/0.4.0/weui.min.css">-->
+    <link rel="stylesheet" href="../addons/ewei_shopv2/static/msg/css/bill.css">
+    <link rel="stylesheet" href="../addons/ewei_shopv2/static/msg/css/flickerplate.css">
+    <script src="../addons/ewei_shopv2/static/msg/js/jquery.js" type="text/javascript" charset="utf-8"></script>
+    <!--<script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>-->
+    <style>
+    body {
+    	-webkit-text-size-adjust: 100% ;
+    }
+  </style>
+</head>
+<body bgcolor="#ebebeb">
+	
+<header>智能路内停车服务评价</header>
+    
+    <div class="board">
+        <!--<h1>您的评价</h1>
+        <div id="starRating">
+	        <p class="photo">
+	        <span><i class="high"></i><i class="nohigh"></i></span>
+	        <span><i class="high"></i><i class="nohigh"></i></span>
+	        <span><i class="high"></i><i class="nohigh"></i></span>
+	        <span><i class="high"></i><i class="nohigh"></i></span>
+	        <span><i class="high"></i><i class="nohigh"></i></span>
+	        </p>
+        </div>-->
+
+        <h1>智能路内停车服务星级评价</h1>
+        <div id="starRating">
+			<p class="photo">
+				<span><i class="high"></i><i class="nohigh"></i></span>
+				<span><i class="high"></i><i class="nohigh"></i></span>
+				<span><i class="high"></i><i class="nohigh"></i></span>
+				<span><i class="high"></i><i class="nohigh"></i></span>
+				<span><i class="high"></i><i class="nohigh"></i></span>
+				<label id="score" style="color:red;"></label>
+			</p>
+        </div>
+		
+        <textarea placeholder="谈谈您对使用智能路内停车服务后的感受" rows="5" id="comment"></textarea>
+        <label class="starNum" style="display: none;"></label>
+        <p id="commError" style="width: 100%;text-align: center;color: red;display: none;">谈谈您对使用智能...</p>
+        <input type="hidden" value="{php echo mobileUrl('parking/msg/Comment');}" id="pUrl"/>
+		<input type="hidden" value="{php echo mobileUrl('parking/parking_orderdetails');}" id="Rurl"/>
+        <!--<input type="hidden" name="starNum" id="starNums" value="" class="starNum"/>-->
+        <button type="submit" class="enter" id="query">提 交 评 价</button>
+		
+    </div>
+  
+	<div style="margin-bottom:5px;">
+		<p style="text-align:center;">
+			<label style="font-size:12px;">Technology by Gogo</label>
+			<img src="../addons/ewei_shopv2/static/images/img/logo.png" width="45px" style="margin-bottom: 5px">
+		</p>
+	</div>
+
+<script>
+   $(function () {
+        //评分
+        var starRating = 0;
+        $('.photo span').on('mouseenter',function () {
+            var index = $(this).index()+1;
+            $(this).prevAll().find('.high').css('z-index',1)
+            $(this).find('.high').css('z-index',1)
+            $(this).nextAll().find('.high').css('z-index',0)
+            $('.starNum').html((index*2).toFixed(1))
+        })
+        
+        $('.photo').on('mouseleave',function () {
+            $(this).find('.high').css('z-index',0)
+            var count = starRating / 2
+            if(count == 5) {
+                $('.photo span').find('.high').css('z-index',1);
+            } else {
+                $('.photo span').eq(count).prevAll().find('.high').css('z-index',1);
+            }
+            $('.starNum').html(starRating.toFixed(1))
+        })
+        
+        $('.photo span').on('click',function () {
+            var index = $(this).index()+1;
+            $(this).prevAll().find('.high').css('z-index',1)
+            $(this).find('.high').css('z-index',1)
+            starRating = index*2;
+            $('.starNum').html(starRating.toFixed(1));
+            $('#score').html(starRating.toFixed(1)+'分')
+            
+        })
+		
+        //取消评分
+        $('.cancleStar').on('click',function () {
+            starRating = 0;
+            $('.photo span').find('.high').css('z-index',0);
+            $('.starNum').html(starRating.toFixed(1));
+        })
+		
+        //确定评分
+        $('.sureStar').on('click',function () {
+            if(starRating === 0) {
+                alert('最低一颗星！');
+            } else {
+				$('#score').html(starRating.toFixed(1)+'分')
+            }
+        });
+        
+        //确认提交
+        $('#query').bind('click',function() {
+        	
+        	var comm = $('#comment').val();
+        	if(comm == '') {
+        		$('#commError').html('请填写评论内容');
+        		$('#commError').css('display','block');
+        		return false;
+        	}else {
+        		$('#commError').css('display','none');
+        	}
+        	
+			var Rurl = $('#Rurl').val();
+        	$.ajax({
+        		url:$('#pUrl').val(),
+        		async:false,
+        		type:'post',
+        		dataType:'json',
+        		data:'comm='+comm+'&starNum='+$('.starNum').html(),
+        		success:function(res) {
+        			//console.dir(res);        			
+        			if(res.status >=1){
+        				$('#comment').val('');
+        				$('.starNum').html('');
+        				alert(res.result.message);
+						//setInterval(function(){
+							window.location.href = Rurl;
+						//},150);
+						
+						//window.location.reload();
+						
+        			}else {
+        				alert(res.result.message);
+						window.location.reload();
+        			}
+        		}
+        	});
+        	
+        });
+    })
+</script>
+</body>
+</html>

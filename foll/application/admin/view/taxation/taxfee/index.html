@@ -1,0 +1,253 @@
+{include file="public/header"}
+<body style="padding: 10px;background: white;">
+<!-- 上级ID -->
+<style>
+    .down{
+        display: block;
+        width: 76px;
+        height: 30px;
+        /*border: 1px solid #ccc;*/
+        color: #FFF;
+        text-align: center;
+        line-height: 30px;
+        border-radius: 3px;
+        background: #1E9FFF;
+        font-size: 16px;
+    }
+    .down:hover{
+        color: #e0a800;
+    }
+    .headerd span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;margin-top: 18px;}
+    .headerd div{border-bottom:solid 2px #009688;margin-top: 8px;}
+    .headerd button{float: right;margin-top: -5px;}
+    .ths{font-size: 22px;font-weight: bold}
+    .boys{font-size: 16px;}
+</style>
+<input type="hidden" id="pid" value="1">
+<div class="header">
+    <span>{$title}</span>
+    <div></div>
+</div>
+
+<!--button class="layui-btn layui-btn-primary layui-btn-sm" style="float: right;margin: 5px 0px 5px 0px;" onclick="backs()">返回上级菜单</button-->
+
+<div style="margin: 5px auto;">
+
+    <form class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">请选择</label>
+            <div class="layui-input-inline">
+                <select name="uids" lay-verify="required">
+                    {volist name="cates" id="item" key="k"}
+                        <option value="{$item}" {if condition="$item==$check" } selected {/if}>{$item|getDecls}</option>
+                    {/volist}
+
+                </select>
+            </div>
+            <button class="layui-btn layui-btn-xm layui-btn-normal" lay-submit lay-filter="formDemo">搜 索</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    //Demo
+    layui.use('form', function(){
+        var form = layui.form;
+        var url = "{:Url('admin/taxation/show')}";
+        //监听提交
+        form.on('submit(formDemo)', function(data) {
+            //layer.msg(JSON.stringify(data.field));
+            var u = url + '&uids='+data.field.uids;
+            window.location.href = u;
+            return false;
+        });
+    });
+</script>
+
+
+<table class="layui-table">
+    <thead>
+        <tr>
+            <th>序号</th>
+            <th>商户名称</th>
+            <th>提单编号</th>
+            <th>交易总额</th>
+            <th>关税</th>
+            <th>增值税</th>
+            <th>消费税</th>
+            <th>综合税</th>
+            <th>生成时间</th>
+            <th>对账状态</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+    {volist name="tax" id="item" key="k"}
+        <tr>
+            <td>{$k}</td>
+            <td>{$item['uid']|getDecls}</td>
+            <td>{$item['bill_num']}</td>
+            <td>{$item['total']}</td>
+            <td>{$item['tariff']}</td>
+            <td>{$item['addtax']}</td>
+            <td>{$item['excisetax']}</td>
+            <td>{$item['comptax']}</td>
+            <td>{$item['add_time']|date='Y-m-d H:i',###}</td>
+            <td>
+                {switch name="$item['status']"}
+                    {case value="1"}
+                        <a href="javascript:void(0);" class="layui-btn layui-btn-primary layui-btn-sm">待对账</a>
+                    {/case}
+
+                    {case value="2"}
+                        <a href="javascript:void(0);" class="layui-btn layui-btn-danger layui-btn-sm">待清算</a>
+                    {/case}
+
+                    {case value="3"}
+                        <a href="javascript:void(0);" class="layui-btn layui-btn-warm layui-btn-sm" data-id="{$item['id']}" data-money="{$item['money']}" data-number="{$item['number']}" data-time="{$item['up_time']|date='Y-m-d H:i',###}" id="checkTax">待核查</a>
+                    {/case}
+
+                    {case value="4"}
+                        <a href="javascript:void(0);" class="layui-btn layui-btn-sm" data-money="{$item['money']}" data-number="{$item['number']}" data-time="{$item['up_time']|date='Y-m-d H:i',###}" id="showTax">已清算/查看</a>
+                    {/case}
+
+                {/switch}
+            </td>
+
+            <td><a class="down" href="{:Url('admin/tax/export')}&bill_num={$item.bill_num}">导出数据</a></td>
+        </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<div class="layui-page">
+    {$page}
+</div>
+
+<script>
+    layui.use(['upload','form'], function(){
+        var upload = layui.upload;
+        var form = layui.form;
+        $   = layui.jquery;
+
+        // 审核清算状态
+        $(document).on('click','#checkTax',function(){
+
+            var id      = $(this).attr('data-id');
+            var money   = $(this).attr('data-money');
+            var number  = $(this).attr('data-number');
+            var time    = $(this).attr('data-time');
+
+            var html = '<div class="headerd" style="margin-top: 18px;"><span>清算税费核查</span><div></div></div>\n' +
+                '<form class="layui-form">\n' +
+                '    <div class="layui-form-item"></div>\n' +
+                '    <div class="layui-form-item">\n' +
+                '        <div class="layui-form-item">\n' +
+                '            <label class="layui-form-label">清算金额:</label>\n' +
+                '            <div class="layui-input-block">\n' +
+                '                <input type="text" value="'+money+'" class="layui-input">\n' +
+                '            </div>\n' +
+                '        </div>\n' +
+                '        <div class="layui-form-item">\n' +
+                '            <label class="layui-form-label">凭证编号:</label>\n' +
+                '            <div class="layui-input-block">\n' +
+                '                <input type="text" value="'+number+'" required  lay-verify="required" autocomplete="off" class="layui-input">\n' +
+                '            </div>\n' +
+                '        </div>\n' +
+                '        <div class="layui-form-item">\n' +
+                '            <label class="layui-form-label">清算日期:</label>\n' +
+                '            <div class="layui-input-block">\n' +
+                '                <input type="text" value="'+time+'" required  lay-verify="required" autocomplete="off" class="layui-input">\n' +
+                '            </div>\n' +
+                '        </div>' +
+                '<div class="layui-form-item">\n' +
+                '<label class="layui-form-label">审核状态:</label>\n' +
+                '<div class="layui-input-block">\n' +
+                '   <select name="status" id=""><option value="4">审核通过</option><option value="2">清算有误</option></select>\n' +
+                '</div></div><input type="hidden" name="id" value="'+id+'">\n' +
+                '    </div>\n' +
+                '    <div class="layui-form-item"><div class="layui-input-block"><button class="layui-btn" id="sub" lay-submit lay-filter="formDemo">确认提交</button><button type="reset" class="layui-btn layui-btn-primary">重置信息</button></div></div></form>';
+
+            layer.open({
+                type: 1,
+                title: false,
+                closeBtn: 0,
+                shadeClose: true,
+                area: ['490px', '329px'],
+                content: html
+            });
+
+            form.render('select');
+            //监听提交
+            form.on('submit(formDemo)', function(data) {
+                var id = data.field.id;
+                var status = data.field.status;
+                // 提交更新数据，审核通过，已清算
+                $.ajax({
+                    url:"{:Url('admin/taxation/setTaxLiqui')}",
+                    type:'post',
+                    dataType:'json',
+                    data:{'id':id,status:status},
+                    success:function(e) {
+                        var es = JSON.parse(e);
+                        if(es.code <=0) {
+                            layer.msg(es.msg,{icon:2});
+                            return false;
+                        }
+                        layer.msg(es.msg,{icon:1},function(){
+                            window.location.reload();
+                        })
+                    },
+                    error:function(er) {
+                        layer.msg('服务器错误，请稍后重试！',{icon:2})
+                    }
+                })
+
+                return false;
+            });
+        });
+
+        // 查看清算数据
+        $(document).on('click','#showTax',function(){
+            var money   = $(this).attr('data-money');
+            var number  = $(this).attr('data-number');
+            var time    = $(this).attr('data-time');
+
+            var html = '<div class="headerd" style="margin-top: 18px;"><span>清算税费核查</span><div></div></div>\n' +
+                '<form class="layui-form">\n' +
+                '    <div class="layui-form-item"></div>\n' +
+                '    <div class="layui-form-item">\n' +
+                '        <div class="layui-form-item">\n' +
+                '            <label class="layui-form-label">清算金额:</label>\n' +
+                '            <div class="layui-input-block">\n' +
+                '                <input type="text" value="'+money+'" class="layui-input">\n' +
+                '            </div>\n' +
+                '        </div>\n' +
+                '        <div class="layui-form-item">\n' +
+                '            <label class="layui-form-label">凭证编号:</label>\n' +
+                '            <div class="layui-input-block">\n' +
+                '                <input type="text" value="'+number+'" required  lay-verify="required" autocomplete="off" class="layui-input">\n' +
+                '            </div>\n' +
+                '        </div>\n' +
+                '        <div class="layui-form-item">\n' +
+                '            <label class="layui-form-label">清算日期:</label>\n' +
+                '            <div class="layui-input-block">\n' +
+                '                <input type="text" value="'+time+'" required  lay-verify="required" autocomplete="off" class="layui-input">\n' +
+                '            </div>\n' +
+                '        </div></form>';
+
+            layer.open({
+                type: 1,
+                title: false,
+                closeBtn: 0,
+                shadeClose: true,
+                area: ['490px', '280px'],
+                content: html
+            });
+        });
+    });
+</script>
+</body>
+</html>

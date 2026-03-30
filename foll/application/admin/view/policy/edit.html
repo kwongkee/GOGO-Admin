@@ -1,0 +1,159 @@
+{include file="public/header_new" /}
+
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+
+<script type="text/javascript">
+    function gosendMail() {
+        var dates = $("#dates").val();
+        var title = $("#title").val();
+        var id = $("#id").val();
+        var type = $("#type").val();
+
+        var ue = UE.getEditor('content');
+        var content = ue.getContent();
+
+        if(!title)
+        {
+            layer.msg('标题不能为空！', {icon:2, time:2000});
+            return false;
+        }
+
+        if(!dates)
+        {
+            layer.msg('日期不能为空！', {icon:2, time:2000});
+            return false;
+        }
+
+        if(!content)
+        {
+            layer.msg('内容不能为空！', {icon:2, time:2000});
+            return false;
+        }
+
+        layer.confirm('确认编辑该政策吗？',function(index){
+
+            $.ajax({
+                url: "{:Url('admin/policy/edit')}",
+                data:{'id':id ,'dates':dates, 'title':title, 'content':content, 'type':type},
+                type:'post',
+                cache:false,
+                dataType:'json',
+                success:function(data){
+                    if(data.status==1)
+                    {
+                        layer.msg(data.message, {
+                                    icon: 1,
+                                    time: 2000
+                                }, function(){
+                                    parent.window.table.bootstrapTable('refresh');
+                                    var index = parent.layer.getFrameIndex(window.name);
+                                    parent.layer.close(index);
+                                });
+                                return true;
+                    }else {
+                        layer.msg(data.message, {icon:2, time:2000});
+                        return false;
+                    }
+                },
+                error:function() {
+                   layer.msg('系统出错,请重试',{icon:2,time:1000});
+                }
+            });
+        });
+
+
+    }
+</script>
+
+<body class="gray-bg">
+
+    <div class="wrapper wrapper-content">
+        <div class="row">
+            <div class="col-sm-12 animated fadeInRight">
+                <div class="mail-box-header">
+                    <div class="pull-right tooltip-demo">
+
+                    </div>
+                    <h2>
+                    新增政策
+                </h2>
+                </div>
+                <div class="mail-box">
+                    <div class="mail-body">
+                        <form class="form-horizontal" method="get">
+                            <input type="hidden" id="id" value="{$data['id']}">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">标题：</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="title" value="{$data['title']}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">类别：</label>
+                                <div class="col-sm-10">
+                                    <select class="form-control m-b" id="type">
+                                        <option value="1" {if $data['type'] == 1} selected {/if}>跨境結算</option>
+                                        <option value="2" {if $data['type'] == 2} selected {/if}>跨境物流</option>
+                                        <option value="3" {if $data['type'] == 3} selected {/if}>跨境通關</option>
+                                        <option value="4" {if $data['type'] == 4} selected {/if}>跨境銷售</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">日期：</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="dates" value="{$data['dates']}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">内容：</label>
+                                <div class="col-sm-10">
+                                    <script id="content" type="text/plain" style="width:100%;height:400px;">
+                                        {$data['content']|htmlspecialchars_decode|stripslashes}
+                                    </script>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label"></label>
+                                <div class="col-sm-10">
+                                    <button type="button" href="javascript:;" onClick="gosendMail()" class="btn btn-primary">
+                                        保存
+                                      </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+	<script type="text/javascript">
+    $(document).ready(function()
+    {
+        var ue = UE.getEditor('content', {
+            initialFrameHeight: 400,
+            serverUrl: 'static/cklein/plugins/ueditor/php/controller.php'
+        });
+
+        $('#dates').datepicker({
+            todayBtn: "linked",
+            keyboardNavigation: false,
+            forceParse: false,
+            calendarWeeks: true,
+            autoclose: true,
+            format: "yyyy-mm-dd"
+        });
+
+    });
+    </script>
+
+</body>
+
+</html>

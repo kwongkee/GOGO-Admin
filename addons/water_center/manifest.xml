@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.baidu.com" versionCode="0.6">
+	<application setting="true">
+		<name><![CDATA[会员中心集合]]></name>
+		<identifie><![CDATA[water_center]]></identifie>
+		<version><![CDATA[1.9.2]]></version>
+		<type><![CDATA[other]]></type>
+		<ability><![CDATA[会员中心集合]]></ability>
+		<description><![CDATA[会员中心集合]]></description>
+		<author><![CDATA[微赞]]></author>
+		<url><![CDATA[http://www.baidu.com]]></url>
+	</application>
+	<platform>
+		<subscribes>
+		</subscribes>
+		<handles>
+			<message type="voice" />
+			<message type="text" />
+		</handles>
+		<rule embed="false" />
+		<card embed="false" />
+	</platform>
+	<bindings>
+		<cover>
+			<entry title="会员中心" do="center" state="" direct="false" />
+		</cover>
+		<menu>
+			<entry title="导航菜单" do="footer" state="" direct="false" />
+			<entry title="分组菜单" do="type" state="" direct="false" />
+			<entry title="会员信息" do="fans" state="" direct="false" />
+		</menu>
+	</bindings>
+	<install><![CDATA[CREATE TABLE IF NOT EXISTS `ims_water_center_footer` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) DEFAULT NULL,
+  `title` varchar(50) DEFAULT NULL COMMENT '名称',
+  `iclass` varchar(50) DEFAULT NULL,
+  `iconname` varchar(50) DEFAULT NULL,
+  `url` varchar(300) DEFAULT NULL,
+  `indexno` int(11) DEFAULT '0' COMMENT '序号',
+  `state` int(2) DEFAULT '0' COMMENT '状态',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_water_center_menu` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) DEFAULT NULL,
+  `typeid` int(11) DEFAULT NULL,
+  `title` varchar(100) DEFAULT NULL COMMENT '名称',
+  `url` varchar(300) DEFAULT NULL,
+  `iconname` varchar(50) DEFAULT NULL,
+  `module` varchar(100) DEFAULT NULL,
+  `moduletype` int(2) DEFAULT NULL,
+  `issys` int(2) DEFAULT '0',
+  `all` int(2) DEFAULT '0',
+  `indexno` int(11) DEFAULT '0' COMMENT '序号',
+  `state` int(2) DEFAULT '0' COMMENT '状态',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_water_center_type` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) DEFAULT NULL,
+  `title` varchar(100) DEFAULT NULL COMMENT '名称',
+  `indexno` int(11) DEFAULT '0' COMMENT '序号',
+  `state` int(2) DEFAULT '0' COMMENT '状态',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS  `ims_water_live_fans` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) DEFAULT NULL,
+  `openid` varchar(300) DEFAULT NULL,
+  `nickname` varchar(300) DEFAULT NULL,
+  `headimgurl` varchar(300) DEFAULT NULL,
+  `sex` int(2) DEFAULT '0',
+  `fimg` varchar(300) DEFAULT NULL,
+  `fname` varchar(20) DEFAULT NULL,
+  `fmobile` varchar(20) DEFAULT NULL,
+  `fage` int(11) DEFAULT '18',
+  `fdesc` varchar(100) DEFAULT NULL,
+  `faddress` varchar(300) DEFAULT NULL,
+  `flocation` varchar(300) DEFAULT NULL,
+  `balance` float DEFAULT '0' COMMENT '余额',
+  `signtime` datetime DEFAULT NULL,
+  `sharetime` datetime DEFAULT NULL,
+  `addtime` datetime DEFAULT NULL,
+  `status` int(2) DEFAULT '0' COMMENT '身份',
+  `state` int(2) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+]]></install>
+	<uninstall><![CDATA[DROP TABLE IF EXISTS `ims_water_center_footer`;
+DROP TABLE IF EXISTS `ims_water_center_menu`;
+DROP TABLE IF EXISTS `ims_water_center_type`;
+]]></uninstall>
+	<upgrade><![CDATA['upgrade.php']]></upgrade>
+</manifest>

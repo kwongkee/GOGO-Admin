@@ -1,0 +1,153 @@
+{include file="public/header_new"}
+<style>
+    img{ width:20px;height:20px;}
+</style>
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <table id="table"
+                /*默认排序项*/
+                data-sort-name="create_at"
+                data-sort-order="desc"
+                /*工具栏相关*/
+                data-toolbar="#toolbar"
+                data-search="true"          /*搜索框*/
+                data-search-on-enter-key="false"
+                data-show-refresh="true"    /*刷新按钮*/
+                /*分页相关*/
+                data-side-pagination="server"
+                data-pagination="true"      /*显示分页*/
+                data-page-size="10"         /*每页显示条数*/
+                /*移动端相关*/
+                data-mobile-responsive="true"
+                data-card-view="true"
+                data-show-columns="true"
+                /*radio or checkbox字段名称*/
+                data-select-item-name="tids" >
+                <thead>
+                <tr>
+                    <th data-field="checkbox"
+                        data-align="center"
+                        data-checkbox="true"></th>
+                    <th data-field="id"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="false">ID</th>
+                    <th data-field="tracking_num"
+                        data-align="center"
+                        data-sortable="true">提单编号</th>
+                    <th data-field="batch_num"
+                        data-align="center"
+                        data-sortable="true">批次编号</th>
+                    <th data-field="type"
+                        data-align="center"
+                        data-sortable="true">类型</th>
+                    <th data-field="batch_status"
+                        data-align="center"
+                        data-sortable="true">状态</th>
+                    <th data-field="total_num"
+                        data-align="center"
+                        data-sortable="true">单批数量</th>
+                    <th data-field="success_num"
+                        data-align="center"
+                        data-sortable="true">成功数</th>
+                    <th data-field="error_num"
+                        data-align="center"
+                        data-sortable="true">错误数</th>
+                    <th data-field="create_at"
+                        data-align="center"
+                        data-sortable="true">时间</th>
+                    <th data-field="manage"
+                        data-align="center"
+                        data-sortable="true"
+                        data-formatter="actionFormatter">操作</th>
+                </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var table;
+    $(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:url('admin/export/zxgetExportBatchInfoList')}&tracking_num={$trackingNum}&btype=CEB505Message",
+            queryParams: queryParams,
+        });
+        $('.form-control').attr('placeholder','批次搜索');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var result = "";
+        if (row.batch_status=='待申报'){
+            result = '<button style="margin-right: 5px;" type="button" onclick="declare(\''+row.batch_num+'\')" class="btn btn-primary btn-xs">开始运单申报</button>';
+        }else if(row.batch_status=='申请撤回'){
+            result = '<button style="margin-right: 5px;" type="button" onclick="recall('+row.id+')" class="btn btn-primary btn-xs">撤回</button>';
+        }else{
+            result='不可操作';
+        }
+        return result;
+    }
+
+    function recall(id) {
+        $.ajax({
+            url: "{:url('admin/export/exportBatchApplyRecall')}",
+            type:'GET',
+            dataType:"json",
+            data:{id:id},
+            success:function (ret) {
+                if (ret.code<0){
+                    layer.msg(ret.msg, {icon:2, time:2000});
+                }else{
+                    layer.msg(ret.msg, {icon:6, time:2000});
+                    table.bootstrapTable('refresh');
+                }
+            }
+        });
+        return false;
+    }
+
+    var isFlag=false;
+    function declare(batchNum) {
+        if (isFlag){
+            return false;
+        }
+        isFlag=true;
+        var load=layer.load(2); //风格1的加载
+        $.ajax({
+            url: "http://decl.gogo198.cn/api/v2/zxLogisticsWaybillExportDeclare",
+            type:'GET',
+            dataType:"json",
+            data:{batchNum:batchNum},
+            success:function (ret) {
+                layer.close(load);
+                isFlag=false;
+                if (ret.code==0){
+                    layer.msg(ret.msg, {icon:6, time:2000});
+                    table.bootstrapTable('refresh');
+                }else{
+                    layer.msg(ret.msg, {icon:2, time:2000});
+                }
+            }
+        });
+        return false;
+    }
+</script>
+</body>
+</html>

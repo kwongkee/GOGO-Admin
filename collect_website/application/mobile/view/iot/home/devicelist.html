@@ -1,0 +1,72 @@
+{include file='iot/header'}
+<body style="background: url(./static/iot/images/index_bg.jpg) no-repeat fixed center; background-size: cover;">
+<link rel="stylesheet" href="./static/iot/css/equip.css">
+<style>
+    *, *:before, *:after {
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+</style>
+<div class="whole">
+    <div class="header">
+        <div class="toplogo"><img src="./static/iot/images/top-logo.png" alt=""></div>
+        <h2 class="title">设备控制</h2>
+    </div>
+    <div class="content">
+        <div class="index">
+            <div class="equip_list">
+                <ul>
+                    <li class="width1 eqtit">设备</li>
+                    <li class="width2 eqtit">状态</li>
+                    <li class="width3 eqtit">操作</li>
+                </ul>
+                {volist name='devList' id='vo'}
+                <ul>
+                    <li class="width1">{$vo.device_name}</li>
+                    <li class="width2">{if $vo['dev_status']}在线{else}下线{/if}</li>
+                    <li class="width3">
+                        <div class="one">
+                            <div class="button-wrap">
+                                <div class="button-bg">
+                                    <div class="button-out" onclick="opens('off');">关</div>
+                                    <div class="button-in" onclick="opens('on','{$vo.deviceid}');">开</div>
+                                    <div class="button-switch"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                {/volist}
+            </div>
+        </div>
+    </div>
+</div>
+{include file='iot/menu'}
+<script src="./static/iot/js/jquery-1.11.0.min.js"></script>
+<script>
+    function opens(type,did=null){
+        if(type=='on'){
+            $('.button-switch').css('left','36px');
+            $('.button-bg').css('background-color','#1481c5');
+            turnOn(did);
+            setTimeout(function () {
+                $('.button-switch').css('left','0px');
+                $('.button-bg').css('background-color','#999');
+            },5000);
+        }else{
+            $('.button-switch').css('left','0px');
+        }
+        return false;
+    }
+    function turnOn(devid){
+        axios.get("{:Url('iot/open')}&deviceid="+devid).then(function (res) {
+            showMsg(res.data.message);
+        }).catch(function (err) {
+            showMsg("打开失败");
+        });
+        return false;
+    }
+</script>
+</body>
+</html>

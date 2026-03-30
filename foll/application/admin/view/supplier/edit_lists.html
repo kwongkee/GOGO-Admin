@@ -1,0 +1,116 @@
+{include file="public/header_new" /}
+
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+
+<script type="text/javascript">
+    function gosendMail() {
+        var name = $("#name").val();
+        var type = $("#type").val();
+
+        if(!name)
+        {
+            layer.msg('岗位名称不能为空！', {icon:2, time:2000});
+            return false;
+        }
+
+        layer.confirm('确认修改该配置吗？',function(index){
+
+            $.ajax({
+                url: "{:Url('admin/supplier/edit_lists')}",
+                data:{'name':name, 'msg_type':type,'id':"{$info['id']}"},
+                type:'post',
+                cache:false,
+                dataType:'json',
+                success:function(data){
+                    if(data.status==1)
+                    {
+                        layer.msg(data.message, {
+                            icon: 1,
+                            time: 2000
+                        }, function(){
+                            parent.window.table.bootstrapTable('refresh');
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        });
+                        return true;
+                    }else {
+                        layer.msg(data.message, {icon:2, time:2000});
+                        return false;
+                    }
+                },
+                error:function() {
+                    layer.msg('系统出错,请重试',{icon:2,time:1000});
+                }
+            });
+        });
+
+
+    }
+</script>
+
+<body class="gray-bg">
+
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-sm-12 animated fadeInRight">
+            <div class="mail-box-header">
+                <div class="pull-right tooltip-demo">
+
+                </div>
+                <h2>
+                    岗位配置
+                </h2>
+            </div>
+            <div class="mail-box">
+                <div class="mail-body">
+                    <form class="form-horizontal" method="get">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">岗位名称：</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="name" value="{$info['name']}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">消息通知：</label>
+                            <div class="col-sm-10">
+                                <select id="type">
+                                    <option value="1" {if $info['msg_type'] == 1} selected {/if}>支持</option>
+                                    <option value="2" {if $info['msg_type'] == 2} selected {/if}>不支持</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+
+                <div class="mail-body text-right tooltip-demo">
+                    <button type="button" href="javascript:;" onClick="gosendMail()" class="btn btn-default">
+                        保存
+                    </button>
+                </div>
+                <div class="clearfix"></div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        var ue = UE.getEditor('content', {
+            initialFrameHeight: 400,
+            serverUrl: 'static/cklein/plugins/ueditor/php/controller.php'
+        });
+
+    });
+</script>
+
+</body>
+
+</html>

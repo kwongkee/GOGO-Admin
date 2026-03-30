@@ -1,0 +1,82 @@
+  {template 'header'}
+  <link rel="stylesheet" href="{$_W['siteroot']}addons/sunshine_huayue/common/ranking/style.ae03ec0c.css" />  
+  <article id="page-index">
+      <!--头部-->  
+      <!--三期顶部-->  
+      <article>
+          <!-- 菜单切换 -->  
+          <ul class="menu-tab clearfix" id="menu-tab">
+              <li>
+                  <div id="tab-main" class="tab-cur">成长排行榜</div>
+              </li>
+              <!--  <li>  
+              <div id="tab-mid" class="tab-cur" data-id="43">积分排行榜</div>
+          </li>
+          -->
+      </ul>
+      <article class="main-cont">
+          <!--搜索明星-->  
+          <!--      <section id="search" class="search" style="display: none;">  
+          <div class="search-div">
+              <input id="search-input" class="search-input" value="" type="text" placeholder="最爱的明星排行第几？一搜就知道" />  
+              <span id="search-btn" class="search-btn">搜索</span>
+          </div>
+      </section>
+      -->
+      <!--滚动提示-->  
+      <!--      <section id="advance" class="advance">  
+      <div class="today-vote">
+          今日可用票数
+          <span id="today_votes">0</span>
+      </div>
+      <p style="">每人每天可投票3次</p>
+      <p>点击拉票分享，即多获1票</p>
+      <p style="display: block;">参与投票5天后可额外多3票</p>
+  </section>
+  -->
+  <!--明星列表-->  
+  <!--首页明星-->  
+  <ul id="index_ul" class="star-index star-ul" style="">
+      {loop $list $key $user}
+      {if $key < 10}
+      <li class="star-<?php echo $key+1?>" >
+          <p class="star-ranking">{php echo $key+1}</p>
+          <p class="star-face">
+              <span>
+                  <img src="{$user['headimgurl']}" />  
+              </span>
+          </p>
+          <p class="star-name">{$user['nickname']}</p>
+          <p class="star-num">{$user['growth_score']}成长值</p>
+          {if self::$openid != $user['openid']}
+          <p class="star-vote" onclick="window.location.href='{php echo $this->createMobileUrl('detail',array('detail_openid'=>$user['openid']))}'">查看</p>
+          <p class="star-share" onclick="window.location.href='{php echo $this->createMobileUrl('chat',array('chat_openid'=>$user['openid']))}'">打招呼</p>
+          <!-- <p class="star-skin" ></p> -->
+          {/if}
+      </li>
+      {else}
+      <li>
+          <p class="star-ranking">{php echo $key + 1}</p>
+          <p class="star-face">
+              <span>
+                   <img src="{$user['headimgurl']}" />  
+              </span>
+          </p>
+          <p class="star-name">{$user['nickname']}</p>
+          <p class="star-num">{$user['growth_score']}成长值</p>
+          {if $this->openid != $user['openid']}
+          <p class="star-vote" onclick="window.location.href='{php echo $this->createMobileUrl('detail',array('detail_openid'=>$user['openid']))}'">查看</p>
+          <p class="star-share" onclick="window.location.href='{php echo $this->createMobileUrl('chat',array('chat_openid'=>$user['openid']))}'">打招呼</p>
+          {/if}
+          <!-- <p class="star-skin" ></p> -->
+      </li>
+      {/if}
+      {/loop}
+  </ul>
+  </article>
+  </article>
+  <section id="go-top" class="go-top" onclick="window.scroll(0,0)"></section>
+  </article>
+  {template 'footer'}
+  </body>
+  </html>

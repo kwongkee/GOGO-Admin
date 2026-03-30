@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>默认卖家配置</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <link href="static/cklein/css/style.css" rel="stylesheet">
+    <link href="static/cklein/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        form{
+            margin-top: 47px;
+            margin-right: 32px;
+        }
+        .layui-form-label{
+            width:110px;
+        }
+    </style>
+</head>
+<body class="gray-bg">
+<form class="layui-form" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">买家类别</label>
+        <div class="layui-input-inline layui-select-fscon">
+            <select name="platform" lay-filter="platform">
+                <option value="1"  {if $data['platform']==1}selected{/if}>平台买家</option>
+                <option value="2" {if $data['platform']==2}selected{/if}>其他买家</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label">买家姓名</label>
+            <div class="layui-input-inline">
+                <!--<div class="layui-input-block">-->
+                <input type="text" name="last_name" lay-verify="required" placeholder="请输入名字" value="{$data['last_name']}" autocomplete="off" class="layui-input buyer-name">
+                <input type="text" name="first_name" lay-verify="required" placeholder="请输入姓氏" value="{$data['first_name']}" autocomplete="off" class="layui-input buyer-name">
+                <!--</div>-->
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">证件类型</label>
+        <div class="layui-input-inline">
+            <select name="id_type" id="id_type" >
+                <option value="身份证" {if $data['id_type']=='身份证'}selected{/if}>身份证</option>
+                <option value="护照" {if $data['id_type']=='护照'}selected{/if}>护照</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">证件号码</label>
+        <div class="layui-input-inline">
+            <input type="text" name="id_card" value="{$data['id_card']}" lay-verify="required" placeholder="请输入证件号码" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">所属国籍</label>
+        <div class="layui-input-inline">
+            <select name="country_code" lay-search id="country_code" lay-verify="required" lay-filter="country_code">
+                <option value="">请选择</option>
+                {volist name="country_code" id="item"}
+                <option value="{$item['code_value']}" {if $item['code_value']==$data['country_code']}selected{/if}>{$item['code_value']} - {$item['code_name']}</option>
+                {/volist}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item" id="sanction_country" style="display: none;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label"></label>
+            <div class="layui-input-inline layui-select-fscon">
+                <div class="layui-form-mid layui-word-aux" style="color: red!important;">该国家是制裁国家，款项无法收到！</div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" id="highrisk_country" style="display: none;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label"></label>
+            <div class="layui-input-inline layui-select-fscon">
+                <div class="layui-form-mid layui-word-aux" style="color: red!important;">该国家是高风险国家，款项可能无法收到或收款时间长！是否继续？</div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">电话</label>
+        <div class="layui-input-inline">
+            <input type="text" name="tel" lay-verify="required" value="{$data['tel']}" placeholder="请输入电话号码" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">电邮</label>
+        <div class="layui-input-inline">
+            <input type="text" name="email" lay-verify="required" value="{$data['email']}" placeholder="请输入电子邮箱" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">地址</label>
+        <div class="layui-input-inline">
+            <textarea type="text" name="address" lay-verify="required" placeholder="请输入地址" autocomplete="off" cols="30" rows="2" class="layui-textarea">{$data['address']}</textarea>
+        </div>
+    </div>
+    <!--其他买家——个人买家-->
+    <div id="buyer_form" style="display: none;">
+        <div class="layui-form-item">
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label"><i class="fa icon-right" id="showtip_buyer_form_type" style="display: none;"  onclick="showInfo('buyer_form_type');"></i>买家来源</label>
+                <div class="layui-input-inline layui-select-fscon">
+                    <input type="radio" name="buyer_form_type" value="线上" title="线上"  {if($data['buyer_form_type'] == '线上')} checked {/if}>
+                    <input type="radio" name="buyer_form_type" value="线下" title="线下" {if($data['buyer_form_type'] == '线下')} checked {/if}>
+                </div>
+            </div>
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label"><i class="fa icon-right" id="showtip_buyer_form" style="display: none;"  onclick="showInfo('buyer_form');"></i>来源</label>
+                <div class="layui-input-block layui-select-fscon">
+                    <input type="text" name="buyer_form" placeholder="请输入买家来源" autocomplete="off" class="layui-input" value="{$data['buyer_form']}">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <div class="layui-footer" style="left: 0;">
+                <button class="layui-btn" lay-submit="" lay-filter="component-form-demo1">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </div>
+</form>
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+<script>
+    //Demo
+    layui.use(['form','upload'], function(){
+        var form = layui.form,upload = layui.upload;
+
+        //监听提交
+        form.on('submit(component-form-demo1)', function(data){
+            if( data.field['platform'] == 2 && data.field['buyer_form'] == '' )
+            {
+                layer.msg('请填写买家来源！');
+                return false;
+            }else{
+
+                $.ajax({
+                    url:"{:Url('admin/defaultInfo/personal_seller_edit')}",
+                    method:'post',
+                    data:data.field,
+                    dataType:'JSON',
+                    success:function(res){
+                        layer.msg(res.msg,{time:2000}, function () {
+                            if(res.code == 1)
+                            {
+                                var index = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(index);
+                                parent.window.location.reload();
+                            }
+                        });
+                    },
+                    error:function (data) {
+                        layer.msg('系统错误',{time:2000});
+                    }
+                });
+            }
+            return false;
+        });
+
+        //买家类别监控
+        form.on('select(platform)', function(data){
+            if(data.value == 1)
+            {
+                $("#buyer_form").hide();
+            }else{
+                $("#buyer_form").show();
+            }
+        });
+
+        // 买家国地检测
+        form.on('select(country_code)', function(data){
+            if(data.value!='')
+            {
+                checkBuyer(data.value);
+            }
+        });
+
+    });
+
+    function checkBuyer(country_code)
+    {
+        // var $ = layui.$;
+        $.ajax({
+            url:"{:url('admin/defaultInfo/country_check')}",
+            method:'get',
+            data:{country_code: country_code},
+            dataType:'JSON',
+            success:function(res){
+                // layer.msg(res.msg,{time:2000}, function () {
+
+                // });
+                if(res.code == 0)
+                {
+                    if(res.type == 'sanction_country')
+                    {
+                        $("#sanction_country").show();
+                        $("#highrisk_country").hide();
+                    }else{
+                        $("#highrisk_country").show();
+                        $("#sanction_country").hide();
+                    }
+                }else{
+                    $("#sanction_country").hide();
+                    $("#highrisk_country").hide();
+                }
+            },
+            error:function (data) {
+                layer.msg('系统错误',{time:2000});
+            }
+        });
+    }
+</script>
+</html>

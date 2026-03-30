@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="common/meta"}
+</head>
+
+<body class="gray-bg">
+<div class="col-sm-12">
+    <div class="ibox float-e-margins">
+        <div class="ibox-title" style="height:60px;">
+            <!--<button type="button" class="btn btn-info btn-lg" style="width: 100px;" id="add" onclick="window.location.href='{:url('admin/AdvertingManagementAdd')}'">展位添加</button>-->
+        </div>
+        <div class="ibox-content">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>接口类型</th>
+                    <th>流水编号</th>
+                    <th>订单编号</th>
+                    <th>银企交易金额  / 商城交易金额</th>
+                    <th>银企交易时间  / 商城交易时间</th>
+                    <th>对账结果</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name="data" id="v"}
+                <tr>
+					<td></td>
+					<td>{$v.flow_number_1}</td>
+					<td>{$v.ordersn_1}</td>
+					<td {if $v.money_color eq 1}style="color:red;"{/if}>{$v.pay_money_1} / {$v.pay_money_2}</td>
+					<td>{$v.pay_time_1|date="Y-m-d",###} / {$v.pay_time_2|date="Y-m-d",###}</td>
+					<td>{$v.account}</td>
+					<td>{if $v.account != '平账'}点击核对{/if}</td>
+                </tr>
+				{/volist}
+                </tbody>
+            </table>
+            <div class="page">
+		        <div>
+		          
+		        </div>
+		    </div>
+        </div>
+    </div>
+</div>
+
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- 自定义js -->
+<script src="./static/hadmin/js/content.js?v=1.0.0"></script>
+
+
+<!-- Bootstrap table -->
+<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="./static/hadmin/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="./static/hadmin/layui/layui.all.js"></script>
+<!-- Peity -->
+</body>
+<div id="qrcode" style="display: none;">
+	<img src="" alt="" id="code_img"/>
+</div>
+<script>
+    function requestAdd(){
+        var name=$("#name").val();
+        var Authority=$('input[name="auth"]:checked').val();
+        var status =$('input[name="optionsRadios"]:checked').val();
+        var beizhu=$("#beizhu").val();
+        $.post("{:Url('admin/AdminCharacterSave/')}",{"name":name,"authType":Authority,"roleStatus":status,"beizhu":beizhu},function (data) {
+            if(!data.status){
+                layer.msg(data.msg);
+                return false;
+            }
+            layer.msg(data.msg);
+        })
+    }
+</script>
+<script>
+	function send_msg(uniacid){
+		var src='../../attachment/qrcode_'+uniacid+'.jpg';
+			$('#code_img').attr('src',src)
+		layer.open({
+		  type: 1,
+		  skin: 'layui-layer-demo', //样式类名
+		  closeBtn: 1, //不显示关闭按钮
+		  anim: 2,
+		  shadeClose: true, //开启遮罩关闭
+		  content: '<img src="'+src+'" width="90px" height="90px">'
+		});
+			
+		
+	}
+</script>
+</html>

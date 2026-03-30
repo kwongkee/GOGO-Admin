@@ -1,0 +1,314 @@
+{include file="common/header_new"}
+
+<style>
+    .disf{display:flex;align-items: center;}
+    img{ width:20px;height:20px;}
+</style>
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <h3 style="text-align: center;">商品审核</h3>
+                <div id="toolbar" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;display:none;">
+                    <div class="disf">
+                        <button type="button" href="javascript:;" onclick="save();" class="btn btn-default">
+                            新增属性
+                        </button>
+                    </div>
+                </div>
+                <table id="table"
+
+                /*默认排序项*/
+                data-sort-name="goods_id"
+                data-sort-order="desc"
+                /*工具栏相关*/
+                data-toolbar="#toolbar"
+                data-search="false"          /*搜索框*/
+                data-search-on-enter-key="false"
+                data-show-refresh="true"    /*刷新按钮*/
+                /*分页相关*/
+                data-side-pagination="server"
+                data-pagination="true"      /*显示分页*/
+                data-page-size="10"         /*每页显示条数*/
+                /*移动端相关*/
+                data-mobile-responsive="true"
+                data-card-view="true"
+                data-show-columns="true"
+                /*radio or checkbox字段名称*/
+                data-select-item-name="id" >
+
+                <thead>
+                <tr>
+                    <th data-field="checkbox"
+                        data-align="center"
+                        data-checkbox="true"></th>
+                    <th data-field="goods_id"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">ID</th>
+                    <th data-field="goods_name"
+                        data-align="center"
+                        data-sortable="true">商品名称</th>
+                    <th data-field="shop_name"
+                        data-align="center"
+                        data-sortable="true">所属企业</th>
+                    <th data-field="status_name"
+                        data-align="center"
+                        data-sortable="true">商品状态</th>
+                    <th data-field="created_at"
+                        data-align="center"
+                        data-sortable="true">创建时间</th>
+                    <th data-field="manage"
+                        data-align="center"
+                        data-sortable="true"
+                        data-formatter="actionFormatter">操作</th>
+                </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<a href="" target="_blank" class="open_goods" style="display: none;">打开商品</a>
+
+<div class="goods_reasons" style="display: none;padding:15px;box-sizing: border-box;">
+    <input type="hidden" id="reject_id" value="">
+    <div class="disf">
+        <div class="label2" style="width:30%;padding-right:15px;box-sizing:border-box;text-align: right;">拒绝原因</div>
+        <div class="reasons" style="width: 70%;">
+            <textarea name="goods_reasons" id="goods_reasons" placeholder="请输入拒绝商品上架原因" style="width: 100%;height:100px;padding:5px;box-sizing: border-box;"></textarea>
+        </div>
+    </div>
+    <div class="disf" style="justify-content: center;">
+        <div class="btn btn-primary btn-md" onclick="sure_reject_shelf()">确认提交</div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var table;
+
+    $(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:url('admin/shopping/goods_check')}",
+            queryParams: queryParams,
+        });
+        $('.form-control').attr('placeholder','搜索新闻名称');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.goods_id;
+        var title = row.goods_name;
+
+        var result = "";
+        result += '<button style="margin-right: 5px;" type="button" onclick="check_goods('+id+',\''+title+'\')" class="btn btn-warning btn-xs">查看商品</button>';
+        if(row.goods_status==0){
+            //待审核状态
+            result += '<button style="margin-right: 5px;" type="button" onclick="sure_goods('+id+',\''+title+'\',1)" class="btn btn-primary btn-xs">同意上架</button>';
+            result += '<button style="margin-right: 5px;" type="button" onclick="sure_goods('+id+',\''+title+'\',2)" class="btn btn-danger btn-xs">拒绝上架</button>';
+        }
+        else if(row.goods_status==1){
+            //已上架状态
+            result += '<button style="margin-right: 5px;" type="button" onclick="sure_goods('+id+',\''+title+'\',3)" class="btn btn-danger btn-xs">立即下架</button>';
+        }
+
+        return result;
+    }
+
+    // function edit(id,name){
+    //     var index = layer.open({
+    //         type: 2,
+    //         title: "修改["+name+']',
+    //         area:['100%','100%'],
+    //         content: "{:url('admin/shopping/save_platform_value')}&id="+id
+    //     });
+    //     // layer.full(index);
+    // }
+
+    function sure_goods(id,title,type){
+        if(type==1){
+            //上架
+            layer.confirm('确认同意该商品['+title+']上架吗？',function(index){
+                $.ajax({
+                    url: "<?php echo Url('admin/shopping/goods_check2'); ?>",
+                    data:{'id':id,'type':type},
+                    type:'post',
+                    cache:false,
+                    dataType:'json',
+                    success:function(data){
+                        if(data.code==0)
+                        {
+                            layer.msg(data.msg, {
+                                icon: 1,
+                                time: 2000
+                            }, function(){
+                                window.location.reload();
+                            });
+                            return true;
+                        }else {
+                            layer.msg(data.msg, {icon:2, time:2000});
+                            return false;
+                        }
+                    },
+                    error:function() {
+                        layer.msg('系统出错,请重试',{icon:2,time:1000});
+                    }
+                });
+            });
+        }
+        else if(type==2){
+            //拒绝上架
+            var index = layer.open({
+                type: 1,
+                title: '拒绝商品['+title+']上架',
+                area:['400px','300px'],
+                content: $('.goods_reasons')
+            });
+            $('.goods_reasons').find('#reject_id').val(id);
+
+        }
+        else if(type==3){
+            //立即下架
+            layer.confirm('确认立即下架该商品['+title+']吗？',function(index){
+                $.ajax({
+                    url: "<?php echo Url('admin/shopping/goods_check2'); ?>",
+                    data:{'id':id,'type':type},
+                    type:'post',
+                    cache:false,
+                    dataType:'json',
+                    success:function(data){
+                        if(data.code==0)
+                        {
+                            layer.msg(data.msg, {
+                                icon: 1,
+                                time: 2000
+                            }, function(){
+                                window.location.reload();
+                            });
+                            return true;
+                        }else {
+                            layer.msg(data.msg, {icon:2, time:2000});
+                            return false;
+                        }
+                    },
+                    error:function() {
+                        layer.msg('系统出错,请重试',{icon:2,time:1000});
+                    }
+                });
+            });
+        }
+    }
+
+    function sure_reject_shelf(){
+        let id = $('.goods_reasons').find('#reject_id').val();
+        let type = 2;
+        let reasons = $('.goods_reasons').find('#goods_reasons').val();
+        if(reasons==''){
+            alert('请提交拒绝原因');return false;
+        }
+        $.ajax({
+            url: "<?php echo Url('admin/shopping/goods_check2'); ?>",
+            data:{'id':id,'type':type,'goods_reasons':reasons},
+            type:'post',
+            cache:false,
+            dataType:'json',
+            success:function(data){
+                if(data.code==0)
+                {
+                    layer.msg(data.msg, {
+                        icon: 1,
+                        time: 2000
+                    }, function(){
+                        window.location.reload();
+                    });
+                    return true;
+                }else {
+                    layer.msg(data.msg, {icon:2, time:2000});
+                    return false;
+                }
+            },
+            error:function() {
+                layer.msg('系统出错,请重试',{icon:2,time:1000});
+            }
+        });
+    }
+
+    function check_goods(id,title){
+        $('.open_goods').attr('href','//www.gogo198.cn/goods-'+id+'.html');
+        setTimeout(function(){
+            $('.open_goods')[0].click();
+        },800);
+    }
+
+    function save(title) {
+        var index = layer.open({
+            type: 2,
+            title: '新增属性',
+            area:['100%','100%'],
+            content: "{:url('admin/shopping/save_platform_value')}"
+        });
+        // layer.full(index);
+    }
+
+    function openWindow(id,title){
+        url = "{:Url('admin/shopping/value_list')}";
+        if(url!=''){
+            var index = layer.open({
+                type: 2,
+                title: title,
+                area:['100%','100%'],
+                content: url+'&pid='+id+'&name='+title
+            });
+        }
+    }
+
+    function del(id,title){
+        let msg = '';
+        layer.confirm('确认删除该属性“'+title+'”吗？',function(index){
+            $.ajax({
+                url: "<?php echo Url('admin/shopping/del_platform_value'); ?>",
+                data:{'id':id},
+                type:'post',
+                cache:false,
+                dataType:'json',
+                success:function(data){
+                    if(data.code==0)
+                    {
+                        layer.msg(data.msg, {
+                            icon: 1,
+                            time: 2000
+                        }, function(){
+                            window.location.reload();
+                        });
+                        return true;
+                    }else {
+                        layer.msg(data.msg, {icon:2, time:2000});
+                        return false;
+                    }
+                },
+                error:function() {
+                    layer.msg('系统出错,请重试',{icon:2,time:1000});
+                }
+            });
+        });
+    }
+
+</script>
+
+</body>
+</html>

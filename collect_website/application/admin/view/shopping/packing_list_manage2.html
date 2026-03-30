@@ -1,0 +1,193 @@
+{include file="common/header_new"}
+
+<style>
+    .container {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+
+    h1, h3 {
+        color: #333;
+    }
+
+    .template-section, .params-section {
+        margin: 20px 0;
+    }
+
+    select, input, button {
+        padding: 8px;
+        margin: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    button {
+        background-color: #4CAF50;
+        color: white;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+
+    #packing-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    #packing-table th, #packing-table td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 10px;
+        }
+        #packing-table {
+            font-size: 14px;
+        }
+    }
+</style>
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <div class="container">
+                    <h1>模板生成器</h1>
+
+                    <!-- 模板选择 -->
+                    <div class="template-section">
+                        <label for="template">选择模板样式：</label>
+                        <select id="template">
+                            <option value="invoice">商业发票</option>
+                            <option value="packing-list">装箱单</option>
+                            <option value="packing-detail">装箱明细</option>
+                        </select>
+                    </div>
+
+                    <!-- 参数选择与添加 -->
+                    <div class="params-section">
+                        <h3>添加表格参数</h3>
+                        <select id="param-options">
+                            <option value="">选择参数</option>
+                            <option value="companyName">公司名称</option>
+                            <option value="consignee">收货人</option>
+                            <option value="shipper">发货人</option>
+                            <option value="country">国家</option>
+                            <option value="supplierAddress">发货地址</option>
+                            <option value="contactNumber">联系电话</option>
+                            <!-- 添加更多参数选项 -->
+                        </select>
+                        <input type="text" id="custom-param" placeholder="自定义参数名">
+                        <button id="add-param">添加参数</button>
+                    </div>
+
+                    <!-- 动态表格 -->
+                    <div class="table-section">
+                        <table id="packing-table" border="1">
+                            <thead id="table-header"></thead>
+                            <tbody id="table-body"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- 导出按钮 -->
+                    <button id="export-pdf">导出为 PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        // 参数列表（从 HTML 中的 options 扩展）
+        const paramsList = [
+            "companyName", "consignee", "shipper", "country", "supplierAddress",
+            "contactNumber", "markingCode", "from", "date", "transportNumber",
+            "description", "productPhoto", "brandName", "unitsPerCarton",
+            "valuePerCarton", "unitPrice", "package", "perDimension",
+            "perWeight", "totalPieces", "grandValue", "totalPackages",
+            "totalM3", "shipper", "contact", "address", "tel", "attn"
+            // 添加更多参数
+        ];
+
+        // 模板切换
+        $('#template').change(function() {
+            const template = $(this).val();
+            // 根据模板加载默认参数
+            if (template === "invoice") {
+                loadDefaultParams(["companyName", "consignee", "shipper", "unitPrice", "grandValue"]);
+            } else if (template === "packing-list") {
+                loadDefaultParams(["description", "quantity", "grossWeight", "measurement"]);
+            }
+        });
+
+        // 加载默认参数到表格
+        function loadDefaultParams(params) {
+            let header = '<tr>';
+            params.forEach(param => {
+                header += `<th>${param.replace(/([A-Z])/g, ' $1').trim()}</th>`;
+            });
+            header += '</tr>';
+            $('#table-header').html(header);
+            $('#table-body').html('<tr><td colspan="' + params.length + '">点击添加数据</td></tr>');
+        }
+
+        // 添加参数
+        $('#add-param').click(function() {
+            const selectedParam = $('#param-options').val();
+            const customParam = $('#custom-param').val().trim();
+
+            if (selectedParam || customParam) {
+                const param = selectedParam || customParam;
+                if (!paramsList.includes(param)) {
+                    paramsList.push(param);
+                    $('#param-options').append(`<option value="${param}">${param}</option>`);
+                }
+
+                // 更新表格头部
+                $('#table-header tr').append(`<th>${param.replace(/([A-Z])/g, ' $1').trim()}</th>`);
+                // 为现有行添加空单元格
+                $('#table-body tr').each(function() {
+                    $(this).append('<td><input type="text" class="table-input"></td>');
+                });
+            }
+            $('#custom-param').val(''); // 清空输入
+        });
+
+        // 导出 PDF
+        $('#export-pdf').click(function() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const table = document.getElementById('packing-table');
+
+            // 使用 html2canvas 或类似库将表格转为图片
+            // 或者直接使用表格数据生成 PDF
+            doc.text('装箱单', 10, 10);
+            doc.autoTable({
+                html: '#packing-table',
+                startY: 20
+            });
+            doc.save('packing-list.pdf');
+        });
+
+        // 动态添加行
+        $('#packing-table').on('click', 'td', function() {
+            if ($(this).text() === '点击添加数据') {
+                $(this).parent().html('<td><input type="text" class="table-input"></td>'.repeat($('#table-header th').length));
+            }
+        });
+    });
+</script>
+</body>
+</html>

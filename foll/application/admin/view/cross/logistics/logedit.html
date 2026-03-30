@@ -1,0 +1,150 @@
+{include file="public/header"}
+
+<body style="padding: 10px;">
+
+<form action="" class="layui-form" id="form1">
+
+    <input type="hidden" name="id" value="{$data['id']}">
+    <input type="hidden" name="pid" value="{$data['pid']}">
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">路线名称</label>
+        <div class="layui-input-inline">
+            <input type="text" class="layui-input" readonly name="routeName" value="{$data['routeName']}" placeholder="请输入路线名称">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">起始地址</label>
+        <div class="layui-input-inline">
+            <input type="text" class="layui-input" required name="addrStart" value="{$data['addrStart']}" placeholder="请输入路线起始地址">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">终止地址</label>
+        <div class="layui-input-inline">
+            <input type="text" class="layui-input" required name="addrEnd" value="{$data['addrEnd']}" placeholder="请输入路线终止地址">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">首重计费</label>
+        <div class="layui-input-inline" style="width: 100px;">
+            <input type="text" name="oneMoney" placeholder="多少元" value="{$data['oneMoney']}" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-form-mid">/</div>
+        <div class="layui-input-inline" style="width: 100px;">
+            <input type="text" name="oneKg" placeholder="多少公斤" value="{$data['oneKg']}" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-form-mid layui-word-aux">Kg</div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">续重计费</label>
+        <div class="layui-input-inline" style="width: 100px;">
+            <input type="text" name="twoMoney" placeholder="多少元" value="{$data['twoMoney']}" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-form-mid">/</div>
+        <div class="layui-input-inline" style="width: 100px;">
+            <input type="text" name="twoKg" placeholder="多少公斤" value="{$data['twoKg']}" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-form-mid layui-word-aux">Kg</div>
+    </div>
+
+</form>
+
+<div class="layui-form-item">
+    <div class="layui-input-block">
+        <button class="layui-btn" onclick="save()">确认编辑</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    layui.use(['layer','form'],function(){
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+    })
+
+
+    // 添加管理员
+    function save()
+    {
+        var id              = $('input[name="id"]').val();
+        var pid             = $('input[name="pid"]').val();
+        var routeName       = $('input[name="routeName"]').val();
+        var addrStart       = $('input[name="addrStart"]').val();
+        var addrEnd         = $('input[name="addrEnd"]').val();
+        var oneMoney        = $('input[name="oneMoney"]').val();
+        var oneKg           = $('input[name="oneKg"]').val();
+        var twoMoney        = $('input[name="twoMoney"]').val();
+        var twoKg           = $('input[name="twoKg"]').val();
+
+        if(routeName == '') {
+            layer.msg('请输入路线名称',{icon:2});
+            return false;
+        }
+        if(addrStart == '') {
+            layer.msg('请输入起始地址',{icon:2});
+            return false;
+        }
+
+        if(addrEnd == '') {
+            layer.msg('请输入终止地址',{icon:2});
+            return false;
+        }
+
+        if(oneMoney == '') {
+            layer.msg('请输入首重多少元',{icon:2});
+            return false;
+        }
+
+        if(oneKg == '') {
+            layer.msg('请输入首重多少公斤',{icon:2});
+            return false;
+        }
+
+
+        if(twoMoney == '') {
+            layer.msg('请输入续重多少元',{icon:2});
+            return false;
+        }
+        if(twoKg == '') {
+            layer.msg('请输入续重多少公斤',{icon:2});
+            return false;
+        }
+
+
+        // 请求处理数据
+        $.post("{:Url('admin/cross/logDoadd')}",{
+            id:id,
+            pid:pid,
+            routeName:routeName,
+            addrStart:addrStart,
+            addrEnd:addrEnd,
+            oneMoney:oneMoney,
+            oneKg:oneKg,
+            twoMoney:twoMoney,
+            twoKg:twoKg,
+            Method:'edit',
+        },function(resd){
+
+            var res = JSON.parse(resd);
+            if(res.code == 1) {
+                layer.msg(res.msg,{icon:1});
+                setTimeout(function(){
+                    layer.closeAll();
+                    parent.window.location.reload();
+                },1000);
+            } else {
+                layer.msg(res.msg,{icon:2});
+            }
+
+        });
+    }
+</script>
+</body>
+</html>

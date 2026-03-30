@@ -1,0 +1,427 @@
+{template "parking/base/header"}
+{template "parking/base/myheader"}
+<style type="text/css">
+	*{
+	    -webkit-touch-callout: all;
+		-webkit-user-select: all;
+		-moz-user-select: all;
+		-ms-user-select: all;
+		user-select:text;
+	}
+	.weui-form-preview__ft{height: 30px;}
+	.weui-navbar{position: fixed;top: 0.1px;}
+	.weui-tabbar{position: fixed;bottom: 0.1px;}
+	.weui-input{width: 62%;border: 1px solid saddlebrown;}
+	.yuan{margin-left: 1px;}
+	.nodata{
+		font-size: 26px;font-weight: bold;color:silver;
+		width: 100%;text-align: center;
+		margin: 42% auto;
+	}
+</style>
+
+<!-- 容器 -->
+<div class="weui-tab">
+	
+	<!-- 菜单部分 -->
+  <div class="weui-navbar">
+    <a class="weui-navbar__item weui-bar__item--on" href="#tab1">微信免密</a>
+    <a class="weui-navbar__item" href="#tab2">农商免密</a>
+    <a class="weui-navbar__item" href="#tab3">银联免密</a>
+    <a class="weui-navbar__item" href="#tab4">聚合支付</a>
+  </div>
+  
+  <div class="weui-tab__bd">
+  	
+    <div id="tab1" class="weui-tab__bd-item weui-tab__bd-item--active">
+    	
+    	<input type="hidden" id="paytype" value="Fwechat" />
+    	<!-- 每页显示条数 -->
+    	<input type="hidden" id="pageSize" value="{$pageSize}" />
+    	<!-- 偏移量  -->
+    	<input type="hidden" id="pageNo" value="{$pageNo}" />
+    	<!-- 总页数 -->
+    	<input type="hidden" id="pagesCount" value="{$pagesCount1}" />
+    	
+    	{if empty($fwechat)}
+    		<p class="nodata">暂无数据!!</p>
+    	{/if}
+    	
+    	{loop $fwechat $item}
+    	<div class="weui-form-preview">
+			<div class="weui-form-preview__bd">
+				<div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">交易金额:</label>
+			      <span style="color: green;" class="weui-form-preview__value">¥ {$item['pay_account']}元</span>
+			    </div>
+				
+			    <div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">订单编号:</label>
+			      <span class="weui-form-preview__value">{$item['ordersn']}</span>
+			    </div>
+			    
+			    <div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">交易时间:</label>
+			      <span class="weui-form-preview__value"><?php echo date("Y-m-d H:i:s",$item['pay_time'])?></span>
+			    </div>
+			</div>
+			
+			<div class="weui-cell weui-form-preview__ft">
+				
+			    <div class="weui-cell__hd">
+			      <label class="weui-label">退款金额:</label>
+			    </div>
+			    
+			    <div class="weui-cell__bd">
+			      <input style="color: red;" class="weui-input" type="text" name="remoney" id="refund{$item['id']}" maxlength="6" value="{$item['pay_account']}" placeholder="退款金额">
+			      <span class="yuan">元</span>
+			      <input type="hidden" id="oldMoney{$item['id']}" value="{$item['pay_account']}" />
+			    </div>
+			    
+			    <div class="weui-cell__ft">
+			    	<a href="javascript:;" onclick="refund({$item['id']})" class="layui-btn layui-btn-sm  layui-btn-radius layui-btn-danger">退款操作</a>
+			    </div>
+			</div>
+		</div>
+		{/loop}
+		
+    </div>
+    
+    <!--div class="weui-loadmore">
+		  <i class="weui-loading"></i>
+		  <span class="weui-loadmore__tips">正在加载</span>
+		</div-->
+    
+    <!-- 农商免密  -->
+    <div id="tab2" class="weui-tab__bd-item">
+    	
+    	<input type="hidden" id="paytype" value="FAgro" />
+    	<!-- 每页显示条数 -->
+    	<input type="hidden" id="pageSize" value="{$pageSize}" />
+    	<!-- 偏移量  -->
+    	<input type="hidden" id="pageNo" value="{$pageNo}" />
+    	<!-- 总页数 -->
+    	<input type="hidden" id="pagesCount" value="{$pagesCount2}" />
+    	
+    	{if empty($fagro)}
+    		<p class="nodata">暂无数据!!</p>
+    	{/if}
+    	
+        {loop $fagro $item}
+    	<div class="weui-form-preview">
+			<div class="weui-form-preview__bd">
+				<div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">交易金额:</label>
+			      <span style="color: green;" class="weui-form-preview__value">¥ {$item['pay_account']}元</span>
+			    </div>
+				
+			    <div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">订单编号:</label>
+			      <span class="weui-form-preview__value">{$item['ordersn']}</span>
+			    </div>
+			    
+			    <div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">交易时间:</label>
+			      <span class="weui-form-preview__value"><?php echo date("Y-m-d H:i:s",$item['pay_time'])?></span>
+			    </div>
+			</div>
+			
+			<div class="weui-cell weui-form-preview__ft">
+				
+			    <div class="weui-cell__hd">
+			      <label class="weui-label">退款金额:</label>
+			    </div>
+			    
+			    <div class="weui-cell__bd">
+			      <input style="color: red;" class="weui-input" type="text" name="remoney" id="refund{$item['id']}" maxlength="6" value="{$item['pay_account']}" placeholder="退款金额">
+			      <span class="yuan">元</span>
+			      <input type="hidden" id="oldMoney{$item['id']}" value="{$item['pay_account']}" />
+			    </div>
+			    
+			    <div class="weui-cell__ft">
+			    	<a href="javascript:;" onclick="refund({$item['id']})" class="layui-btn layui-btn-sm  layui-btn-radius layui-btn-danger">退款操作</a>
+			    </div>
+			</div>
+		</div>
+		{/loop}
+    </div>
+    
+    
+    <!-- 银联免密  -->
+    <div id="tab3" class="weui-tab__bd-item">
+    	
+    	<input type="hidden" id="paytype" value="Parks" />
+    	<!-- 每页显示条数 -->
+    	<input type="hidden" id="pageSize" value="{$pageSize}" />
+    	<!-- 偏移量  -->
+    	<input type="hidden" id="pageNo" value="{$pageNo}" />
+    	<!-- 总页数 -->
+    	<input type="hidden" id="pagesCount" value="{$pagesCount3}" />
+    	
+    	{if empty($parks)}
+    		<p class="nodata">暂无数据!!</p>
+    	{/if}
+    	
+    	{loop $parks $item}
+    	<div class="weui-form-preview">
+			<div class="weui-form-preview__bd">
+				<div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">交易金额:</label>
+			      <span style="color: green;" class="weui-form-preview__value">¥ {$item['pay_account']}元</span>
+			    </div>
+				
+			    <div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">订单编号:</label>
+			      <span class="weui-form-preview__value">{$item['ordersn']}</span>
+			    </div>
+			    
+			    <div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">交易时间:</label>
+			      <span class="weui-form-preview__value"><?php echo date("Y-m-d H:i:s",$item['pay_time'])?></span>
+			    </div>
+			</div>
+			
+			<div class="weui-cell weui-form-preview__ft">
+				
+			    <div class="weui-cell__hd">
+			      <label class="weui-label">退款金额:</label>
+			    </div>
+			    
+			    <div class="weui-cell__bd">
+			      <input style="color: red;" class="weui-input" type="text" name="remoney" id="refund{$item['id']}" maxlength="6" value="{$item['pay_account']}" placeholder="退款金额">
+			      <span class="yuan">元</span>
+			      <input type="hidden" id="oldMoney{$item['id']}" value="{$item['pay_account']}" />
+			    </div>
+			    
+			    <div class="weui-cell__ft">
+			    	<a href="javascript:;" onclick="refund({$item['id']})" class="layui-btn layui-btn-sm  layui-btn-radius layui-btn-danger">退款操作</a>
+			    </div>
+			</div>
+		</div>
+		{/loop}
+      
+    </div>
+    
+    
+    <!-- 聚合支付  -->
+    <div id="tab4" class="weui-tab__bd-item">
+    
+		<input type="hidden" id="paytype" value="wechat" />
+		<!-- 每页显示条数 -->
+		<input type="hidden" id="pageSize" value="{$pageSize}" />
+		<!-- 偏移量  -->
+		<input type="hidden" id="pageNo" value="{$pageNo}" />
+		<!-- 总页数 -->
+		<input type="hidden" id="pagesCount" value="{$pagesCount4}" />
+	
+    	{if empty($aggreg)}
+    		<p class="nodata">暂无数据!!</p>
+    	{/if}
+    	
+    	{loop $aggreg $item}
+    	<div class="weui-form-preview">
+			<div class="weui-form-preview__bd">
+				<div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">交易金额:</label>
+			      <span style="color: green;" class="weui-form-preview__value">¥ {$item['pay_account']}元</span>
+			    </div>
+				
+			    <div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">订单编号:</label>
+			      <span class="weui-form-preview__value">{$item['ordersn']}</span>
+			    </div>
+			    
+			    <div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">交易时间:</label>
+			      <span class="weui-form-preview__value"><?php echo date("Y-m-d H:i:s",$item['pay_time'])?></span>
+			    </div>
+			</div>
+			
+			<div class="weui-cell weui-form-preview__ft">
+				
+			    <div class="weui-cell__hd">
+			      <label class="weui-label">退款金额:</label>
+			    </div>
+			    
+			    <div class="weui-cell__bd">
+			      <input style="color: red;" class="weui-input" type="text" name="remoney" id="refund{$item['id']}" maxlength="6" value="{$item['pay_account']}" placeholder="退款金额">
+			      <span class="yuan">元</span>
+			      <input type="hidden" id="oldMoney{$item['id']}" value="{$item['pay_account']}" />
+			    </div>
+			    
+			    <div class="weui-cell__ft">
+			    	<a href="javascript:;" onclick="refund({$item['id']})" class="layui-btn layui-btn-sm  layui-btn-radius layui-btn-danger">退款操作</a>
+			    </div>
+			</div>
+		</div>
+		{/loop}
+      	
+    </div>
+    
+  </div>
+</div>
+
+{template "parking/base/mycomm"}
+
+<script type="text/javascript">
+
+	function refund(tid) {
+		var oldMoney = $('#oldMoney'+tid).val();
+		var remoney = $('#refund'+tid).val();
+		console.dir('原金额：'+oldMoney);
+		console.dir('退款金额：'+remoney);
+		
+		if(remoney==' ' || remoney == 0){
+			alert('退款金额不能小于0或为空');
+		} else if(remoney > oldMoney) {
+			alert('退款金额不能大于订单金额')
+		} else {
+			if(confirm('您确认退款吗？')){
+				alert('确认');
+				// ajax  请求退款查询
+			} else {
+				alert('取消');
+			}
+		}
+	}
+
+	var loading = false;  //状态标记
+	$(document.body).infinite().on("infinite", function() {
+		var hr = $('.weui-bar__item--on').attr('href');
+		var inp = $(hr).children('input');//获取选中值下的input
+		var payType 	= inp[0].defaultValue;//支付类型
+		var pageSize    = inp[1].defaultValue;//每页显示条数
+		var pageNo 		= inp[2].defaultValue;//当前页码
+		var pagesCount  = inp[3].defaultValue;//分页总数
+		if(loading) return;
+		++pageNo;//页码加一
+		
+		console.dir(payType);
+		console.dir(pageSize);
+		console.dir(pageNo);
+		console.dir(pagesCount);
+		
+		// 如果数据大于总页数禁止加载数据
+		/*if(pageNo > pagesCount) {
+			return;
+		}*/
+		switch(payType) {
+			case 'Fwechat':
+				loading = true;
+				$.ajax({
+	                url: "{php echo mobileUrl('parking/queryuserinfo/onLoading')}",
+	                type: 'POST',
+	                data: {'payType':'Fwechat',pageSi:pageSize,pageN:pageNo,pagesC:pagesCount},
+	                async:false,
+	                dataType:'jsonp',
+	                success: function(data){
+	                    var datas=JSON.parse(data.status);
+	                    console.dir(datas);
+	                    if(datas.code > 0) {
+	                    	alert('有数据了');
+	                    	
+	                    	setTimeout(function() {
+								var contents = '<div class="weui-form-preview"><div class="weui-form-preview__bd"><div class="weui-form-preview__item"><label class="weui-form-preview__label">交易金额:</label><span style="color: green;" class="weui-form-preview__value">¥ 5.00元</span></div><div class="weui-form-preview__item"><label class="weui-form-preview__label">订单编号:</label><span class="weui-form-preview__value">GG991980054548484845454524</span></div><div class="weui-form-preview__item"><label class="weui-form-preview__label">交易时间:</label><span class="weui-form-preview__value"><?php echo date("Y-m-d H:i:s",$item['pay_time'])?></span></div></div><div class="weui-cell weui-form-preview__ft"><div class="weui-cell__hd"><label class="weui-label">退款金额:</label></div><div class="weui-cell__bd"><input style="color: red;" class="weui-input" type="text" name="remoney" id="refund12" maxlength="6" value="12" placeholder="退款金额"><span class="yuan">元</span><input type="hidden" id="oldMoney12" value="5.00" /></div><div class="weui-cell__ft"><a href="javascript:;" onclick="refund(12)" class="layui-btn layui-btn-sm  layui-btn-radius layui-btn-danger">退款操作</a></div></div></div>';
+								$(hr).append(contents);
+								loading = false;
+							},500);//模拟延迟
+							
+	                    	inp[2].defaultValue = pageNo;
+	                    }else{
+	                    	alert('没有数据了');
+	                    }
+	                }
+	            });
+			break;
+			
+			case 'FAgro':
+				loading = true;
+				$.ajax({
+	                url: "{php echo mobileUrl('parking/queryuserinfo/onLoading')}",
+	                type: 'POST',
+	                data: {'payType':'FAgro',pageSi:pageSize,pageN:pageNo,pagesC:pagesCount},
+	                async:false,
+	                dataType:'jsonp',
+	                success: function(data){
+	                    var datas=JSON.parse(data.status);
+	                    console.dir(datas);
+	                    if(datas.code > 0) {
+	                    	alert('有数据了');
+	                    	
+	                    	setTimeout(function() {
+								var contents = '<div class="weui-form-preview"><div class="weui-form-preview__bd"><div class="weui-form-preview__item"><label class="weui-form-preview__label">交易金额:</label><span style="color: green;" class="weui-form-preview__value">¥ 5.00元</span></div><div class="weui-form-preview__item"><label class="weui-form-preview__label">订单编号:</label><span class="weui-form-preview__value">GG991980054548484845454524</span></div><div class="weui-form-preview__item"><label class="weui-form-preview__label">交易时间:</label><span class="weui-form-preview__value"><?php echo date("Y-m-d H:i:s",$item['pay_time'])?></span></div></div><div class="weui-cell weui-form-preview__ft"><div class="weui-cell__hd"><label class="weui-label">退款金额:</label></div><div class="weui-cell__bd"><input style="color: red;" class="weui-input" type="text" name="remoney" id="refund12" maxlength="6" value="12" placeholder="退款金额"><span class="yuan">元</span><input type="hidden" id="oldMoney12" value="5.00" /></div><div class="weui-cell__ft"><a href="javascript:;" onclick="refund(12)" class="layui-btn layui-btn-sm  layui-btn-radius layui-btn-danger">退款操作</a></div></div></div>';
+								$(hr).append(contents);
+								loading = false;
+							},500);//模拟延迟
+							
+	                    	inp[2].defaultValue = pageNo;
+	                    }else{
+	                    	alert('没有数据了');
+	                    }
+	                }
+	            });
+            
+			break;
+			
+			case 'Parks':
+				loading = true;
+				$.ajax({
+	                url: "{php echo mobileUrl('parking/queryuserinfo/onLoading')}",
+	                type: 'POST',
+	                data: {'payType':'Parks',pageSi:pageSize,pageN:pageNo,pagesC:pagesCount},
+	                async:false,
+	                dataType:'jsonp',
+	                success: function(data){
+	                    var datas=JSON.parse(data.status);
+	                    console.dir(datas);
+	                    if(datas.code > 0) {
+	                    	alert('有数据了');
+	                    	
+	                    	setTimeout(function() {
+								var contents = '<div class="weui-form-preview"><div class="weui-form-preview__bd"><div class="weui-form-preview__item"><label class="weui-form-preview__label">交易金额:</label><span style="color: green;" class="weui-form-preview__value">¥ 5.00元</span></div><div class="weui-form-preview__item"><label class="weui-form-preview__label">订单编号:</label><span class="weui-form-preview__value">GG991980054548484845454524</span></div><div class="weui-form-preview__item"><label class="weui-form-preview__label">交易时间:</label><span class="weui-form-preview__value"><?php echo date("Y-m-d H:i:s",$item['pay_time'])?></span></div></div><div class="weui-cell weui-form-preview__ft"><div class="weui-cell__hd"><label class="weui-label">退款金额:</label></div><div class="weui-cell__bd"><input style="color: red;" class="weui-input" type="text" name="remoney" id="refund12" maxlength="6" value="12" placeholder="退款金额"><span class="yuan">元</span><input type="hidden" id="oldMoney12" value="5.00" /></div><div class="weui-cell__ft"><a href="javascript:;" onclick="refund(12)" class="layui-btn layui-btn-sm  layui-btn-radius layui-btn-danger">退款操作</a></div></div></div>';
+								$(hr).append(contents);
+								loading = false;
+							},500);//模拟延迟
+							
+	                    	inp[2].defaultValue = pageNo;
+	                    }else{
+	                    	alert('没有数据了');
+	                    }
+	                }
+	            });
+			break;
+			
+			case 'wechat':
+				loading = true;
+				$.ajax({
+	                url: "{php echo mobileUrl('parking/queryuserinfo/onLoading')}",
+	                type: 'POST',
+	                data: {'payType':'wechat',pageSi:pageSize,pageN:pageNo,pagesC:pagesCount},
+	                async:false,
+	                dataType:'jsonp',
+	                success: function(data){
+	                    var datas=JSON.parse(data.status);
+	                    
+	                    console.dir(datas);
+	                    
+	                    if(datas.code > 0) {
+	                    	
+	                    	setTimeout(function() {
+								var contents = '<div class="weui-form-preview"><div class="weui-form-preview__bd"><div class="weui-form-preview__item"><label class="weui-form-preview__label">交易金额:</label><span style="color: green;" class="weui-form-preview__value">¥ 5.00元</span></div><div class="weui-form-preview__item"><label class="weui-form-preview__label">订单编号:</label><span class="weui-form-preview__value">GG991980054548484845454524</span></div><div class="weui-form-preview__item"><label class="weui-form-preview__label">交易时间:</label><span class="weui-form-preview__value"><?php echo date("Y-m-d H:i:s",$item['pay_time'])?></span></div></div><div class="weui-cell weui-form-preview__ft"><div class="weui-cell__hd"><label class="weui-label">退款金额:</label></div><div class="weui-cell__bd"><input style="color: red;" class="weui-input" type="text" name="remoney" id="refund12" maxlength="6" value="12" placeholder="退款金额"><span class="yuan">元</span><input type="hidden" id="oldMoney12" value="5.00" /></div><div class="weui-cell__ft"><a href="javascript:;" onclick="refund(12)" class="layui-btn layui-btn-sm  layui-btn-radius layui-btn-danger">退款操作</a></div></div></div>';
+								$(hr).append(contents);
+								loading = false;
+							},500);//模拟延迟
+							
+	                    	inp[2].defaultValue = pageNo;
+	                    }else{
+	                    	alert('没有数据了');
+	                    }
+	                }
+	            });
+			break;
+		}
+	});
+	
+	
+</script>
+{template "parking/base/footer"}

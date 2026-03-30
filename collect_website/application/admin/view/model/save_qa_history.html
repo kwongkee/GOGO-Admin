@@ -1,0 +1,154 @@
+{include file="common/header_inner_new"}
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    #service_ids{width:200px;}
+    .addService,.delService{font-size:20px;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">问题</div>
+                            <div class="layui-input-block">
+                                {$data['text']}
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">回答</div>
+                            <div class="layui-input-block">
+                                {if !empty($data['children'])}
+                                    <table class="layui-table">
+                                        <thead>
+                                            <th style="min-width:30%;max-width: 30%;width: 30%;">推理过程</th>
+                                            <th style="min-width:30%;max-width: 30%;width: 30%;">目前回答</th>
+                                            <th style="min-width:30%;max-width: 30%;width: 30%;">大模型原回答</th>
+                                            <th style="min-width:30%;max-width: 30%;width: 30%;">监督回答</th>
+                                            <th style="min-width:100px;max-width: 100px;width: 100px;">操作</th>
+                                        </thead>
+                                        <tbody>
+                                        {volist name="data.children" id="vo"}
+                                            <tr>
+                                                <td><div style="height: 100px;overflow-y: auto;max-height: 100px;">{$vo['reasoning_text']}</div></td>
+                                                <td><div style="height: 100px;overflow-y: auto;max-height: 100px;">{$vo['text']}</div></td>
+                                                <td><div style="height: 100px;overflow-y: auto;max-height: 100px;">{$vo['origin_text']}</div></td>
+                                                <td>
+                                                    <input type="hidden" name="answer_id[]" value="{$vo['id']}">
+                                                    <div class="correct_result" style="display:{if $vo['status']==1}block{else}none{/if};">当前的回答结果良好，请继续保持。</div>
+                                                    <textarea name="real_text[]" id="real_text{$vo['id']}" class="layui-textarea" placeholder="请填写正确的回答" style="display: {if $vo['status']==-1}block{else}none{/if};">{$vo['real_text']}</textarea>
+                                                </td>
+                                                <td>
+                                                    <select name="status[]" lay-filter="check_status">
+                                                        <option value="" {if $vo['status']==0}selected{/if}>待审批</option>
+                                                        <option value="1" {if $vo['status']==1}selected{/if}>回答正确</option>
+                                                        <option value="-1" {if $vo['status']==-1}selected{/if}>回答错误</option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        {/volist}
+                                        </tbody>
+                                    </table>
+                                {else}
+                                    暂无回答
+                                {/if}
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">推理日志</div>
+                            <div class="layui-input-block">
+                                <table class="layui-table">
+                                    <thead>
+                                        <th style="min-width:30%;max-width: 30%;width: 30%;">推理事项</th>
+                                        <th style="min-width:30%;max-width: 30%;width: 30%;">花费时间(秒)</th>
+                                    </thead>
+                                    <tbody>
+                                    {volist name="data.children" id="vo"}
+                                        {volist name="vo.process" id="vo2"}
+                                            <tr>
+                                                <td>{$vo2['opera_name']}</td>
+                                                <td><?php echo sprintf('%.2f',$vo2['use_time']);?></td>
+                                            </tr>
+                                        {/volist}
+                                    {/volist}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload','colorpicker'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+        var colorpicker = layui.colorpicker;
+
+        form.render(null,'component-form-element');
+
+        form.on('select(check_status)',function(data){
+            let val = data.value;
+
+            if(val==1){
+                $(this).parents(":eq(3)").find('td').eq(2).find('textarea').hide();
+                $(this).parents(":eq(3)").find('td').eq(2).find('textarea').val("");
+                $(this).parents(":eq(3)").find('td').eq(2).find('.correct_result').show();
+            }
+            else if(val==-1){
+                $(this).parents(":eq(3)").find('td').eq(2).find('textarea').show();
+                $(this).parents(":eq(3)").find('td').eq(2).find('textarea').val("当前的回答不正确，正确的回答应该为：");
+                $(this).parents(":eq(3)").find('td').eq(2).find('.correct_result').hide();
+            }
+            else{
+                $(this).parents(":eq(3)").find('td').eq(2).find('textarea').hide();
+                $(this).parents(":eq(3)").find('td').eq(2).find('textarea').val("");
+                $(this).parents(":eq(3)").find('td').eq(2).find('.correct_result').hide();
+            }
+        });
+
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+
+            $.ajax({
+                url:"{:Url('admin/model/save_qa_history')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+{include file="common/header"}
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<body>
+<div class="x-body">
+    <table id="table-checkbox" lay-filter="test"></table>
+</div>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs layui-btn-radius layui-btn-danger" lay-event="del" style="line-height:31px;">删除</a>
+</script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script type="text/javascript">
+    layui.use(['layer','form','jquery','laypage','table'],function(){
+        $ = layui.jquery;
+        layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var index = layer.load(1);
+        setTimeout(function () {
+            table.render({
+                elem: '#table-checkbox'
+                ,url: '{:Url("index/get_push_all_list")}'
+                ,cols: [[
+                    {field:'card_name', title: '卡名称', width:200}
+                    ,{field:'period_start', title: '开始时间段', width:200}
+                    ,{field:'period_end', title: '结束时间段', width:200}
+                    ,{field:'park_start',title: '适用车位段开始', width:200}
+                    ,{field:'park_end', title: '适用车位段结束', width:200}
+                    ,{field:'lowest_start', title: '最低购买开始时间', width:200}
+                    ,{field:'lowest_end', title: '最低购买结束时间', width:200}
+                    ,{field:'discount_start', title: '折扣开始时间', width:200}
+                    ,{field:'discount_end', title: '折扣结束时间', width:200}
+                    ,{field:'c_discount', title: '折扣', width:200}
+                    ,{field:'sell_count', title: '购买人数', width:200}
+                    ,{field:'create_at', title: '发布时间', width:200}
+                    ,{align:'center', fixed: 'right', toolbar: '#barDemo', width:200}
+                ]]
+                ,page: true
+                ,done:function () {
+                    layer.close(index);
+                }
+            });
+        },800);
+        //监听工具条
+        table.on('tool(test)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'del'){
+                layer.confirm('真的删除行么', function(index){
+                    obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                    layer.close(index);
+                    //向服务端发送删除指令
+                    axios.get('{:Url("index/del_issue_data")}',{
+                        params: {id: data.id}
+                    }).then(function (response) {
+                        console.log(response);
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>

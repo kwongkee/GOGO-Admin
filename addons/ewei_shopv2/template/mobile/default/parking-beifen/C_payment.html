@@ -1,0 +1,112 @@
+{template "parking/_header"}
+    <link rel="stylesheet" type="text/css" href="../addons/ewei_shopv2/static/css/frozenui/css/payment.css"/>
+    <style>
+    .pay img{
+        width: 50px;
+    }
+    .fr{
+        color: #999999;
+    }
+    </style>
+    <body>
+        <div class="container">
+            <div class="licensePlate" style="text-align:center;color:#FFFFFF">
+                    <span>{$add['Town']}{$add['Road']}</span>
+                    <span>:{$orders['number']}</span>
+                <!-- <button id="giveUpBtn">放弃</button> -->
+            </div>
+            <div class="timeMoney">
+                <div class="allTime">
+                    <p>总时长</p>
+                    <p class="red">{$time}</p>
+                    <div class="lineCol"></div>
+                </div>
+                <div class="shouldPay">
+                    <p>总金额</p>
+                    <p class="red">￥<span>{$orders['total']}</span></p>
+                </div>
+                <div class="lineRow"></div>
+            </div>
+
+            <div class="admission">
+                <div class="admissionLeft">
+                    <p>进场时间&nbsp;&nbsp;&nbsp;&nbsp;<span></span>&nbsp;&nbsp;<span></span></p>
+                    <p>离场时间&nbsp;&nbsp;&nbsp;&nbsp;<span></span>&nbsp;&nbsp;<span></span></p>
+                </div>
+                <div class="admissionRight">
+                    <img src="../addons/ewei_shopv2/static/images/mapIcon.png" />入场图
+                </div>
+            </div>
+            <div class="goPay">
+                <div class="goPayTxt">
+                    合计:<span>￥{$orders['total']}</span>
+                </div>
+                {if $orders !=''}
+                <button class="goPayBtn" id="goPayBtn">结算</button>
+                {else}
+                <button class="goPayBtn" id="goPayBtn" disabled="disabled">结算</button>
+
+                {/if}
+            </div>
+        </div>
+
+        <div class="payConfirmBox">
+            <div class="payConfirm" style="margin-top:6%">
+                <p style="height:57px;line-height:57px;">支付确认</p>
+                <div class="stopInfo" style="padding:4px 0px;">
+                    <p><span class="fl">车位: </span><span class="fr"> {$orders['number']}</span></p>
+                    <p><span class="fl">进场时间: </span><span class="fr"> {php echo date('Y-m-d H:i:s',$orders['starttime'])}</span></p>
+                    <p><span class="fl">总时长: </span><span class="fr">{$time}</span></p>
+                    <p><span class="fl">全天最高限额: </span><span class="fr">{$Toll['Allcapped']}</span></p>
+                    <p><span class="fl">优惠后: </span><span class="fr">{$orders['pay_account']}</span></p>
+                    <!-- <div class="lineRow"></div> -->
+                </div>
+                <div class="payInfo">
+                    <h3>支付信息</h3>
+                    <p><span class="fl">应付:</span><span class="fr">{$orders['pay_account']}元</span></p>
+
+                    <p><span>支付方式：</span></p>
+                    <p><div style="border-top:1px solid #E6E6E6"></div></p>
+                    <input type="hidden" name="oid"  id="oid" value="{$orders['id']}"/>
+                    <input type="hidden" name="order" id="orders" value="{$orders['ordersn']}" />
+                </div>
+                <div class="stopInfo" id="paysure">
+                    <!-- <div> -->
+                    <div class="pay">
+                        <img  src="../addons/ewei_shopv2/static/images/alipay.png">
+                    </div>
+                    <div class="pay pays" style="position: relative;">
+                        <!--<i class="weui_icon_success" style="position:absolute;padding-left:30px"></i>-->
+                        <img src="../addons/ewei_shopv2/static/images/wxpay.png">
+                    </div>
+                    <div class="pay">
+                        <img src="../addons/ewei_shopv2/static/images/unpay.png">
+                    </div>
+                    <div class="pay">
+                        <img src="../addons/ewei_shopv2/static/images/bestpay.png">
+                    </div>
+                    <!-- </div>              -->
+                </div>
+                <div class="btns">
+                    <div class="lineRow"></div>
+                    <div class="payBtn">
+                        支付 Go
+                        <div class="lineCol"></div>
+                    </div>
+                    <div class="cancleBtn">
+                        取消
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            var url="{php echo mobileUrl('parking/pay/ajaxPost')}";
+        </script>
+        <script src="../addons/ewei_shopv2/static/js/payment.js" type="text/javascript" charset="utf-8"></script>
+    </body>
+    <script>
+        if($("#_embed_v3_frmc")){
+            $("#_embed_v3_frmc").hide();
+        }
+    </script>
+{template "parking/_footer"}

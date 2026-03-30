@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>海关申报系统菜单管理</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <style>
+        .layui-form-label{
+            width:114px;
+        }
+        .layui-input-block {
+            margin-left: 145px;
+        }
+        .reason{display: none;}
+    </style>
+</head>
+<body>
+
+<form class="layui-form" action="">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <input type="hidden" name="id" value="{$id}">
+        <input type="hidden" name="pre_batch_num" value="{$batch_num}">
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">申报状态</label>
+        <div class="layui-input-block">
+            <select name="declare_status" lay-filter="declare_status" lay-verify="required">
+                <option value="1" {if condition="$data['declare_status'] eq 1"} selected {/if}>已申报未运抵</option>
+                <option value="2" {if condition="$data['declare_status'] eq 2"} selected {/if}>已运抵未通关</option>
+                <option value="3"  {if condition="$data['declare_status'] eq 3"} selected {/if}>已通关未离境</option>
+                <option value="4"  {if condition="$data['declare_status'] eq 4"} selected {/if}>已离境已结关</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">编辑数据</button>
+            <button type="reset" class="layui-btn layui-btn-danger">重置数据</button>
+        </div>
+    </div>
+</form>
+
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+
+<script>
+    //Demo
+    layui.use('form', function(){
+        var form = layui.form;
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+
+            $.ajax({
+                url:"{:Url('admin/predeclare/declare_status')}",
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (res) {
+                    // var red = JSON.parse(res);
+                    console.log(res.code);
+                    if(res.code < 1) {
+                        layer.msg(res.msg);
+                        return false;
+                    }
+                    layer.msg(res.msg);
+                    setTimeout(function(){
+                        // layer.closeAll();
+                        // parent.window.location.reload();
+                        parent.window.table.bootstrapTable('refresh');
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                    },1200)
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</html>

@@ -1,0 +1,194 @@
+{include file="common/header_new"}
+
+<style>
+    img{ width:20px;height:20px;}
+    /*返回按钮*/
+    .backDiv{padding: 5px 5px 5px 20px;border-bottom: 1px solid #d9d9d9;}
+    .backDiv .backBox{display: flex;align-items: center;cursor: pointer;}
+    .backDiv .back_icon{font-size: 18px;color: #333;margin-right: 10px;position: relative;}
+    .backDiv .back_icon:before{content:'';position:absolute;width:9px;height:9px;border-left:2px solid #000;border-top:2px solid #000;transform:rotate(-45deg);margin-right:5px;top:-7px;}
+    .backDiv .back_text{font-size: 16px;color: #333;font-weight: 500;margin-left: 5px;}
+</style>
+<body class="gray-bg">
+<div class="backDiv">
+    <div class="backBox" onclick="javascript:window.history.back(-1);">
+        <div class="back_icon"></div>
+        <div class="back_text">返回</div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <h3 style="text-align: center;">{if $guide_info['content_id'] == 4}大卡片管理{else}内容管理{/if}</h3>
+                <div id="toolbar" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;">
+                    <button type="button" href="javascript:;" onclick="save('添加内容');" class="btn btn-default">
+                        添加内容
+                    </button>
+                </div>
+                <table id="table"
+
+                /*默认排序项*/
+                data-sort-name="id"
+                data-sort-order="desc"
+                /*工具栏相关*/
+                data-toolbar="#toolbar"
+                data-search="false"          /*搜索框*/
+                data-search-on-enter-key="false"
+                data-show-refresh="true"    /*刷新按钮*/
+                /*分页相关*/
+                data-side-pagination="server"
+                data-pagination="true"      /*显示分页*/
+                data-page-size="10"         /*每页显示条数*/
+                /*移动端相关*/
+                data-mobile-responsive="true"
+                data-card-view="true"
+                data-show-columns="true"
+                /*radio or checkbox字段名称*/
+                data-select-item-name="id" >
+
+                <thead>
+                <tr>
+                    <th data-field="checkbox"
+                        data-align="center"
+                        data-checkbox="true"></th>
+                    <th data-field="name"
+                        data-align="center"
+                        data-sortable="true">卡片名称</th>
+                    <th data-field="go_method"
+                        data-align="center"
+                        data-sortable="true">导流方式</th>
+                    <th data-field="manage"
+                        data-align="center"
+                        data-sortable="true"
+                        data-formatter="actionFormatter">操作</th>
+                </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var table;
+
+    $(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:url('admin/operaweb/home_content')}&system_id={$system_id}&pid={$pid}&guide_id={$guide_id}&top_id={$top_id}",
+            queryParams: queryParams,
+        });
+        $('.form-control').attr('placeholder','搜索轮播图名称');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.id;
+        var title = row.name;
+        var format_type = "{$guide_id}";
+
+        var result = "";
+
+        if("{$guide_info['content_id']}" == 4){
+            result += '<button style="margin-right: 5px;" type="button" onclick="content_manage('+id+',\''+title+'\','+format_type+')" class="btn btn-warning btn-xs">内容管理</button>';
+        }
+        result += '<button style="margin-right: 5px;" type="button" onclick="edit('+id+',\''+title+'\')" class="btn btn-primary btn-xs">编辑</button>';
+        result += '<button style="margin-right: 5px;" type="button" onclick="del('+id+',\''+title+'\')" class="btn btn-danger btn-xs">删除</button>';
+        return result;
+    }
+
+    function content_manage(id,name,format_id){
+        window.location.href = "{:url('admin/operaweb/home_content2')}&system_id={$system_id}&pid={$pid}&top_id="+id+"&guide_id="+format_id;
+    }
+
+    function edit(id,name){
+        var index = layer.open({
+            type: 2,
+            title: '修改-'+name,
+            area:['100%','100%'],
+            content: "{:url('admin/operaweb/save_home_content')}&system_id={$system_id}&pid={$pid}&guide_id={$guide_id}&id="+id
+        });
+        // layer.full(index);
+    }
+
+    function save(title) {
+        var index = layer.open({
+            type: 2,
+            title: title,
+            area:['100%','100%'],
+            content: "{:url('admin/operaweb/save_home_content')}&system_id={$system_id}&pid={$pid}&guide_id={$guide_id}"
+        });
+        // layer.full(index);
+    }
+
+    function openWindow(t,id,title){
+        let val = $(t).val();
+
+        let url = '';
+        if(val==1){
+            url = "{:Url('admin/officialwebsite/base_setting')}";
+        }else if(val==2){
+            url = "{:Url('admin/officialwebsite/menu_list')}";
+        }else if(val==3){
+            url = "{:Url('admin/officialwebsite/rotate_list')}";
+        }else if(val==4){
+            url = "{:Url('admin/officialwebsite/index_list')}";
+        }else if(val==5){
+            url = "{:Url('admin/officialwebsite/index_list')}";
+        }
+        if(url!=''){
+            var index = layer.open({
+                type: 2,
+                title: title,
+                area:['100%','100%'],
+                content: url+'&id='+id
+            });
+        }
+    }
+
+    function del(id,title){
+        layer.confirm('确认删除该内容吗？',function(index){
+            $.ajax({
+                url: "<?php echo Url('admin/operaweb/del_home_content'); ?>",
+                data:{'id':id},
+                type:'post',
+                cache:false,
+                dataType:'json',
+                success:function(data){
+                    if(data.code==0)
+                    {
+                        layer.msg(data.msg, {
+                            icon: 1,
+                            time: 2000
+                        }, function(){
+                            window.location.reload();
+                        });
+                        return true;
+                    }else {
+                        layer.msg(data.msg, {icon:2, time:2000});
+                        return false;
+                    }
+                },
+                error:function() {
+                    layer.msg('系统出错,请重试',{icon:2,time:1000});
+                }
+            });
+        });
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+{template 'header'}
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-6">
+				<h4><span class='glyphicon glyphicon-circle-arrow-right'></span>&nbsp;&nbsp;多公众号数据库优化</h4>
+				<label>优化</label>
+				{if $this->settings['opt_uniacid'] != 'handled2'}
+				<button class="form-control btn btn-sm btn-success" onclick="optUniacid('opt_uniacid','handled2')">开始优化</button>
+				{else}
+				<button class="form-control btn btn-sm btn-danger" onclick="alert('多公众号只能优化一次，如需再次优化，请联系开发者');">已优化，优化已被禁用</button>
+				{/if}
+				<p class="help-block">本次优化是为了兼容多公众号运营操作的，如果之前已经运营改模块的，需要在运营模块的公众号下运行执行该优化！请谨慎操作！一旦开始进行多公众号运营，禁止点击此按钮。多个版本升级后改按钮将自动取消</p>
+				<br>
+				<br>
+				<h4><span class='glyphicon glyphicon-circle-arrow-right'></span>&nbsp;&nbsp;优化聊天室logo</h4>
+				<label></label>
+				{if $this->settings['opt_logo'] != 'handled2'}
+				<button class="form-control btn btn-sm btn-success" onclick="optLogo('opt_logo','handled2')">开始优化图片</button>
+				{else}
+				<button class="form-control btn btn-sm btn-danger" onclick="alert('如需再次优化，请联系开发者');">已优化，优化已被禁用</button>
+				{/if}
+				<p class="help-block">本次优化为优化之前上传的聊天室图片！升级后，图片会丢失，这个时候需要点击优化图片</p>
+			</div>
+		</div>
+		<br>
+	</div>
+	<script type="text/javascript">
+	function optUniacid(type,val) {
+
+		if(!type) {
+			return false;
+		}
+
+
+		$.ajax({
+			type:'post',
+			data:{
+				dataType:type, // 数据类型区分
+				setval:val
+			},
+
+			url:"{php echo $this->createWebUrl('optuniacid')}",
+			success:function(d) {
+				if(d.res == '100') {
+					alert('优化成功');
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+
+	}
+	function optLogo(type,val) {
+
+		if(!type) {
+			return false;
+		}
+		
+
+		$.ajax({
+			type:'post',
+			data:{
+				dataType:type, // 数据类型区分
+				setval:val
+			},
+
+			url:"{php echo $this->createWebUrl('optlogo')}",
+			success:function(d) {
+				if(d.res == '100') {
+					alert('优化成功');
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+
+	}
+	</script>
+{template 'footer'}

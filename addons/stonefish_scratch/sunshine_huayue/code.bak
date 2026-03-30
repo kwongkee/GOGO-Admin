@@ -1,0 +1,140 @@
+/*图片上传*/
+	public function doMobilePicupload()
+	{
+		global $_GPC,$_W;
+		if(!self::$openid)
+		{
+			echoJson(array("res"=>"101",'msg'=>'非法访问'));
+		}
+
+		if(!isset($_FILES['file']))
+    	{
+    		header("HTTP/1.1 500 Internal Server Error");
+    		echoJson(array("res"=>'101','msg'=>'no file param'));
+    	}
+    	// 判断文件的大小
+    	if($_FILES['file']['size'] > 1024*1024*10 || $_FILES['file']['size'] <= 0)
+    	{
+    		header("HTTP/1.1 500 Internal Server Error");
+    		echoJson(array("res"=>'101','msg'=>'size > 10M'));
+    	}
+    	// 生成文件名称
+    	$prefix = substr($_FILES['file']['name'], strpos($_FILES['file']['name'],'.'));
+    	$filename = date('YmdHis').'_'.rand(1000000000,9999999999).'_'.rand(1000,9999).$prefix;
+    	// 读取所有配置
+    	$settings = self::readAllSettings();
+    	if($settings === false)
+    	{
+    		header("HTTP/1.1 500 Internal Server Error");
+    		echoJson(array("res"=>'101','msg'=>'get qiniuallow error'));
+    	}
+    	// 判断是否开启七牛上传
+    	// 未开启七牛
+    	if($settings['qiniuallow']['value'] == 'close')
+    	{
+    		// 上传文件
+	    	if(file_exists('../addons/sunshine_huayue/upload/images/'.$filename))
+	    	{
+	    		$filename = date('YmdHis').'_'.rand(1000000000,9999999999).'_'.rand(1000,9999).$prefix;
+	    	}
+	    	// 移动文件upload
+	    	$r = move_uploaded_file($_FILES['file']['tmp_name'], '../addons/sunshine_huayue/upload/images/'.$filename);
+	    	$upload_way = 'local';
+	    	// 如果是
+
+    		if(!$r)
+    		{
+    			header("HTTP/1.1 500 Internal Server Error");
+    			echoJson(array("res"=>'101','msg'=>'move error'));
+    		}
+    	}
+    	else
+    	{
+    		// 如果是上传七牛，那么要在文件名称前面+标志位进行区分
+    		$filename = 'we7_sunshine_huayue/'.$filename;
+
+    		require_once("qiniu/io.php");
+			require_once("qiniu/rs.php");
+
+			if(!$settings['qiniu_ak']['value'] || !$settings['qiniu_sk']['value'] || !$settings['qiniu_bucket']['value'])
+			{
+				header("HTTP/1.1 500 Internal Server Error");
+    			echoJson(array("res"=>'101','msg'=>'get qiniu settings error'));
+			}
+
+			$bucket = $settings['qiniu_bucket']['value'];
+			$accessKey = $settings['qiniu_ak']['value'];
+			$secretKey = $settings['qiniu_sk']['value'];
+
+			Qiniu_SetKeys($accessKey, $secretKey);
+			$putPolicy = new Qiniu_RS_PutPolicy($bucket);
+			$upToken = $putPolicy->Token(null);
+			$putExtra = new Qiniu_PutExtra();
+			$putExtra->Crc32 = 1;
+			list($ret, $err) = Qiniu_PutFile($upToken, $filename,$_FILES['file']['tmp_name'], $putExtra);
+			
+			if ($err) {
+			    header("HTTP/1.1 500 Internal Server Error");
+    			echoJson(array("res"=>'101','msg'=>var_export($err,true)));
+			}
+    		$upload_way = 'qiniu';	
+    	}
+    	
+		// 写入数据库
+		$data = array();
+		$data['openid'] = self::$openid;
+		$data['remark'] = '';
+		$data['img_url'] = $filename;
+		$data['add_time'] = date("Y-m-d H:i:s");
+		$data['upload_way'] = $upload_way;
+
+		if($_GPC['datatype'] == 'icon')
+		{
+			$data['type'] = 'icon';
+
+			// 同时更改member表中的headimgurl
+			$headimgurl = self::imgUrlHandle($filename,$upload_way);
+			$res = pdo_update('sunshine_huayue_member',array('headimgurl'=>$headimgurl),array('openid'=>self::$openid));
+			if($res === false)
+			{
+				echoJson(array("res"=>'101','msg'=>'update headimgurl error'));
+			}
+			else
+			{
+				echoJson(array("res"=>'100','msg'=>'success'));
+			}
+
+		}
+		else
+		{
+			$data['type'] = 'album';
+			// 同时更改member表中的headimgurl
+			$data['img_url'] = self::imgUrlHandle($filename,$upload_way);
+			$res = pdo_insert("sunshine_huayue_album",$data);
+			if($res)
+			{
+				echoJson(array("res"=>'100','msg'=>'success'));
+			}
+			else
+			{
+				header("HTTP/1.1 500 Internal Server Error");
+				echoJson(array("res"=>'101','msg'=>'insert error'));
+			}
+		}
+	}
+
+
+
+	--reply table
+CREATE TABLE  if not exists `ims_sunshine_huayue_reply` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` INT(10) UNSIGNED NOT NULL,
+  `reply_type` enum('comment','reply') not null comment '回复主点评，回复回复',
+  `oid` int(10) unsigned not null comment '被回复的记录id',
+  `user_openid` varchar(255) NOT NULL DEFAULT '',
+  `content` varchar(500) NOT NULL DEFAULT '',
+  `add_time` datetime not null,
+  `is_del` enum('y','n') DEFAULT 'n',
+  `del_time` datetime not null,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;

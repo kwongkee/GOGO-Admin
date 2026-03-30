@@ -1,0 +1,179 @@
+{include file="common/header_inner_new"}
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+
+    .info_div{display: grid;grid-template-columns: repeat(2,1fr);-moz-column-gap: 0px;column-gap: 0px;row-gap: 0px;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="hidden" name="id" value="{$id}">
+            <input type="hidden" name="pid" value="{$pid}">
+
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="info_div">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">选择格式</label>
+                            <div class="layui-input-block">
+                                <select name="type" id="type" lay-filter="type" lay-verify="required">
+                                    <option value="0" {if 0==$data['type']}selected{/if}>正常费用格式</option>
+                                    <option value="1" {if 1==$data['type']}selected{/if}>递增费用格式</option>
+                                    <option value="2" {if 2==$data['type']}selected{/if}>正常费用+自定义选择格式</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item fee_name">
+                            <label class="layui-form-label">费用名称</label>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" name="name" value="{$data['name']}" placeholder="费用名称" lay-verify="required">
+                            </div>
+                        </div>
+                        <div class="layui-form-item desc">
+                            <label class="layui-form-label">服务简述</label>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" name="desc" value="{$data['desc']}" placeholder="服务简述" lay-verify="">
+                            </div>
+                        </div>
+                        <div class="layui-form-item tipcs">
+                            <label class="layui-form-label">费用详情</label>
+                            <div class="layui-input-block">
+                                <textarea name="tips" id="tips" class="layui-textarea" placeholder="服务简述" lay-verify="required">{$data['tips']}</textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">费用金额</label>
+                            <div class="layui-input-block">
+                                <div class="disf">
+                                    <div class="currency_div">
+                                        <select name="currency" id="currency" lay-search>
+                                            {volist name="currency" id="vo"}
+                                            <option value="{$vo['id']}" {if $vo['id']==$data['currency']}selected{/if}>{$vo['currency_symbol_standard']}</option>
+                                            {/volist}
+                                        </select>
+                                    </div>
+                                    <input type="text" class="layui-input" name="price" placeholder="费用金额" lay-verify="required" value="{$data['price']}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item interval_price" style="display:{if $data['type']==1}block{else}none{/if}">
+                            <label class="layui-form-label">递增金额</label>
+                            <div class="layui-input-block">
+                                <div class="disf">
+                                    <div class="layui-input-split layui-input-suffix" style="white-space: nowrap;">从第</div>
+                                    <input type="number" class="layui-input" name="num" placeholder="数量" lay-verify="" value="{$data['num']}">
+                                    <div class="layui-input-split layui-input-suffix" style="white-space: nowrap;">件后，开始每件递增</div>
+                                    <input type="number" class="layui-input" name="interval_price" placeholder="递增金额" lay-verify="" value="{$data['interval_price']}">
+                                    <div class="layui-input-split layui-input-suffix">元</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item diy_select" style="display:{if $data['type']==2}block{else}none{/if}">
+                            <label class="layui-form-label">自定义选择</label>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" name="diy_select" placeholder="自定义选择" lay-verify="" value="{$data['diy_select']}">
+                                <div class="layui-input-split layui-input-suffix">将选择值用顿号“、”分割</div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item tipcs">
+                            <label class="layui-form-label">默认选中</label>
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="is_select" title="默认选中" {if $data['is_select']==1}checked{/if}>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload'],function(){
+        var laydate = layui.laydate,
+            layer = layui.layer,
+            form  = layui.form,
+            $ = layui.jquery,
+            upload = layui.upload;
+
+        form.render(null,'component-form-element');
+
+        form.on('select(type)',function(data){
+            let val = data.value;
+            if(val==0){
+                //普通格式
+                $('.interval_price,.diy_select').hide();
+            }
+            else if(val==1){
+                //递增格式
+                $('.interval_price').show();
+                $('.diy_select').hide();
+            }
+            else if(val==2){
+                //普通+自定义选择
+                $('.interval_price').hide();
+                $('.diy_select').show();
+            }
+        });
+
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            // if( $('#img_file-upload-list').children().length == 0 )
+            // {
+            //     layer.msg('请上传广告图！');
+            //     return false;
+            // }
+
+            $.ajax({
+                url:"{:Url('admin/shopping/save_costs_fee')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+
+</script>
+</body>
+</html>

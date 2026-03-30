@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <title>审核</title>
+    <style>
+    @import url("//unpkg.com/element-ui@2.0.5/lib/theme-chalk/index.css");
+    .selectpicker{
+        width:95px;
+        height:27px;
+        border:1px solid #CCCCCC;
+    }
+</style>
+</head>
+<body>
+<script>
+function bb(object){
+    var i=$(object).next().val();
+    $("input[name='ids']").val(i);
+}
+</script>
+    <div class="container-fluid">
+      <div class="row">
+          <table class="table">
+              <tr>
+                  <th>id</th>
+                  <th>姓名</th>
+                  <th>车牌号</th>
+                  <th>身份证</th>
+                  <th>审核状态</th>
+                  <th>操作</th>
+
+              </tr>
+              {loop $participators $index $item}
+              <tr>
+                 <td>{$item['id']}</td>
+                 <td>{$item['uname']}</td>
+                 <td>{$item['license']}</td>
+                 <td>{$item['idcard']}</td>
+                 <td>{if $item['audit_status']==0}
+                     未审核
+                    {else}
+                    已审核
+                    {/if}
+                 </td>
+                <td>
+                    <button type="button" onclick="bb(this)" class="btn btn-info" data-toggle="modal" data-target="#myModal">审核</button>
+                    <input type="hidden" name='id' value="{$item['id']}" />
+                </td>
+              </tr>
+            {/loop}
+          </table>
+          <!-- Modal -->
+          <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <!-- <h4 class="modal-title" id="myModalLabel"></h4> -->
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                      <label for="exampleInputEmail1">房产证号</label>
+                      <input type="email" name="number" value="" class="form-control" id="exampleInputEmail1">
+                      <input type="hidden" name='ids' value="{$item['id']}" />
+                      <div id="app">
+                          <select class="selectpicker" id="resProvince">
+                              <option>
+                                  请选择
+                              </option>
+                          </select>
+                          <select class="selectpicker" id="resCity">
+                              <option>
+                                  请选择
+                              </option>
+                          </select>
+                          <select class="selectpicker" id="resArea">
+                              <option>
+                                  请选择
+                              </option>
+                          </select>
+                     </div>
+                      </div>
+                      <textarea class="form-control ad" rows="3" name='addr' value="" ></textarea>
+                      <button onclick="but()" type="submit" class="btn btn-default">提交</button>
+
+                    </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+          {$pager}
+      </div>
+    </div>
+
+</body>
+
+<script src="../addons/ewei_shopv2/static/js/jquery-3.1.1.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="//unpkg.com/vue/dist/vue.js"></script>
+<script src="//unpkg.com/element-ui@2.0.5/lib/index.js"></script>
+<script>
+$('#myModal').on('shown.bs.modal', function () {
+$('#myInput').focus();
+});
+
+(function(){
+$.get("{php echo mobileUrl('parking/address/Province');}",function(data){
+    var data=JSON.parse(data);
+    var province='';
+    for(i=0;i<data.data.result.length;i++){
+        province+="<option  name='Province' value='"+data.data.result[i].name+":"+data.data.result[i].id+"'>"+data.data.result[i].name+"</option>";
+        // console.dir(data.data.result[i].id);
+    }
+    $('#resProvince').append(province);
+});
+$("#resProvince").change(function(){
+    var va=$(this).val().split(":");
+    $.get("{php echo mobileUrl('parking/address/City');}",{'pid':va['1']},function(info){
+        var info=JSON.parse(info);
+        var object=JSON.parse(info.status);
+        var cite='<option>请选择</option>';
+        for(i=0;i<object.data.result.length;i++){
+            cite+="<option  name='City' value='"+object.data.result[i].name+":"+object.data.result[i].id+"'>"+object.data.result[i].name+"</option>";
+        }
+        $('#resCity').html(cite);
+    });
+})
+
+$("#resCity").change(function(){
+    var c=$(this).val().split(":");
+    $.get("{php echo mobileUrl('parking/address/Area');}",{'pid':c['1']},function(data){
+        var data=JSON.parse(data);
+        var area='<option>请选择</option>';
+        for(i=0;i<data.data.result.length;i++){
+            area+="<option  name='Area' value='"+data.data.result[i].name+":"+data.data.result[i].id+"'>"+data.data.result[i].name+"</option>";
+            // console.dir(data.data.result[i].id);
+        }
+        $('#resArea').html(area);
+    })
+})
+})();
+
+function but(){
+var id=$("input[name='ids']").val();
+var p=$('#resProvince option:selected').val();
+var c=$('#resCity option:selected').val();
+var a=$('#resArea option:selected').val()=='请选择'?'':$('#resArea option:selected').val();
+var num=$('#exampleInputEmail1').val();
+var text=$('.ad').val();
+$.post("{php echo mobileUrl('parking/signing/Save');}",{'id':id,'resProvince':p,'resCity':c,'resArea':a,'num':num,'addr':text},function(data){
+    var source=JSON.parse(data);
+    alert(source.result.message);
+     location.reload();
+})
+
+}
+
+</script>
+</html>

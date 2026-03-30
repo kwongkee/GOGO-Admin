@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="Cache-Control" content="no-cache"/>
+<title>我的作业 - {$config['webtitle']}</title>
+<meta http-equiv="description" content="" />
+<meta name="renderer" content="webkit"/>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+<meta name="description" content="" id="description"/>
+<meta name="keywords" content=""/>
+<link rel="stylesheet" href="{$templateurl}css/wap_css.css" type="text/css"/>
+<link href="{$templateurl}js/SpryAssets/SpryTabbedPanels.css" rel="stylesheet" type="text/css" />
+<script src="{$templateurl}js/jquery-1.8.0.min.js" language="javascript"></script>
+<style>.TabbedPanelsTabSelected a{ color:#FFFFFF;}</style>
+
+<!--分页 start-->
+<link rel="stylesheet" href="{$templateurl}css/pase.css" type="text/css"/>
+<!--分页 end-->
+</head>
+
+<body>
+<div class="kaoshizuoyetab">
+  <div id="TabbedPanels1" class="TabbedPanels">
+    <ul class="TabbedPanelsTabGroup">
+	  <li class="TabbedPanelsTab {if $tab == '0'}TabbedPanelsTabSelected{/if}" ><a href="{$urlt}&tab=0" style="display:block;">未完成的作业</a></li>
+	  <li class="TabbedPanelsTab {if $tab == '1'}TabbedPanelsTabSelected{/if}" ><a href="{$urlt}&tab=1" style="display:block;">已批改作业</a></li>
+	  <li class="TabbedPanelsTab {if $tab == '2'}TabbedPanelsTabSelected{/if}" ><a href="{$urlt}&tab=2" style="display:block;">待批改作业</a></li>
+    </ul>
+    <div class="TabbedPanelsContentGroup">
+      <div class="TabbedPanelsContent zhishidiantab">
+        <div class="warp_content clear">
+          <div class="job_list_content">
+          
+           <div class="banjifld">
+          	<div style="overflow:scroll;">
+          	<font>            
+            	<a href="{$urltk}" {if $xkid == '0'}class="active"{/if}>全部</a>
+          		{loop $category $value}
+            	<a href="{$urltk}&xkid={$value['cid']}" {if $xkid == $value['cid']}class="active"{/if}>{$value['name']}</a>
+				{/loop}
+            </font>
+            </div>
+          </div>
+          
+		  {if $tab > 0}
+		  
+		  {loop $list_yz $key $value}
+		  <div class="job_list_box"> <a href="{php echo $this->createMobileUrl('m_homework_result');}&fid={$value['fid']}&wid={$value['wid']}&bjid={$value['bjid']}">
+		  <h3>{$value['titlename']}</h3>
+		  <div> <span class="index_wap_joblist_comname_p">本次作业共[{$value['total_q']}]道题 </span> </div>
+		  {if $tab == 1}
+		  <div class="index_wap_joblist_yq_p" style=" margin-top:-5px;"><span>本次错题数：<small>{$value['total_cwq']}</small></span>  </div>
+		  {else}
+		  <div class="index_wap_joblist_yq_p" style=" margin-top:-5px;"><span>作业完成：{php echo date('Y年m月d日 H:i', $value['dateline']);}</span>  </div>
+		  {/if}
+		  
+		  {if $value['state'] == 0}
+		  <div class="index_wap_joblist_flbox" style="padding-top:0; color:#9eea6a;">主观题等待老师批改中！可查看客观题结果</div>
+		  {/if}
+		  </a> </div>
+		  {/loop}
+		  
+		  <div style="text-align:center;">{$pager}</div>
+		  
+		  {else}
+		  
+		  {loop $list_wz $key $value}
+			<div class="job_list_box">
+				{if $value['endtimes'] > $newstmes} 
+				<a href="{php echo $this->createMobileUrl('m_homework_fen');}&wid={$value['wid']}&bjid={$value['bjid']}">
+				{else}<a>{/if}
+				<h3>{$value['titlename']}</h3>
+				<div> <span class="index_wap_joblist_comname_p">本次作业共[{$value['total_q']}]道题</span> </div>
+				<div class="index_wap_joblist_yq_p" style=" margin-top:-5px; font-size:12px;">
+				<span {if $value['endtimes'] < $newstmes}style="color:#CC0000;"{/if}>作业截止时间：{php echo date('Y年m月d日 H:i', $value['endtimes']);}</span>
+				</div>
+				</a>
+			</div>
+		  {/loop}
+		  
+		  {/if}
+              
+              
+          </div>
+        </div>
+      </div>
+     
+      
+    </div>
+  </div>
+</div>
+<div class="clear"></div>
+<div class="clear"></div>
+ 
+<!--footer strat-->
+{template 'footer'}
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>pdf</title>
+    <link rel="stylesheet" href="./static/doc/invoice2.css" />
+    <link rel="stylesheet" href="./static/doc/pi_invoice.css" />
+    <!--<link rel="stylesheet" href="./static/hadmin/layui/css/layui.css">-->
+    <style type="text/css">
+        .btn{width:300px;line-height:40px}
+        body{overflow-y: auto;}
+        .page{width: 595.32pt;margin: 0;}
+        .content{margin-bottom:15px;background:#fff;overflow: hidden;}
+        .content>div{width: 100%;height:auto;padding-top: 5px;}
+        /*height: 885pt;*/
+        #printId{width: 100%;font-size: 18px;background:unset;}
+        input{border: 1px #000 solid;padding: 5px;}
+        .layui-form-label{width: 110px;}
+        body{color: #505050;}
+        .diyform input{border:1px solid #333 !important;padding:5px 5px;box-sizing:border-box;}
+        .layui-form-label{width:100px;}
+        .goodsinfo input{
+            font-size: 12pt;
+            color: #000;
+            font-family: "arial, helvetica, sans-serif";
+            background:none;
+            border:0;
+        }
+        .goodsinfo #goods_qty{width:40px;text-align:right;}
+        .goodsinfo #goods_price_cny,.goodsinfo #goods_total_price_cny{width:100px;text-align:left;}
+        .diyform .layui-form-item:nth-child(even){margin-left:15px;}
+        .layui-upload-file{display:none;}
+        .layui-btn{
+            background-color: #009688;
+            color: #fff;
+            white-space: nowrap;
+            text-align: center;
+            font-size: 14px;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            padding:4px 6px;
+            box-sizing:border-box;
+        }
+        .page_box .pi-top{color:#000;font-size:23.5pt;font-weight:bold;text-align:center;margin-bottom:3mm;height:fit-content;margin-top:2em;}
+        .pi-mid{height:unset !important;}
+        .paper{width: 190mm;margin: 0 auto;}
+        .p-line2{margin-top:1em;text-indent:2em;padding-left: 0em;font-size: 12pt;width: 185mm;margin-left: 3.8em;}
+        .p-line3{width:160mm;margin:0 auto;text-align: right;margin-top:10px;font-size:10.5pt;}
+        .p-line4{width: 448pt;margin: 0 auto;text-align: right;font-size: 9pt;margin-top: 1mm;margin-left: 87pt;}
+        .p-line5{width:190mm;margin:0 auto;}
+        .p-line5 img{margin-left: auto;}
+        .p-line6{width:190mm;margin:0 auto;display:flex;align-items: baseline;margin-bottom: 3px;}
+        .p-line6 .num:nth-of-type(1){font-size:9pt;}
+        .p-line6 .num:nth-of-type(2){font-size:9pt;margin-left: 70px;}
+        .p-line6 .num:nth-of-type(3){font-size: 14pt;letter-spacing: 3.5px;margin-left: 42mm;}
+        .pi-table tr th{padding-top:0;font-weight: 100;font-size: 9pt;}
+        .pi-table tr th div{height:15px;width:fit-content;font-family:'宋体';}
+        .pi-table tr th .first_pad{padding-left:3px;color:#000;width:100%;box-sizing: border-box;font-size:9pt;font-family:'宋体';}
+        .paper-goods tr th div{height:12px;font-size: 7.5pt !important;}
+        .paper-dash{border-top:0;}
+        .paper-dash th{border-bottom:1px dashed #000;width:200mm;height:20px;}
+        .pi-bg{height:unset;}
+        .p-line7{width:190mm;margin:0 auto;border-bottom:1px dashed #000;}
+        .p-line8{width:165mm;margin:0 auto;font-size:12pt;margin-top:10px;}
+        .p-line9{width: 66mm;margin: 0 auto;font-size: 10.5pt;margin-left: 127mm;margin-top: 10px;text-align:center;position:relative;}
+        .p-line9 p:nth-of-type(1){white-space:nowrap;}
+        .p-line9 p:nth-of-type(2){margin-top:10px;}
+        .p-line10{display: flex;align-items:center;width:200mm;margin:0 auto;margin-top:35px;font-size:14px;}
+        .p-line10 div:nth-of-type(2){margin-left:20mm;}
+        #content-main {
+            height: calc(100% - 100px);
+            overflow: hidden;
+        }
+        .pi-bigtxt{font-size:16px;font-weight:600;margin-bottom:0.2cm;}
+        .pi-bigcontent{font-size:16px;text-indent: 2rem;margin-bottom:0.2cm;}
+        .pi-smltxt{font-size:14px;font-weight: 600;margin-bottom: 0.2cm;}
+        .pi-smlcontent{font-size:14px;text-indent: 2rem;margin-bottom: 0.2cm;}
+        .end_parag{height:0.4cm;width:1px;}
+    </style>
+</head>
+
+<body style="font-family:宋体;">
+<div class="page root">
+    <div class="page_box">
+        <div id="printId">
+            <div class="content">
+                <div>
+                    <div class="pi-bg" style="background:#fff;color: #000;">
+                        <header>
+                            <div style='text-align:center;font-size: 14px;margin-bottom: 10px;'>发布日期：<?php echo $data['createtime'];?> 生效日期：{$data['effecttime']} 版本号：{$data['version']}</div>
+                        </header>
+                        {volist name="data.content" id="vo"}
+                            <div class="pi-bigtxt">{$vo.parag_num}<span style="margin-left:0.5rem;">{$vo.title}</span></div>
+                            <div class="pi-bigcontent">{$vo.content}</div>
+                            {if !empty($vo.children)}
+                                {volist name="vo.children" id="vo2"}
+                                    {if !empty($vo2.title)}
+                                        <div class="pi-smltxt">{$vo2.parag_num}<span style="margin-left:0.5rem;">{$vo2.title}</span></div>
+                                        <div class="pi-smlcontent">{$vo2.content}</div>
+                                    {else}
+                                        <div class="pi-smltxt">{$vo2.parag_num}<span class="pi-smlcontent" style="font-weight:400;margin-left:0.5rem;">{$vo2.content}</span></div>
+                                    {/if}
+
+                                    {if !empty($vo2.children)}
+                                        {volist name="vo2.children" id="vo3"}
+                                            {if !empty($vo3.title)}
+                                                <div class="pi-smltxt">{$vo3.parag_num}<span style="margin-left:0.5rem;">{$vo3.title}</span></div>
+                                                <div class="pi-smlcontent">{$vo3.content}</div>
+                                            {else}
+                                                <div class="pi-smltxt">{$vo3.parag_num}<span class="pi-smlcontent" style="font-weight:400;margin-left:0.5rem;">{$vo3.content}</span></div>
+                                            {/if}
+                                        {/volist}
+                                    {/if}
+                                {/volist}
+                            {/if}
+                            <div class="end_parag"></div>
+                        {/volist}
+                        <footer>
+                            <div style='text-align:center;font-size: 14px;margin-top: 10px;'>发布日期：<?php echo $data['createtime'];?> 生效日期：{$data['effecttime']} 版本号：{$data['version']}</div>
+                        </footer>
+                    </div>
+<!--                    <div class="p-line10">-->
+<!--                        <div>打印时间：<span class="print_time"></span></div>-->
+<!--                        <div>第1页/共1页</div>-->
+<!--                    </div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div style="padding: 30px 0;text-align: center;position: fixed;top: 0;right: 3em;">
+    <button type="button" style="width: 10em;" class="btn" onclick="createPDF()">生成</button>
+</div>
+
+<script src="./static/doc/jquery.min.js"></script>
+<script src="./static/doc/html2canvas.min.js"></script>
+<script src="./static/doc/jspdf.min.js?v=<?php echo time();?>"></script>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script>
+    // 随机数
+    function randomNum(minNum,maxNum){
+        switch(arguments.length){
+            case 1:
+                return parseInt(Math.random()*minNum+1,10);
+                break;
+            case 2:
+                return parseInt(Math.random()*(maxNum-minNum+1)+minNum,10);
+                break;
+            default:
+                return 0;
+                break;
+        }
+    }
+    // 生成pdf
+    function createPDF() {
+        var layer = layui.layer;
+        let domHeight = document.querySelector("#printId").offsetHeight;
+        let maxHeight = 64257;
+        html2canvas(document.querySelector("#printId"), {
+            allowTaint: !0,
+            scale: (maxHeight/domHeight) > 1 ? 1: (maxHeight/domHeight)
+        }).then((function(canvas) {
+
+            var contentWidth = canvas.width;
+            var contentHeight = canvas.height;
+
+            //一页pdf显示html页面生成的canvas高度;
+            var pageHeight = contentWidth / 592.28 * 841.89;
+            //未生成pdf的html页面高度
+            var leftHeight = contentHeight;
+            //pdf页面偏移
+            var position = 0;
+            //a4纸的尺寸[595.28,841.89]，html页面生成的canvas在pdf中图片的宽高
+            var imgWidth = 595.28;
+            var imgHeight = 592.28/contentWidth * contentHeight;
+
+            var pageData = canvas.toDataURL('image/jpeg', 1.0);
+
+            var pdf = new jsPDF('', 'pt', 'a4');
+
+            //有两个高度需要区分，一个是html页面的实际高度，和生成pdf的页面高度(841.89)
+            //当内容未超过pdf一页显示的范围，无需分页
+            // pdf.text("Effect Date: {$data['effecttime']} VERSION: {$data['version']}", 70, 20);
+            if (leftHeight < pageHeight) {
+                pdf.addImage(pageData, 'JPEG', 10, position, imgWidth-20, imgHeight );
+            } else {
+                while(leftHeight > 0) {
+                    pdf.addImage(pageData, 'JPEG', 10, position, imgWidth-20, imgHeight);
+                    leftHeight -= pageHeight;
+                    position -= 841.89;
+                    //避免添加空白页
+                    if(leftHeight > 0) {
+                        pdf.addPage();
+                    }
+                }
+            }
+
+            var pdfName = "demo.pdf";
+            // 将pdf输入为base格式的字符串
+            var buffer = pdf.output("datauristring");
+            // 将base64格式的字符串转换为file文件
+            var myfile = dataURLtoFile(buffer, pdfName);
+            var formdata = new FormData();
+            formdata.append('file', myfile);
+            formdata.append('folder', 'payer_pay');
+            formdata.append('type', 'pi_invoice');
+
+            // 之后ajax传递数据
+            pdf.save(pdfName);
+            //保存水路货物运单
+            // $.ajax({
+            //     url:"{:url('admin/Entrustdecl/waterway_paper_info')}",
+            //     method:'post',
+            //     data:{type:'paper',zm_nature:zm_nature,ordersn:lading_no,domestic_origin:domestic_origin,declare_date:declare_date,container_num:container_num,transaction_mode:transaction_mode},
+            //     dataType:'JSON',
+            //     success:function(res){
+            //         pdf.save(pdfName);
+            //     },
+            //     error:function (data) {
+            //         alert('系统错误');
+            //     }
+            // })
+
+        }))
+    }
+
+    //将base64转换为文件对象
+    function dataURLtoFile(dataurl, filename) {
+        var arr = dataurl.split(',');
+        var mime = arr[0].match(/:(.*?);/)[1];
+        var bstr = atob(arr[1]);
+        var n = bstr.length;
+        var u8arr = new Uint8Array(n);
+        while(n--){
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        //转换成file对象
+        return new File([u8arr], filename, {type:mime});
+        //转换成成blob对象
+        //return new Blob([u8arr],{type:mime});
+    }
+
+    function addPageHeader(node, item){
+        let pageHeader = document.createElement("div");
+        pageHeader.className = "c-page-head";
+        pageHeader.innerHTML = "页头内容";
+        node.insertBefore(pageHeader,item);
+    }
+    function addPageFooter(node, item, currentPage, diff, isLastest){
+        console.log(item.offsetTop, diff);
+        let pageFooter = document.createElement("div");
+        pageFooter.className = "c-page-foot";
+        pageFooter.innerHTML = "第" + currentPage + " 页";
+        isLastest?node.insertBefore(pageFooter,null):node.insertBefore(pageFooter,item);
+        pageFooter.style.marginTop = diff+"px";
+        pageFooter.style.marginBottom = "10px";
+    }
+</script>
+
+</body>
+</html>

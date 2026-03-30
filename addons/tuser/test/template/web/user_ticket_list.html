@@ -1,0 +1,161 @@
+{template 'common/header'}
+<style>
+    .l_tableWrap .l_table_tit .l_formBar {
+        border: 0;
+        float: left;
+        font-size: 0;
+    }
+    .y_sele {
+        display: inline-block;
+        padding: 5px 0 12px 12px;
+    }
+    .y_sele_tit {
+        font-size: 14px;
+        padding: 0 0 0 10px;
+    }
+    .l_table_search{
+        margin-left: 10px;
+        margin-bottom: 5px;
+    }
+</style>
+<div class="clearfix">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            小票审核列表
+        </div>
+
+        <div class="table-responsive panel-body" style="overflow:visible;">
+            <table class="table table-hover">
+                <tr>
+                    <th width="10%">ID</th>
+                    <th width="10%">粉丝id</th>
+                    <th width="10%">昵称</th>
+                    <th width="10%">用户名</th>
+                    <th width="10%">手机号</th>
+                    <th width="5%">小票图片</th>
+                    <th width="5%">积分数量</th>
+                    <th width="10%">审核通过</th>
+                    <th width="10%">发放时间</th>
+                    <th width="10%">创建时间</th>
+                    <th width="10%">操作</th>
+                </tr>
+                {loop $list $row}
+                <tr>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['id']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['fans_info']['uid']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['fans_info']['nickname']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['fans_info']['username']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['fans_info']['mobile']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            <a target="_blank" href="{php echo $row['ticket_img']}"><img style="width:100px;height:100px;" src="{php echo $row['ticket_img']}" /></a>
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['num']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {if $row['ischeck']==0}
+                            待审核
+                            {elseif $row['ischeck']==1}
+                            审核通过
+                            {elseif $row['ischeck']==2}
+                            审核不通过
+                            {/if}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static" title="{php echo date('Y-m-d H:i:s',$row['send_time']);}">
+                            {if $row['send_time']}
+                              {php echo date('Y-m-d H:i:s',$row['send_time']);}
+                            {/if}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static" title="{php echo date('Y-m-d H:i:s',$row['create_at']);}">
+                            {php echo date('Y-m-d H:i:s',$row['create_at']);}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {if $row['ischeck']==0 && $row['event_type']==5}
+                            <input name="buttton" type="buttton" value="审核" onclick="work_check({$row['id']})" class="btn btn-primary btn-block" />
+                            {/if}
+                        </p>
+                    </td>
+                </tr>
+                {/loop}
+            </table>
+        </div>
+        <input type="hidden" class="tmp_log_id" />
+        <div class="panel-body text-right">
+            {$pager}
+        </div>
+    </div>
+</div>
+<script>
+    function work_check(log_id) {
+        require(['jquery', 'util'], function ($, u) {
+            var content = '<div class="panel panel-default text-center"><input type="text" id="scan_title" class="form-control span7 send_credit" placeholder="发放积分" name="credit"></div>';
+            content += '<div class="panel panel-default text-center"><textarea class="form-control span7 remark" placeholder="备注" name="remark"></textarea></div>';
+            var footer =
+                    '<button type="button" class="btn btn-success" onclick="send_update_ticket_credit(' + log_id + ',1)" >审核通过</button>' +
+                    '<button type="button" class="btn btn-danger" onclick="send_update_ticket_credit(' + log_id + ',0)" >审核不通过</button>' +
+                    '<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>';
+            var diaobj = u.dialog('拍小票审核', content, footer);
+            diaobj.find('.btn-default').click(function () {
+                diaobj.modal('hide');
+            });
+            diaobj.modal('show');
+        });
+    }
+
+    function send_update_ticket_credit(log_id, is_check) {
+        var pars = {};
+        pars.log_id = log_id;
+        pars.is_check = is_check;
+        var credit = $(".send_credit").val();
+        var remark = $(".remark").val();
+        pars.credit = credit;
+        pars.remark = remark;
+        $.ajax({
+            url: "{php echo $this->createWebUrl('ajax',array('sdo'=>'send_update_ticket_credit'))}",
+            type: "post",
+            dataType: "html",
+            data: pars,
+            success: function (res) {
+                $(".submit").attr("disabled", false);
+                if (res == "ok") {
+                    alert("操作成功");
+                    window.location.reload(true);
+                } else {
+                    alert(res);
+                }
+            }
+        })
+    }
+</script>
+{template 'common/footer'}

@@ -1,0 +1,325 @@
+{include file="public/header"}
+
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .info_div{display: grid;grid-template-columns: repeat(2,1fr);-moz-column-gap: 0px;column-gap: 0px;row-gap: 0px;}
+    @media screen and (max-width: 450px){
+        .info_div{display: grid;grid-template-columns: repeat(1,1fr);-moz-column-gap: 0px;column-gap: 0px;row-gap: 0px;}
+    }
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="info_div">
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">仓库名称</div>
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input" lay-verify="required" name="warehouse_name" id="warehouse_name" value="{$data['warehouse_name']}">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">仓库代码</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="warehouse_code" lay-verify="required" placeholder="请输入仓库编号" autocomplete="off" class="layui-input" value="{$data['warehouse_code']}" maxlength="2">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">收件人名称</div>
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input" lay-verify="" name="name" id="name" value="{$data['name']}">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">联系电话</div>
+                                <div class="layui-input-block">
+                                    <div class="disf">
+                                        <div class="selectBox">
+                                            <select name="area_code" id="area_code" class="country_code" lay-search>
+                                                {volist name="country_code" id="vo"}
+                                                <option value="{$vo.param8}__{$vo.id}" {if $vo.param8==$data['area_code']}selected{/if}>{$vo.param6} {$vo.param8}</option>
+                                                {/volist}
+                                            </select>
+                                        </div>
+                                        <input type="number" name="mobile" lay-verify="required" placeholder="收件人电话" autocomplete="off" class="layui-input" value="{$data['mobile']}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">选择国家</label>
+                                <div class="layui-input-block">
+                                    <select name="country_code" lay-verify="required" lay-search lay-filter="country_code">
+                                        <option value="">请选择国家</option>
+                                        {volist name="country_code" key="k" id="v"}
+                                        <option value="{$v['id']}" {if $v['id']==$data['country_code']}selected{/if}>{$v['param2']}:{$v['param6']}</option>
+                                        {/volist}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">选择地区</label>
+                                <div class="layui-input-block">
+                                    <div class="addr_list disf">
+                                        {if $id>0}
+                                        {$data['area_info']}
+                                        {volist name="data['area_codes']" key="ke" id="vo"}
+                                        {if 'area'.$ke=='area1'}
+                                        <input type="hidden" name="area1" value="{$vo}">
+                                        {/if}
+                                        {if 'area'.$ke=='area2'}
+                                        <input type="hidden" name="area2" value="{$vo}">
+                                        {/if}
+                                        {if 'area'.$ke=='area3'}
+                                        <input type="hidden" name="area3" value="{$vo}">
+                                        {/if}
+                                        {if 'area'.$ke=='area4'}
+                                        <input type="hidden" name="area4" value="{$vo}">
+                                        {/if}
+                                        {/volist}
+                                        {/if}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item postal_code">
+                                <label class="layui-form-label">邮政编码</label>
+                                <div class="layui-input-block postal_div">
+                                    <div class="disf">
+                                        <div>例子：</div>
+                                        <div class="postal_rule disf">
+                                            {if $id>0}
+                                            <div class="postal_temp" style="border:0;">{$data['origin_postal_code']}</div>
+                                            {/if}
+                                        </div>
+                                    </div>
+                                    <div class="disf">
+                                        <div>填写：</div>
+                                        <div class="postal_rule2 disf" style="width: 200px;">
+                                            {if $id>0}
+                                            {volist name="data['postal_code']" id="vo"}
+                                            <input type="text" name="postal_code[]" lay-verify="" placeholder="" autocomplete="off" class="layui-input postal_code" value="{$vo}" style="width:50px;" maxlength="1">
+                                            {/volist}
+                                            {/if}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">状态</label>
+                                <div class="layui-input-block">
+                                    <select name="status" lay-search>
+                                        <option value="0" {if $data['status']==0}selected{/if}>启用</option>
+                                        <option value="1" {if $data['status']==1}selected{/if}>禁用</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item addr">
+                            <label class="layui-form-label">仓库地址1</label>
+                            <div class="layui-input-block disf">
+                                <input type="text" name="address1" lay-verify="required" placeholder="请输入地址1" autocomplete="off" class="layui-input" value="{$data['address1']}">
+                                <div class="layui-btn layui-btn-success" onclick="add_addr()">+</div>
+                            </div>
+                        </div>
+
+                        <div class="addrs">
+                            {if !empty($data['addresss'])}
+                            {volist name="data['addresss']" key="key" id="vo"}
+                            <div class="layui-form-item addr">
+                                <label class="layui-form-label">仓库地址<?php echo $key+1;?></label>
+                                <div class="layui-input-block disf">
+                                    <input type="text" name="addresss[]" lay-verify="" placeholder="请输入地址" autocomplete="off" class="layui-input" value="{$vo}">
+                                    <div class="layui-btn layui-btn-danger" onclick="del_addr(this)">-</div>
+                                    <div class="layui-btn layui-btn-success" onclick="add_addr()">+</div>
+                                </div>
+                            </div>
+                            {/volist}
+                            {/if}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+    <script type="text/javascript">
+    layui.use(['layer','form','laydate','upload'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+
+        form.on('submit(component-form-element)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+
+            $.ajax({
+                url:"{:Url('centralize/index/warehouse_save')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+        //邮政编码格式
+        var regNumber = /\d+/;
+        var regString = /[a-zA-Z]+/;
+
+        //国家选择
+        form.on('select(country_code)',function(datas){
+            let val = datas.value;
+            layer.load();
+            $.post("{:Url('centralize/index/get_country_info')}",{'id':val},function(data){
+                if(data.code==0){
+                    layer.closeAll('loading');
+                    //地区
+                    let area_html = '<select name="area1" lay-search lay-verify="required" lay-filter="area1">\n'+
+                        '                        <option value="">请选择</option>\n';
+                    for(let i=0;i<data.list.addr.length;i++){
+                        area_html += '<option value="'+data.list.addr[i]['id']+'">'+data.list.addr[i]['code_name']+'</option>';
+                    }
+                    area_html += '   </select>';
+                    $('.addr_list').html('<div class="area_div">'+area_html+'</div>');
+
+                    //邮政编码
+                    let html = '';
+                    let html2 = '';
+
+                    for(let i=0;i<data.list.rule.param3.length;i++){
+                        if(regNumber.test(data.list.rule.param3[i]) || regString.test(data.list.rule.param3[i])) {
+                            html += '<div class="postal_temp">'+data.list.rule.param3[i]+'</div>';
+                            html2 += '<input type="text" name="postal_code[]" lay-verify="required" placeholder="" autocomplete="off" class="layui-input postal_code" value="" style="width:50px;" maxlength="1">';
+                        }else{
+                            html += '<div class="postal_temp" style="font-size:18px;font-weight:800;">'+data.list.rule[i]+'</div>';
+                            html2 += '<input type="text" name="postal_code[]" lay-verify="" placeholder="" autocomplete="off" class="layui-input postal_code" value="'+data.list.rule.param3[i]+'" style="width:50px;" maxlength="1">';
+                        }
+                    }
+                    $('.postal_rule').html(html);
+                    $('.postal_rule2').html(html2);
+                    $('.postal_div').show();
+
+                    form.render(null, 'component-form-element');
+                }
+            });
+        });
+
+        //获取地区2
+        form.on('select(area1)',function(data){
+            let val = data.value;
+            $.post("{:Url('centralize/index/get_area_info')}",{'id':val},function(data){
+                if(data.list.length!=0) {
+                    let area_html = '<select name="area2" lay-search lay-verify="required" lay-filter="area2">\n' +
+                        '                        <option value="">请选择</option>\n';
+                    for (let i = 0; i < data.list.length; i++) {
+                        area_html += '<option value="' + data.list[i]['id'] + '">' + data.list[i]['code_name'] + '</option>';
+                    }
+                    area_html += '   </select>';
+                    $('.addr_list').append('<div class="area_div">' + area_html + '</div>');
+                    form.render(null, 'component-form-element');
+                }
+            });
+        });
+
+        //获取地区3
+        form.on('select(area2)',function(data){
+            let val = data.value;
+            $.post("{:Url('centralize/index/get_area_info')}",{'id':val},function(data){
+                if(data.list.length!=0) {
+                    let area_html = '<select name="area3" lay-search lay-verify="required" lay-filter="area3">\n' +
+                        '                        <option value="">请选择</option>\n';
+                    for (let i = 0; i < data.list.length; i++) {
+                        area_html += '<option value="' + data.list[i]['id'] + '">' + data.list[i]['code_name'] + '</option>';
+                    }
+                    area_html += '   </select>';
+                    $('.addr_list').append('<div class="area_div">' + area_html + '</div>');
+                    form.render(null, 'component-form-element');
+                }
+            });
+        });
+
+        //获取地区4
+        form.on('select(area3)',function(data){
+            let val = data.value;
+            $.post("{:Url('centralize/index/get_area_info')}",{'id':val},function(data){
+                if(data.list.length!=0){
+                    let area_html = '<select name="area4" lay-search lay-verify="required" lay-filter="area3">\n'+
+                        '                        <option value="">请选择</option>\n';
+                    for(let i=0;i<data.list.length;i++){
+                        area_html += '<option value="'+data.list[i]['id']+'">'+data.list[i]['code_name']+'</option>';
+                    }
+                    area_html += '   </select>';
+                    $('.addr_list').append('<div class="area_div">'+area_html+'</div>');
+                    form.render(null, 'component-form-element');
+                }
+            });
+        });
+
+        // $('.country_code').chosen();
+        // $('.country_code').on('change', function(e, params) {
+        //     let val = params.selected.split('__');
+        //     $.getJSON("{:Url('centralize/index/get_area_info')}""?s=gather/getminiprogramcode", {pa:4,id:val[1]}, function(data) {
+        //         $('.selectBox .chosen-container-single .chosen-single span').text(data.data);
+        //     });
+        // });
+    });
+
+    function add_addr(){
+        var $ = layui.$
+            , layer = layui.layer
+            , form = layui.form;
+
+        let num = $('.addr').length + 1;
+
+        let html = '<div class="layui-form-item addr">\n' +
+            '                                <label class="layui-form-label">仓库地址'+num+'</label>\n' +
+            '                                <div class="layui-input-block disf">\n' +
+            '                                    <input type="text" name="addresss[]" lay-verify="required" placeholder="请输入地址" autocomplete="off" class="layui-input" value="">\n' +
+            '                                    <div class="layui-btn layui-btn-danger" onclick="del_addr(this)">-</div>\n' +
+            '                                    <div class="layui-btn layui-btn-success" onclick="add_addr()">+</div>\n' +
+            '                                </div>\n' +
+            '                            </div>';
+
+        $('.addrs').append(html);
+        form.render(null,'component-form-element');
+    }
+
+    function del_addr(t){
+        var $ = layui.$
+            , layer = layui.layer
+            , form = layui.form;
+        var idx = layer.confirm('确认删除吗？',function(index){
+            $(t).parent().parent().remove();
+            form.render(null,'component-form-element');
+            layer.close(idx);
+        },function(){
+
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,175 @@
+{include file="header"}
+<link rel="stylesheet" href="./static/coupon/css/login.css" />
+<style type="text/css">
+    .login-footer {
+        text-align: center;
+    }
+    .login-footer .btn {
+        float: inherit;
+    }
+    #yzm{
+
+        width: 140px;
+        height: 57px;
+        line-height: 57px;
+        color: #fff;
+        font-size: 13px;
+        background: #2873ff;
+
+    }
+</style>
+<body>
+<div class="login">
+    <div class="login-content">
+        <div class="login-header">
+            商家营销系统<small>shop.gogo198.cn</small>
+        </div>
+        <div class="login-form">
+            <form action="#" method="post">
+                <h3>用户登录</h3>
+                <dl>
+                    <dd>
+                        <input type="text" class="username" id="username" placeholder="手机号" name="username" style="padding-left: 65px" />
+                        <span class="user-icon username"></span>
+                    </dd>
+                </dl>
+                <!--<dl>-->
+                    <!--<dd>-->
+                        <!--<input type="password" class="password" name="password" autocomplete="off"  style="padding-left: 65px"/>-->
+                        <!--<span class="user-icon password"></span>-->
+                    <!--</dd>-->
+                <!--</dl>-->
+                <dl class="login-form-yzm">
+                    <dd>
+                        <input type="text" class="captcha" name="captcha" maxlength="6" style="width: 170px"
+                               autocomplete="off" /> <button id="yzm">获取验证码</button>
+                    </dd>
+                </dl>
+                <!--<div class="fn-clear">-->
+                    <!--<label class="checkbox" data-value="1"><i></i>-->
+                        <!--<span>自动登录</span>-->
+                    <!--</label>-->
+                    <!--<a href="/findBackPwd/confirmMobilePage" class="fn-right fn-blue">找回密码？</a>-->
+                <!--</div>-->
+
+                <div>
+                    <a class="btn btn-blue btn-full fn-mt15" style="background: #2873ff">提交</a>
+                </div>
+
+                <div class="fn-mt20">
+                    还没有账号？<a href="{:Url('coupon/register')}" class="fn-blue">立即注册</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="./static/coupon/js/comm.js"></script>
+<script src="./static/index/xadmin/lib/layui/layui.js" charset="utf-8"></script>
+<script>
+
+    layui.use('layer', function(){
+        layer = layui.layer;
+    });
+
+    var login = {
+        isRun:false,
+        checkPhone: function (phone){
+            if(!(/^1[34578]\d{9}$/.test(phone))){
+                return false;
+            }else{
+                return true;
+            }
+        },
+        resetCode:function (){
+            $('#yzm').html(60+'后重试');
+            var second = 60;
+            var timer = null;
+            timer = setInterval(function(){
+            second -= 1;
+            if(second >0 ){
+                $('#yzm').html(second+'后重试');
+            }else{
+                second = 60;
+                login.isRun=false;
+                $('#yzm').html('发送');
+                window.clearInterval(timer);
+            }
+            },1000);
+        },
+        sendCode:function (tel) {
+            $.ajax({
+                url:"{:Url('coupon/send_login_code')}",
+                data:{tel:tel},
+                dataType:'json',
+                type:'GET',
+                success:function (res) {
+                    console.log(res);
+                }
+            });
+        },
+        verifyLogin:function (tel,code) {
+
+            var  load = layer.load(2);
+            $.ajax({
+                url: '{:Url("coupon/check_login")}',
+                type:'POST',
+                data:{'tel':tel,'code':code},
+                dataType:'json',
+                cache: false,
+                success:function (res) {
+                    console.dir(res);
+                    layer.close(load);
+                    layer.msg(res.msg);
+                    if (res.code==0){
+                        setTimeout(function () {
+                           window.location.href="{:Url('coupon/index')}";
+                        },4000);
+                    }
+                },
+                error:function (err) {
+                    layer.close(load);
+                    layer.msg('连接服务器错误..!');
+                }
+            });
+        }
+    };
+
+    $(function () {
+       $('#yzm').bind('click',function () {
+           var tel = $('#username').val();
+           if (tel==''){
+               layer.msg('请输入手机号');
+               return false;
+           }
+           if (!login.checkPhone(tel)){
+               layer.msg('手机号格式错误');
+               return false;
+           }
+
+           if (!login.isRun){
+               login.isRun=true;
+               login.resetCode();
+               login.sendCode(tel);
+           }
+          return false;
+       });
+
+       $('.btn').bind('click',function () {
+           var mobile = $('#username').val();
+           var yzm = $('.captcha').val();
+           if (yzm==''){
+               layer.msg('请输入验证码');
+               return false;
+           }
+           login.verifyLogin(mobile,yzm);
+          return false;
+       });
+    });
+
+
+
+
+
+
+</script>
+{include file="footer"}

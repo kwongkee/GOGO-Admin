@@ -1,0 +1,301 @@
+{include file="common/header_new"}
+
+<style>
+    .disf{display:flex;align-items: center;}
+    img{ width:20px;height:20px;}
+</style>
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <h3 style="text-align: center;">内容管理</h3>
+                <div id="toolbar" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;">
+                    <div class="disf">
+                        <button type="button" href="javascript:;" onclick="importExl();" class="btn btn-default daoru">
+                            内容导入
+                        </button>
+                        {if $pid==5}
+                            <button type="button" href="javascript:;" onclick="importExl2();" class="btn btn-default" style="margin-left:10px;">
+                                检查国地
+                            </button>
+                            <button type="button" href="javascript:;" onclick="importExl2_phone();" class="btn btn-default" style="margin-left:10px;">
+                                录入时差和电话代码
+                            </button>
+
+                            <button type="button" href="javascript:;" onclick="exportExl_country();" class="btn btn-default" style="margin-left:10px;">
+                                导出国地
+                            </button>
+
+                            <button type="button" href="javascript:;" onclick="importExl_language();" class="btn btn-default" style="margin-left:10px;">
+                                录入国地语言
+                            </button>
+                        {/if}
+                        {if $pid==9}
+                            <button type="button" href="javascript:;" onclick="importExl3();" class="btn btn-default" style="margin-left:10px;">
+                                关联国地
+                            </button>
+                        {/if}
+                        {if $pid==10}
+                            <button type="button" href="javascript:;" onclick="importExl4();" class="btn btn-default" style="margin-left:10px;">
+                                检查各国邮政
+                            </button>
+                        {/if}
+                    </div>
+                </div>
+                <table id="table"
+
+                /*默认排序项*/
+                data-sort-name="id"
+                data-sort-order="desc"
+                /*工具栏相关*/
+                data-toolbar="#toolbar"
+                data-search="false"          /*搜索框*/
+                data-search-on-enter-key="false"
+                data-show-refresh="true"    /*刷新按钮*/
+                /*分页相关*/
+                data-side-pagination="server"
+                data-pagination="true"      /*显示分页*/
+                data-page-size="10"         /*每页显示条数*/
+                /*移动端相关*/
+                data-mobile-responsive="true"
+                data-card-view="true"
+                data-show-columns="true"
+                /*radio or checkbox字段名称*/
+                data-select-item-name="id" >
+
+                <thead>
+                <tr>
+                    <th data-field="checkbox"
+                        data-align="center"
+                        data-checkbox="true"></th>
+                    <!--                    <th data-field="id"-->
+                    <!--                        data-align="center"-->
+                    <!--                        data-sortable="true"-->
+                    <!--                        data-visible="true">ID</th>-->
+                    <!--                    <th data-field="type_name"-->
+                    <!--                        data-align="center"-->
+                    <!--                        data-sortable="true">类别名称</th>-->
+                    <th data-field="param1"
+                        data-align="center"
+                        data-sortable="true">参数1</th>
+                    <th data-field="param2"
+                        data-align="center"
+                        data-sortable="true">参数2</th>
+                    <th data-field="param3"
+                        data-align="center"
+                        data-sortable="true">参数3</th>
+                    <th data-field="param4"
+                        data-align="center"
+                        data-sortable="true">参数4</th>
+                    {if $pid==8}
+                    <th data-field="manage"
+                        data-align="center"
+                        data-sortable="true"
+                        data-formatter="actionFormatter2">操作</th>
+                    {/if}
+                    {if $pid==9}
+                    <th data-field="manage"
+                        data-align="center"
+                        data-sortable="true"
+                        data-formatter="actionFormatter">操作</th>
+                    {/if}
+                </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var table;
+
+    $(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:url('admin/country/content_list')}&pid={$pid}&state_id={$state_id}",
+            queryParams: queryParams,
+        });
+        $('.form-control').attr('placeholder','搜索新闻名称');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.id;
+        var title = row.param1;
+
+        var result = "";
+        // result += '<button style="margin-right: 5px;" type="button" onclick="edit('+id+',\''+title+'\')" class="btn btn-primary btn-xs">编辑</button>';
+        result += '<button style="margin-right: 5px;" type="button" onclick="openWindow2('+id+',\''+title+'\')" class="btn btn-warning btn-xs">查看内容列表</button>';
+        // result += '<button style="margin-right: 5px;" type="button" onclick="del('+id+',\''+title+'\')" class="btn btn-danger btn-xs">删除</button>';
+
+        return result;
+    }
+
+    function actionFormatter2(value, row, index) {
+        var id = row.id;
+        var title = row.param1;
+
+        var result = "";
+        // result += '<button style="margin-right: 5px;" type="button" onclick="edit('+id+',\''+title+'\')" class="btn btn-primary btn-xs">编辑</button>';
+        result += '<button style="margin-right: 5px;" type="button" onclick="openWindow3('+id+',\''+title+'\')" class="btn btn-warning btn-xs">补充信息</button>';
+        // result += '<button style="margin-right: 5px;" type="button" onclick="del('+id+',\''+title+'\')" class="btn btn-danger btn-xs">删除</button>';
+
+        return result;
+    }
+
+    function importExl(){
+        var index = layer.open({
+            type: 2,
+            title: '上传代码',
+            area:['70%','60%'],
+            content: "{:url('admin/country/upload_code')}&pid={$pid}"
+        });
+    }
+    function importExl2(){
+        var index = layer.open({
+            type: 2,
+            title: '检查国地',
+            area:['70%','60%'],
+            content: "{:url('admin/country/upload_code2')}&pid={$pid}"
+        });
+    }
+    function importExl2_phone(){
+        var index = layer.open({
+            type: 2,
+            title: '录入时差和电话代码',
+            area:['70%','60%'],
+            content: "{:url('admin/country/upload_code2_phone')}&pid={$pid}"
+        });
+    }
+    function exportExl_country(){
+        window.location.href="{:url('admin/country/exportexl_country')}";
+    }
+    function importExl_language(){
+        var index = layer.open({
+            type: 2,
+            title: '录入国地语言',
+            area:['70%','60%'],
+            content: "{:url('admin/country/importexl_language')}&pid={$pid}"
+        });
+    }
+    function importExl3(){
+        var index = layer.open({
+            type: 2,
+            title: '关联国地',
+            area:['70%','60%'],
+            content: "{:url('admin/country/upload_code3')}&pid={$pid}"
+        });
+    }
+    function importExl4(){
+        var index = layer.open({
+            type: 2,
+            title: '检查各国邮政',
+            area:['70%','60%'],
+            content: "{:url('admin/country/upload_code4')}&pid={$pid}"
+        });
+    }
+
+    function edit(id,name){
+        var index = layer.open({
+            type: 2,
+            title: "修改["+name+']',
+            area:['100%','100%'],
+            content: "{:url('admin/country/save_code')}&id="+id
+        });
+        // layer.full(index);
+    }
+
+    function save(title) {
+        var index = layer.open({
+            type: 2,
+            title: '新增代码分类',
+            area:['100%','100%'],
+            content: "{:url('admin/country/save_code')}"
+        });
+        // layer.full(index);
+    }
+
+    function openWindow(id,title){
+        url = "{:Url('admin/country/content_list')}";
+        if(url!=''){
+            var index = layer.open({
+                type: 2,
+                title: title,
+                area:['100%','100%'],
+                content: url+'&pid='+id
+            });
+        }
+    }
+
+    function openWindow2(id,title){
+        url = "{:Url('admin/country/content_list')}";
+        if(url!=''){
+            var index = layer.open({
+                type: 2,
+                title: title,
+                area:['100%','100%'],
+                content: url+'&pid=5&state_id='+id
+            });
+        }
+    }
+    function openWindow3(id,title){
+        url = "{:Url('admin/country/upload_file')}";
+        if(url!=''){
+            var index = layer.open({
+                type: 2,
+                title: title,
+                area:['40%','50%'],
+                content: url+'&pid=8&id='+id
+            });
+        }
+    }
+
+    function del(id,title){
+        let msg = '';
+        layer.confirm('确认删除该分类“'+title+'”吗？',function(index){
+            $.ajax({
+                url: "<?php echo Url('admin/country/del_code'); ?>",
+                data:{'id':id},
+                type:'post',
+                cache:false,
+                dataType:'json',
+                success:function(data){
+                    if(data.code==0)
+                    {
+                        layer.msg(data.msg, {
+                            icon: 1,
+                            time: 2000
+                        }, function(){
+                            window.location.reload();
+                        });
+                        return true;
+                    }else {
+                        layer.msg(data.msg, {icon:2, time:2000});
+                        return false;
+                    }
+                },
+                error:function() {
+                    layer.msg('系统出错,请重试',{icon:2,time:1000});
+                }
+            });
+        });
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,145 @@
+{include file="common/header_inner_new"}
+
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .layui-form-item .layui-input-inline{line-height: 38px}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="hidden" name="id" value="{$id}">
+
+            <table class="layui-table">
+                <thead>
+                <tr>
+                    <th>运单号</th>
+                    <th>费用名称</th>
+                    <th>利润</th>
+                    <th>服务费</th>
+                    <th>总费用</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name="list.order_info" id="v" key="idx"}
+                <tr>
+                    <td>
+                        <input type="hidden" class="layui-input" name="express_id[{$idx}]" value="{$v['express_id']}" lay-verify="required">
+                        <input type="text" class="layui-input" name="fee_express[{$idx}]" value="{$v['express_no']}" lay-verify="required">
+                    </td>
+                    <td><input type="text" class="layui-input" name="fee_name[{$idx}]" placeholder="名称" value="{$v['fee_name']}" lay-verify="required"></td>
+                    <td><input type="text" class="layui-input" name="fee_profit[{$idx}]" placeholder="利润" value="{$v['fee_profit']}" lay-verify="required" onchange="priceChange1(this)"></td>
+                    <td><input type="text" class="layui-input" name="fee_service[{$idx}]" placeholder="服务费" value="{$v['fee_service']}" lay-verify="required" onchange="priceChange2(this)"></td>
+                    <td><input type="text" class="layui-input fee_total" name="fee_total[{$idx}]" placeholder="总费用" value="{$v['fee_total']}" lay-verify="required" readonly></td>
+                </tr>
+                {/volist}
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="5">
+                        <div class="disf" style="justify-content: end;font-size:15px;margin-bottom:5px;">
+                            总费用：<div id="totalMoney" style="color:#ff2222;font-weight: 600;">￥{$totalprice}</div>
+                        </div>
+                        <div class="disf" style="justify-content: end;font-size:15px;margin-bottom:5px;">
+                            支付状态：<div id="totalMoney" style="font-weight: 600;">
+                            {if $list['status']==0}
+                            未支付
+                            {else}
+                            已支付
+                            {/if}
+                        </div>
+                        </div>
+                    </td>
+                </tr>
+                </tfoot>
+            </table>
+            {if $list['status']!=1}
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">立即修改</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+            {/if}
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            $.ajax({
+                url:"{:Url('admin/task/edit_workorder')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+    function priceChange1(t){
+        var $ = layui.$
+            , layer = layui.layer
+            , form = layui.form;
+
+        let val = Number(parseFloat($(t).val()).toFixed(2));
+        let price2 = Number(parseFloat($(t).parent().parent().find('td').eq(-2).find('input').val()).toFixed(2));
+        if(isNaN(price2)){
+            val = val+0;
+        }else{
+            val = val+price2;
+        }
+
+        $(t).parent().parent().find('td').eq(-1).find('input').val(parseFloat(val).toFixed(2));
+        totalMoney();
+    }
+
+    function priceChange2(t){
+        var $ = layui.$
+            , layer = layui.layer
+            , form = layui.form;
+        let val = Number(parseFloat($(t).val()).toFixed(2));
+        let price2 = Number(parseFloat($(t).parent().parent().find('td').eq(2).find('input').val()).toFixed(2));
+
+        if(isNaN(price2)){
+            val = val+0;
+        }else{
+            val = val+price2;
+        }
+
+        $(t).parent().parent().find('td').eq(-1).find('input').val(parseFloat(val).toFixed(2));
+        totalMoney();
+    }
+
+    function totalMoney(){
+        let total = 0;
+
+        for(let i=0;i<$('.fee_total').length;i++){
+            total = Number(parseFloat(total).toFixed(2)) + Number(parseFloat($('.fee_total').eq(i).val()).toFixed(2));
+        }
+        $('#totalMoney').html('￥'+Number(parseFloat(total).toFixed(2)));
+    }
+</script>
+</body>
+</html>

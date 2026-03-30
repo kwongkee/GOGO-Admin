@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>{if !empty($title['help'])}{$title['help']}{else}帮助中心-{$setting['company']}{/if}</title>
+<meta name="keywords" content="{$setting['keywords']}" />
+<meta name="description" content="{$setting['description']}" />
+{if !empty($setting['icon'])}
+<link rel="shortcut icon" href="{$_W['attachurl']}{$setting['icon']}" />
+{/if}
+<meta name="format-detection" content="telephone=no"/>
+<meta content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<meta content="yes" name="apple-mobile-web-app-capable" />
+<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+<meta content="telephone=no" name="format-detection" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+<link href="../addons/mogucms_guanwang/template/style/css/common.css" type="text/css" rel="stylesheet">
+<link href="../addons/mogucms_guanwang/template/style/css/style.css" type="text/css" rel="stylesheet">
+
+<script src="../addons/mogucms_guanwang/template/style/js/jquery.js"></script>
+<script src="../addons/mogucms_guanwang/template/style/js/wow.min.js"></script>
+<script src="../addons/mogucms_guanwang/template/style/js/jquery.lazyload.js"></script>
+<script src="../addons/mogucms_guanwang/template/style/js/comloding.js"></script>
+<script src="../addons/mogucms_guanwang/template/style/js/common.js"></script>
+<!--[if lt IE 9]>
+<script src="../addons/mogucms_guanwang/template/style/js/html5.js"></script>
+<![endif]-->
+
+</head>
+{if !empty($setting['shangqiao']) && $setting['isshangqiao']=="1"}{php echo html_entity_decode($setting['shangqiao'])}{/if}
+<body>
+{template 'default/header'}
+<div class="container">
+    <div class="banner hlepbaner" style="background:url({if !empty($banner['help'])}{$_W['attachurl']}{$banner['help']}{else}../addons/mogucms_guanwang/template/style/images/help_banner.jpg{/if}) no-repeat center center; background-size:cover;">
+        <div class="wrapper">
+            <div class="help_bantxt">
+                <div class="help_bh2">{if !empty($banner['helptitle'])}{$banner['helptitle']}{else}帮助中心{/if}</div>
+                <div class="help_bsearch"><form method="post" name="form1" action="{php echo $this->mogucms_url('help')}"><input class="help_ssinp" name="keyword" type="text" placeholder="请输入你要查询的内容"><input class="help_ssbtn" type="submit" value="搜索"></form></div>
+            </div>
+        </div>
+    </div>
+    <div class="news_content bgf4">
+        <div class="wrapper">
+            <div class="help_menu">
+            	<ul>
+					<li {if $cid==0}class="on"{/if}><a href="{php echo $this->mogucms_url('help')}">全部</a></li>
+					{loop $categorys $c}
+                	<li {if $cid==$c['id']}class="on"{/if}><a href="{php echo $this->mogucms_url('help',array('cid'=>$c['id']))}">{$c['categoryname']}</a></li>
+                	{/loop}
+                </ul>
+            </div>
+            <div class="new_fr">
+                <div class="help_box">
+					{loop $lists $list}
+                    <dl class="wow fadeInUp">
+                        <dt><a href="{php echo $this->mogucms_url('helpdetail',array('id'=>$list['id']))}"><img src="{$_W['attachurl']}{$list['image']}" /></a></dt>
+                        <dd>
+                            <h2><a href="{php echo $this->mogucms_url('helpdetail',array('id'=>$list['id']))}">{$list['title']}</a></h2>
+                            <p>{$list['abstract']}</p>
+                            <h3>{php echo date("Y-m-d",$list['addtime'])}</h3>
+                        </dd>
+                    </dl>
+					{/loop}
+                </div>
+                <div class="page">
+				{if $pindex>1}
+				<a href="{php echo $this->mogucms_url('help',array('page'=>($pindex-1)))}"><img src="../addons/mogucms_guanwang/template/style/images/page_lico.png"></a>
+				{/if}
+				{php for($i=1;$i<=$allpage;$i++){}
+				<a {if $pindex==$i}class="on"{/if} href="{php echo $this->mogucms_url('help',array('page'=>$i))}">{$i}</a>
+				{php }}
+				{if $pindex<$allpage}
+				<a href="{php echo $this->mogucms_url('help',array('page'=>($pindex+1)))}"><img src="../addons/mogucms_guanwang/template/style/images/page_rico.png"></a>
+				{/if}
+				</div>
+            </div>
+        </div>
+    </div>
+</div>
+{template 'default/footer'}

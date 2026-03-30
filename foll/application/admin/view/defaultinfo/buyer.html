@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>默认买家配置</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <link href="static/cklein/css/style.css" rel="stylesheet">
+    <link href="static/cklein/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        form{
+            margin-top: 47px;
+            margin-right: 32px;
+        }
+        .seller{
+            display:none;
+        }
+        .layui-tab{
+            height:1000px;
+        }
+        .green{
+            background:#009688;
+            color:#fff;
+        }
+        .btn-default:hover {
+            color: #fff;
+            background-color: #009688;
+            border-color: #adadad;
+        }
+    </style>
+</head>
+<body class="gray-bg">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+              <div class="ibox-content">
+                 <h3 style="text-align: center;font-size:16px;font-weight:bold;color:#676a6c;">公用配置</h3>
+                 <div id="toolbar" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;">
+                    <button type="button" onClick="new_buyer()" class="btn btn-default newbuyer green" style="margin-right:10px;">
+                      新增公用买家
+                    </button>
+                     <!--data_add('新增公用卖家','{:url('admin/defaultInfo/add_seller')}')-->
+                    <button type="button" onClick="new_seller()" class="btn btn-default newseller">
+                      新增公用卖家
+                    </button>
+                 </div>
+                  <!--公用买家-->
+                  <div class="buyer">
+                      <button class="layui-btn" onClick="add_new_buyer()">添加</button>
+                  </div>
+                 <div class="layui-tab layui-tab-card buyer">
+                      <ul class="layui-tab-title">
+                          <li class="layui-this">公用企业买家</li>
+                          <li>公用个人买家</li>
+                      </ul>
+                      <div class="layui-tab-content" style="height: 100px;">
+                          <div class="layui-tab-item layui-show">
+                              <table class="layui-hide" id="mainTable"></table>
+                          </div>
+                          <div class="layui-tab-item">
+                              <table class="layui-hide" id="mainTable2"></table>
+                          </div>
+                      </div>
+                 </div>
+                  <!--公用买家 END-->
+
+                  <!--公用卖家-->
+                  <div class="seller">
+                      <button class="layui-btn" onClick="add_new_seller()">添加</button>
+                  </div>
+                  <div class="layui-tab layui-tab-card seller">
+                      <ul class="layui-tab-title">
+                          <li class="layui-this">公用企业卖家</li>
+                          <li>公用个人卖家</li>
+                      </ul>
+                      <div class="layui-tab-content" style="height: 100px;">
+                          <div class="layui-tab-item layui-show">
+                              <table class="layui-hide" id="mainTable3"></table>
+                          </div>
+                          <div class="layui-tab-item">
+                              <table class="layui-hide" id="mainTable4"></table>
+                          </div>
+                      </div>
+                  </div>
+                  <!--公用卖家 END-->
+              </div>
+            </div>
+        </div>
+    </div>
+
+<form class="layui-form" action="" style="display:none;">
+    <div class="layui-form-item">
+        <label class="layui-form-label">企业名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="company_name" value="{$infos['company_name']}" required  lay-verify="required" placeholder="请输入企业名称" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">企业名称（英文）</label>
+        <div class="layui-input-block">
+            <input type="text" name="company_ename" value="{$infos['company_ename']}" required  lay-verify="required" placeholder="请输入企业名称" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">国家(英文)</label>
+        <div class="layui-input-block">
+            <input type="text" name="country_code" value="{$infos['country_code']}" placeholder="请输入国家" required  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">企业电话</label>
+        <div class="layui-input-block">
+            <input type="text" name="company_tel" value="{$infos['company_tel']}" placeholder="请输入企业电话" required  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">企业邮箱</label>
+        <div class="layui-input-block">
+            <input type="text" name="company_email" value="{$infos['company_email']}" placeholder="请输入企业邮箱" required  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">企业地址</label>
+        <div class="layui-input-block">
+            <input type="text" name="company_address" value="{$infos['company_address']}" placeholder="请输入企业地址" required  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">注册号码</label>
+        <div class="layui-input-block">
+            <input type="text" name="company_code" value="{$infos['company_code']}" placeholder="请输入注册号码" required  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">注册文件</label>
+        <div class="layui-input-block">
+            <img src="http://declare.gogo198.cn/temp/香港跨境倉有限公司.jpeg" width="120px;">
+        </div>
+    </div>
+    
+    
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即保存</button>
+        </div>
+    </div>
+</form>
+
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+
+<script>
+    //选项卡
+    layui.use(['table','element'], function(){
+        var table = layui.table
+            ,element = layui.element;
+
+        //公用企业买家
+        table.render({
+            elem: '#mainTable'
+            ,url: "{:Url('admin/defaultInfo/view_info')}"
+            ,where: {
+                type: 'enterprise'
+            }
+            ,cols: [[
+                {field:'id', width:80, title: '编号'}
+                ,{field:'company_name', width: 150, title: '企业名称'}
+                ,{field:'platform', width: 150, title: '买家类别'}
+                ,{field:'country_code', width: 150, title: '注册国地'}
+                ,{field:'company_tel', width: 150, title: '企业电话'}
+                ,{field:'company_email', width: 150, title: '企业邮箱'}
+                ,{field:'company_address', width: 150, title: '企业地址'}
+                ,{field:'create_at', width: 170, title: '创建时间'}
+                ,{width:200, align:'center', fixed: 'right', title: '操作', templet: function(d){
+                        return [
+                            '<a onclick="openWindow('+ "'"+d.company_name+"编辑信息'" +',' + "'{:Url("admin/defaultInfo/enterprise_edit")}&id="+ d.id +"'" + ');" class="layui-btn layui-btn-normal layui-btn-xs">编辑信息</a>',
+                            '<a onclick="del('+ "'"+d.id+"'" +','+ "'enterprise'" +');" class="layui-btn layui-btn-danger layui-btn-xs">删除</a>',
+                        ].join('');
+                    } }
+            ]]
+            ,page: true
+        });
+
+        //公用个人买家
+        table.render({
+            elem: '#mainTable2'
+            ,url: "{:Url('admin/defaultInfo/view_info')}"
+            ,where: {
+                type: 'personal'
+            }
+            ,cols: [[
+                {field:'id', width:80, title: '编号'}
+                ,{field:'full_name', width: 150, title: '姓名', templet: function(d){
+                        return d.last_name +'-'+ d.first_name
+                    }}
+                ,{field:'platform', width: 150, title: '买家类别'}
+                ,{field:'country_code', width: 150, title: '注册国地'}
+                ,{field:'id_info', width: 150, title: '证件', templet: function(d){
+                        return d.id_type +':'+ d.id_card
+                    }}
+                ,{field:'tel', width: 150, title: '电话'}
+                ,{field:'email', width: 150, title: '邮箱'}
+                ,{field:'address', width: 150, title: '地址'}
+                ,{field:'create_at', width: 170, title: '创建时间'}
+                ,{width:200, align:'center', fixed: 'right', title: '操作', templet: function(d){
+                        return [
+                            '<a onclick="openWindow('+ "'"+d.last_name+"编辑信息'" +',' + "'{:Url("admin/defaultInfo/personal_edit")}&id="+ d.id +"'" + ');" class="layui-btn layui-btn-normal layui-btn-xs">编辑信息</a>',
+                            '<a onclick="del('+ "'"+d.id+"'" +','+ "'personal'" +');" class="layui-btn layui-btn-danger layui-btn-xs">删除</a>',
+                        ].join('');
+                    } }
+            ]]
+            ,page: true
+        });
+
+        //公用企业卖家
+        table.render({
+            elem: '#mainTable3'
+            ,url: "{:Url('admin/defaultInfo/view_info')}"
+            ,where: {
+                type: 'enterprise_seller'
+            }
+            ,cols: [[
+                {field:'id', width:80, title: '编号'}
+                ,{field:'company_name', width: 150, title: '企业名称'}
+                ,{field:'platform', width: 150, title: '卖家类别'}
+                ,{field:'country_code', width: 150, title: '注册国地'}
+                ,{field:'company_tel', width: 150, title: '企业电话'}
+                ,{field:'company_email', width: 150, title: '企业邮箱'}
+                ,{field:'company_address', width: 150, title: '企业地址'}
+                ,{field:'create_at', width: 170, title: '创建时间'}
+                ,{width:200, align:'center', fixed: 'right', title: '操作', templet: function(d){
+                        return [
+                            '<a onclick="openWindow('+ "'"+d.company_name+"编辑信息'" +',' + "'{:Url("admin/defaultInfo/enterprise_seller_edit")}&id="+ d.id +"'" + ');" class="layui-btn layui-btn-normal layui-btn-xs">编辑信息</a>',
+                            '<a onclick="del2('+ "'"+d.id+"'" +','+ "'enterprise'" +');" class="layui-btn layui-btn-danger layui-btn-xs">删除</a>',
+                        ].join('');
+                    } }
+            ]]
+            ,page: true
+        });
+
+        //公用个人卖家
+        table.render({
+            elem: '#mainTable4'
+            ,url: "{:Url('admin/defaultInfo/view_info')}"
+            ,where: {
+                type: 'personal_seller'
+            }
+            ,cols: [[
+                {field:'id', width:80, title: '编号'}
+                ,{field:'full_name', width: 150, title: '姓名', templet: function(d){
+                        return d.last_name +'-'+ d.first_name
+                    }}
+                ,{field:'platform', width: 150, title: '卖家类别'}
+                ,{field:'country_code', width: 150, title: '注册国地'}
+                ,{field:'id_info', width: 150, title: '证件', templet: function(d){
+                        return d.id_type +':'+ d.id_card
+                    }}
+                ,{field:'tel', width: 150, title: '电话'}
+                ,{field:'email', width: 150, title: '邮箱'}
+                ,{field:'address', width: 150, title: '地址'}
+                ,{field:'create_at', width: 170, title: '创建时间'}
+                ,{width:200, align:'center', fixed: 'right', title: '操作', templet: function(d){
+                        return [
+                            '<a onclick="openWindow('+ "'"+d.last_name+"编辑信息'" +',' + "'{:Url("admin/defaultInfo/personal_seller_edit")}&id="+ d.id +"'" + ');" class="layui-btn layui-btn-normal layui-btn-xs">编辑信息</a>',
+                            '<a onclick="del2('+ "'"+d.id+"'" +','+ "'personal'" +');" class="layui-btn layui-btn-danger layui-btn-xs">删除</a>',
+                        ].join('');
+                    } }
+            ]]
+            ,page: true
+        });
+    });
+
+    //删除个人、企业买家
+    function del(id,type) {
+        var $ = layui.$, layer = layui.layer;
+        if( type == 'enterprise' )
+        {
+            var url = "{:Url('admin/defaultInfo/enterprise_del')}";
+        }else{
+            var url = "{:Url('admin/defaultInfo/personal_del')}";
+        }
+
+        layer.confirm('确认要删除该买家吗？', {
+            btn: ['是的','取消'] //按钮
+        }, function(){
+            $.ajax({
+                url:url,
+                type:"GET",
+                dataType:"json",
+                data:{id:id},
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        window.location.reload();
+                    });
+                },error:function(xhr){
+                    layer.alert('系统异常', {icon: 2});
+                }
+            });
+        }, function(){
+
+        });
+    }
+
+    //删除个人、企业卖家
+    function del2(id,type) {
+        var $ = layui.$, layer = layui.layer;
+        if( type == 'enterprise' )
+        {
+            var url = "{:Url('admin/defaultInfo/enterprise_seller_del')}";
+        }else{
+            var url = "{:Url('admin/defaultInfo/personal_seller_del')}";
+        }
+
+        layer.confirm('确认要删除该卖家吗？', {
+            btn: ['是的','取消'] //按钮
+        }, function(){
+            $.ajax({
+                url:url,
+                type:"GET",
+                dataType:"json",
+                data:{id:id},
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        window.location.reload();
+                    });
+                },error:function(xhr){
+                    layer.alert('系统异常', {icon: 2});
+                }
+            });
+        }, function(){
+
+        });
+    }
+
+    //默认公用买家原
+    layui.use('form', function(){
+        var form = layui.form;
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            $.ajax({
+                url:'{:Url("admin/defaultInfo/buyer")}',
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (res) {
+                    layer.msg(res.message);
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            return false;
+        });
+    });
+
+    function openWindow(title,url)
+    {
+        var layer = layui.layer;
+        var index = layer.open({
+            type: 2,
+            title: title,
+            content: url,
+            area:['1000px','1000px']
+        });
+        layer.full(index);
+    }
+
+    function data_add(title,url)
+    {
+        var index = layer.open({
+            type: 2,
+            title: title,
+            content: url,
+            area:['1000px','1000px']
+        });
+        layer.full(index);
+    }
+
+    //新增公用企业买家、个人买家
+    function new_buyer(){
+        $('.buyer').show();
+        $('.seller').hide();
+        $('.newbuyer').addClass('green').siblings().removeClass('green');
+    }
+
+    function add_new_buyer(){
+        layer.confirm('新增企业或个人买家？', {
+            // title:'123',
+            btn: ['新增企业买家', '新增个人买家'] //可以无限个按钮
+            ,btn3: function(index, layero){
+                //按钮【按钮三】的回调
+            }
+        }, function(index, layero){
+            //按钮【按钮一】的回调
+            data_add('新增企业买家','{:url('admin/defaultInfo/add_enterprise')}');
+        }, function(index){
+            //按钮【按钮二】的回调
+            data_add('新增个人买家','{:url('admin/defaultInfo/add_personal')}');
+        });
+    }
+    //公用买家 END
+
+    //新增公用企业卖家、个人卖家
+    function new_seller(){
+        $('.buyer').hide();
+        $('.seller').show();
+        $('.newseller').addClass('green').siblings().removeClass('green');
+    }
+
+    function add_new_seller(){
+        layer.confirm('新增企业或个人卖家？', {
+            // title:'123',
+            btn: ['新增企业卖家', '新增个人卖家'] //可以无限个按钮
+            ,btn3: function(index, layero){
+                //按钮【按钮三】的回调
+            }
+        }, function(index, layero){
+            //按钮【按钮一】的回调
+            data_add('新增企业卖家','{:url('admin/defaultInfo/add_enterprise_seller')}');
+        }, function(index){
+            //按钮【按钮二】的回调
+            data_add('新增个人卖家','{:url('admin/defaultInfo/add_personal_seller')}');
+        });
+    }
+    //公用卖家 END
+</script>
+</html>

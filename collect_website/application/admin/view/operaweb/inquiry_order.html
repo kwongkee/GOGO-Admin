@@ -1,0 +1,209 @@
+{include file="common/header_new"}
+
+<style>
+    img{ width:20px;height:20px;}
+</style>
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <h3 style="text-align: center;">询价管理中心</h3>
+                <div id="toolbar" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;">
+<!--                    <button type="button" href="javascript:;" onclick="create();" class="btn btn-default">-->
+<!--                        分享询价-->
+<!--                    </button>-->
+                </div>
+                <table id="table"
+
+                /*默认排序项*/
+                data-sort-name="id"
+                data-sort-order="desc"
+                /*工具栏相关*/
+                data-toolbar="#toolbar"
+                data-search="false"          /*搜索框*/
+                data-search-on-enter-key="false"
+                data-show-refresh="true"    /*刷新按钮*/
+                /*分页相关*/
+                data-side-pagination="server"
+                data-pagination="true"      /*显示分页*/
+                data-page-size="10"         /*每页显示条数*/
+                /*移动端相关*/
+                data-mobile-responsive="true"
+                data-card-view="true"
+                data-show-columns="true"
+                /*radio or checkbox字段名称*/
+                data-select-item-name="id" >
+
+                <thead>
+                <tr>
+                    <th data-field="checkbox"
+                        data-align="center"
+                        data-checkbox="true"></th>
+                    <th data-field="id"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">序号</th>
+                    <th data-field="custom_id"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">客户ID</th>
+                    <th data-field="ordersn"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">订单编号</th>
+                    <th data-field="buss_name"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">所属业务</th>
+                    <th data-field="statusname"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">状态</th>
+                    <th data-field="createtime"
+                        data-align="center"
+                        data-sortable="true">创建时间</th>
+                    <th data-field="manage"
+                        data-align="center"
+                        data-sortable="true"
+                        data-formatter="actionFormatter">操作</th>
+                </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var table;
+
+    $(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:url('admin/operaweb/inquiry_order')}",
+            queryParams: queryParams,
+        });
+        $('.form-control').attr('placeholder','搜索轮播图名称');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.id;
+        var buss_id = row.buss_id;
+        var title = row.buss_name;
+        var status = row.status;
+
+        var result = "";
+        result += '<button style="margin-right: 5px;" type="button" onclick="openWindow('+id+','+buss_id+',\''+title+'\',1)" class="btn btn-normal btn-xs">查看详情</button>';
+        if(status==0){
+            //已询价待报价
+            result += '<button style="margin-right: 5px;" type="button" onclick="openWindow('+id+','+buss_id+',\''+title+'\',2)" class="btn btn-warning btn-xs">分享询价</button>';
+        }else if(status==2){
+            result += '<button style="margin-right: 5px;" type="button" onclick="openWindow('+id+','+buss_id+',\''+title+'\',3)" class="btn btn-warning btn-xs">催单</button>';
+        }
+        // result += '<button style="margin-right: 5px;" type="button" onclick="del('+id+',\''+title+'\')" class="btn btn-danger btn-xs">删除</button>';
+
+        return result;
+    }
+
+    function create(id,name){
+        var index = layer.open({
+            type: 2,
+            title: '生成询价',
+            area:['100%','100%'],
+            content: "{:url('admin/operaweb/save_inquiry')}"
+        });
+        // layer.full(index);
+    }
+
+    function openWindow(id,buss_id,title,typ){
+        let url = '';
+        if(typ==1){
+            url = "{:Url('admin/operaweb/inquiry_order_detail')}&id="+id+"&buss_id="+buss_id;
+        }
+        else if(typ==2){
+            url = "{:Url('admin/operaweb/share_inquiry')}&id="+id;
+        }
+        else if(typ==3){
+            layer.confirm('确认催单吗？',function(index) {
+                $.ajax({
+                    url: "{:Url('admin/operaweb/reminder')}",
+                    method: 'post',
+                    data: {'id':id},
+                    dataType: 'JSON',
+                    success: function (res) {
+                        if(res.code==0){
+                            layer.msg(res.msg, {
+                                icon: 1,
+                                time: 2000
+                            }, function(){
+                                window.location.reload();
+                            });
+                            return true;
+                        }
+                    }
+                });
+            });
+            return false;
+        }
+        else if(typ==4){
+            url = "{:Url('admin/operaweb/distr_manage')}";
+        }
+
+        if(url!=''){
+            var index = layer.open({
+                type: 2,
+                title: title,
+                area:['100%','100%'],
+                content: url+'&id='+id
+            });
+        }
+    }
+
+    function del(id,title){
+        layer.confirm('确认删除该询价模板吗？',function(index){
+            $.ajax({
+                url: "<?php echo Url('admin/operaweb/del_inquiry'); ?>",
+                data:{'id':id},
+                type:'post',
+                cache:false,
+                dataType:'json',
+                success:function(data){
+                    if(data.code==1)
+                    {
+                        layer.msg(data.msg, {
+                            icon: 1,
+                            time: 2000
+                        }, function(){
+                            window.location.reload();
+                        });
+                        return true;
+                    }else {
+                        layer.msg(data.message, {icon:2, time:2000});
+                        return false;
+                    }
+                },
+                error:function() {
+                    layer.msg('系统出错,请重试',{icon:2,time:1000});
+                }
+            });
+        });
+    }
+
+</script>
+
+</body>
+</html>

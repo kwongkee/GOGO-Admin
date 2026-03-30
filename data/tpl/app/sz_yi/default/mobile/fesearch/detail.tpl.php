@@ -1,0 +1,349 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/warehouse_header', TEMPLATE_INCLUDEPATH)) : (include template('common/warehouse_header', TEMPLATE_INCLUDEPATH));?>
+<title><?php  echo $title;?></title>
+<style>
+    body{background:#f8f8f8;}
+    .layui-table td, .layui-table th{ text-align: center;}
+    .layui-table th{ background-color: #ecf6fc; }
+    .required{color: red;font-size: 1.3rem;right: 3px;position: relative;top: 7px;}
+    .icon-right{font-size: 20px;line-height: 20px;padding-right: 10px;vertical-align: middle;}
+    .layui-layer-adminRight{top : 0px !important;}
+    .layui-layer-btn .layui-layer-btn0{border-color: #F7931E!important;background-color: #F7931E!important;}
+    .layui-table-cell{padding:0 2px;}
+    .laytable-cell-1-0-2{height:auto;min-height:auto;}
+    .page_head{width:100%;background:#fff;margin-bottom:5px;box-shadow:0 0 4px #ddd;padding:10px 0 10px;}
+    .page_head .center{text-align: center;}
+    .page_head .left{width:20%;display:flex;align-items:center;font-size:15px;}
+    .page_head .left .back{width:13px;height:13px;border-top:2px solid #000;border-left:2px solid #000;transform:rotate(-50deg);margin-left:15px;margin-right:5px;}
+
+    .box{font-size: 15px;width: 100%;margin: 0 auto;box-shadow: 0px 0px 2px #a7a5a5;border-radius: 5px;box-sizing: border-box;padding:15px 20px;text-align:center;margin-top:15px;color:#fff;}
+    .box1{background:#1790FF;}
+    .box2{background:#f70e0e;}
+
+    .layui-layer-hui .layui-layer-content{color:#fff;}
+    .layui-layout-admin .layui-footer{background:#fff;}
+</style>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-xs12">
+            <div class="layui-card">
+                <div class="layui-form-item layui-col-xs12" style="padding-top:15px;margin-bottom:0;background:#fff;">
+                    <h1 style="text-align:center;color:#ff2222;">请选择数据筛查方式!</h1>
+                    
+                    <div class="layui-col-xs12">
+                        <div class="box box1 layui-col-xs12">
+                            相同地址筛查
+                        </div>
+                        <div class="box box2 layui-col-xs12">
+                            相同代理筛查
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="address" style="display:none;">
+    <form class="layui-form" action="" lay-filter="component-form-demo1">
+        <input type="text" name="id" id="id" value="<?php  echo $info['id'];?>"  style="display:none;"/>
+        <div class="layui-form-item layui-col-xs12" style="padding-top:15px;margin-bottom:0;">
+            <div class="layui-col-xs12">
+                <select name="address" lay-verify="required" lay-search>
+                    <option value="">请选择地址</option>
+                    <?php  if(is_array($address)) { foreach($address as $val) { ?>
+                        <option value="<?php  echo $val;?>"><?php  echo $val;?></option>
+                    <?php  } } ?>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-layout-admin">
+             <div class="layui-input-block" style="margin-left:0;">
+                <div class="layui-footer" style="left: 0;text-align:center;position:relative;bottom:-30px;">
+                    <button class="layui-btn" lay-submit="" lay-filter="component-form-demo1">搜索</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="agent" style="display:none;">
+    <form class="layui-form" action="" lay-filter="component-form-demo2">
+        <input type="text" name="id" id="id" value="<?php  echo $info['id'];?>"  style="display:none;"/>
+        <div class="layui-form-item layui-col-xs12" style="padding-top:15px;margin-bottom:0;">
+            <div class="layui-col-xs12">
+                <select name="agent" lay-verify="required" lay-search>
+                    <option value="">请选择代理</option>
+                    <?php  if(is_array($agent)) { foreach($agent as $val) { ?>
+                        <option value="<?php  echo $val;?>"><?php  echo $val;?></option>
+                    <?php  } } ?>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-layout-admin">
+            <div class="layui-input-block" style="margin-left:0;">
+                <div class="layui-footer" style="left: 0;text-align:center;position:relative;bottom:-30px;">
+                    <button class="layui-btn" lay-submit="" lay-filter="component-form-demo2">搜索</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!--数据分析-->
+<div class="analyze" style="display:none;">
+    <form class="layui-form" action="" lay-filter="component-form-demo3">
+        <input type="text" name="ids" id="ids" value=""  style="display:none;"/>
+        <input type="text" name="pa" id="pa" value=""  style="display:none;"/>
+        <div class="layui-form-item layui-col-xs12" style="padding-top:15px;margin-bottom:0;">
+            <div class="layui-col-xs12">
+                <select name="analysis_type" lay-verify="required" lay-filter="analisis_type">
+                    <option value="">请选择分析方式</option>
+                    <option value="1">按商圈地址</option>
+                    <option value="2">按物业单位</option>
+                    <option value="3">按代理单位</option>
+                </select>
+            </div>
+            <div class="layui-col-xs12 an_1" style="display:none;margin-top:15px;">
+                <!--地址-->
+            </div>
+            <div class="layui-col-xs12 an_2" style="display:none;margin-top:15px;">
+                <!--大厦-->
+            </div>
+            <div class="layui-col-xs12 an_3" style="display:none;margin-top:15px;">
+                <!--经纪公司-->
+            </div>
+            <div class="layui-col-xs12" style="margin-top:15px;">
+                <select name="sort_type" lay-verify="required">
+                    <option value="">请选择租金排序方式</option>
+                    <option value="1">降序</option>
+                    <option value="2">升序</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-layout-admin">
+             <div class="layui-input-block" style="margin-left:0;">
+                <div class="layui-footer" style="left: 0;text-align:center;position:relative;bottom:-30px;">
+                    <button class="layui-btn" lay-submit="" lay-filter="component-form-demo3">搜索</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!--筛查结果列表-->
+<div id="result_list" style="display:none;">
+    <div class="layui-col-xs12 content" style="padding:0 20px;box-sizing:border-box;">
+        
+    </div>
+</div>
+<script>
+    layui.use(['layer', 'form', 'table', 'upload', 'laydate'], function () {
+        var $ = layui.$
+            , layer = layui.layer
+            , form = layui.form
+            , element = layui.element
+            , laydate = layui.laydate
+            , upload = layui.upload
+            , table = layui.table;
+        
+        //form.render(null,'component-form-demo1');
+        
+        //form.render(null,'component-form-demo2');
+        
+        $('.box1').click(function(){
+            layer.open({
+                type:1,
+                title:'相同地址筛查',
+                area:['90%','50%'],
+                content:$('#address')
+            });
+        });
+        
+        $('.box2').click(function(){
+            layer.open({
+                type:1,
+                title:'相同代理筛查',
+                area:['90%','50%'],
+                content:$('#agent')
+            });
+        });
+        
+        form.on('select(analisis_type)',function(data){
+            let val = data.value;
+            if(val==1){
+                $('.an_1').show();
+                $('.an_2').hide();
+                $('.an_3').hide();
+            }else if(val==2){
+                $('.an_1').hide();
+                $('.an_2').show();
+                $('.an_3').hide();
+            }else if(val==3){
+                $('.an_1').hide();
+                $('.an_2').hide();
+                $('.an_3').show();
+            }    
+        });
+        
+         /* 监听地址提交 */
+        form.on('submit(component-form-demo1)', function(data){
+            $.ajax({
+                url:"./index.php?i=3&c=entry&do=fesearch&p=index&m=sz_yi&op=screen&pa=1",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:3000}, function () {
+                        if(res.code == 0)
+                        {
+                            $('#ids').val(res.list_ids);
+                            $('#pa').val(1);
+                            
+                            let html = '<select name="an_2" lay-search>\n'+
+                                            '<option value="">请选择物业单位</option>\n';
+                                            for(let i=0;i<res.building_name.length;i++){
+                                                html += '<option value="'+res.building_name[i]+'">'+res.building_name[i]+'</option>\n';
+                                            }
+                                    html += '</select>';
+                            $('.an_2').html(html);
+                            
+                            let html2 = '<select name="an_3" lay-search>\n'+
+                                            '<option value="">请选择代理单位</option>\n';
+                                            for(let i=0;i<res.agent_name.length;i++){
+                                                html2 += '<option value="'+res.agent_name[i]+'">'+res.agent_name[i]+'</option>\n';
+                                            }
+                                    html2 += '</select>';
+                            $('.an_3').html(html2);
+                            
+                            layer.open({
+                                type:1,
+                                title:'地址['+data.field['address']+']',
+                                area:['100%','100%'],
+                                content:$('.analyze')
+                            });
+                            
+                            form.render(null,'component-form-demo3');
+                            //window.location.href="./index.php?i=3&c=entry&do=fesearch&p=index&m=sz_yi&op=screen_detail&ids="+res.idss;
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:3000});
+                }
+            });
+            return false;
+        });    
+        
+         /* 监听代理提交 */
+        form.on('submit(component-form-demo2)', function(data){
+            $.ajax({
+                url:"./index.php?i=3&c=entry&do=fesearch&p=index&m=sz_yi&op=screen&pa=2",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:3000}, function () {
+                        if(res.code == 0)
+                        {
+                            $('#ids').val(res.list_ids);
+                            $('#pa').val(2);
+                            
+                            let html = '<select name="an_2" lay-search>\n'+
+                                            '<option value="">请选择物业单位</option>\n';
+                                            for(let i=0;i<res.building_name.length;i++){
+                                                html += '<option value="'+res.building_name[i]+'">'+res.building_name[i]+'</option>\n';
+                                            }
+                                    html += '</select>';
+                            $('.an_2').html(html);
+                            
+                            let html2 = '<select name="an_1" lay-search>\n'+
+                                            '<option value="">请选择商圈地址</option>\n';
+                                            for(let i=0;i<res.address_name.length;i++){
+                                                html2 += '<option value="'+res.address_name[i]+'">'+res.address_name[i]+'</option>\n';
+                                            }
+                                    html2 += '</select>';
+                            $('.an_1').html(html2);
+                            
+                            layer.open({
+                                type:1,
+                                title:'代理['+data.field['agent']+']',
+                                area:['100%','100%'],
+                                content:$('.analyze')
+                            });
+                            
+                            form.render(null,'component-form-demo3');
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:3000});
+                }
+            });
+            return false;
+        });
+        
+        /* 监听数据分析提交 */
+        form.on('submit(component-form-demo3)', function(data){
+            $.ajax({
+                url:"./index.php?i=3&c=entry&do=fesearch&p=index&m=sz_yi&op=screen_detail",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:3000}, function () {
+                        if(res.code == 0)
+                        {
+                            let html = '';
+                            for(let i=0;i<res.list.length;i++){
+                                html += '<a href="javascript:openWindow('+res.list[i].id+');">\n'+
+                                            '<div class="layui-col-xs12 box">\n'+
+                                                '<div class="layui-col-xs4">\n'+
+                                                    '<img class="logo" src="'+res.list[i].pic_list+'" alt="" style="width:100%;height:80px;"/>\n'+
+                                                '</div>\n'+
+                                                '<div class="layui-col-xs8" style="padding:0 7px;box-sizing:border-box;">\n'+
+                                                    '<div class="title" style="font-size:15px;text-overflow:ellipsis;-webkit-line-clamp:1;white-space:nowrap;overflow:hidden;text-align:left;">\n'+
+                                                        res.list[i].title+
+                                                    '</div>\n'+
+                                                    '<div class="building_name" style="margin:10px 0;text-align:left;">\n'+
+                                                        res.list[i].building_name+
+                                                    '</div>\n'+
+                                                    '<div class="info layui-col-xs12">\n'+
+                                                        '<div class="layui-col-xs6" style="color:#ff2222;text-align:left;">\n'+
+                                                            res.list[i].price+
+                                                        '</div>\n'+
+                                                        '<div class="layui-col-xs4" style="text-align:left;">\n'+
+                                                            res.list[i].area+
+                                                        '</div>\n'+
+                                                    '</div>\n'+
+                                                '</div>\n'+
+                                            '</div>\n'+
+                                        '</a>';
+                            }
+                            $('#result_list').find('.content').html(html);
+                            layer.open({
+                                type:1,
+                                title:'数据分析列表',
+                                area:['100%','100%'],
+                                content:$('#result_list')
+                            });
+                        }
+                    });
+                }
+            });
+            return false;
+        });
+    });
+    
+    function openWindow(id){
+        var $ = layui.$,
+            layer = layui.layer;
+            
+            layer.open({
+                type:2,
+                title:'详情信息',
+                area:['100%','100%'],
+                content:'./index.php?i=3&c=entry&do=fesearch&p=index&m=sz_yi&op=info_detail&id='+id
+            });
+    }
+</script>

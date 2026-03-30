@@ -1,0 +1,212 @@
+{include file="common/header_new"}
+
+<style>
+    img{ width:20px;height:20px;}
+</style>
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <h3 style="text-align: center;">客户管理</h3>
+                <div id="toolbar" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;">
+<!--                    <button type="button" href="javascript:;" onclick="set();" class="btn btn-default">-->
+<!--                        ChatGPT访问配置-->
+<!--                    </button>-->
+                </div>
+                <table id="table"
+
+                /*默认排序项*/
+                data-sort-name="id"
+                data-sort-order="desc"
+                /*工具栏相关*/
+                data-toolbar="#toolbar"
+                data-search="false"          /*搜索框*/
+                data-search-on-enter-key="false"
+                data-show-refresh="true"    /*刷新按钮*/
+                /*分页相关*/
+                data-side-pagination="server"
+                data-pagination="true"      /*显示分页*/
+                data-page-size="10"         /*每页显示条数*/
+                /*移动端相关*/
+                data-mobile-responsive="true"
+                data-card-view="true"
+                data-show-columns="true"
+                /*radio or checkbox字段名称*/
+                data-select-item-name="id" >
+
+                <thead>
+                <tr>
+                    <th data-field="checkbox"
+                        data-align="center"
+                        data-checkbox="true"></th>
+                    <th data-field="custom_id"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">客户ID</th>
+                    <th data-field="nickname"
+                        data-align="center"
+                        data-sortable="true">客户昵称</th>
+                    <th data-field="realname"
+                        data-align="center"
+                        data-sortable="true">真实名称</th>
+                    <th data-field="phone"
+                        data-align="center"
+                        data-sortable="true">联系电话</th>
+                    <th data-field="email"
+                        data-align="center"
+                        data-sortable="true">联系邮箱</th>
+                    <th data-field="createtime"
+                        data-align="center"
+                        data-sortable="true">注册时间</th>
+                    <th data-field="manage"
+                        data-align="center"
+                        data-sortable="true"
+                        data-formatter="actionFormatter">操作</th>
+                </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var table;
+
+    $(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:url('admin/operaweb/website_user')}",
+            queryParams: queryParams,
+        });
+        $('.form-control').attr('placeholder','搜索轮播图名称');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.id;
+        var title = row.custom_id;
+        var reg_method = row.reg_method;
+        var merch_status = row.merch_status;
+
+        var result = "";
+        // result += '<button style="margin-right: 5px;" type="button" onclick="openWindow('+id+',\''+title+'\',5)" class="btn btn-primary btn-xs">GPT访问设置</button>';
+        // if(merch_status=='未认证'){
+        //     result += '<button style="margin-right: 5px;" type="button" onclick="openWindow('+id+',\''+title+'\',6)" class="btn btn-primary btn-xs">成为商户</button>';
+        // }
+        if(merch_status=='已认证待审批'){
+            result += '<button style="margin-right: 5px;" type="button" onclick="openWindow('+id+',\''+title+'\',1)" class="btn btn-primary btn-xs">认证管理</button>';
+        }else if(reg_method==2 && merch_status=='已认证待审批'){
+            // result += '<button style="margin-right: 5px;" type="button" onclick="openWindow('+id+',\''+title+'\',2)" class="btn btn-normal btn-xs">认证管理</button>';
+        }else if(merch_status=='已认证已审批'){
+            // result += '<button style="margin-right: 5px;" type="button" onclick="openWindow('+id+',\''+title+'\',3)" class="btn btn-warning btn-xs">业务关联</button>';
+        }
+        if(row.agent_status==2 && row.agent_id==0){
+            result += '<button style="margin-right: 5px;" type="button" onclick="openWindow('+id+',\''+title+'\',4)" class="btn btn-danger btn-xs">分销管理</button>';
+        }
+
+        return result;
+    }
+
+    function set(){
+        var index = layer.open({
+            type: 2,
+            title: 'GPT访问配置',
+            area:['100%','100%'],
+            content: "{:url('admin/operaweb/set_gpt')}"
+        });
+    }
+
+    function edit(id,name){
+        var index = layer.open({
+            type: 2,
+            title: '修改-'+name,
+            area:['100%','100%'],
+            content: "{:url('admin/operaweb/save_rotate')}&id="+id
+        });
+        // layer.full(index);
+    }
+
+    function openWindow(id,title,typ){
+        let url = '';
+        if(typ==1){
+            layer.confirm('确认该客户['+title+']通过商户审批吗？',function(index){
+                $.ajax({
+                    url: "<?php echo Url('admin/operaweb/website_user'); ?>",
+                    data: {'id': id,'typ':typ,'pa':1},
+                    type: 'post',
+                    cache: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        layer.msg(data.msg, {
+                            icon: 1,
+                            time: 2000
+                        }, function(){
+                            window.location.reload();
+                        });
+                        return true;
+                    }
+                });
+            });
+        }
+        else if(typ==2){
+            url = "{:Url('admin/operaweb/baseinfo')}";
+        }
+        else if(typ==3){
+            url = "{:Url('admin/operaweb/connect_app')}";
+        }
+        else if(typ==4){
+            url = "{:Url('admin/operaweb/distr_manage')}";
+        }
+        else if(typ==5){
+            url = "{:Url('admin/operaweb/set_usergpt')}";
+        }
+        else if(typ==6){
+            //配置为商户
+            layer.confirm('确认该客户['+title+']配置为商户吗？',function(index){
+                $.ajax({
+                    url: "<?php echo Url('admin/operaweb/set_usermerch'); ?>",
+                    data: {'id': id,'typ':typ,'pa':1},
+                    type: 'post',
+                    cache: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        layer.msg(data.msg, {
+                            icon: 1,
+                            time: 2000
+                        }, function(){
+                            window.location.reload();
+                        });
+                        return true;
+                    }
+                });
+            });
+        }
+
+        if(url!=''){
+            var index = layer.open({
+                type: 2,
+                title: title,
+                area:['100%','100%'],
+                content: url+'&id='+id
+            });
+        }
+    }
+
+</script>
+
+</body>
+</html>

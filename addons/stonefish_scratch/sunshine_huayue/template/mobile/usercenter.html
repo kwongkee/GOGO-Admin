@@ -1,0 +1,137 @@
+{template 'header'}
+<!-- container -->
+<div class="ui-container">
+	<ul  class="ui-list ui-list-link  ui-list-active ui-list-cover ui-border-tb">
+		<li class="ui-border-t"  onclick="window.location.href='{php echo $this->createMobileUrl('detail',array('detail_openid'=>self::$openid))}'">
+			<div class="ui-list-icon" >
+			<span style="background-image:url({$userinfo['headimgurl']});border-radius:5px;"></span>
+			</div>
+			<div class="ui-list-info">
+			<h4 class="ui-nowrap">进入个人主页</h4>
+			</div>
+		</li>
+	</ul>
+	<ul  class="ui-list ui-list-link  ui-list-active ui-list-cover ui-border-tb">
+		<li class="ui-border-t"  onclick="window.location.href='{php echo $this->createMobileUrl('userwallet')}'">
+			<div class="ui-list-thumb">
+				<span style="background-image:url({$_W['siteroot']}/addons/sunshine_huayue/common/img/mycomment.png);border-radius:5px;"></span>
+				</div>
+			<div class="ui-list-info">
+			<h4 class="ui-nowrap">我要提现</h4>
+			</div>
+		</li>
+		<li class="ui-border-t"  onclick="window.location.href='{php echo $this->createMobileUrl('userset')}'">
+			<div class="ui-list-thumb">
+				<span style="background-image:url({$_W['siteroot']}/addons/sunshine_huayue/common/img/moments.png);border-radius:5px;"></span>
+				</div>
+			<div class="ui-list-info">
+			<h4 class="ui-nowrap">个人设置</h4>
+			</div>
+		</li>
+		<li class="ui-border-t"  onclick="window.location.href='{php echo $this->createMobileUrl('mygiftorderlist')}'">
+			<div class="ui-list-thumb">
+				<span style="background-image:url({$_W['siteroot']}/addons/sunshine_huayue/common/img/moments.png);border-radius:5px;"></span>
+				</div>
+			<div class="ui-list-info">
+			<h4 class="ui-nowrap">礼物购买记录</h4>
+			</div>
+		</li>
+		<li class="ui-border-t"  onclick="window.location.href='{php echo $this->createMobileUrl('mymoments')}'">
+			<div class="ui-list-thumb">
+				<span style="background-image:url({$_W['siteroot']}/addons/sunshine_huayue/common/img/moments.png);border-radius:5px;"></span>
+				</div>
+			<div class="ui-list-info">
+			<h4 class="ui-nowrap">动态管理</h4>
+			</div>
+		</li>
+		<li class="ui-border-t" onclick="window.location.href='{php echo $this->createMobileUrl('commentlist',array('comment_openid'=>self::$openid))}'">
+			<div class="ui-list-thumb">
+				<span style="background-image:url({$_W['siteroot']}/addons/sunshine_huayue/common/img/mycomment.png);border-radius:5px;"></span>
+				</div>
+			<div class="ui-list-info">
+			<h4 class="ui-nowrap">点评回复</h4>
+			</div>
+		</li>
+		<li class="ui-border-t"  onclick="window.location.href='{php echo $this->createMobileUrl('mycommentmanage')}'">
+			<div class="ui-list-thumb">
+				<span style="background-image:url({$_W['siteroot']}/addons/sunshine_huayue/common/img/comment.png);border-radius:5px;"></span>
+				</div>
+			<div class="ui-list-info">
+			<h4 class="ui-nowrap">点评删除</h4>
+			</div>
+		</li>
+		<!-- <li class="ui-border-t"  onclick="window.location.href='{php echo $this->createMobileUrl('mychatroommine')}'">
+			<div class="ui-list-thumb">
+				<span style="background-image:url({$_W['siteroot']}/addons/sunshine_huayue/common/img/chatroom.png);border-radius:5px;"></span>
+				</div>
+			<div class="ui-list-info">
+			<h4 class="ui-nowrap">我的房间</h4>
+			</div>
+		</li> -->
+		<li class="ui-border-t"  onclick="window.location.href='{php echo $this->createMobileUrl('defriendlist')}'">
+			<div class="ui-list-thumb">
+				<span style="background-image:url({$_W['siteroot']}/addons/sunshine_huayue/common/img/chatroom.png);border-radius:5px;"></span>
+				</div>
+			<div class="ui-list-info">
+			<h4 class="ui-nowrap">黑名单</h4>
+			</div>
+		</li>
+	</ul>
+	<script type="text/javascript">
+	// change visible
+	function change_visible(obj) {
+		var _self = $(obj);
+		// if checked  then false
+		if(_self.attr('checked')) {
+			_self.attr('checked',true);
+			isvisible = 'open';
+		}else {
+			_self.attr('checked',false);
+			isvisible = 'close';
+		}
+
+		// ajax
+		$.ajax({
+			type:'post',
+			url:"{php echo $this->createMobileUrl('visible')}",
+			data:{isvisible:isvisible},
+			success:function(d) {
+				if(d.res == '100') {
+					//
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+	}
+	// change visible
+	function change_notice(obj) {
+		var _self = $(obj);
+		// if checked  then false
+		if(_self.attr('checked')) {
+			_self.attr('checked',true);
+			is_notice = 'y';
+		}else {
+			_self.attr('checked',false);
+			is_notice = 'n';
+		}
+
+		// ajax
+		$.ajax({
+			type:'post',
+			url:"{php echo $this->createMobileUrl('changenotice')}",
+			data:{is_notice:is_notice},
+			success:function(d) {
+				if(d.res == '100') {
+					//
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+	}
+
+	</script>
+	{template 'menu'}
+</div>
+{template 'footer'}

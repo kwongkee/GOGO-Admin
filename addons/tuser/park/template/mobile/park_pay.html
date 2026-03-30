@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <!-- Meta, title, CSS, favicons, etc. -->
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>购物中心-停车缴费系统</title>
+        <link href="{$modulePublic}css/bootstrap.min.css" rel="stylesheet" type="text/css">
+        <style>
+            body{
+                background: #5A9BD5;
+            }
+            .container_left{
+                float: left;
+                margin-top: 150px;
+            }
+            .container_right {
+                float: right;
+                text-align: center;
+            }
+        </style>
+        <script src="{$modulePublic}shop/js/jquery-1.8.3.min.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="" style="margin-top:150px">
+                <div class="container_left">
+                    <div class="" style="">
+                        <div style="margin-top:12px;float:left;display: block;text-align: center; vertical-align: middle;color: #fff;font-weight: bold;font-size: 20px;">
+                            金额
+                        </div>
+                        <div style="margin-left:20px;float:right;">
+                            <input style="font-size: 16px;width:220px;height:50px;" type="text" id="money" class="form-control span7" placeholder="请输入金额" name="money" value="">
+                        </div>
+                    </div>
+                    <div style="margin-top:120px;margin-left:80px;">
+                        <button style="height:50px;font-size: 16px;" class="btn btn-default submit_pay">提交收费</button>
+                    </div>
+                </div>
+                <div class="container_right return_qrcode" style="display:none;">
+                    <h3 style="text-align:center;margin-bottom: 50px;">亲爱的客户请扫描二维码</h3>
+                    <div>
+                        <img src="{$modulePublic}img/park_pay_qrcode.png" class="qr_code_img"/>
+                    </div>
+                </div>
+
+                <div class="container_right return_msg" style="display:none;">
+                    <h3 style="text-align:center;margin-bottom: 50px;"></h3>
+                    <div class="qr_code_text" style="margin-top:150px;">
+                        <h3 style="color: #fff;letter-spacing:3px;">
+                            尊敬的<span class="username"></span>会员<span class="plate_number"></span><br/><br/>
+                            <span class="return_msg_show"><span class="msg">支付成功！欢迎下次光临</span>&nbsp;(<span class="countdown">5</span>)</span>
+                        </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="order_id"/>
+    </body>
+    <script>
+        var time = function (obj) {
+            var left_time = obj.html() * 1;
+            if (left_time == 0) {
+                $(".return_msg").hide();
+                wait = 3;
+            } else {
+                left_time--;
+                obj.html(left_time);
+                setTimeout(function () {
+                    time(obj);
+                }, 1000);
+            }
+        }
+        //领取优惠券
+        $(".submit_pay").click(function () {
+            var money = $('#money').val() * 1;
+            if (money <= 0) {
+                alert('请输入正确的金额');
+                return;
+            }
+            var param = {};
+            param.money = money;
+            $.ajax({
+                url: "{php echo $this->createMobileUrl('ajax_web',array('sdo'=>'park_pay_get_qrcode'))}",
+                type: "post",
+                data: param,
+                dataType: "json",
+                success: function (res) {
+                    if (res.error_code == 1) {
+                        $(".return_qrcode").show();
+                        $(".return_msg").hide();
+                        $(".qr_code_img").attr('src', res.data.qrcode);
+                        $("#order_id").val(res.data.order_id);
+                    } else {
+                        show_error("订单创建失败," + res.error_msg, 0);
+                    }
+                }
+            })
+        })
+
+        $(function () {
+            window.setInterval(function () {
+                var order_id = $("#order_id").val();
+                if (order_id) {
+                    var param = {};
+                    param.order_id = order_id;
+                    $.ajax({
+                        url: "{php echo $this->createMobileUrl('ajax_web',array('sdo'=>'check_order'))}",
+                        type: "post",
+                        data: param,
+                        dataType: "json",
+                        success: function (res) {
+                            if (res.data.status == 3) {
+                                //支付失败
+                                show_error("支付失败," + res.data.fail_reason, 0);
+                            } else if (res.data.status == 2) {
+                                $('.username').html(res.data.username);
+                                var plate_number = res.data.plate_number;
+                                var plate_text = '';
+                                if(plate_number) {
+                                    plate_text = ',车牌号'+plate_number;
+                                    $('.plate_number').html(plate_text);
+                                }
+                                if (res.data.credit > 0) {
+                                    show_error("支付成功！共消耗" + res.data.credit + "积分,欢迎下次光临" + res.data.fail_reason, 1);
+                                } else {
+                                    show_error("支付成功！共支付" + res.data.pay_money + "元,欢迎下次光临" + res.data.fail_reason, 1);
+                                }
+                            }
+                        }
+                    })
+                }
+            }, 3000);
+        });
+        function show_error(error_msg, success) {
+            $(".return_qrcode").hide();
+            $(".return_msg").show();
+            $(".qr_code_img").attr('src', '');
+            $(".return_msg .msg").html(error_msg);
+            if (success == 0) {
+                $(".return_msg .return_msg_show").css("color", "red");
+            }
+
+            $(".return_msg .countdown").html(5);
+            $("#order_id").val('');
+            $("#money").val('');
+            time($(".countdown"));
+        }
+    </script>
+</html>

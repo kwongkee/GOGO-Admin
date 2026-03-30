@@ -1,0 +1,272 @@
+{include file="common/header"}
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<script src="http://apps.bdimg.com/libs/jquery-qrcode/1.0.0/jquery.qrcode.min.js"></script>
+<style>
+	.choice_pay{
+		width: 80%;
+		margin: auto;
+	}
+	
+	.choice_pay h1{text-align: center;color: #666;font-size: 16px;}
+	.choice_pay form{margin-top: 5%;}
+	.type{
+		float: left;
+	}
+	.type2{
+		float:right
+	}
+	.is_pay{
+		display: inline-block;
+		width: 50%;
+		height: 40px;
+		background: #ccc;
+		margin:5% 0 0 22%;
+		line-height: 40px;
+		text-align: center;
+		color: #666;
+	}
+	.clear{clear: both;}
+	#qrcode canvas{margin: auto;}
+</style>
+<style>
+.pagination { display: inline-block; padding-left: 0; margin: 20px 0; border-radius: 4px; }
+.pagination li { display: inline; }
+.pagination li a,.pagination li span { position: relative; float: left; padding: 6px 12px; margin-left: -1px; line-height: 1.428571429; text-decoration: none; background-color: #fff; border: 1px solid #ddd; }
+.pagination li:first-child a { margin-left: 0; border-bottom-left-radius: 4px; border-top-left-radius: 4px; }
+.pagination li:last-child a { border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
+.pagination li a:hover, .pagination li a:focus { background-color: #eee; }
+.pagination .active span, .pagination .active span:hover, .pagination .active span:focus { z-index: 2; color: #fff; cursor: default; background-color: #428bca; border-color: #428bca; }
+.pagination .disabled span, .pagination .disabled span:hover, .pagination .disabled span:focus { color: #999; cursor: not-allowed; background-color: #fff; border-color: #ddd; }
+.pagination-lg li a { padding: 10px 16px; font-size: 18px; }
+.pagination-sm li a, .pagination-sm li span { padding: 5px 10px; font-size: 12px; }
+</style>
+<body>
+<div class="x-nav">
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<div class="x-body">
+
+
+<form class="layui-form layui-form-pane" id="forms" method="post" action="">
+  
+	<div class="layui-form-item">
+	
+		<div class="layui-inline">
+			<label class="layui-form-label">日期选择</label>
+			<div class="layui-input-inline" style="width: 132px;">
+				<input type="text" name="start_time" id="start_time" autocomplete="off" placeholder="开始时间" class="layui-input">
+			</div>
+
+			<div class="layui-form-mid">-</div>
+			<div class="layui-input-inline" style="width: 132px;">
+				<input type="text" name="end_time" id="end_time" autocomplete="off" placeholder="结束时间" class="layui-input">
+			</div>
+		</div>
+		
+		<div class="layui-inline">
+			<label class="layui-form-label">订单编号</label>
+			<div class="layui-input-inline">
+				<input type="text" name="ordersn" maxlength='30'  placeholder="请输入订单编号" autocomplete="off" class="layui-input">
+			</div>
+		</div>
+	
+		<div class="layui-inline">
+			<div class="layui-form-item" style="margin-bottom:0px;">
+				<button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="demo">确认搜索</button>
+				<button class="layui-btn layui-btn-warm layui-btn-sm" lay-submit="" lay-filter="demo2">订单导出</button>				
+			</div>
+		</div>
+		
+	</div>
+
+</form>
+
+    <table class="layui-table">
+        <thead>
+			<tr style="text-align:center;">
+				<th style="text-align:center;">序号</th>
+				<th style="text-align:center;">开票时间</th>
+				<th style="text-align:center;">开票金额</th>
+				<th style="text-align:center;">发票号码</th>
+				<th style="text-align:center;">订单编号</th>
+				<th style="text-align:center;">开具状态</th>            
+				<th style="text-align:center;">发票下载</th>
+				<th style="text-align:center;">操作</th>
+			</tr>
+        </thead>
+		
+        <tbody>
+		{volist name="order.lists" id="vo" key="k"}
+			<tr class="i_tr" style="text-align:center;">
+				<td>{$k}</td>
+				<td>{$vo.create_date|date="Y-m-d H:i:s",###}</td>
+				<td>{$vo.KPHJJE} 元</td>
+				<td>{$vo.FP_HM}</td>
+				<td><a href="#" onclick="infos('{$vo.openid}')">{$vo.DDH}</a></td>
+				<td>
+					{if condition="$vo.state eq 1"}
+						<span class="layui-btn layui-btn-xs layui-btn-radius">成功</span>
+					{else /}
+						<span class="layui-btn layui-btn-xs layui-btn-radius layui-btn-danger">失败</span>
+					{/if}
+				</td>
+				<td>
+					{if condition="$vo.PDF_URL != '' "}
+						<a class="layui-btn layui-btn-xs layui-btn layui-btn-warm layui-btn-radius" href="{$vo.PDF_URL}">发票下载</a>
+					{else /}
+						<span class="layui-btn layui-btn-xs layui-btn-radius layui-btn-danger">暂无发票</span>
+					{/if}
+				</td>
+
+				<td>
+					<a href="#" class="layui-btn layui-btn-radius layui-btn-normal" onclick="edits({$vo.id})">订单详情</a>
+				</td>
+			</tr>
+		{/volist}
+        </tbody>
+    </table>
+	
+    <div class="page">
+		{$order.pages}
+    </div>
+	
+</div>
+</body>
+
+<script>
+layui.use(['form', 'layedit', 'laydate'], function(){
+	var form = layui.form
+	,layer = layui.layer
+	,layedit = layui.layedit
+	,laydate = layui.laydate
+	,nowTime = new Date().valueOf()
+	,max     = null;
+
+	//日期
+	laydate.render({
+		elem: '#date'
+	});
+	laydate.render({
+		elem: '#date1'
+	});
+
+	// 查看订单详细信息
+	window.edits = function(gid) {		
+		layer.open({
+			type:2,
+			title:'订单详情',
+			shade:0.3,
+			area:['980px','320px'],
+			content:"{:Url('Invoice/infos')}&gid="+gid
+		});
+	}
+
+    // 查看订单详细信息
+    window.infos = function(gid) {
+        layer.open({
+            type:2,
+            title:'开票人信息',
+            shade:0.3,
+            area:['980px','280px'],
+            content:"{:Url('Invoice/infoss')}&opid="+gid
+        });
+    }
+	
+	var start = laydate.render({
+		elem:'#start_time',
+		type:'datetime',
+		max:nowTime,
+		btns:['clear','confirm'],
+		done:function(value,date){
+			endMax = end.config.max;
+			end.config.min = date;
+			end.config.min.month = date.month-1;
+		}
+	});
+	
+	var end = laydate.render({
+		elem:'#end_time',
+		type:'datetime',
+		max:nowTime,
+		done:function(value,date){
+			if($.trim(value) == ''){
+				var curDate = new Date();
+				date = {'date':curDate.getDate(),'month':curDate.getMonth()+1,'year':curDate.getFullYear()};
+			}
+			start.config.max = date;
+			start.config.max.month = date.month-1;
+		}
+		
+	});
+  
+  //创建一个编辑器
+  var editIndex = layedit.build('LAY_demo_editor');
+ 
+  //自定义验证规则
+  form.verify({
+    title: function(value){
+      if(value.length < 5){
+        return '标题至少得5个字符啊';
+      }
+    }
+    ,pass: [/(.+){6,12}$/, '密码必须6到12位']
+    ,content: function(value){
+      layedit.sync(editIndex);
+    }
+  });
+  
+  
+	//监听提交   确认搜索
+	form.on('submit(demo)', function(data) {
+		var start = data.field.start_time;
+		var end   = data.field.end_time;
+		var ordersn = data.field.ordersn;
+		var urls    = "{:Url('Invoice/index')}";
+		$('#forms').attr('action',urls);
+		return true;
+		/*if((start == '' && end == '') && ordersn == '') {
+			layer.alert('必须填写一个搜索条件',{
+				title:'温馨提示'
+			});
+			return false;
+		}*/
+	});
+	
+	
+	form.on('submit(demo2)',function(data){
+		
+		var start = data.field.start_time;
+		var end   = data.field.end_time;
+		var urls    = "{:Url('Invoice/espost')}";
+		$('#forms').attr('action',urls);
+		
+		if(start == '' && end == '') {
+			layer.alert('请选择导出订单时间');
+			return false;
+		} else {
+			
+			return true;
+			/*$.ajax({
+				url:"{:url('Invoice/espost')}",
+				type:'POST',
+				data:{'start_time':start,'end_time':end},
+				dataType:'json',
+				success:function(res){
+					console.dir(res);
+					console.dir(res.code);
+				},error:function(er){
+					console.log(er);
+				}
+			});*/
+		}		
+		return false;
+	})
+	
+	
+});
+</script>
+
+
+</html>

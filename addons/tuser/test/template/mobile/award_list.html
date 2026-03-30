@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+    <head lang="en">
+        <meta charset="UTF-8">
+        <title>积分商城</title>
+        <script src="{$modulePublic}shop/js/template.js"></script>
+        <script src="{$modulePublic}shop/js/common.js"></script>
+        <script src="{$modulePublic}shop/js/SetSize.js"></script>
+
+        <meta name="screen-orientation" content="portrait/landscape">
+        <meta content="yes" name="apple-mobile-web-app-capable">
+        <meta content="yes" name="apple-touch-fullscreen">
+        <meta content="black" name="apple-mobile-web-app-status-bar-style">
+        <meta content="telephone=no" name="format-detection">
+
+        <link href="{$modulePublic}shop/css/index.css" rel="stylesheet" type="text/css">
+        <link href="{$modulePublic}shop/css/mall.css" rel="stylesheet" type="text/css">
+        <link href="{$modulePublic}shop/css/swiper.min.css" rel="stylesheet" type="text/css">
+        <style>
+            #Header_02 .titleField .btns i svg{ fill:#8c8c8c;}
+            #Header_02 .titleField .label{background:#fff; border:1px solid #bababa; border-radius:0;}
+            #Header_02 .titleField .label .ssbtn{ background-color:#bababa;}
+            #Header_02 .titleField .label .ssbtn svg{ fill:#fff;}
+            #Header_02 .titleField{ padding:0.7em 5.2em;}
+
+            .sortType_02 a.on.up span::after {
+                -webkit-transform: rotate(-135deg); 
+            }
+            .sortType_02 a.on.down span::after {
+                -webkit-transform: rotate(45deg);
+                margin-top:-6px;
+            }
+            .sortType_02.type a span::after{
+                content: none;
+            }
+        </style>
+    </head>
+    <body>
+        <script>
+            document.body.style.fontSize = SetSize.getScreenRatio() * 10 + 'px';</script>
+        <script src="{$modulePublic}shop/js/svgPackage.js"></script>
+        <script src="{$modulePublic}shop/js/idangerous.swiper.min.js"></script>
+
+        <form id="myform" action="" onsubmit="return false;">
+            <section id="main01" class="prod overf">
+                <div class="bannerPanel_02">
+                    <div class="listField">
+                       <ul class="swiper-wrapper" style="width: 100%; height: 500px;">
+                            {php foreach($index_info['banners'] as $banner) { }
+                            <li class="swiper-slide" style="width: 100%; height: 500px;">
+                                <a href="{$banner[1]}">
+                                    <img src="{php echo $attach_url . '/'.$banner[0]}" alt="">
+                                </a>
+                            </li>
+                            {php } }
+                        </ul>
+                    </div>
+                    <div class="controlField"><span class="swiper-pagination-switch swiper-visible-switch swiper-active-switch"></span></div>
+                </div>
+
+                <div class="brandListPanel_02">
+                    <div class="sortField sortType_02 type">
+                        <a href="{php echo $this->createMobileUrl('award_list',array('type'=>'award'))}" class="{if $type=='award'}on{/if}"><span id="sp_fl">奖品</span></a>
+                        <a href="{php echo $this->createMobileUrl('award_list',array('type'=>'coupon',))}" class="{if $type=='coupon'}on{/if}"><span id="sp_type">优惠券</span></a>
+                    </div>
+                    <div class="smark"></div>
+                </div>
+
+                <div class="brandListPanel_02" style='margin-top:10px;'>
+                    <div class="sortField sortType_02">
+                        <a href="{php echo $this->createMobileUrl('award_list',array('type'=>$type,'order'=>'credit','sort'=>$outSort))}" class="{if $_GPC['order']=='credit'}on{/if} {$_GPC['sort']}"><span id="sp_type">按积分</span></a>
+                        <a href="{php echo $this->createMobileUrl('award_list',array('type'=>$type,'order'=>'cashed','sort'=>$outSort))}" class="{if $_GPC['order']=='cashed'}on{/if} {$_GPC['sort']}"><span id="sp_fl">按兑换</span></a>
+                    </div>
+                    <div class="smark"></div>
+                </div>
+                <div class="commodityList">
+                    <ul>
+                        {php foreach($couponList as $row) { }
+                        <li>
+                            <a href="{php echo $this->createMobileUrl('award_coupon_detail',array('id'=>$row['id']))}">
+                                <div class="pic"><div class="picture">
+                                        <img data-bg="http://file.capitaland.com.cn/webupload/346-1/Inegral/images/201612/201612062021267859.jpg" alt="" src="data:image/PNG;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAEElEQVR42gEFAPr/AP///wAI/AL+Sr4t6gAAAABJRU5ErkJggg==" style="width: 100%; height: 100%; background-position: 50% 50%; background-repeat: no-repeat; background-size: cover; background-image: url(&quot;{php echo $attach_url . '/'.$row['img']}&quot;);">
+                                    </div>
+                                </div>
+                                <div class="text">
+                                    <h2>{$row['name']}</h2>
+                                    {if $row['cashed']}
+                                    <h3>已兑{php echo $row['cashed']}件</h3>
+                                    {/if}
+                                    <div class="illustrate">
+                                        <div class="illu ziti"><span class="hasbg"><i><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_shoppingbag_1"></use></svg></i></span> <span class="nobg">自提</span></div>
+                                    </div>
+                                    <div class="coprice">  <del>
+                                            <!--原价：<small>￥</small><big>1098.00</big></del>-->
+                                            <br>
+                                            <span><small></small><big>{$row['credit']}积分</big></span></div>
+                                </div>
+                            </a>
+                        </li>
+                        {php } }
+
+                        {php foreach($awardList as $row) { }
+                        <li>
+                            <a href="{php echo $this->createMobileUrl('award_credit_detail',array('id'=>$row['id']))}">
+                                <div class="pic"><div class="picture">
+                                        <img data-bg="http://file.capitaland.com.cn/webupload/346-1/Inegral/images/201612/201612062021267859.jpg" alt="" src="data:image/PNG;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAEElEQVR42gEFAPr/AP///wAI/AL+Sr4t6gAAAABJRU5ErkJggg==" style="width: 100%; height: 100%; background-position: 50% 50%; background-repeat: no-repeat; background-size: cover; background-image: url(&quot;{php echo $attach_url . '/'.$row['img']}&quot;);">
+                                    </div>
+                                </div>
+                                <div class="text">
+                                    <h2>{$row['name']}</h2>
+                                    {if $row['cashed']}
+                                    <h3>已兑{php echo $row['cashed']}件</h3>
+                                    {/if}
+                                    <div class="illustrate">
+                                        <div class="illu ziti"><span class="hasbg"><i><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_shoppingbag_1"></use></svg></i></span> <span class="nobg">自提</span></div>
+                                    </div>
+                                    <div class="coprice">  <del>
+                                            <!--原价：<small>￥</small><big>1098.00</big></del>-->
+                                            <br>
+                                            <span><small></small><big>{$row['credit']}积分</big></span></div>
+                                </div>
+                            </a>
+                        </li>
+                        {php } }
+                    </ul>
+                </div>
+                </div>
+            </section>
+                    <nav id="nav" class="mainNav">
+                <div class="linkField">
+               <ul>
+                    <li>
+                        <a href="{php echo $this->createMobileUrl('index2')}" >
+                            <i><svg><use xlink:href = "#icon_index_1"/></svg></i>
+                            <span>逛商场</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="{php echo $this->createMobileUrl('shop_activity_list')}" >
+                            <i><svg><use xlink:href = "#icon_star_1"/></svg></i>
+                            <span>活动</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{php echo $this->createMobileUrl('award_list')}" class="current">
+                            <i><svg><use xlink:href = "#icon_gift_1"/></svg></i>
+                            <span>换礼品</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{php echo $this->createMobileUrl('index')}" >
+                            <i><svg><use xlink:href = "#icon_user_2"/></svg></i>
+                            <span>我</span>
+                        </a>
+                    </li>
+                </ul>
+                </div>
+            </nav>
+            <script>
+                var mySwiper = new Swiper('.bannerPanel_02 .listField', {
+                    autoplay: 5000,
+                    pagination: '.controlField',
+                    loop: true
+                })
+            </script>
+            {template 'share'}
+    </body>
+</html>

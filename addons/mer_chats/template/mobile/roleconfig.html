@@ -1,0 +1,121 @@
+{template '_headers'}
+<style>
+    .ck{
+        width: 10%;
+        height: 44.8px;
+    }
+    .uup{
+        width: 90%;
+        height: 44.8px;
+        float: right;
+    }
+    .uups{
+        display: inline-block;
+        width: 70%;
+        height: 44.8px;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+    }
+    .up{
+        display: inline-block;
+        width: 100%;
+        height: 44.8px;
+        float: right;
+        /*margin-right: 10px;*/
+    }
+</style>
+<div class="warp">
+    <div class="container">
+        <div class="store-list">
+            <div class="store-checkbox">
+                <input type="checkbox" id="hvtck" name="checkAll" />
+                <span class="dohovertree" id="dohovertree">全选</span>
+                <button id="alertBtn" type="button" class="zbox-btn zbox-btn-blue zbox-btn-outlined del fr" onclick="del();"><img src="../addons/mer_chats/static/images/icon_07.png" alt="" style="width: 20%; margin-right: 5px;"><span>删除角色</span></button>
+                <button id="" type="button" class="zbox-btn zbox-btn-blue zbox-btn-outlined add fr" onclick="add();"><img src="../addons/mer_chats/static/images/icon_06.png" alt="" style="width: 20%; margin-right: 5px;"><span>添加角色</span></button>
+            </div>
+            <ul>
+                {loop $role $index $item}
+                    <li>
+                        <span class="ck"><input type="checkbox" name="myCheck" value="{$item['id']}" /></span>
+                        <p class="uup">
+                            <a class="item up" href="{php echo url('entry',array('do'=>'index','p'=>'editrole','m'=>'mer_chats','id'=>$item['id']))}">
+                                <span class="uups">{$item['roleName']}</span>
+                            </a>
+                        </p>
+                    </li>
+                {/loop}
+            </ul>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function add() {
+        var url = "{php echo url('entry',array('do'=>'index','p'=>'roleadd','m'=>'mer_chats'))}";
+        window.location.href = url;
+    }
+
+    // 全选操作;
+    $('#hvtck').click(function() {
+        if(this.checked) {
+            $("input:checkbox[name=myCheck]").each(function(index,vals) {
+                //操作
+                this.checked = !this.checked;
+            });
+        } else {
+            $("input:checkbox[name=myCheck]").each(function(index,vals) {
+                //操作
+                this.checked = false;
+            });
+        }
+    });
+
+
+
+    // 删除数据
+    function del() {
+
+        if (!confirm('您确定要删除吗？')) {
+            return false;
+        }
+
+        var checkbox = {};
+        var flage = false;
+
+        $("input:checkbox[name=myCheck]:checked").each(function (index) {
+            //操作
+            checkbox[index] = $(this).val();
+            flage = true;
+        });
+
+        if (!flage) {
+            $.DialogByZ.Alert({Title: "提示", Content: "请选择您要操作的数据", BtnL: "确定", FunL: alerts})
+            return false;
+        }
+
+        var urls = "{php echo url('entry',array('do'=>'index','p'=>'delrole','m'=>'mer_chats'))}";
+        $.ajax({
+            url: urls,
+            type: 'POST',
+            data: {'myCheck': checkbox},
+            success: function (res) {
+                // 获取成功改变按钮
+                var red = JSON.parse(res);
+                console.log(red);
+                if (red.code != 1) {
+                    $.DialogByZ.Alert({Title: "提示", Content: red.msg, BtnL: "确定", FunL: alerts})
+                }
+
+                $.DialogByZ.Alert({Title: "提示", Content: red.msg, BtnL: "确定", FunL: alerts})
+                setTimeout(function () {
+                    window.location.reload();
+                }, 1200);
+            }
+        });
+    }
+
+</script>
+{template '_footers'}

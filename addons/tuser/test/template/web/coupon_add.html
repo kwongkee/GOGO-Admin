@@ -1,0 +1,122 @@
+{template 'common/header'}
+<script>
+    require(['jquery', 'util', 'datetimepicker'], function ($, u) {
+        $('#expiry_date_start').datetimepicker({
+            format: 'Y-m-d',
+            language: 'zh-CN',
+            pickDate: false,
+            pickTime: false,
+            hourStep: 1,
+            autoclose: true,
+            inputMask: true,
+            minView: "month",
+            timepicker: false,
+        });
+        $('#expiry_date_end').datetimepicker({
+            format: 'Y-m-d',
+            language: 'zh-CN',
+            pickDate: false,
+            pickTime: false,
+            hourStep: 1,
+            autoclose: true,
+            inputMask: true,
+            minView: "month",
+            timepicker: false,
+        });
+    });
+</script>
+<div class="clearfix">
+    <form id="theform" class="form form-horizontal" action="" method="post">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                添加优惠券
+            </div>
+            <div class="panel-body">
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">选择商铺</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <select class="level form-control" data_id="{$row['uid']}" name='shop_id'>
+                                {php foreach($shops as $k=>$shop) {}
+                                <option value="{$shop['id']}">{$shop['name']}</option>
+                                {php } }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">优惠券标题</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <input type="text" id="scan_title" class="form-control span7" placeholder="" name="name" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">优惠券图片</label>
+                        <div class="col-sm-9 col-xs-12">
+                            {php echo tpl_form_field_image('img','')}<em>推荐尺寸440x300</em>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">可使用的会员等级</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <select class="level form-control" data_id="{$row['uid']}" name='level'>
+                                {php foreach($levels as $k=>$level) {}
+                                <option value="{$k}">{php echo $level}</option>
+                                {php } }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">可以使用的店面</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <input type="text" id="scan_title" class="form-control span7" placeholder="" name="store" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">优惠券数量</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <input type="text" id="scan_title" class="form-control span7" placeholder="" name="total_num" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">积分兑换</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <input type="text" id="scan_title" class="form-control span7" placeholder="" name="credit" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">密码</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <input type="text" id="scan_title" class="form-control span7" placeholder="" name="password" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">有效期开始</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <input type="text" id="expiry_date_start" class="form-control span7" placeholder="" name="expiry_date_start" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">有效期结束</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <input type="text" id="expiry_date_end" class="form-control span7" placeholder="" name="expiry_date_end" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">优惠详情</label>
+                        <div class="col-sm-9 col-xs-12">
+                            {php echo tpl_ueditor('desc','')}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
+                    <div class="col-md-2 col-lg-1">
+                        <input name="submit" type="submit" value="保存" class="btn btn-primary btn-block" />
+                        <input type="hidden" name="token" value="{$_W['token']}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{template 'common/footer'}

@@ -1,0 +1,217 @@
+{include file="common/header_new"}
+<link href="https://cdn.bootcss.com/bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    .container { max-width: 1200px; }
+    .template-preview {
+        border: 2px solid #28a745;
+        background-color: #f0fff4;
+        min-height: 200px;
+    }
+    .param-pool {
+        border-right: 1px dashed #ccc;
+        padding-right: 15px;
+    }
+    .param-item {
+        cursor: move;
+        padding: 5px;
+        margin: 2px 0;
+        background: #e9ecef;
+    }
+    .data-table {
+        border: 2px solid #28a745;
+        background: #f8fff8;
+    }
+    .data-table th { background: #d4edda; }
+</style>
+
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <div class="container mt-4">
+                    <h2 class="text-center mb-4">智能装箱单配置系统</h2>
+
+                    <!-- 模板选择区 -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <select class="form-control template-selector">
+                                <option value="standard">标准模板</option>
+                                <option value="custom">自定义模板</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 主体布局 -->
+                    <div class="row">
+                        <!-- 参数库 -->
+                        <div class="col-md-3 param-pool">
+                            <h5>可选参数 <button class="btn btn-sm btn-info float-right" id="saveTemplate">保存模板</button></h5>
+                            <div id="paramList" class="mb-3">
+                                <!-- 动态加载参数 -->
+                            </div>
+                        </div>
+
+                        <!-- 表格编辑区 -->
+                        <div class="col-md-9">
+                            <!-- 头部信息 -->
+                            <div class="header-section mb-3 p-3 template-preview">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>发货人信息</label>
+                                            <textarea class="form-control shipper-info" rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>收货人信息</label>
+                                            <textarea class="form-control consignee-info" rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 数据表格 -->
+                            <table class="table data-table">
+                                <thead id="tableHeader"></thead>
+                                <tbody id="tableBody">
+                                <tr class="data-row">
+                                    <td><input type="text" class="form-control"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <button class="btn btn-success mt-2" id="addRow">+ 添加行</button>
+                        </div>
+                    </div>
+
+                    <!-- 操作区 -->
+                    <div class="row mt-4">
+                        <div class="col-md-12 text-center">
+                            <button class="btn btn-primary mr-2" id="exportPDF">导出PDF</button>
+                            <button class="btn btn-secondary" id="resetAll">重置配置</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+</body>
+<script>
+    $(function() {
+        // 参数配置
+        const params = [
+            { id: 'productName', name: '产品名称', required: true },
+            { id: 'quantity', name: '数量', type: 'number' },
+            { id: 'grossWeight', name: '毛重(kg)', type: 'number' },
+            { id: 'size', name: '尺寸(L*W*H)' },
+            { id: 'unitPrice', name: '单价(USD)', type: 'currency' },
+            { id: 'totalValue', name: '总价(USD)', type: 'currency' }
+        ];
+
+        // 初始化参数库
+        function initParamList() {
+            $('#paramList').empty();
+            params.forEach(param => {
+                $('#paramList').append(`
+        <div class="param-item" data-id="${param.id}">
+          ${param.name}
+          ${param.required ? '<span class="text-danger">*</span>' : ''}
+        </div>
+      `);
+            });
+        }
+
+        // 添加表格列
+        $('#paramList').on('click', '.param-item', function() {
+            const paramId = $(this).data('id');
+            const param = params.find(p => p.id === paramId);
+
+            // 添加表头
+            $('#tableHeader').append(`
+      <th data-id="${paramId}">
+        ${param.name}
+        ${param.required ? '<span class="text-danger">*</span>' : ''}
+      </th>
+    `);
+
+            // 添加表格列
+            $('.data-row').each(function() {
+                const inputType = param.type === 'number' ? 'number' : 'text';
+                $(this).append(`
+        <td>
+          <input type="${inputType}"
+                 class="form-control"
+                 ${param.required ? 'required' : ''}>
+        </td>
+      `);
+            });
+        });
+
+        // 添加数据行
+        $('#addRow').click(() => {
+            const newRow = $('.data-row:first').clone();
+            newRow.find('input').val('');
+            $('#tableBody').append(newRow);
+        });
+
+        // PDF导出
+        $('#exportPDF').click(() => {
+            const doc = new jsPDF();
+
+            // 添加头部信息
+            doc.setFontSize(16);
+            doc.text('Commercial Invoice & Packing List', 15, 15);
+
+            // 添加公司信息
+            doc.setFontSize(10);
+            doc.text([
+                `Shipper: ${$('.shipper-info').val()}`,
+                `Consignee: ${$('.consignee-info').val()}`
+            ], 15, 25);
+
+            // 生成表格数据
+            const headers = [];
+            const rows = [];
+
+            $('#tableHeader th').each(function() {
+                headers.push($(this).text().replace('*','').trim());
+            });
+
+            $('#tableBody tr').each(function() {
+                const row = [];
+                $(this).find('input').each(function() {
+                    row.push($(this).val());
+                });
+                rows.push(row);
+            });
+
+            // 使用autoTable插件生成表格
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 40,
+                theme: 'grid',
+                styles: {
+                    fillColor: [212, 237, 218], // 浅绿色背景
+                    textColor: [40, 40, 40]
+                },
+                columnStyles: {
+                    0: { cellWidth: 20 },
+                    1: { cellWidth: 'auto' }
+                }
+            });
+
+            doc.save('packing-list.pdf');
+        });
+
+        // 初始化
+        initParamList();
+    });
+</script>

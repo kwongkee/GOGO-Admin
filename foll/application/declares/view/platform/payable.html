@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{$title}</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+  <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+  	<style type="text/css">
+		.clear{clear: both;height: 8px;}
+		.money{color: red;font-weight: bold;font-size: 15px;}
+		.laytable-cell-1-0{ width: 80px; }
+		.laytable-cell-1-2{width: 185px;}
+		.laytable-cell-1-amount{width: 165px;}
+		.laytable-cell-1-4{ width: auto; }
+		
+		.laytable-cell-1-province{ width: 115px; }
+		.laytable-cell-1-city{ width: 80px; }
+		.laytable-cell-1-zone{ width: 80px; }
+		.fee{color: red;}
+		
+		.laytable-cell-1-id{ width: 99px; }
+		.laytable-cell-1-username{ width: 99px; }
+		.laytable-cell-1-sex{ width: 99px; }
+		.laytable-cell-1-city{ width: 99px; }
+		.laytable-cell-1-sign{ width: 99px; }
+		.laytable-cell-1-classify{ width: 99px; }
+		.laytable-cell-1-experience{ width: 99px; }
+		.laytable-cell-1-score{ width: 99px; }
+		.laytable-cell-1-wealth{ width: 99px; }
+		.layui-form{width: 830px;}
+	</style>
+</head>
+<body> 
+
+<div style="margin-top: 10px;"></div>
+<p><h2 style="text-align: center;color: green;">{$title}</h2></p>
+
+
+<form action="{:Url('Platform/payable')}" method="post">
+	
+	<div class="layui-form-item">
+	  <label class="layui-form-label">选择时间</label>
+	  <div class="layui-input-inline">
+	    <input type="text" name="startDate" id="test1" required="" lay-verify="required" placeholder="请输选择时间" autocomplete="off" class="layui-input layui-form-danger">
+	  </div>
+	  <input type="submit" name="" class="layui-btn" id="" value="搜索" />
+	</div>
+	
+</form>
+
+<!-- 数据加载部分 -->
+<div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-2" id="duizhang">
+	<div class="layui-table-box  layui-form">
+		<div class="layui-table-header">
+			<table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+				<thead>
+					<tr>
+						<th data-field="username" rowspan="2"><div class="layui-table-cell laytable-cell-1-amount"><span>数据时间</span></div></th>
+						<th data-field="username" rowspan="2"><div class="layui-table-cell laytable-cell-1-amount"><span>实名认证费</span></div></th>
+						<th data-field="amount" rowspan="2"><div class="layui-table-cell laytable-cell-1-amount"><span>支付订单费</span></div></th>
+						<th data-field="amount" rowspan="2"><div class="layui-table-cell laytable-cell-1-amount"><span>商品备案费</span></div></th>
+						<th data-field="amount" rowspan="2"><div class="layui-table-cell laytable-cell-1-amount"><span>电子订单费</span></div></th>
+						<th data-field="amount" rowspan="2"><div class="layui-table-cell laytable-cell-1-amount"><span>平台应付总额</span></div></th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+		
+		<div class="layui-table-body layui-table-main">
+			<table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+				<tbody id="tabledata">
+					<tr data-index="">
+						<td><div class="layui-table-cell laytable-cell-1-amount">{$new}</div></td>
+						{volist name="$Money" id='vo' key='index'}
+						<td><div class="layui-table-cell laytable-cell-1-amount">{$vo}元</div></td>
+						{/volist}
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<script>
+layui.use(['layer','form','jquery','laypage','table','flow','element','laydate'], function(){
+	var $ = layui.jquery,form=layui.form,layer=layui.layer,laypage=layui.laypage,table=layui.table,element=layui.element,flow=layui.flow;
+	var element = layui.element;
+	var laydate = layui.laydate;
+	
+	laydate.render({
+		elem:'#test1',
+		type:'datetime',
+		format:'yyyy-MM-dd',
+		btns:['clear','confirm'],
+		istoday:true,
+	})
+	
+	
+  
+  $('.demoTable .layui-btn').on('click', function(){
+  	/*var startDate = new Date($('#test1').val());
+  	startDate     = startDate.getTime();*/
+  	var startDate   = $('#test1').val();
+  	
+    /*var type = $(this).data('type');
+    console.dir(type)*/
+    
+    //active[type] ? active[type].call(this) : '';
+  });
+});
+</script>
+
+</body>
+</html>

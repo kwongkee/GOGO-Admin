@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <link href="../addons/ewei_shopv2/static/css/framework7.bundle.min.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="../addons/ewei_shopv2/static/js/framework7.bundle.min.js"></script>
+
+    <link href="../addons/ewei_shopv2/static/css/mstyle.css" rel="stylesheet" type="text/css"/>
+    <title>月卡购买</title>
+    <style type="text/css">
+        .tabs .tab {
+        }
+    </style>
+</head>
+<body class="" style="background: #eee;">
+<div id="app"><div class="view view-main">
+    <div id="payCard"></div>
+    <div class="page">
+        <div class="navbar">
+            <div class="navbar-inner">
+                <div class="left"></div>
+                <div class="title">月卡购买</div>
+                <div class="right"></div>
+                <div class="subnavbar">
+                    <div class="subnavbar-inner">
+                        <div class="segmented segmented-raised">
+                            <a class="button tab-link tab-link-active" href="#tab1">购买</a>
+                            <a class="button tab-link" href="#tab2">有效月卡</a>
+                            <!--
+                            <a class="button tab-link" href="#tab3">记录</a> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page-content hide-navbar-on-scroll">
+            <div class="tabs">
+                <div class="tab tab-active" id="tab1">
+                    <form id="frmCard" onsubmit="return false;">
+                        <div class="list accordion-list">
+                            <ul>
+                                <li class="accordion-item accordion-item-opened">
+                                    <a href="#" class="item-link item-content">
+                                        <div class="item-media"><i class="icon material-icons">brightness_5</i></div>
+                                        <div class="item-inner">
+                                            <div class="item-title">全日卡</div>
+                                        </div>
+                                    </a>
+                                    <div class="accordion-item-content">
+                                        <div class="list media-list">
+                                            <ul id="aList">
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li class="accordion-item">
+                                    <a href="#" class="item-link item-content">
+                                        <div class="item-media"><i class="icon material-icons">brightness_6</i></div>
+                                        <div class="item-inner">
+                                            <div class="item-title">日间卡</div>
+                                        </div>
+                                    </a>
+                                    <div class="accordion-item-content">
+                                        <div class="list media-list">
+                                            <ul id="dList">
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li class="accordion-item">
+                                    <a href="#" class="item-link item-content">
+                                        <div class="item-media"><i class="icon material-icons">brightness_4</i></div>
+                                        <div class="item-inner">
+                                            <div class="item-title">夜间卡</div>
+                                        </div>
+                                    </a>
+                                    <div class="accordion-item-content">
+                                        <div class="list media-list">
+                                            <ul id="nList">
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </form>
+
+                    <div class="list inset">
+                        <ul>
+                            <li><a href="#" class="button button-fill button-large list-button color-red" onclick="buyCard()">确定购买</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="block-title">温馨提醒</div>
+                    <div class="card">
+                        <div class="card-content card-content-padding color-red">购买月卡后仍需主动确认停车，否则视为无月卡用户，需照常付费。</div>
+                    </div>
+                </div>
+                <div class="tab" id="tab2">
+                    <!-- 已购买的 -->
+                </div>
+
+                <div class="tab" id="tab3">
+                    <!-- 购买记录 -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div></div>
+
+<script id="tplVlist" type="text/template7">
+    {{#each rows}}
+    <div class="block-title">{{js "cardType[this.card_type]"}}</div>
+    <div class="list">
+        <ul>
+            <li>
+                <div class="item-content">
+                    <div class="item-media"><i class="icon f7-icons">calendar_fill</i></div>
+                    <div class="item-inner">
+                        <div class="item-title">{{sdate}}</div>
+                        <div class="item-after">起始日期</div>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="item-content">
+                    <div class="item-media"><i class="icon f7-icons">alarm_fill</i></div>
+                    <div class="item-inner">
+                        <div class="item-title">{{edate}} 23:59:59</div>
+                        <div class="item-after">截止时间</div>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="item-content">
+                    <div class="item-media"><i class="icon f7-icons">money_yen_round_fill</i></div>
+                    <div class="item-inner">
+                        <div class="item-title">¥ {{money}}</div>
+                        <div class="item-after">实付金额</div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    {{/each}}
+    {{#js_if "this.rows.length === 0 "}}
+    <div class="block-title">没有有效月卡</div>
+    {{/js_if}}
+</script>
+
+<script id="tplCardList" type="text/template7">
+    {{#each rows}}
+    <li>
+        <label class="radio item-radio item-content">
+            <input type="radio" name="id" value="{{id}}" {{js "@root.IsCheck ? 'checked' : ''"}} />
+            <i class="icon icon-radio" {{js "@root.IsCheck ? 'checked' : ''"}}></i>
+            <div class="item-inner">
+                <div class="item-title-row">
+                    <div class="item-title">{{month}} 个月 </div>
+                    <div class="item-after">优惠价: {{price}} 元</div>
+                </div>
+                <div class="item-subtitle">原价: {{price1}} 元</div>
+                <div class="item-text">有效期 {{start_date}} 到 {{end_date}}</div>
+            </div>
+        </label>
+    </li>
+    {{/each}}
+</script>
+
+<script id="tplList" type="text/template7">
+    {{#each rows}}
+    <div class="block-title">{{js "cardType[this.card_type]"}}</div>
+    <div class="list">
+        <ul>
+            <li>
+                <div class="item-content">
+                    <div class="item-media"><i class="icon f7-icons">calendar_fill</i></div>
+                    <div class="item-inner">
+                        <div class="item-title">{{sdate}}</div>
+                        <div class="item-after">起始日期</div>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="item-content">
+                    <div class="item-media"><i class="icon f7-icons">alarm_fill</i></div>
+                    <div class="item-inner">
+                        <div class="item-title">{{edate}} 23:59:59</div>
+                        <div class="item-after">截止时间</div>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="item-content">
+                    <div class="item-media"><i class="icon f7-icons">money_yen_round_fill</i></div>
+                    <div class="item-inner">
+                        <div class="item-title">¥ {{money}}</div>
+                        <div class="item-after">售价</div>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="item-content">
+                    <div class="item-media"><i class="icon f7-icons">bars_chart_square_fill</i></div>
+                    <div class="item-inner">
+                        <div class="item-title">{{js "buyStatus[this.status]"}}</div>
+                        <div class="item-after">状态</div>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="item-content">
+                    <div class="item-media"><i class="icon f7-icons">time_fill</i></div>
+                    <div class="item-inner">
+                        <div class="item-title">{{sysTime}}</div>
+                        <div class="item-after">购买时间</div>
+                    </div>
+                </div>
+            </li>
+            {{#js_if "this.status !== 'Y' "}}
+            <li>
+                <a href="/card/pay/{{id}}" class="item-link item-content">
+                    <div class="item-media"><i class="icon material-icons">payment</i></div>
+                    <div class="item-inner">
+                        <div class="item-title"></div>
+                        <div class="item-after">立即支付</div>
+                    </div>
+                </a>
+            </li>
+            {{/js_if}}
+        </ul>
+    </div>
+    {{/each}}
+    {{#js_if "this.rows.length === 0 "}}
+    <div class="block-title">没有购买记录</div>
+    {{/js_if}}
+</script>
+
+<script>
+    var cardType = ['全日卡', '日间卡', '夜间卡'];
+    var buyStatus = {'W': '等待付款', 'Y': '已支付', 'N': '支付失败'};
+    var routes = [
+        {
+            path: '/',
+            url: '/m/',
+        },
+        {
+            path: '/about/',
+            url: '/m/about',
+        },
+        {
+            path: '/card/pay/:id',
+            componentUrl: '/app/index.php?i=14&c=entry&m=ewei_shopv2&do=mobile&r=parking.card.pay',
+        },
+        // Default route (404 page). MUST BE THE LAST
+        {
+            path: '(.*)',
+            url: '/m/404',
+        },
+    ];
+
+    var $$ = Dom7;
+    var app  = new Framework7({
+        root: '#app',
+        id: 'card',
+        name: 'Framework7',
+        theme: 'ios',
+        view: {
+            stackPages: true
+        },
+        dialog: {
+            buttonCancel: '取消',
+            buttonOk: '确定'
+        },
+        routes: routes,
+    });
+
+    var mainView = app.views.create('.view-main', {
+    });
+
+    const toast = (title, timeout) => {
+        var toast = app.toast.create({
+            text: title,
+            position: 'top',
+            closeTimeout: timeout || 5000,
+            closeButton: true,
+            closeButtonText: '<i class="icon f7-icons ios-only">close</i>',
+        });
+        toast.open();
+
+        return toast;
+    };
+
+    const alert = (title) => {
+        app.dialog.alert(title, '温馨提示');
+    };
+
+    const confirm = (title, ok, cancel) => {
+        app.dialog.confirm(title, '温馨提示', ok, cancel);
+    };
+
+    const template = (from, to, context) => {
+        var template = $$(from).html();
+
+        var compiledTemplate = Template7.compile(template);
+        $$(to).html(compiledTemplate(context));
+    };
+
+    const getJSON = (url, args, cb) => {
+        app.dialog.preloader('正在获取数据...');
+        args.random = Math.random();
+
+        app.request.json(url, args, (data) => {
+            if (data !== null) {
+                if (data.status || data.status !== 0) {
+                    toast('错误:' + data.message);
+                } else {
+                    cb(data);
+                }
+            } else {
+                toast('请求错误, 返回数据格式错误');
+            }
+            app.dialog.close();
+        }, (xhr, status) => {
+            toast('HTTP request error');
+            app.dialog.close();
+        });
+    };
+
+    const getJSONBack = (url, args, cb) => {
+        args.random = Math.random();
+
+        app.request.json(url, args, (data) => {
+            if (data !== null) {
+                if (data.status || data.status !== 0) {
+                    console.log('getJSONBack 错误:' + data.message);
+                } else {
+                    cb(data);
+                }
+            } else {
+                console.log('getJSONBack 请求错误, 返回数据格式错误');
+            }
+        }, (xhr, status) => {
+            console.log('getJSONBack HTTP request error');
+        });
+    };
+
+    const postJSON = (url, args, cb, dict) => {
+        app.dialog.preloader('正在提交数据...');
+        app.request.postJSON(url, args, (data) => {
+            if (data !== null) {
+                if (data.status || data.status !== 0) {
+                    alert('错误:' + data.message);
+                } else {
+                    cb(data);
+                }
+            } else {
+                alert('请求错误, 返回数据格式错误');
+            }
+            app.dialog.close();
+        }, (xhr, status) => {
+            alert('HTTP request error');
+            app.dialog.close();
+        });
+    };
+
+    const postJSON1 = (url, args, cb) => {
+        app.dialog.preloader('正在提交数据...');
+        app.request.postJSON(url, args, (data) => {
+            cb(data);
+            app.dialog.close();
+        }, (xhr, status) => {
+            alert('HTTP request error');
+            app.dialog.close();
+        });
+    };
+
+    const buyCard = () => {
+        var id = $$('#frmCard [name="id"]:checked').val();
+        console.log('id', id);
+        var url = '/app/index.php?i=14&c=entry&m=ewei_shopv2&do=mobile&r=parking.card.buy';
+        postJSON(url, {id: id}, (obj) => {
+            console.log(obj);
+            var id = obj.data.id, o = obj.obj;
+            var s = '购买 ' + cardType[o.ctype] + ', 有效期 ' + o.month + ' 月: ' + o.sdate + ' 到 ' + o.edate + ', 金额: ' + o.money + ' 元。现在支付吗？';
+            confirm(s, () => {
+                // obj.money 支付金额
+                // 支付处理
+                payCard(id);
+            }, () => { /* 取消 */ });
+        });
+        return false;
+    };
+    // const buyCard = () => {
+    //     var id = $$('#frmCard [name="id"]:checked').val();
+    //     console.log('id', id);
+    //     var url = '/app/index.php?i=14&c=entry&m=ewei_shopv2&do=mobile&r=parking.card.buy';
+    //     postJSON(url, {id: id}, (obj) => {
+    //         console.log(obj);
+    //         var id = obj.data.id;
+    //         confirm('现在支付吗？', () => {
+    //             // obj.money 支付金额
+    //             // 支付处理
+    //             payCard(id);
+    //         }, () => { /* 取消 */ });
+    //     });
+    //     return false;
+    // };
+
+    const post = (url, args, cb) => {
+        app.dialog.preloader('正在提交数据...');
+        app.request.post(url, args, (data) => {
+            if (data !== null) {
+                if (data.status || data.status !== 0) {
+                    alert('错误:' + data.message);
+                } else {
+                    cb(data);
+                }
+            } else {
+                alert('请求错误, 返回数据格式错误');
+            }
+            app.dialog.close();
+        }, function(xhr, status) {
+            alert('HTTP request error');
+            app.dialog.close();
+        });
+    };
+
+    const payNow = (obj) => {
+        WeixinJSBridge.invoke('getBrandWCPayRequest', obj, (res) => {
+            if (res.err_msg == 'get_brand_wcpay_request:ok') {
+                alert('支付完成');
+            } else if(res.err_msg=='get_brand_wcpay_request:cancel') {
+                alert('取消支付');
+                console.log(res);
+            } else {
+                alert('启动微信支付失败, 请检查你的支付参数');
+                console.log(res);
+            }
+        })
+    };
+
+    const payCard = (id) => {
+        //alert('支付 payCard:');
+        var url = '/app/index.php?i=14&c=entry&m=ewei_shopv2&do=mobile&r=parking.card.payCard';
+        postJSON1(url, {id: id}, (obj) => {
+            //payNow(obj.data);
+            // ok
+            $$('#payCard').html(obj.data);
+            document.forms['formPost'].submit();
+            /*
+            url = 'http://shop.gogo198.cn/addons/ewei_shopv2/payment/wechat/pay.php';
+            post(url, obj.data, (obj) => {
+                toast('ok');
+            });
+            // */
+        });
+        return false;
+    }
+
+    const init = () => {
+        var url = '/app/index.php?i=14&c=entry&m=ewei_shopv2&do=mobile&r=parking.card.valid';
+        getJSONBack(url, {}, (obj) => {
+            console.log(obj);
+            template('#tplVlist', '#tab2', obj);
+        });
+
+        url = '/app/index.php?i=14&c=entry&m=ewei_shopv2&do=mobile&r=parking.card.info';
+        getJSONBack(url, {ctype: 0}, (obj) => {
+            console.log(obj);
+            template('#tplCardList', '#aList', {rows: obj.rows, IsCheck: true});
+        });
+        getJSONBack(url, {ctype: 1}, (obj) => {
+            console.log(obj);
+            template('#tplCardList', '#dList', {rows: obj.rows, IsCheck: false});
+        });
+        getJSONBack(url, {ctype: 2}, (obj) => {
+            console.log(obj);
+            template('#tplCardList', '#nList', {rows: obj.rows, IsCheck: false});
+        });
+
+        /*
+        url = '/app/index.php?i=14&c=entry&m=ewei_shopv2&do=mobile&r=parking.card.list';
+        getJSONBack(url, {}, (obj) => {
+          console.log(obj);
+          template('#tplList', '#tab3', obj);
+        });
+        // */
+    }
+
+    init();
+</script>
+</body>
+</html>

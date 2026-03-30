@@ -1,0 +1,91 @@
+{template 'header'}
+	<div class="container-fluid">
+		<h4><span class='glyphicon glyphicon-circle-arrow-right'></span>&nbsp;&nbsp;替换图片地址</h4>
+		<div class="row">
+			<div class="col-md-6">
+				<img src="{php echo $info['gift_pic']}">
+				<label>礼物图片</label>
+				<script type="text/javascript">
+				function showImageDialog(elm, opts, options) {
+					require(["util"], function(util){
+						var btn = $(elm);
+						var ipt = btn.parent().prev();
+						var val = ipt.val();
+						var img = ipt.parent().next().children();
+						options = {'width':400,'extras':{'text':'ng-model=\'entry.thumb\''},'global':false,'class_extra':'','direct':true,'multiple':false};
+						util.image(val, function(url){
+							if(url.url){
+								if(img.length > 0){
+									img.get(0).src = url.url;
+								}
+								ipt.val(url.attachment);
+								ipt.attr("filename",url.filename);
+								ipt.attr("url",url.url);
+							}
+							if(url.media_id){
+								if(img.length > 0){
+									img.get(0).src = "";
+								}
+								ipt.val(url.media_id);
+							}
+						}, null, options);
+					});
+				}
+				function deleteImage(elm){
+					require(["jquery"], function($){
+						$(elm).prev().attr("src", "./resource/images/nopic.jpg");
+						$(elm).parent().prev().find("input").val("");
+					});
+				}
+				</script>
+				<div class="input-group ">
+					<input type="text" name="thumb" value="" id='gift_pic' class="form-control ng-pristine ng-untouched ng-valid" autocomplete="off" disabled="disabled">
+					<span class="input-group-btn">
+						<button class="btn btn-default" type="button" onclick="showImageDialog(this);">选择图片</button>
+					</span>
+				</div>
+				<div class="input-group " style="margin-top:.5em;">
+					<img src="" onerror="this.src='./resource/images/nopic.jpg'; this.title='图片未找到.'" class="img-responsive img-thumbnail" width="150"> <em class="close" style="position:absolute; top: 0px; right: -14px;" title="删除这张图片" onclick="deleteImage(this)">×</em>
+				</div>
+				<p class="help-block">图片请上传背景透明的png图片</p>
+			</div>
+		</div>
+		<div class="row">
+		<div class="col-md-6">
+		<button class="btn btn-sm btn-success form-control" onclick="saveItem('{php echo $info['id']}')">更新图片</button>
+		</div>
+		</div>
+		<br>
+	</div>
+	<script type="text/javascript">
+
+	function saveItem(id) {
+
+		var gift_pic = $("#gift_pic").val();
+
+		if(!gift_pic) {
+			alert("请选择图片");
+			return;
+		}
+
+		$.ajax({
+			type:'post',
+			data:{
+				update_type:'pic',
+				gift_pic:gift_pic,
+				gift_id:id
+			},
+
+			url:"{php echo $this->createWebUrl('giftupdate')}",
+			success:function(d) {
+				if(d.res == '100') {
+					alert('保存成功');
+					window.location.href='{php echo $this->createWebUrl('giftmall')}';
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+	}
+	</script>
+{template 'footer'}

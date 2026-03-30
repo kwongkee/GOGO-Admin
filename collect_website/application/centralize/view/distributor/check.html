@@ -1,0 +1,94 @@
+{include file="public/header"}
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+</style>
+
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">审核</div>
+                            <div class="layui-input-block">
+                                <select name="agent_status" id="agent_status" lay-verify="required" lay-filter="agent_status">
+                                    <option value="">请选择</option>
+                                    <option value="2">审核通过</option>
+                                    <option value="-1">审核不通过</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item agent_remark" style="display:none;">
+                            <div class="layui-form-label">理由</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" name="agent_remark" id="agent_remark" placeholder="请输入审核不通过理由">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload'],function() {
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+
+        form.on('select(agent_status)',function(data){
+            let val = data.value;
+            if(val==2){
+                $('.agent_remark').hide();
+            }else if(val==-1){
+                $('.agent_remark').show();
+            }
+            form.render(null,'component-form-element');
+        });
+
+        form.on('submit(component-form-element)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+
+            if(data.field['agent_status']==-1 && data.field['agent_remark']==''){
+                layer.msg('请输入审核不通过理由');return false;
+            }
+
+            if(data.field['agent_status']==2){
+                data.field['agent_remark'] = '';
+            }
+
+            $.ajax({
+                url:"{:Url('centralize/distributor/check')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+</script>

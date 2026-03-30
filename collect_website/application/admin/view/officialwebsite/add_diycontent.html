@@ -1,0 +1,277 @@
+{include file="common/header_inner_new"}
+<style>
+    .show{display:block;}
+    .disf{display:flex;align-items: center;}
+
+</style>
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+
+<body style="padding:15px;box-sizing: border-box;">
+<form class="layui-form" action="">
+    <input type="hidden" name="id" value="{$id}">
+    <div class="layui-form-item">
+        <label class="layui-form-label">内容标题</label>
+        <div class="layui-input-block">
+            <input type="text" name="title" value="{$data['title']}"  lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">内容分类</label>
+        <div class="layui-input-block">
+            <select name="type" id="type" lay-filter="type">
+                <option value="1" {if $data['type']==1}selected{/if}>菜单内容</option>
+                <option value="2" {if $data['type']==2}selected{/if}>内页内容</option>
+            </select>
+        </div>
+    </div>
+<!--    <div class="layui-form-item">-->
+<!--        <div class="layui-form-label">内容描述</div>-->
+<!--        <div class="layui-input-block">-->
+<!--            <textarea name="description" id="description" class="layui-textarea" placeholder="请输入描述">$data['description']</textarea>-->
+<!--        </div>-->
+<!--    </div>-->
+
+    <div class="content_box">
+        <fieldset class="layui-elem-field ">
+            <legend>内容页</legend>
+            <div class="layui-form-item">
+                <div class="layui-form-label">内页横幅图(1920*380)</div>
+                <div class="layui-input-block">
+                    <div class="layui-upload" style="margin-top: 10px;">
+                        <button type="button" class="layui-btn" id="img_file2-upload">上传图片(一张)</button>
+                        <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                            预览图：
+                            <div class="layui-upload-list" id="img_file2-upload-list">
+                                {if !empty($data['inner_banner'])}
+                                <div style="display: inline-block;">
+                                    <img onclick="seePic(this);" src="/{$data['inner_banner']}" class="layui-upload-img" style="width:80px;height:80px;">
+                                    <button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button>
+                                    <input type="hidden" name="inner_banner[]" value="{$data['inner_banner']}">
+                                </div>
+                                {/if}
+                            </div>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-field-box" style="text-align: center;">
+                <div class="field-box-con">
+                    {if empty($data['id'])}
+                    <input type="hidden" name="num" value="1">
+                    <fieldset class="layui-elem-field layui-field-title content1 content">
+                        <legend style="text-align: left;">内容1：</legend>
+                        <div class="layui-field-box">
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">标题</div>
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input" name="content_title[]">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">内容</div>
+                                <div class="layui-input-block">
+                                    <script id="cont1" type="text/plain" style="width:100%;height:100px;">
+                                    </script>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                    {else}
+                    <input type="hidden" name="num" value="<?php echo count($data['content']);?>">
+                    {volist name="data.content" key="idx" id="vo"}
+                    <fieldset class="layui-elem-field layui-field-title content1 content">
+                        <legend style="text-align: left;">内容{$idx}：</legend>
+                        <div class="layui-field-box">
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">标题</div>
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input" name="content_title[]" value="{$vo['title']}">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">内容</div>
+                                <div class="layui-input-block">
+                                    <script id="cont{$idx}" type="text/plain" style="width:100%;height:100px;">
+                                                {$vo['title_content']}
+                                            </script>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                    {/volist}
+                    {/if}
+                </div>
+                <div class="add layui-btn">新增</div>
+            </div>
+        </fieldset>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    //Demo
+    layui.use(['layer','form','laydate','upload','colorpicker'], function(){
+        var laydate = layui.laydate;
+        var layer = layui.layer;
+        var form  = layui.form;
+        var $ = layui.jquery;
+        var upload = layui.upload;
+        var colorpicker = layui.colorpicker;
+
+        {if(empty($data['id']))}
+        UE.getEditor('cont1', {
+            initialFrameHeight: 200,
+            serverUrl: 'static/cklein/plugins/ueditor/php/controller.php'
+        });
+
+        var c1 = setInterval(function(){
+            let i = document.getElementById('ueditor_textarea_editorValue').setAttribute('name','cont[]');
+            document.getElementById('ueditor_textarea_editorValue').setAttribute('id','ueditor_textarea_editorValue1');
+            if(typeof(i)=='undefined'){
+                clearInterval(c1);
+            }
+        },1000);
+        {else}
+        {volist name="data.content" key="idx" id="vo"}
+        UE.getEditor('cont{$idx}', {
+            initialFrameHeight: 200,
+            serverUrl: 'static/cklein/plugins/ueditor/php/controller.php'
+        });
+
+        setTimeout(function(){
+            document.getElementById('ueditor_textarea_editorValue').setAttribute('name','cont[]');
+            document.getElementById('ueditor_textarea_editorValue').setAttribute('id','ueditor_textarea_editorValue{$idx}');
+        },2000);
+        {/volist}
+            {/if}
+
+                //监听提交
+                form.on('submit(formDemo)', function(data){
+                    $.ajax({
+                        url:"{:Url('admin/officialwebsite/add_diycontent')}",
+                        type:"POST",
+                        dataType:"json",
+                        data:data.field,
+                        success:function (res) {
+                            layer.msg(res.msg);
+                            if(res.code==0){
+                                setTimeout(function () {
+                                    parent.location.reload();
+                                },2000);
+                            }
+
+                        },
+                        error:function (xhr) {
+                            layer.msg('链接服务错误..');
+                        }
+                    });
+                    return false;
+                });
+
+                // 轮播图内页文件
+                upload.render({
+                    elem: '#img_file2-upload'
+                    ,url: '{:Url("admin/basic/upload_file")}'
+                    ,accept: 'image'
+                    ,data: { folder: 'centralize', type: 'website_detail'}
+                    ,multiple: false
+                    ,number:1
+                    ,before: function(obj){
+                        layer.load(); //上传loading
+                    }
+                    ,done: function(res){
+                        layer.closeAll('loading'); //关闭loading
+                        if(res.code == 1)
+                        {
+
+                            $('#img_file2-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="inner_banner[]" value="'+res.file_path+'"></div>')
+                        }
+                    }
+                });
+
+                //添加多个内容
+                $('.add').click(function(){
+                    let num = parseInt($('input[name="num"]').val());
+                    num+=1;
+
+                    let html = '<fieldset class="layui-elem-field layui-field-title content content'+num+'">\n' +
+                        '                                    <legend style="text-align: left;">内容'+num+'：<div class="layui-btn layui-btn-danger layui-btn-xs" onclick="del('+num+')">删除</div></legend>\n' +
+                        '                                    <div class="layui-field-box">\n' +
+                        '                                        <div class="layui-form-item">\n' +
+                        '                                            <div class="layui-form-label">标题</div>\n' +
+                        '                                            <div class="layui-input-block">\n' +
+                        '                                                <input type="text" class="layui-input" name="content_title[]">\n' +
+                        '                                            </div>\n' +
+                        '                                        </div>\n' +
+                        '                                        <div class="layui-form-item">\n' +
+                        '                                            <div class="layui-form-label">内容</div>\n' +
+                        '                                            <div class="layui-input-block">\n' +
+                        '                                                <div id="con'+num+'"></div>\n'+
+                        '                                                <div class="clearfix"></div>\n'+
+                        '                                            </div>\n'+
+                        '                                        </div>\n'+
+                        '                                    </div>\n'+
+                        '                                </fieldset>';
+
+
+                    $('input[name="num"]').val(num);
+                    $('.field-box-con').find('.content:last').parent().append(html);
+
+                    var script = document.createElement('script');
+                    script.id="cont"+num;
+                    script.type='text/plain';
+                    document.getElementById('con'+num).append(script);
+
+                    UE.getEditor("cont"+num, {
+                        initialFrameHeight: 200,
+                        serverUrl: 'static/cklein/plugins/ueditor/php/controller.php'
+                    });
+                    var cc = setInterval(function(){
+                        let i = document.getElementById('ueditor_textarea_editorValue').setAttribute('name','cont[]');
+                        document.getElementById('ueditor_textarea_editorValue').setAttribute('id','ueditor_textarea_editorValue'+num);
+                        if(typeof(i)=='undefined'){
+                            clearInterval(cc);
+                        }
+                    },1000);
+                });
+            });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+
+    function del(num){
+        var layer = layui.layer,$ = layui.$;
+
+        layer.confirm('确认要删除该内容'+num+'吗？', {
+            btn: ['删除','取消']
+        }, function(){
+            $('.layui-field-box').find('.content'+num).remove();
+            $('#ueditor_textarea_editorValue'+num).remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+</script>
+</body>
+</html>

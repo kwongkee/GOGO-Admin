@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="common/meta"}
+</head>
+<body class="gray-bg">
+<div class="col-sm-12">
+
+    <div class="ibox float-e-margins">
+        <div class="ibox-content" style="display:block;" id="list1">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>常驻用户</th>
+                    <th>访客名称</th>
+                    <th>验证方式</th>
+                    <th>访问时间</th>
+                    <th>到访日期</th>
+                    <th>是否已到访</th>
+                    <th>来次</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name='data' id='vo'}
+                <tr>
+                    <td>{$vo.name}</td>
+                    <td>{$vo.idname}</td>
+                    <td>{$verifType[$vo.verif_type]}</td>
+                    <td>{$vo.expire_time}/小时</td>
+                    <td>{$vo.invait_time|date='Y-m-d',###}</td>
+                    <td>{if $vo.updated_at==''}否{else}是{/if}</td>
+                    <td>{$flag[$vo.is_flag]}</td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+</body>
+</html>

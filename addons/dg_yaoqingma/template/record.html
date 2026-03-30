@@ -1,0 +1,40 @@
+{template 'common/header'}
+<div class="main">
+	<ul class="nav nav-tabs">
+		<li{if $_GPC['do'] == 'manage' } class="active"{/if}><a href="{php echo $this->createWebUrl('manage');}">管理中心</a></li>
+		<li{if $_GPC['do'] == 'record' || $_GPC['do'] == '' } class="active"{/if}><a href="{php echo $this->createWebUrl('record',array('rid'=>$rid));}">参与记录</a></li>
+	</ul> 
+	<div class="panel panel-default">
+		<div class="panel-body table-responsive">
+		<table class="table table-hover">
+			<thead class="navbar-inner">
+				<tr>
+					<th style="width:150px;">昵称</th>
+					<th style="width:150px;">头像</th>
+					<th style="width:200px;" align="center">邀请码</th>
+					<th style="width:200px;" align="center">二维码</th>
+					<th style="width:200px;" align="center">邀请数量</th>
+				</tr>
+			</thead>
+			<tbody>
+				{loop $list $row}
+				<tr>
+					<td>{$row['nick']}</td>
+					<td><img alt="" src="{$row['headimg']}" width='auto' style="max-width:50px; max-height:50px;" height='auto'></td>
+					<td>{$row['invitcode']}</td>
+					<td><img src="https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket={$row['tiket']}" style="width:50px;" align="center" height="50px"></td>
+					{if $row['invitcount']>0}
+					<td><a href="{php echo $this->createWebUrl('invit',array('openid'=>$row['openid'],'rid'=>$row['rid']));}" style="color:red;">{$row['invitcount']}</a></td>
+					{/if}
+					{if $row['invitcount']==0}
+					<td>{$row['invitcount']}</td>
+					{/if}
+				</tr>
+				{/loop}
+			</tbody>
+		</table>
+	</div>
+	</div>
+	{$pager}
+</div>
+{template 'common/footer'}

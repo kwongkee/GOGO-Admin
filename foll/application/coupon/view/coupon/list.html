@@ -1,0 +1,389 @@
+{include file='home_header'}
+<body>
+<!--主体内容-->
+<div class="list-content" style="position: relative;">
+    <!--块元素-->
+    <div class="block">
+        <!--页面有多个表格时，可以用于标识表格-->
+        <h2>列表</h2>
+        <a href="javascript:location.reload();">
+            <button class="button wathet" style="position: absolute;right: 20px;top: 16px;"><span class="icon-reload1"></span> 刷新</button>
+        </a>
+
+        <!--正文内容-->
+        <div class="main">
+
+
+            <!--表格上方的操作元素，添加、删除等-->
+            <div class="operation-wrap">
+                <div class="buttons-wrap">
+                    <button class="button blue add"><span class="icon-plus"></span> 添加</button>
+                </div>
+            </div>
+            <table id="table" class="table color2  no-vertical-line ">
+                <thead>
+                <tr>
+                    <!--<th class="checkbox"><input type="checkbox" class="fill listen-1" /> </th>-->
+                    <th>卡卷编码</th>
+                    <th>名称</th>
+                    <!--<th>标题</th>-->
+                    <!--<th>适用业务</th>-->
+                    <!--<th>适用商户</th>-->
+                    <!--<th>适用条件</th>-->
+                    <!--<th>条件金额</th>-->
+                    <th>优惠金额</th>
+                    <th>发放数量</th>
+                    <th>卡卷状态</th>
+                    <th>审核状态</th>
+
+                    <th>使用方式</th>
+                    <th>限领/张</th>
+                    <!--<th>过期时间</th>-->
+                    <!--<th>领取有效时间</th>-->
+                    <!--<th>结算状态</th>-->
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name='list' id='vo'}
+                <tr>
+                    <!--<td class="checkbox"><input type="checkbox" class="fill listen-1-2" /> </td>-->
+                    <td>{$vo.coupon_num}</td>
+                    <td>{$vo.coupon_name}</td>
+                    <!--<td>{$vo.coupon_title}</td>-->
+                    <!--<td>{$vo.coupon_use_term}</td>-->
+                    <!--<td>{$vo.enough}</td>-->
+                    <td>{$vo.coupon_money}</td>
+                    <td>{$vo.total}</td>
+                    <!--<td>{$vo.coupon_stime}/{$vo.coupon_etime}</td>-->
+                    <!--<td>{$vo.coupon_get_stime}/{$vo.coupon_get_etime}</td>-->
+                    <td>{$vo.coupon_status}</td>
+                    <td>{$vo.check_status}</td>
+                    <td>{$vo.use_type}</td>
+                    <td>{$vo.max_limit}/张</td>
+                    <!--<td>{$vo.platform_sett}</td>-->
+                    <td>
+                        {if !($vo.check_status=='审核中'||$vo.check_status=='审核失败')}
+                        {switch name="$vo.coupon_status"}
+                            {case value="待发布"}
+                                <button class="button blue" onclick="confirPush(this,'{$vo.id}')"><span class="icon-check"></span> 确认发布</button>
+                                <button class="button red" onclick="close_release(this,'{$vo.id}')"><span class="icon-close"></span> 取消发布</button>
+                                <button class="button red" onclick="deleteRow(this,'{$vo.id}');"><span class="icon-remove"></span> 删除</button>
+                            {/case}
+                            {case value="已放弃"}
+                                <!--<button class="button blue" onclick="detil('{$vo.id}')"><span class="icon-eye"></span> 详情</button>-->
+                                <button class="button red" onclick="deleteRow(this,'{$vo.id}');"><span class="icon-remove"></span> 删除</button>
+                            {/case}
+                        {default /}
+                            {if $vo.coupon_status=='生效中'}
+                            <button class="button red" onclick="Disable(this,'{$vo.id}',2);"><span class="icon-close2"></span> 禁用</button>
+                            {else}
+                            <button class="button green" onclick="Enable(this,'{$vo.id}',1);"><span class="icon-check2"></span> 启用</button>
+                        {/if}
+                        {/switch}
+                        {/if}
+                        <button class="button blue" onclick="detil('{$vo.id}')"><span class="icon-eye"></span> 详情</button>
+                    </td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+            <div class="page">
+            {$page}
+            <!--<ul id="page" class="pagination">-->
+                  <!---->
+                <!--</ul>-->
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+<script src="https://cdn.bootcss.com/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+<script>
+    $(".add").click(function() {
+        javaex.dialog({
+            type : "window",
+            title:'新增',
+            mask:true,
+            id : "add",	// 指定id，仅当页面存在多个弹出层，需要关闭指定弹出层时才使用
+            url : "{:Url('coupon/coupon/create')}",	// 页面地址或网址或请求地址
+            width : "1000",	// 弹出层宽度
+            height : "700"	// 弹出层高度
+        });
+    });
+    // obj为当前点击的元素对象
+  
+    function confirPush(obj,id) {
+        javaex.deleteDialog(obj,{
+            content : "确定要发布么!",
+            tip:'发布需要支付一定发行费用',
+            callback :"callback('push',"+id+")"
+        });
+    }
+    
+    function deleteRow(obj,id){
+        javaex.deleteDialog(obj,{
+            content : "确定要删除么!",
+            callback :"callback('del',"+id+")"
+        });
+    }
+    
+    function Disable(obj,id,status) {
+        javaex.deleteDialog(obj,{
+            content : "确定要禁用么!",
+            tip:'禁用之后优惠券活动将失效！',
+            callback :"callback('disable',"+id+','+status+")"
+        });
+    }
+    
+    function Enable(obj,id,status) {
+        javaex.deleteDialog(obj,{
+            content : "确定要启用么!",
+            tip:'启用之后优惠券活动开始！',
+            callback :"callback('disable',"+id+','+status+")"
+        });
+    }
+
+    function close_release(obj,id) {
+        javaex.deleteDialog(obj,{
+            content : "确定要取消么!",
+            tip:'放弃该卷发布',
+            callback :"callback('close',"+id+")"
+        });
+    }
+    
+    function callback(type,id,status=null) {
+        switch (type) {
+            case 'close':
+                req_close(id);
+                break;
+            case 'disable':
+                disables(id,status);
+                break;
+            case 'enable':
+                disables(id,status);
+                break;
+            case 'del':
+                deletes(id);
+                break;
+            case 'push':
+                openQrCode(id);
+                break;
+            default:
+                return false;
+        }
+        console.log(type+id);
+    }
+
+    //打开付款二维码
+    function openQrCode(id) {
+        javaex.optTip({
+            content : "数据提交中，请稍候...",
+            type : "submit"
+        });
+        $.ajax({
+            url:"{:Url('coupon/confirm_push')}",
+            type:'GET',
+            data:{id:id},
+            success:function (res) {
+                console.log(res);
+                if (res.code==0){
+                    javaex.optTip({
+                        content : "请扫码支付发布费用",
+                        type : "success"
+                    });
+                    javaex.alert({
+                        content : '<div id="qrcode"></div>',
+                        maxHeight:'400',
+                        mask:true,
+                        title:res.msg,
+                        confirmName:'取消',
+                        width:'338'
+                    });
+                    jQuery('#qrcode').qrcode({width: 250,height: 200,text: res.data['url']});
+                    req_heartbeat_order(res.data['orderId'])
+                } else {
+                    javaex.optTip({
+                        content : res.msg,
+                        type : "error"
+                    });
+                }
+
+            },
+            error:function (err) {
+                javaex.optTip({
+                    content : "操作失败",
+                    type : "error"
+                });
+            }
+        })
+    }
+
+    /**
+     * 心跳检测支付回调
+     * @param oid
+     */
+    function req_heartbeat_order(oid) {
+        console.log(oid);
+        setInterval(function () {
+            $.ajax({
+                url:"{:Url('coupon/checkPayStatus')}",
+                type:'GET',
+                data:{order_id:oid},
+                success:function (res) {
+                    console.log(res);
+                    if (res.code==0){
+                        if (res.data==1){
+                            javaex.optTip({
+                                content : "支付成功",
+                                type : "success"
+                            });
+                            javaex.close();
+                            setTimeout(function () {
+                                window.location.reload();
+                            },2000);
+                        } else if (res.data==2) {
+                            javaex.optTip({
+                                content : "支付失败",
+                                type : "error"
+                            });
+                            javaex.close();
+                        }
+
+                    }
+                },
+                error:function (err) {
+                    javaex.optTip({
+                        content : "操作失败",
+                        type : "error"
+                    });
+                }
+            })
+        },3000);
+
+        //支付完成关闭弹窗刷新页面
+    }
+
+    function req_close(id) {
+        javaex.optTip({
+            content : "数据提交中，请稍候...",
+            type : "submit"
+        });
+        $.ajax({
+            url:"{:Url('coupon/close_rel')}",
+            type:'GET',
+            data:{id:id},
+            success:function (res) {
+                console.log(res);
+                if (res.code==0){
+                    javaex.optTip({
+                        content : "操作成功",
+                        type : "success"
+                    });
+                    setTimeout(function () {
+                        window.location.reload();
+                    },2000);
+                } else {
+                    javaex.optTip({
+                        content : res.msg,
+                        type : "error"
+                    });
+                }
+
+            },
+            error:function (err) {
+                javaex.optTip({
+                    content : "操作失败",
+                    type : "error"
+                });
+            }
+        })
+    }
+    function disables(id,status) {
+        javaex.optTip({
+            content : "数据提交中，请稍候...",
+            type : "submit"
+        });
+        $.ajax({
+            url:"{:Url('coupon/disable')}",
+            type:'GET',
+            data:{id:id,status,status},
+            success:function (res) {
+                console.log(res);
+                if (res.code==0){
+                    javaex.optTip({
+                        content : "操作成功",
+                        type : "success"
+                    });
+                    setTimeout(function () {
+                        window.location.reload();
+                    },2000);
+                } else {
+                    javaex.optTip({
+                        content : res.msg,
+                        type : "error"
+                    });
+                }
+
+            },
+            error:function (err) {
+                javaex.optTip({
+                    content : "操作失败",
+                    type : "error"
+                });
+            }
+        })
+    }
+
+    function deletes(id) {
+        javaex.optTip({
+            content : "数据删除中，请稍候...",
+            type : "submit"
+        });
+        $.ajax({
+            url:"{:Url('coupon/delete_coupon')}",
+            type:'GET',
+            data:{id:id,status,status},
+            success:function (res) {
+                console.log(res);
+                if (res.code==0){
+                    javaex.optTip({
+                        content : "操作成功",
+                        type : "success"
+                    });
+                    setTimeout(function () {
+                        window.location.reload();
+                    },2000);
+                } else {
+                    javaex.optTip({
+                        content : res.msg,
+                        type : "error"
+                    });
+                }
+
+            },
+            error:function (err) {
+                javaex.optTip({
+                    content : "操作失败",
+                    type : "error"
+                });
+            }
+        })
+    }
+    function detil(id) {
+        javaex.dialog({
+            type : "window",
+            title:'详情',
+            mask:true,
+            id : "add",	// 指定id，仅当页面存在多个弹出层，需要关闭指定弹出层时才使用
+            url : "{:Url('coupon/coupon_detail')}&id="+id,	// 页面地址或网址或请求地址
+            width : "1100",	// 弹出层宽度
+            height : "400"	// 弹出层高度
+        });
+    }
+
+    
+</script>
+</html>

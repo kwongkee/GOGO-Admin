@@ -1,0 +1,1153 @@
+{include file="common/header"}
+<style>
+    .disf{display:flex;align-items: center;justify-content: space-evenly;}
+    .our-services,.aboutus{margin:0 auto;margin-top:30px;width:1200px;}
+    .our-services h2,.aboutus h2{color:#333;}
+    .swiper-container{width: 1200px;height: 380px;}
+    .service_banner{margin-top:15px;text-align:center;}
+    .service_banner .change{display:inline-block;width:16.5%;text-align:center;margin:0 2%;font-size:18px;height:54px;line-height: 54px;}
+    .service_banner .change:first-child{margin-left:0;}
+    .service_banner .change:last-child{margin-right:0;}
+    .service_banner .change_active{background:rgb(1,143,215);color:#fff;border-radius: 30px;}
+    .box{color:#fff;width:22%;position: relative;height:150px;}
+    .box p{position: absolute;color:#fff;top:50%;left:50%;transform: translate(-50%,-50%);font-size: 25px;font-weight: 600;width: 90%;text-align: center;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}
+    .swiper-slide .descript{width:100%;position: absolute;top:10%;left:2%;}
+
+    .aboutus{background:rgb(1,142,215);width:100%;padding:30px 0;color:#fff;}
+    .aboutus .text-center h2,.aboutus .text-center .text-large{color:#fff;}
+    .aboutus .container{width:1200px;margin-top:10px;background:#fff;border-radius:30px;padding:30px;}
+    .price_circle_nav{display: none;}
+
+    @media screen and (max-width: 768px){
+        .our-services{margin:0 auto;margin-top:30px;width:90%;}
+        .service_banner{text-align:center;margin-bottom:10px;}
+        .service_banner .change{font-size:14px;width:fit-content;padding:15px;box-sizing: border-box;height:0;line-height: 0;margin-right:5px;}
+        .swiper-container{width:100%;height:fit-content;}
+        .swiper-container .disf{display:inline-block;padding:0 !important;}
+        .swiper-container .disf .box{height:100%;width:100%;display:inline-block;}
+        .swiper-container .disf .box2{display:inline-block;margin-bottom:7px;}
+        .swiper-container .disf .box2 img{height:230px !important;}
+        .swiper-container .disf .colorbox{display:inline-block;width:100% !important;;height:230px !important;}
+        .swiper-container .swiper-button-prev,.swiper-container .swiper-button-next{display:none;}
+        .swiper-slide .descript{width:100%;position: relative;top:unset;left:unset;margin-bottom:10px;}
+
+        .aboutus .container{width:90%;}
+
+        /**价格查询**/
+        .price_circle_nav{display: block;}
+        .price_circle_nav {padding:20px 10px 5px;max-width:100%}
+        .price_circle_nav_list {max-width:100%;overflow:hidden}
+        .price_circle_nav_list li {width:25%;float:left;margin-bottom:15px}
+        .price_circle_nav_list a {border-radius:50%;width:55px;height:55px;display:block;margin:0 auto;color:#fff;text-align:center;line-height:55px;font-size:45px;-webkit-transition:all 0.2s ease;transition:all 0.2s ease}
+        .price_circle_nav_list a:hover {-webkit-box-shadow:inset 0 0 40px rgba(0,0,0,.3);box-shadow:inset 0 0 40px rgba(0,0,0,.3);-webkit-transition:all 0.2s ease;transition:all 0.2s ease}
+        .price_circle_nav_list a img{width:90%;height:90%;}
+        .price_circle_nav_list span {display:block;width:100%;text-align:center;padding-top:5px;font-size:14px}
+
+    }
+</style>
+<link rel="stylesheet" href="static/css/swiper.min.css">
+<script src="static/js/swiper.min.js"></script>
+<!--================轮播图开始 =================-->
+<section class="slider_area mr_top">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="owl-carousel">
+                    {volist name="rotate" id="vo"}
+                        <div class="item" style="cursor:pointer;">
+                            <a href="/collect_website/public/?s=index/rotate_detail&wid=<?php echo session('wid')?>&id={$vo.id}">
+                            <div class="slide">
+                                <img src="/{$vo.banner}" alt="{$vo.title}" >
+                                <div class="slide-overlay"></div>
+                            </div>
+                            <div class="container" style="display: none;">
+                                <div class="carousel-captions caption-align-center">
+                                    <div class="caption-align-center-wrap">
+                                        <span class="small-heading">WE PROVIDE </span>
+                                        <h2 class="heading color">the best solution<br>for your logistic transport</h2>
+                                        <a href="#" class="btn btn-outline  lighter"> read more</a>
+                                    </div>
+                                </div>
+                            </div>
+                            </a>
+                        </div>
+                    {/volist}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--================轮播图结束 =================-->
+
+<!--================手机版价格查询结束 =================-->
+<section>
+    <div class="price_circle_nav">
+        <ul class="price_circle_nav_list">
+            <li><a href="/collect_website/public/?s=index/price_search&wid=<?php echo session('wid')?>"><img src="static/img/index/index1.png" width="32" height="32"></a><span>价格查询</span></li>
+            <li><a href="/collect_website/public/?s=index/package_tracking&wid=<?php echo session('wid')?>" ><img src="static/img/index/index2.png" width="32" height="32"></a><span>包裹追踪</span></li>
+        </ul>
+        <hr style="background:#666;">
+    </div>
+</section>
+<!--================价格查询结束 =================-->
+
+{volist name="content" key="index" id="vo"}
+    {if $vo['nav_type']==1}
+        <section>
+            <div class="our-services">
+                <div class="text-center">
+                    <h2>{$vo['zh_name']}</h2>
+                    <p class="text-large text-gray">-{$vo['en_name']}-</p>
+                </div>
+        
+                <!--变换头部-->
+                <div class="service_banner">
+                    {volist name="vo.menu_info" key="idx" id="vo2"}
+                        <div class="change change{$index}  {if $idx==1} change_active{/if}" data-i="{$idx}">{$vo2.menu_name}</div>
+                    {/volist}
+                </div>
+        
+                <div class="swiper-container swiper-container{$index}">
+                    <div class="swiper-wrapper">
+                        {volist name="vo.menu_info" key="idx" id="vo2"}
+                            <div class="swiper-slide disf" style="width:100%;padding: 0 60px;box-sizing: border-box;position: relative;">
+                                <p class="descript">{$vo2.description}</p>
+        
+                                {volist name="vo2.child_menu" id="vo3"}
+                                    {if $vo3.child_style==1}
+                                    <a href="/collect_website/public/?s=index/detail&wid=<?php echo session('wid')?>&id={$vo3.menu_id}" class="box" target="_blank">
+                                        <div class="box2" style="width: 100%;">
+                                            <p style="z-index: 10;">{$vo3.word}</p>
+                                            <div class="shadow" style="width: 100%;height: 100%;position: absolute;background: rgba(0,0,0,0.2);z-index: 9;"></div>
+                                            <img src="https://admin.gogo198.cn/{$vo3.imgword}" alt="" style="width:100%;height:150px;">
+                                        </div>
+                                    </a>
+                                    {/if}
+    
+                                    {if $vo3.child_style==2}
+                                    <a href="/collect_website/public/?s=index/detail&wid=<?php echo session('wid')?>&id={$vo3.menu_id}" class="box" target="_blank">
+                                        <div class="box2 colorbox" style="background:{$vo3.color};width:100%;height:150px;">
+                                            <p>{$vo3.word}</p>
+                                        </div>
+                                    </a>
+                                    {/if}
+                                {/volist}
+                            </div>
+                        {/volist}
+                    </div>
+        
+                    <!-- 如果需要导航按钮 -->
+                    <div class="swiper-button-prev swiper-button-black"></div>
+                    <div class="swiper-button-next swiper-button-black"></div>
+                </div>
+            </div>
+        </section>
+        <script>
+            var swiper = new Swiper('.swiper-container{$index}', {
+                // pagination: '.swiper-pagination',
+                // paginationClickable: true,
+                nextButton: '.swiper-button-next',
+                prevButton: '.swiper-button-prev',
+                // spaceBetween: 30,
+                loop:true,
+                onSlideChangeStart:function(swiper){
+                    // 获取当前滑动页的下标
+                    let actIndex = swiper.activeIndex;
+                    let menu_num = "<?php echo count($vo['menu_info']);?>";
+                    console.log(actIndex);
+        
+                    if(menu_num==2) {
+                        if(actIndex==3){
+                            $('.change{$index}').eq(0).addClass('change_active');
+                            $('.change{$index}').eq(0).siblings().removeClass('change_active');
+                        }else{
+                            $('.change{$index}').eq(actIndex-1).addClass('change_active');
+                            $('.change{$index}').eq(actIndex-1).siblings().removeClass('change_active');
+                        }
+                    }else if(menu_num==3) {
+                        if(actIndex==4){
+                            $('.change{$index}').eq(0).addClass('change_active');
+                            $('.change{$index}').eq(0).siblings().removeClass('change_active');
+                        }else{
+                            $('.change{$index}').eq(actIndex-1).addClass('change_active');
+                            $('.change{$index}').eq(actIndex-1).siblings().removeClass('change_active');
+                        }
+                    }else if(menu_num==4) {
+                        if(actIndex==5){
+                            $('.change{$index}').eq(0).addClass('change_active');
+                            $('.change{$index}').eq(0).siblings().removeClass('change_active');
+                        }else{
+                            $('.change').eq(actIndex-1).addClass('change_active');
+                            $('.change').eq(actIndex-1).siblings().removeClass('change_active');
+                        }
+                    }else if(menu_num==5) {
+                        if(actIndex==6){
+                            $('.change{$index}').eq(0).addClass('change_active');
+                            $('.change{$index}').eq(0).siblings().removeClass('change_active');
+                        }else{
+                            $('.change{$index}').eq(actIndex-1).addClass('change_active');
+                            $('.change{$index}').eq(actIndex-1).siblings().removeClass('change_active');
+                        }
+                    }
+                }
+            });
+            $(function(){
+                $('.change{$index}').mouseover(function(){
+                    $(this).siblings().removeClass('change_active');
+                    $(this).addClass('change_active');
+                    let idx = $(this).data('i');
+                    // console.log(idx);
+                    //切换swiper
+                    swiper.slideTo(idx,0);
+                });
+            });
+        </script>
+    {else if($vo['nav_type']==2)}
+        <section>
+            <div class="aboutus" {if $vo.content_info['child_style']==2}style="background:{$vo.content_info['color']};"{/if} {if $vo.content_info['child_style']==1}style="background:url(https://admin.gogo198.cn/{$vo.content_info['imgword']});background-size:cover;background-repeat:no-repeat;"{/if}>
+                <div class="text-center">
+                    <h2>{$vo.zh_name}</h2>
+                    <p class="text-large text-gray">-{$vo.en_name}-</p>
+                </div>
+                <div class="container" style="position:relative;">
+                    <p style="text-indent:2rem;">{$vo.content_info['description']}</p>
+                    <div style="position:absolute;bottom:5px;right:15px;">
+                        <a href="/collect_website/public/?s=index/detail&wid=<?php echo session('wid')?>&id={$vo.content_info['menu_id']}" style="color:#1790FF;">查看更多>></a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    {/if}
+{/volist}
+<!--================我们的服务-Start==================-->
+
+<!--================我们的服务-End===================-->
+
+<!--================关于我们-Start==================-->
+
+<!--================关于我们-End===================-->
+
+<!--================我们的服务-Start=================-->
+<section style="display: none;">
+    <div class="equipment-section">
+        <div class="container">
+            <div class="equipment-mainpanel">
+                <div class="equipment-slider owl-carousel">
+                    <div class="equipment-group">
+                        <div class="equipment-contents">
+                            <h2>Lobeca</h2>
+                            <div class="equipment-contentshide">
+                                <h3>Cargo shiping</h3>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                                    minim veniam, quis nostrud
+                                    exercitation ullamco laboris do consequat.
+                                </p>
+                                <a href="#" class="common-btn">READ MORE</a>
+                            </div>
+                        </div>
+                        <div class="equipment-img">
+                            <img src="static/img/latest-service/equipment-1.jpg" alt="equipment">
+                        </div>
+                    </div>
+                    <div class="equipment-group">
+                        <div class="equipment-contents">
+                            <h2>Air Frieght</h2>
+                            <div class="equipment-contentshide">
+                                <h3>Cargo shiping</h3>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                                    minim veniam, quis nostrud
+                                    exercitation ullamco laboris do consequat.
+
+                                </p>
+                                <a href="#" class="common-btn">READ MORE</a>
+                            </div>
+                        </div>
+                        <div class="equipment-img">
+                            <img src="static/img/latest-service/equipment-2.jpg" alt="equipment">
+                        </div>
+                    </div>
+                    <div class="equipment-group">
+                        <div class="equipment-contents">
+                            <h2>cargo shiping</h2>
+                            <div class="equipment-contentshide">
+                                <h3>Cargo shiping</h3>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                                    minim veniam, quis nostrud
+                                    exercitation ullamco laboris do consequat.
+                                </p>
+                                <a href="#" class="common-btn">READ MORE</a>
+                            </div>
+                        </div>
+                        <div class="equipment-img">
+                            <img src="static/img/latest-service/equipment-3.jpg" alt="equipment">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--================ourservice-section-Start=================-->
+        <section>
+            <div class="ourservice-section">
+                <div class="container">
+                    <div class="page-heading">
+                        <h5>What We Do</h5>
+                        <h2>We Provide Services</h2>
+                    </div>
+                    <div class="ourservice-main">
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="ourservice-panel">
+                                    <div class="ourservice-icon">
+                                        <span><img src="static/img/icon/storage.png" alt="storage"></span>
+                                    </div>
+                                    <h3>Storage</h3>
+                                    <p>Lorem ipsum dolor sit amet, consec quis nostrud exercitation ullamco consequat. </p>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="ourservice-panel">
+                                    <div class="ourservice-icon">
+                                        <span><img src="static/img/icon/cargo.png" alt="storage"></span>
+                                    </div>
+                                    <h3>Cargo</h3>
+                                    <p>Lorem ipsum dolor sit amet, consec quis nostrud exercitation ullamco consequat. </p>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="ourservice-panel">
+                                    <div class="ourservice-icon">
+                                        <span><img src="static/img/icon/sea-freight.png" alt="storage"></span>
+                                    </div>
+                                    <h3>Sea Freight</h3>
+                                    <p>Lorem ipsum dolor sit amet, consec quis nostrud exercitation ullamco consequat. </p>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="ourservice-panel">
+                                    <div class="ourservice-icon">
+                                        <span><img src="static/img/icon/air-freight.png" alt="storage"></span>
+                                    </div>
+                                    <h3>Air freight</h3>
+                                    <p>Lorem ipsum dolor sit amet, consec quis nostrud exercitation ullamco consequat. </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!--================ourservice-section-End=================-->
+    </div>
+</section>
+<!--================我们的服务-End=================-->
+
+<!--================为何选择我们-Start=================-->
+<section style="display:none;">
+    <div class="whychooseus-section">
+        <div class="container">
+            <div class="whychooseus-main">
+                <div class="ourcompany-panel">
+                    <div class="row">
+                        <div class="col-md-4 col-sm-12">
+                            <h2>
+                                <span>OUR COMPANY</span>
+                                Why Choose Us
+                            </h2>
+                        </div>
+                        <div class="col-md-8 col-sm-12">
+                            <p>
+                                Core values are the fundamental beliefs of a person
+                                or organization. The core values are
+                                the guiding principles that t dictate behavior
+                                and action. Core values can help people
+                                to know what is right from wrong, they can
+                                help companies to  if they are on the right
+                                path and fulfilling their business goals;
+                                and they create an unwavering and unchangingguide.
+                                There are many different types of
+                                core values and many different
+                                examples of core values depending
+                                upon the context.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="whychooseus-gridmain">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-4 col-xs-12">
+                            <div class="whychooseus-panel warehouse">
+                                <div class="overlay">
+                                    <span><img src="static/img/icon/wirehouse.png" alt="wirehouse"></span>
+                                    <h3>WAREHOUSE LARGEST<br> STORAGE</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-4 col-xs-12">
+                            <div class="whychooseus-panel">
+                                <span>
+                                    <img src="static/img/icon/team-member.png" alt="team-member">
+                                </span>
+                                <h3><strong><i class="count">200</i>+</strong><br> TEAM MEMBERS</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-4 col-xs-12">
+                            <div class="whychooseus-panel support">
+                                <div class="overlay">
+                                    <span>
+                                        <img src="static/img/icon/support.png" alt="support">
+                                    </span>
+                                    <h3><strong>24/7</strong><br> SUPPORT</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-4 col-xs-12">
+                            <div class="whychooseus-panel">
+                                <span>
+                                    <img src="static/img/icon/safe-delivery.png" alt="safe-delivery">
+                                </span>
+                                <h3>Safe <br>Delivery</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-4 col-xs-12">
+                            <div class="whychooseus-panel easy-payment">
+                                <div class="overlay">
+                                    <span>
+                                        <img src="static/img/icon/easy-payment.png" alt="easy-payment">
+                                    </span>
+                                    <h3>EASY PAYMENT <br>METHODS</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-4 col-xs-12">
+                            <div class="whychooseus-panel">
+                                <span>
+                                    <img src="static/img/icon/satisfied-client.png" alt="satisfied-client">
+                                </span>
+                                <h3><strong class="count">784</strong> <br>Satisfied Clients</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-4 col-xs-12">
+                            <div class="whychooseus-panel countries-covered">
+                                <div class="overlay">
+                                    <span><img src="static/img/icon/globe.png" alt="globe"></span>
+                                    <h3><strong>57</strong> <br>Countries Covered</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-4 col-xs-12">
+                            <div class="whychooseus-panel">
+                                <span>
+                                    <img src="static/img/icon/customer-rating.png" alt="customer-rating">
+                                </span>
+                                <h3><strong>9.9</strong><br> CUSTOMER RATING</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--================为何选择我们-End=================-->
+
+<!--================案例学习-Start=================-->
+<section style="display: none;">
+    <div class="casestudy-section">
+        <!--                <div class="container">-->
+        <div class="page-heading">
+            <h2>Case Study</h2>
+        </div>
+        <div class="casestudy-main">
+            <div class="casestudy-slider owl-carousel">
+                <div class="casestudy-group">
+                    <div class="casestudy-imggroup">
+                        <div class="casestudy-imgpanel">
+                            <img src="static/img/case-study/case-stody-1.jpg" alt="case-stody">
+                        </div>
+                    </div>
+                    <div class="casestudy-contens">
+                        <h3>But I must explain to you how all this en idea of  the system actual...</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                            <br>
+                            <br>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                            incididunt ut labore et dolore magna ullamco laboris nisi ut
+                            aliquip ex ea commodo consequat.
+                        </p>
+                        <a href="#" class="common-btn">READ MORE</a>
+                    </div>
+                </div>
+                <div class="casestudy-group">
+                    <div class="casestudy-imggroup">
+                        <div class="casestudy-imgpanel">
+                            <img src="static/img/case-study/case-stody-2.jpg" alt="case-stody">
+                        </div>
+                    </div>
+                    <div class="casestudy-contens">
+                        <h3>But I must explain to you how all this en idea of  the system actual...</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                            <br>
+                            <br>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                            incididunt ut labore et dolore magna ullamco laboris nisi ut
+                            aliquip ex ea commodo consequat.
+                        </p>
+                        <a href="#" class="common-btn">READ MORE</a>
+                    </div>
+                </div>
+                <div class="casestudy-group">
+                    <div class="casestudy-imggroup">
+                        <div class="casestudy-imgpanel">
+                            <img src="static/img/case-study/case-stody-3.jpg" alt="case-stody">
+                        </div>
+                    </div>
+                    <div class="casestudy-contens">
+                        <h3>But I must explain to you how all this en idea of  the system actual...</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                            <br>
+                            <br>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                            incididunt ut labore et dolore magna ullamco laboris nisi ut
+                            aliquip ex ea commodo consequat.
+                        </p>
+                        <a href="#" class="common-btn">READ MORE</a>
+                    </div>
+                </div>
+                <div class="casestudy-group">
+                    <div class="casestudy-imggroup">
+                        <div class="casestudy-imgpanel">
+                            <img src="static/img/case-study/case-stody-4.jpg" alt="case-stody">
+                        </div>
+                    </div>
+                    <div class="casestudy-contens">
+                        <h3>But I must explain to you how all this en idea of  the system actual...</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                            <br>
+                            <br>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                            incididunt ut labore et dolore magna ullamco laboris nisi ut
+                            aliquip ex ea commodo consequat.
+                        </p>
+                        <a href="#" class="common-btn">READ MORE</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--                </div>-->
+    </div>
+</section>
+<!--================案例学习-End=================-->
+
+<!--================品牌列表-Start=================-->
+<section style="display: none;">
+    <div class="brandlist-section">
+        <div class="container">
+            <div class="brandlist-main">
+                <div class="brandlist-group">
+                    <img src="static/img/brand-logo/brand-1.png" alt="brand">
+                </div>
+                <div class="brandlist-group">
+                    <img src="static/img/brand-logo/brand-2.png" alt="brand">
+                </div>
+                <div class="brandlist-group">
+                    <img src="static/img/brand-logo/brand-3.png" alt="brand">
+                </div>
+                <div class="brandlist-group">
+                    <img src="static/img/brand-logo/brand-4.png" alt="brand">
+                </div>
+                <div class="brandlist-group">
+                    <img src="static/img/brand-logo/brand-5.png" alt="brand">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--================brandlist-section-End=================-->
+
+<!--================我们的任务-Start=================-->
+<section style="display:none;">
+    <div class="ourmission-section">
+        <div class="ourmission-main">
+            <div class="ourmission-group">
+                <div class="ourmission-imgpanel">
+                    <img src="static/img/mission/mission-1.jpg" alt="mission">
+                </div>
+                <div class="ourmission-contents">
+                    <h2 class="wow fadeIn animated" data-wow-delay="100ms">OUR MISSION</h2>
+                    <p class=" wow fadeIn animated" data-wow-delay="100ms">Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        Ut ris nisi ut aliquip ex ea commodo consequat.
+                        <br><br>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                        laboris nisi ut aliquip ex ea commodo consequat.
+                    </p>
+                    <a href="#" class="common-btn">READ MORE</a>
+                </div>
+
+            </div>
+            <div class="ourmission-group">
+                <div class="ourmission-contents">
+                    <h2>OUR VISION</h2>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        Ut ris nisi ut aliquip ex ea commodo consequat.
+                        <br><br>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                        laboris nisi ut aliquip ex ea commodo consequat.
+                    </p>
+                    <a href="#" class="common-btn" data-wow-delay="100ms">READ MORE</a>
+                </div>
+                <div class="ourmission-imgpanel">
+                    <img src="static/img/mission/mission-2.jpg" alt="mission">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--================我们的任务-End=================-->
+
+<!--================客户声音-Start=================-->
+<section style="display:none;">
+    <div class="testimonial-section">
+        <div class="container">
+            <div class="page-heading">
+                <h5>Testimonials</h5>
+                <h2>What Clients Say</h2>
+            </div>
+            <div class="testimonial-main">
+                <div class="testimonial-slider owl-carousel">
+                    <div class="testimonial-group">
+                        <div class="testimonial-maincontent">
+                            <div class="testimonial-content">
+                                <h5>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                </h5>
+                                <h4>Company Name</h4>
+                                <p>These cases are perfectly
+                                    simple and easy to guish.
+                                    In a free hour, when our
+                                    power of choice is melled what
+                                    we like best, every and  avoided.
+                                </p>
+                                <img src="static/img/comma.png" alt="comma">
+                            </div>
+                        </div>
+                        <div class="testimonial-infomain">
+                            <div class="testimonial-clientname">
+                                <figure><span><img src="static/img/testimonial/client-1.jpg" alt="client"></span></figure>
+                                <h3>Steven Joe-2</h3>
+                                <small>Director</small>
+                            </div>
+                            <div class="testimonial-media">
+                                <div class="testimonial-inlinemedia">
+                                    <figure><img src="static/img/testimonial/testi-1.jpg" alt="testi-1"></figure>
+                                    <div class="overlay">
+                                        <div class="testimonial-video">
+                                            <a href="#" class="video-fancybox  lightbox-image">
+                                                <span class="play-video"> <i class=" fa fa-play"></i> </span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-group">
+                        <div class="testimonial-maincontent">
+                            <div class="testimonial-content">
+                                <h5>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                </h5>
+                                <h4>Company Name</h4>
+                                <p>These cases are perfectly
+                                    simple and easy to guish.
+                                    In a free hour, when our
+                                    power of choice is melled what
+                                    we like best, every and  avoided.
+                                </p>
+                                <img src="static/img/comma.png" alt="comma">
+                            </div>
+                        </div>
+                        <div class="testimonial-infomain">
+                            <div class="testimonial-clientname">
+                                <figure><span><img src="static/img/testimonial/client-1.jpg" alt="client"></span></figure>
+                                <h3>Steven Joe</h3>
+                                <small>Director</small>
+                            </div>
+                            <div class="testimonial-media">
+                                <div class="testimonial-inlinemedia">
+                                    <figure><img src="static/img/testimonial/testi-1.jpg" alt="testi-1"></figure>
+                                    <div class="overlay">
+                                        <div class="testimonial-video">
+                                            <a href="#" class="video-fancybox  lightbox-image">
+                                                <span class="play-video"> <i class=" fa fa-play"></i> </span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-group">
+                        <div class="testimonial-maincontent">
+                            <div class="testimonial-content">
+                                <h5>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                </h5>
+                                <h4>Company Name</h4>
+                                <p>These cases are perfectly
+                                    simple and easy to guish.
+                                    In a free hour, when our
+                                    power of choice is melled what
+                                    we like best, every and  avoided.
+                                    simple and easy to guish.
+                                    In a free hour, when our
+                                    power of choice is melled what
+                                    we like best, every and  avoided.
+                                </p>
+                                <img src="static/img/comma.png" alt="comma">
+                            </div>
+                        </div>
+                        <div class="testimonial-infomain">
+                            <div class="testimonial-clientname">
+                                <figure><span><img src="static/img/testimonial/client-1.jpg" alt="client"></span></figure>
+                                <h3>Steven Joe-3</h3>
+                                <small>Director</small>
+                            </div>
+                            <div class="testimonial-media">
+                                <div class="testimonial-inlinemedia">
+                                    <figure><img src="static/img/testimonial/testi-1.jpg" alt="testi-1"></figure>
+                                    <div class="overlay">
+                                        <div class="testimonial-video">
+                                            <a href="#" class="video-fancybox  lightbox-image">
+                                                <span class="play-video"> <i class=" fa fa-play"></i> </span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="commonbtn-parent"><a href="#" class="common-btn">VIEW ALL</a></div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--================客户声音-End=================-->
+
+<!--================团队介绍-Start=================-->
+<section style="display:none;">
+    <div class="myteam-section">
+        <div class="page-heading" data-wow-delay="100ms">
+            <h5>Explor My Team</h5>
+            <h2>Meet our Professionals</h2>
+        </div>
+        <div class="container-fluid">
+            <div class="myteam-main">
+                <div class="myteam-gridpanel">
+                    <figure class="myteam-group">
+                        <div class="myteam-img">
+                            <div class="myteam-inlineimg">
+                                <img src="static/img/team/team-1.jpg" alt="team-1">
+                                <div class="overlay">
+                                    <div class="social-media">
+                                        <a href="#" class="facebook"><i class="fa fa-facebook"></i></a>
+                                        <a href="#" class="twitter"><i class="fa fa-twitter"></i></a>
+                                        <a href="#" class="linkedin"><i class="fa fa-linkedin"></i></a>
+                                        <a href="#" class="google-plus"><i class="fa fa-google-plus"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <figcaption class="myteam-content">
+                            <h3>Jannie Allan</h3>
+                            <h5>Senior Supervisor</h5>
+                        </figcaption>
+                    </figure>
+                    <figure class="myteam-group">
+                        <div class="myteam-img">
+                            <div class="myteam-inlineimg">
+                                <img src="static/img/team/team-2.jpg" alt="team-1">
+                                <div class="overlay">
+                                    <div class="social-media">
+                                        <a href="#" class="facebook"><i class="fa fa-facebook"></i></a>
+                                        <a href="#" class="twitter"><i class="fa fa-twitter"></i></a>
+                                        <a href="#" class="linkedin"><i class="fa fa-linkedin"></i></a>
+                                        <a href="#" class="google-plus"><i class="fa fa-google-plus"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <figcaption class="myteam-content">
+                            <h3>Jannie Allan</h3>
+                            <h5>Senior Supervisor</h5>
+                        </figcaption>
+                    </figure>
+                    <figure class="myteam-group">
+                        <div class="myteam-img">
+                            <div class="myteam-inlineimg">
+                                <img src="static/img/team/team-3.jpg" alt="team-1">
+                                <div class="overlay">
+                                    <div class="social-media">
+                                        <a href="#" class="facebook"><i class="fa fa-facebook"></i></a>
+                                        <a href="#" class="twitter"><i class="fa fa-twitter"></i></a>
+                                        <a href="#" class="linkedin"><i class="fa fa-linkedin"></i></a>
+                                        <a href="#" class="google-plus"><i class="fa fa-google-plus"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <figcaption class="myteam-content">
+                            <h3>Jannie Allan</h3>
+                            <h5>Senior Supervisor</h5>
+                        </figcaption>
+                    </figure>
+                    <figure class="myteam-group">
+                        <div class="myteam-img">
+                            <div class="myteam-inlineimg">
+                                <img src="static/img/team/team-4.jpg" alt="team-1">
+                                <div class="overlay">
+                                    <div class="social-media">
+                                        <a href="#" class="facebook"><i class="fa fa-facebook"></i></a>
+                                        <a href="#" class="twitter"><i class="fa fa-twitter"></i></a>
+                                        <a href="#" class="linkedin"><i class="fa fa-linkedin"></i></a>
+                                        <a href="#" class="google-plus"><i class="fa fa-google-plus"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <figcaption class="myteam-content">
+                            <h3>Jannie Allan</h3>
+                            <h5>Senior Supervisor</h5>
+                        </figcaption>
+                    </figure>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--================团队介绍-End=================-->
+
+<!--================会员权益介绍-Start=================-->
+<section style="display:none;">
+    <div class="membership-section">
+        <div class="container">
+            <div class="becomember-main">
+                <h2>Sign in Today and secure your <br>exclusive membership</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                    sed do eiusmod tempor incididunt ut<br> labore et dolore magna aliqua.
+                    Ut ris nisi ut aliquip ex ea commodo consequat.
+                </p>
+                <div class="commonbtn-parent">
+                    <a href="#" class="common-btn">BECOME A MEMBER</a>
+                    <a href="#" class="common-btn">READ MORE</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--================会员权益介绍-End=================-->
+
+<!--================疑问回答-Start=================-->
+<section style="display:none;">
+    <div class="homefaq-section">
+        <div class="container">
+            <div class="page-heading">
+                <h5>Faq</h5>
+                <h2>Frequently Asked Question</h2>
+            </div>
+            <div class="homefaq-mainpanel">
+                <div class="homefaq-listmain">
+                    <div class="row">
+                        <div class="col-lg-6 col-sm-12 col-xs-12">
+                            <div class="panel-group faq_ques" id="accordion" role="tablist" aria-multiselectable="true">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="faq1">
+                                        <h4 class="panel-title">
+                                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#faq_c1" aria-expanded="true" aria-controls="company_c1">
+                                                <strong>Q: Lorem ipsum dolor sit amet, consectetur adipiscing elit?</strong>
+                                                <span><i class="fa fa-angle-down" aria-hidden="true"></i><i class="fa fa-angle-up" aria-hidden="true"></i></span>
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="faq_c1" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="faq1">
+                                        <div class="panel-body">
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                            Proin frinneque ut varius lobortis, turpis nisi maximus erat, eget sodales quat.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="faq2">
+                                        <h4 class="panel-title">
+                                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#faq_c2" aria-expanded="false" aria-controls="company_c2">
+                                                <strong>Q: Lorem ipsum dolor sit amet, consectetur adipiscing elit?</strong>
+                                                <span><i class="fa fa-angle-down" aria-hidden="true"></i><i class="fa fa-angle-up" aria-hidden="true"></i></span>
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="faq_c2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="faq2">
+                                        <div class="panel-body">
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                            Proin frinneque ut varius lobortis, turpis nisi maximus erat, eget sodales quat.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="faq3">
+                                        <h4 class="panel-title">
+                                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#faq_c3" aria-expanded="false" aria-controls="company_c3">
+                                                <strong>Q: Lorem ipsum dolor sit amet, consectetur adipiscing elit?</strong>
+                                                <span><i class="fa fa-angle-down" aria-hidden="true"></i><i class="fa fa-angle-up" aria-hidden="true"></i></span>
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="faq_c3" class="panel-collapse collapse" role="tabpanel" aria-labelledby="faq3">
+                                        <div class="panel-body">
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                            Proin frinneque ut varius lobortis, turpis nisi maximus erat, eget sodales quat.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="faq4">
+                                        <h4 class="panel-title">
+                                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#faq_c4" aria-expanded="false" aria-controls="company_c4">
+                                                <strong>Q: Lorem ipsum dolor sit amet, consectetur adipiscing elit?</strong>
+                                                <span><i class="fa fa-angle-down" aria-hidden="true"></i><i class="fa fa-angle-up" aria-hidden="true"></i></span>
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="faq_c4" class="panel-collapse collapse" role="tabpanel" aria-labelledby="faq4">
+                                        <div class="panel-body">
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                            Proin frinneque ut varius lobortis, turpis nisi maximus erat, eget sodales quat.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-sm-12 col-xs-12">
+                            <div class="panel-group faq_ques" id="accordion-2" role="tablist" aria-multiselectable="true">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="faq5">
+                                        <h4 class="panel-title">
+                                            <a role="button" data-toggle="collapse" data-parent="#accordion-2" href="#faq_c5" aria-expanded="true" aria-controls="company_c1">
+                                                <strong>Q: Lorem ipsum dolor sit amet, consectetur adipiscing elit?</strong>
+                                                <span><i class="fa fa-angle-down" aria-hidden="true"></i><i class="fa fa-angle-up" aria-hidden="true"></i></span>
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="faq_c5" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="faq5">
+                                        <div class="panel-body">
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                            Proin frinneque ut varius lobortis, turpis nisi maximus erat, eget sodales quat.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="faq6">
+                                        <h4 class="panel-title">
+                                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion-2" href="#faq_c6" aria-expanded="false" aria-controls="company_c2">
+                                                <strong>Q: Lorem ipsum dolor sit amet, consectetur adipiscing elit?</strong>
+                                                <span><i class="fa fa-angle-down" aria-hidden="true"></i><i class="fa fa-angle-up" aria-hidden="true"></i></span>
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="faq_c6" class="panel-collapse collapse" role="tabpanel" aria-labelledby="faq6">
+                                        <div class="panel-body">
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                            Proin frinneque ut varius lobortis, turpis nisi maximus erat, eget sodales quat.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="faq7">
+                                        <h4 class="panel-title">
+                                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion-2" href="#faq_c7" aria-expanded="false" aria-controls="company_c3">
+                                                <strong>Q: Lorem ipsum dolor sit amet, consectetur adipiscing elit?</strong>
+                                                <span><i class="fa fa-angle-down" aria-hidden="true"></i><i class="fa fa-angle-up" aria-hidden="true"></i></span>
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="faq_c7" class="panel-collapse collapse" role="tabpanel" aria-labelledby="faq7">
+                                        <div class="panel-body">
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                            Proin frinneque ut varius lobortis, turpis nisi maximus erat, eget sodales quat.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="faq8">
+                                        <h4 class="panel-title">
+                                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion-2" href="#faq_c8" aria-expanded="false" aria-controls="company_c4">
+                                                <strong>Q: Lorem ipsum dolor sit amet, consectetur adipiscing elit?</strong>
+                                                <span><i class="fa fa-angle-down" aria-hidden="true"></i><i class="fa fa-angle-up" aria-hidden="true"></i></span>
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="faq_c8" class="panel-collapse collapse" role="tabpanel" aria-labelledby="faq8">
+                                        <div class="panel-body">
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                            Proin frinneque ut varius lobortis, turpis nisi maximus erat, eget sodales quat.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="commonbtn-parent">
+                    <a href="#" class="common-btn">MORE FAQ’S</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--================疑问回答-Start=================-->
+
+
+<!--================最新帖子-Start=================-->
+<div class="newsarticle-section" style="display:none;">
+    <div class="container">
+        <div class="page-heading">
+            <h2>Latest Posts</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscinga elit,
+                sed do eiusmod tempor incididunt ut labore et <br> dolore magna
+                quis nostrud exercitation ullamco consequat.
+            </p>
+        </div>
+        <div class="newsblog-mainpanel">
+            <div class="newsblog-gridpanel">
+                <div class="row">
+                    <div class="col-md-4 col-sm-12 col-xs-12">
+                        <div class="newsblog-group">
+                            <div class="newsblog-imgpanel">
+                                <img src="static/img/blog/blog-h-1.jpg" alt="camera-article">
+                                <span class="newsblog-date">25<small>Mar</small></span>
+                            </div>
+                            <div class="newsblog-conents">
+                                <h3>chiropractor in <br>jersey city</h3>
+                                <p> Lorem ipsum dolor sit amet, consectetur qui
+                                    officia deserunt  id est laborum.
+                                </p>
+                                <a href="#" class="common-innerbtn">READ MORE</a><i></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-12 col-xs-12">
+                        <div class="newsblog-group">
+                            <div class="newsblog-imgpanel">
+                                <img src="static/img/blog/blog-h-2.jpg" alt="camera-article">
+                                <span class="newsblog-date">25<small>Mar</small></span>
+                            </div>
+                            <div class="newsblog-conents">
+                                <h3>chiropractor in <br>jersey city</h3>
+                                <p> Lorem ipsum dolor sit amet, consectetur qui
+                                    officia deserunt  id est laborum.
+                                </p>
+                                <a href="#" class="common-innerbtn">READ MORE</a><i></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-12 col-xs-12">
+                        <div class="newsblog-group">
+                            <div class="newsblog-imgpanel">
+                                <img src="static/img/blog/blog-h-3.jpg" alt="camera-article">
+                                <span class="newsblog-date">25<small>Mar</small></span>
+                            </div>
+                            <div class="newsblog-conents">
+                                <h3>chiropractor in <br>jersey city</h3>
+                                <p> Lorem ipsum dolor sit amet, consectetur qui
+                                    officia deserunt  id est laborum.
+                                </p>
+                                <a href="#" class="common-innerbtn">READ MORE</a><i></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--================最新帖子-End=================-->
+
+<!--================联系我们-Start=================-->
+<section style="display:none;">
+    <div class="getintouch-section">
+        <div class="container-fluid">
+            <div class="getintouch-main">
+                <div class="contactform-grid">
+                    <div class="page-heading">
+                        <h3>
+                            GET IN TOUCH
+                        </h3>
+                        <h5><span>CONTACT US</span><img src="static/img/getmap.png" alt="getmap"></h5>
+                    </div>
+                    <form class="contact-us-form" action="inc/sendemail.php" id="contactform" novalidate="novalidate">
+                        <div class="row">
+                            <div class="col-sm-6 col-xs-12">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="name" name="name" placeholder="Name">
+                                </div>
+                                <div class="form-group">
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="Email">
+                                </div>
+                                <div class="form-group">
+                                    <input type="number" class="form-control" id="number" name="number" placeholder="Phone">
+                                </div>
+                                <div class="form-group send-meassage1">
+                                    <button type="submit" value="submit" class="common-btn full-width">SEND MESSAGE</button>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xs-12">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="city" name="subject" placeholder="Subject">
+                                </div>
+                                <div class="form-group message-textarea">
+                                    <textarea class="form-control" name="message" id="message" rows="1" placeholder="Message"></textarea>
+                                </div>
+                                <div class="form-group send-meassage2">
+                                    <button type="submit" value="submit" class="common-btn full-width">SEND MESSAGE</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="getintouch-imgpanel">
+                        <img src="static/img/getin-touch.png" alt="getin-touch">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+<!--================联系我们-End=================-->
+
+{include file="common/footer"}

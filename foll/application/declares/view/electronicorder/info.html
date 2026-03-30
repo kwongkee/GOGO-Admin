@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>商品备案</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        th{
+            padding:3px 12px;
+        }
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<!--<div class="header">-->
+<!--<span>商品备案列表</span>-->
+<!--<div></div>-->
+<!--</div>-->
+<div class="x-body">
+    <table class="layui-table" style="margin-top:0px;">
+        <thead>
+        <tr>
+            <th>编号</th>
+            <th>订单编号</th>
+            <th>商品编号</th>
+            <th>支付编号</th>
+            <th>支付状态</th>
+            <th>申报状态</th>
+            <th>申报金额</th>
+            <th>时间</th>
+        </tr>
+        </thead>
+        <tbody>
+        {volist name="data" index="key" id="vo"}
+        <tr>
+            <td>{$key}</td>
+            <td>{$vo.EntOrderNo}</td>
+            <td>{$vo.goodsNo}</td>
+            <td>{$vo.PayNo}</td>
+            <td>{$payStatus[$vo.PayStatus]}</td>
+            <td>{$elecStatus[$vo.elecStatus]}</td>
+            <td>{$vo.OrderGoodTotal}</td>
+            <td>{$vo.create_at|date="Y-m-d H:i:s",###}</td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+    <div class="page">
+        <div>
+
+        </div>
+    </div>
+</div>
+
+<div class="layui-form" id="forms">
+    <div id="show" style="display: none;">
+        <div class="layui-upload-drag" id="test10">
+            <i class="layui-icon"></i>
+            <p>点击上传，或将文件拖拽到此处</p>
+        </div>
+        <input class="layui-upload-file" type="file" accept="undefined" name="file">
+    </div>
+</div>
+
+<script type="text/javascript">
+    layui.use(['layer','form','jquery','upload'],function(){
+        $ = layui.jquery;
+        layer = layui.layer;
+        var form = layui.form;
+        upload = layui.upload;
+
+    });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+{template 'common/header'}
+<link rel="stylesheet" href="{MODULE_URL}public/css/meanser.css"/>
+<link rel="stylesheet" href="{MODULE_URL}public/css/question.css"/>
+<div id="QuestionList">
+    {if !empty($questions['list'])}
+    <ul class="questions">
+    {loop $questions['list'] $li}
+    {php $member = M('member')->getInfo($li['openid'])}
+    <li class="a-question">
+        <a class="AQ" href="{php echo $this->createMobileUrl('question',array('id'=>$li['id']))}">
+            <div class="question-content">
+                <p>{$li['title']}</p>
+            </div>
+            <div>
+                <span class="question-respondent">
+                    {$member['nickname']}｜{$member['desc']}
+                    {if $li['status'] == 2}
+                        <span style="color:red;float: right;">已回答</span>
+                    {/if}
+                    {if $li['status'] == 1}
+                        <span style="color:red;float: right;">等待回答</span>
+                    {/if}
+                </span>
+            </div>
+        </a>
+    </li>
+    {/loop}
+    </ul>
+    <div class="weui-infinite-scroll" style="padding-bottom: 54px;">
+        <div class="infinite-preloader"></div>
+        正在加载...
+    </div>
+    {else}
+    <div style="text-align:center;padding:3.6rem 2.875rem;">
+        <div data-reactid=".1andidxn8jk.0">
+            <img src="http://hangjia.qiniudn.com/FugCrgkvyNW-neCLtifXyyKnS-07" style="display:inline-block;width:4,5rem;height:4.5rem;margin-bottom:1rem;"/>
+        </div>
+        <p style="font-size:.8rem;color:#999;line-height:1.1rem;margin-bottom:1.65rem;" data-reactid=".1andidxn8jk.1">你还没有提问呦~</p>
+        <a style="display:inline-block;line-height:2.2rem;width:8.675rem;background:#F85F48;border:1px solid #F85F48;font-size:.75rem;color:#fff;text-decoration:none;text-align:center;border-radius:.3rem;" href="{php echo $this->createMobileUrl('tutor')}">去分享我的名片吧</a>
+    </div>
+    {/if}
+</div>
+{template 'common/footerbar'}
+<script type="text/javascript" src="{MODULE_URL}public/libs/jquery_weui/lib/jquery-2.1.4.js"></script>
+<script type="text/javascript" src="{MODULE_URL}public/libs/jquery_weui/jquery-weui.js"></script>
+<script type="text/javascript" src="{MODULE_URL}public/libs/velocity.min.js"></script>
+<script src="{MODULE_URL}public/js/loadmore.js"></script>
+<script>
+    $(function(){
+        function callback(html){
+            $('#QuestionList .questions').append(html);
+        }
+        initload("",callback);
+        loadmore("",callback);
+    })
+</script>
+{template 'common/footer'}

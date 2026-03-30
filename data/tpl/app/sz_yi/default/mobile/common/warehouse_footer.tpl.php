@@ -1,0 +1,46 @@
+<?php defined('IN_IA') or exit('Access Denied');?><style>
+    body{background:#f8f8f8;}
+    .change_language{width:100%;background: #f8f8f8;}
+    .change_language .zt{width:50%;padding:0px 10px;box-sizing: border-box;}
+    .change_language .zh{text-align: right;border-right:1px solid #eee;}
+    .change_language .cht{text-align: left;}
+
+    footer{
+        padding: 5px 15px;
+        box-sizing: border-box;
+        background:#fff;
+        display: flex;/*设置弹性盒子*/
+        justify-content: space-around;/*水平对齐，两边间距是中间间距的一半*/
+        align-items: center;/* 垂直居中对齐 */
+        position: fixed;
+        bottom:0;
+        left:50%;
+        transform: translateX(-50%);
+        width: 100%;
+        height: 50px;
+        /*border-top:1px solid #ccc;*/
+        max-width: 760px;
+        font-size: 12px;
+        text-align: center;
+    }
+    footer div{width: 25%;}
+    footer img{width:25px;}
+    footer p{font-size:13px;color:#666;}
+    footer .bolder{color:#000;}
+</style>
+<footer>
+    <div class="home" onclick="javascript:window.location.href='./index.php?i=3&c=entry&p=index&do=warehouse&m=sz_yi&op=display';">
+        <img src="<?php  if($menu_index==1) { ?>../addons/sz_yi/static/warehouse/home_active.png<?php  } else { ?>../addons/sz_yi/static/warehouse/home.png<?php  } ?>" alt="">
+        <p class="<?php  if($menu_index==1) { ?>bolder<?php  } else { ?>''<?php  } ?>">仓储管理</p>
+    </div>
+    <div class="home" onclick="javascript:window.location.href='./index.php?i=3&c=entry&p=sales&do=warehouse&m=sz_yi&op=display';">
+        <img src="<?php  if($menu_index==2) { ?>../addons/sz_yi/static/warehouse/sales_active.png<?php  } else { ?>../addons/sz_yi/static/warehouse/sales.png<?php  } ?>" alt="">
+        <p class="<?php  if($menu_index==2) { ?>bolder<?php  } else { ?>''<?php  } ?>">销售管理</p>
+    </div>
+</footer>
+</html>
+<script>
+    $(function(){
+
+    });
+</script>

@@ -1,0 +1,184 @@
+{template 'common/header'}
+<ul class="nav nav-tabs">
+	{template 'accounts_header'}
+</ul>
+
+<style>
+.form-group{ padding:10px 0;}
+.form-group .time-div input{width:100%; cursor:pointer;}
+.form-group .control-label{ text-align:right;}
+.title_msg{color:#333333; font-size:.8em; padding-left:3em;}
+</style>
+<div class='main'>
+   	<div class="panel panel-info">
+		<div class="panel-heading">筛选</div>
+		<div class="panel-body">
+			<form action="./index.php" method="get" class="form-inline" role="form">
+				<input type="hidden" name="c" value="{$_GPC['c']}">
+				<input type="hidden" name="a" value="{$_GPC['a']}">
+				<input type="hidden" name="do" value="{$_GPC['do']}">
+				<input type="hidden" name="m" value="{$_GPC['m']}">
+				
+				<div class="form-group col-xs-12 col-sm-4">
+					<label class="col-xs-4 col-sm-4 control-label">开始时间：</label>
+					<div class="col-xs-8 col-sm-8 time-div">
+						{php echo tpl_form_field_date('starttimes', $starttimes, false);}
+					</div>
+				</div>
+				<div class="form-group col-xs-12 col-sm-4">
+					<label class="col-xs-4 col-sm-4 control-label">结束时间：</label>
+					<div class="col-xs-8 col-sm-8 time-div">
+						{php echo tpl_form_field_date('endtimes', $endtimes, false);}
+					</div>
+				</div>
+				
+				<div class="form-group col-xs-12 col-sm-4">
+					<!--这里纯粹是位置控制，需要放东西到这里请直接修改-->
+					<label for="" class="col-xs-7 col-sm-7 control-label">&nbsp;</label>
+					<div class="col-xs-5 col-sm-5" >
+						<p class="form-control-static">
+							<input type="checkbox" style="visibility:hidden;">
+						</p>
+					</div>
+				</div>
+				
+				<div class="form-group col-xs-12 col-sm-4">
+					<label class="col-xs-4 col-sm-4 control-label">类型：</label>
+					<div class="col-xs-8 col-sm-8">
+						<select class="form-control" name="accounttype" style="width:100%;" autocomplete="off">
+							{loop $accounttype_arr $i $value}
+							<option value="{$i}" {$accounttype_selected[$i]}>{$value}</option>
+							{/loop}
+						</select>
+					</div>
+				</div>
+				
+				<div class="form-group col-xs-12 col-sm-4">
+					<label class="col-xs-4 col-sm-4 control-label">支付类型：</label>
+					<div class="col-xs-8 col-sm-8">
+						<select class="form-control" name="moneytype" style="width:100%;" autocomplete="off">
+							{loop $moneytype_arr $i $value}
+							<option value="{$i}" {$moneytype_selected[$i]}>{$value}</option>
+							{/loop}
+						</select>
+					</div>
+				</div>
+				<div class="form-group col-xs-12 col-sm-4">
+					<button type="submit" class="btn btn-primary">搜索</button>
+					<div style="width:0;height:0;overflow:hidden;">
+						<input type="submit" id="export" name="export" value="export" >
+					</div>
+				</div>
+			</form>
+
+		</div>
+	</div>
+</div>
+
+<script language="javascript" type="text/javascript">
+function checkAll(form, name) {
+	for(var i = 0; i < form.elements.length; i++) {
+		var e = form.elements[i];
+		if(e.name.match(name)) {
+			e.checked = form.elements['chkall'].checked;
+		}
+	}
+}
+</script>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <form method="post" class="form" onsubmit="return submit_check();">
+	<input name="token" type="hidden" value="{$_W['token']}" />
+	<div class="table-responsive">
+	  <table class="table">
+		<tr>
+			<th width="30">选择</th>
+			<th >订单号</th>
+			<th >支付者（编号）</th>
+			<th >类型</th>
+			<th >支付类型</th>
+			<th >金额/积分</th>
+			<th width="150">时间</th>
+			<th width="100">操作</th>
+		</tr>
+		{loop $list $key $value}
+		<tr >
+			<td><input type="checkbox" name="ids[]" value="{$value[id]}"></td>
+			<td>{$value[orderid]}</td>
+			<td>{$value[name]}({$value[uid]})</td>
+			<td>{if $value['accounttype']=='1'} 支出{elseif $value['accounttype']=='2'} 收入{/if}</td>
+			<td>{$moneytype_arr[$value['moneytype']]}</td>
+			<td style="color:#CC0000;">{$value['money']}</td>
+			<td>{php echo date('Y-m-d H:i', $value['dateline']);}</td>
+			<td>
+				<a href="{php echo $this->createWebUrl('order', array('orderid'=>$value['orderid']));}" class="btn btn-info btn-sm" title="查看订单"><i class="fa fa-search"></i></a>
+				<a href="{$urlt}&op=delete&id={$value[id]}" class="btn btn-danger btn-sm" title="删除" onclick="return confirm('本操作不可恢复，确认删除？');"><i class="fa fa-remove"></i></a>
+			</td>
+		</tr>
+		<tr >
+			<td style="background-color:#E8E8E8;"></td>
+			<td colspan="8" style="background-color:#E8E8E8;"><strong>说明：</strong>{$value[moneydesc]}</td>
+		</tr>
+		{/loop}
+		{if $pager}
+		<tr >
+			<td colspan="8">{$pager}</td>
+		</tr>
+		{/if}
+		<tr >
+			<td colspan="8" align="center">
+				
+				<label><input type="checkbox" id="chkall" name="chkall" onchange="checkAll(this.form, 'ids')">&nbsp;全选</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				{loop $optype_arr $i $value}
+				<label>
+				<input type="radio" name="optype" value="{$i}">&nbsp;{$value}
+				</label>&nbsp;&nbsp;&nbsp;&nbsp;
+				{/loop}
+				<script>
+					function submit_check(){
+						var optype_arr = JSON.parse('{$optype_json}');
+						var optype = document.getElementsByName("optype");
+						var ids = document.getElementsByName("ids[]");
+						var key,flag_id = flag_op = false;
+						
+						for(i=0;i<ids.length;i++){
+							if(ids[i].checked == true){
+								flag_id = true;
+								break;
+							}else{
+								flag_id = false;
+							}
+						}
+						if(flag_id == false){
+							alert('请选择需要处理的对象！');
+							return false;
+						}
+						
+						for(i=0;i<optype.length;i++){
+							if(optype[i].checked == true){
+								flag_op = true;
+								key = optype[i].value;
+								break;
+							}else{
+								flag_op = false;
+							}
+						}
+						if(flag_op == false){
+							alert('请选择批量处理的方法！');
+							return false;
+						}
+						var check=confirm("您确定要进行批量 "+optype_arr[key]+" 的操作吗？");
+						return check;
+					}
+				</script>
+				<input type="submit" name="listsubmit" value="提交" class="btn btn-primary">
+			</td>
+		</tr>
+	  </table>
+	</div>
+	
+	</form>
+  </div>
+</div>
+
+{template 'common/footer'}

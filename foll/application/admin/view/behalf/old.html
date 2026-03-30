@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>代付订单列表</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+
+
+<form class="layui-form">
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+
+            <div class="layui-form-label">账户户名</div>
+            <div class="layui-input-inline">
+                <input type="text" name="accName" placeholder="账户户名" autocomplete="off" class="layui-input">
+            </div>
+
+            <div class="layui-form-label">账户类型</div>
+            <div class="layui-input-inline">
+                <select name="accType" lay-filter="accType">
+                    <option value="">请选择</option>
+                    <option value="0">卡</option>
+                    <option value="1">存折</option>
+                    <option value="2">对公账号</option>
+                </select>
+            </div>
+
+            <div class="layui-form-label">订单日期</div>
+            <div class="layui-input-inline">
+                <input type="text" id="myDate" name="atime" placeholder="订单日期" autocomplete="off" class="layui-input">
+            </div>
+
+            <div class="layui-input-inline">
+                <button lay-submit lay-filter="*" class="layui-btn">搜索</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重 置</button>
+            </div>
+
+        </div>
+    </div>
+
+</form>
+
+
+<table class="layui-table">
+    <thead>
+    <tr>
+        <th>商户交易流水</th>
+        <!--th>商户交易时间</th-->
+        <th>订单号</th>
+        <th>交易金额</th>
+        <th>交易账号</th>
+        <th>账户户名</th>
+        <th>账户类型</th>
+        <th>邦付宝流水号</th>
+        <th>交易手续费</th>
+        <th>响应信息</th>
+        <th>订单日期</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {volist name='acclist' id='vo' key='k'}
+        <tr>
+            <td>{$vo.mcSequenceNo}</td>
+            <!--td>{$vo.mcTransDateTime}</td-->
+            <td>{$vo.orderNo}</td>
+            <td>{$vo.amount}元</td>
+            <td>{$vo.cardNo}</td>
+            <td>{$vo.accName}</td>
+            <td>{$accType[$vo.accType]}</td>
+            <td>{$vo.bfbSequenceNo}</td>
+            <td>{$vo.fee}元</td>
+            <td>{$vo.respMsg}</td>
+            <td>{$vo.a_time|date='Y-m-d H:i:s',###}</td>
+        </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<div style="width: 100%;text-align: center;">
+    <div class="layui-box layui-laypage layui-laypage-default">{$pages}</div>
+</div>
+<!--<div class="layui-box layui-laypage layui-laypage-default">1</div>-->
+
+<script>
+
+    layui.use(['form','layer','jquery','laydate'], function() {
+
+       var $ = layui.jquery,form = layui.form,layer = layui.layer,laydate=layui.laydate;
+
+        // 监听体积
+        form.on('submit(*)', function(data) {
+            // var formData = data.field;
+            var accName = data.field.accName;
+            var accType = data.field.accType;
+            var atime = data.field.atime;
+
+            var url = "{:url('admin/customs/oldlist')}&accName="+accName+"&accType="+accType+'&atime='+atime;
+            window.location.href = url;
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        laydate.render({
+            elem:"#myDate"
+        })
+    });
+
+</script>
+
+
+</body>
+</html>

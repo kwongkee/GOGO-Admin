@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>商家对账后台</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./static/order/css/font.css">
+	<link rel="stylesheet" href="./static/order/css/xadmin.css">
+	<link rel="stylesheet" href="./static/order/css/swiper.min.css">
+    <!--<link rel="stylesheet" href="https://cdn.bootcss.com/Swiper/3.4.2/css/swiper.min.css">-->
+    <!--<script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>-->
+    <!--<script type="text/javascript" src="https://cdn.bootcss.com/Swiper/3.4.2/js/swiper.jquery.min.js"></script>-->
+    <script type="text/javascript" src="./static/order/js/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.bootcss.com/Swiper/3.4.2/js/swiper.jquery.min.js"></script>
+    <script src="./static/order/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./static/order/js/xadmin.js"></script>
+</head>
+<style type="text/css">
+	.active{
+		background: goldenrod;
+		width: 147px;
+		display: block;
+	}
+	#nav a{
+		width: 147px;
+	}
+</style>
+
+<body style="background-color: white;">
+    <!-- 顶部开始 -->
+    <div class="container">
+        <div class="logo"><a class="open active" href="javascript:void(0)" jumplink="{:url('order/orderLists')}" onclick="getClickUrl(this)">商家对账后台</a></div>
+        <div class="open-nav"><i class="iconfont">&#xe699;</i></div>
+        <ul class="layui-nav right" lay-filter="">
+          <li class="layui-nav-item">
+            <a href="javascript:;">{$Think.session.user_name}</a>
+            <dl class="layui-nav-child"> <!-- 二级菜单 -->
+              <dd><a href="">商家信息</a></dd>
+              <dd><a href="">切换帐号</a></dd>
+              <dd><a href="{:url('order/logout')}">退出</a></dd>
+            </dl>
+          </li>
+          <li class="layui-nav-item"><a href="#">对账后台</a></li>
+        </ul>
+    </div>
+    <!-- 顶部结束 -->
+    
+    <!-- 中部开始 -->
+    <div class="wrapper">    	
+        <!-- 左侧菜单开始 -->
+        <div class="left-nav" style="width:182px;">
+          <div id="side-nav">
+            <ul id="nav">
+              
+                <li class="list">
+                    <a href="javascript:;" class="open">
+                        <i class="iconfont">&#xe70b;</i>
+                        	订单管理
+                        <i class="iconfont nav_right">&#xe697;</i>
+                    </a>
+                    
+                    <ul id="list">                    	
+                        <li class="list">                        	
+		                    <a href="javascript:;" class="">
+		                        <i class="iconfont">&#xe6a7;</i>咪表停车
+		                    </a>
+		                    <ul id="sub-menu1" style="display: none;">		                        
+		                        <li>
+		                            <a href="#">
+		                            	<i class="iconfont">&nbsp;</i>
+		                            	免费订单</a>
+		                        </li>
+		                        <li>
+		                            <a href="#">
+		                            	<i class="iconfont">&nbsp;</i>
+		                            	付费订单</a>
+		                        </li>
+		                        <li>
+		                            <a href="#">
+		                            	<i class="iconfont">&nbsp;</i>
+		                            	挂账订单</a>
+		                        </li>
+		                    </ul>
+		                    
+		                    
+		                    <!-- 微信订单 -->
+		                    <a id="wechat" href="javascript:;" class="">
+		                        <i class="iconfont">&#xe6a7;</i>微信订单
+		                    </a>
+		                    <ul id="sub-menu2" style="display: none;">		                        
+		                        <li>
+		                            <a class="open" style="width: 147px;display: block;z-index: 100;" href="javascript:void(0)" jumplink="{:url('order/order')}&type=free&typeId=1" onclick="getClickUrl(this)">
+		                            	<i class="iconfont">&nbsp;</i>
+	                            		免费订单</a>
+		                        </li>		                        
+		                        
+		                        <!-- 付费订单  -->
+	                            <a href="#" id="fufei">
+	                            	<i class="iconfont">&nbsp;&#xe6a7;</i>
+	                            	付费订单
+	                            </a>
+		                        <ul id="sub-menu3" style="display: none;">		                        
+			                        <!-- 付费账单分两种 1、预付费订单，2、后付费订单 -->
+			                        <li>
+			                            <a class="{eq name='$Request.get.typeId' value='3'} active open{/eq}" style="width: 147px;display: block;z-index: 100;" href="{:url('order/order')}&type=advance&typeId=3">
+			                            	<i class="iconfont">&nbsp;</i>
+			                            	预付费订单</a>
+			                        </li>
+			                        
+			                        <!-- 后付费分两种：1、聚合支付，2、免密支付；-->
+		                            <a href="#" id="houfufei">
+		                            	<i class="iconfont">&nbsp;&#xe6a7;</i>
+		                            	后付费订单
+		                            </a>
+		                            <ul id="sub-menu4" style="display: none;">		                        
+				                        
+				                        <!-- 聚合支付开始 -->
+			                            <a href="#" id="juhepay">
+			                            	<i class="iconfont">&nbsp;&#xe6a7;</i>
+			                            	聚合支付订单
+			                            </a>
+				                        <ul id="sub-menu5" style="display: none;">
+				                        	<!-- 聚合支付订单  -->
+				                        	<li><a class="{eq name='$Request.get.typeId' value='4'} active open{/eq}" style="width: 147px;display: block;z-index: 100;" href="{:url('order/order')}&type=wechat&typeId=4">
+				                        		<i class="iconfont">&nbsp;</i>
+				                        		微信支付
+				                        	</a></li>
+				                        	
+				                        	<li><a class="{eq name='$Request.get.typeId' value='5'} active open{/eq}" style="width: 147px;display: block;z-index: 100;"  href="{:url('order/order')}&type=alipay&typeId=5">
+				                        		<i class="iconfont">&nbsp;</i>
+				                        		支付宝支付
+				                        	</a></li>
+
+				                        	<li><a class="{eq name='$Request.get.typeId' value='6'} active open{/eq}" style="width: 147px;display: block;z-index: 100;"  href="{:url('order/order')}&type=unionpay&typeId=6">
+				                        		<i class="iconfont">&nbsp;</i>
+				                        		银联快捷支付
+				                        	</a></li>
+				                        </ul>
+				                        <!-- 聚合支付结束 -->
+				                        
+				                        <!-- 免密扣费  -->
+			                            <a href="#" id="mianmipay">
+			                            	<i class="iconfont">&nbsp;&#xe6a7;</i>
+			                            	免密扣费订单
+			                            </a>
+			                            <ul id="sub-menu6" style="display: none;border: 1px solid green;">
+				                        	<li><a class="{eq name='$Request.get.typeId' value='7'} active open{/eq}" style="width: 147px;display: block;z-index: 100;"  href="{:url('order/order')}&type=Fwechat&typeId=7">
+				                        		<i class="iconfont">&nbsp;</i>
+				                        		微信扣费
+				                        	</a></li>
+				                        	
+				                        	<li><a class="{eq name='$Request.get.typeId' value='8'} active open{/eq}" style="width: 147px;display: block;z-index: 100;"  href="{:url('order/order')}&type=Falipay&typeId=8">
+				                        		<i class="iconfont">&nbsp;</i>
+				                        		支付宝扣费
+				                        	</a></li>
+				                        	
+				                        	<li><a class="{eq name='$Request.get.typeId' value='9'} active open{/eq}" style="width: 147px;display: block;z-index: 100;"  href="{:url('order/order')}&type=FCreditCard&typeId=9">
+				                        		<i class="iconfont">&nbsp;</i>
+				                        		信用卡扣费
+				                        	</a></li>
+				                        	
+				                        	<li><a class="{eq name='$Request.get.typeId' value='10'} active open{/eq}" style="width: 147px;display: block;z-index: 100;"  href="{:url('order/order')}&type=FAgro&typeId=10">
+				                        		<i class="iconfont">&nbsp;</i>
+				                        		农商行扣费
+				                        	</a></li>
+				                        </ul>
+			                            <!-- 免密扣费结束 -->
+				                    </ul>
+		                            
+			                    </ul>
+			                    <!--付费订单结束 -->
+		                        
+		                        <li>
+		                            <a class="{eq name='$Request.get.typeId' value='2'} active open{/eq}" style="width: 147px;display: block;z-index: 100;"  href="{:url('order/order')}&type=bill&typeId=2">
+		                            	<i class="iconfont">&nbsp;</i>
+		                            	挂账订单</a>
+		                        </li>
+		                    </ul>
+		                    <!-- 微信订单结束 -->
+		                </li>
+		                
+                    </ul>
+                </li>
+                
+                
+                <li class="list1">
+                    <a href="javascript:;">
+                        <i class="iconfont">&#xe70b;</i>
+                        	电商订单
+                        <i class="iconfont nav_right">&#xe697;</i>
+                    </a>
+                    <ul class="sub-menu">
+                        <li>
+                            <a href="{:url('set/appoin')}">
+                                <i class="iconfont">&#xe6a7;</i>
+                                	生活消费
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{:url('list/lists')}">
+                                <i class="iconfont">&#xe6a7;</i>
+                                	网络购物
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{:url('list/lists')}">
+                                <i class="iconfont">&#xe6a7;</i>
+                                	网络服务
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            
+          </div>
+        </div>
+        <!-- 左侧菜单结束 -->
+        
+        

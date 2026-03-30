@@ -1,0 +1,37 @@
+<script type="text/javascript">
+/*
+超级粉丝社区 聊天JS
+2015年10月28日17:49:47
+sunhuajie
+*/
+var Chat = (function(settings) {
+
+	var to_openid = settings.to_openid;
+
+	// sayHi
+	var sayHi = function () {
+		if(!to_openid) {
+			return false;
+		}
+		$.ajax({
+			type:'post',
+			data:{'to_openid':to_openid},
+			url:"{php echo $this->createmMobile('greet')}",
+			success:function(d) {
+				if(d.res == '100') {
+					// success
+					alert(d.msg);
+				}else {
+					// fail
+					alert(d.msg);
+				}
+			}
+		})
+	}
+	return {
+		sayHi:sayHi,
+		init:init,
+		to_openid:to_openid
+	}
+}(chat_settings))
+</script>

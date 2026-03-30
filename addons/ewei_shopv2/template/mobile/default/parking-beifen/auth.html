@@ -1,0 +1,172 @@
+{template "parking/base/header"}
+<body>
+<div class="wx_box">
+    {if !empty($announcement)}
+    <div class="notice">
+        <div>
+            <ul>
+                {loop $announcement $index $item}
+                <li><a href="#">{$item['msg']}</a></li>
+                {/loop}
+            </ul>
+        </div>
+        <em></em>
+    </div>
+    {/if}
+
+    <!--focus-->
+    <div class="focus" id="focus">
+        <ul>
+            {if !empty($carousel)}
+            {loop $carousel $index $item}
+            <li><a href="{$item}"><img src="../addons/ewei_shopv2/static/images/img/{$index}" style="width:100%;" /></a></li>
+            {/loop}
+            {else}
+            <li><a href="#"><img src="../addons/ewei_shopv2/static/images/img/0.jpg" style="width:100%;" /></a></li>
+            <li><a href="#"><img src="../addons/ewei_shopv2/static/images/img/002.jpeg" style="width:100%;" /></a></li>
+            <li><a href="#"><img src="../addons/ewei_shopv2/static/images/img/003.jpeg" style="width:100%;" /></a></li>
+            {/if}
+        </ul>
+        <ol>
+            <li class="on"></li>
+            <li></li>
+            <li></li>
+        </ol>
+    </div>
+    <!--focus end-->
+    <!--<ul class="nav">-->
+        <!--<li class="nav_icon01"><a href="https://www.sobot.com/chat/pc/index.html?sysNum=0e3544a96d5e41f4919655542ba43428">在线客服</a></li>-->
+        <!--<li class="nav_icon02">服务导航</li>-->
+        <!--<li class="nav_icon03">用户须知</li>-->
+    <!--</ul>-->
+    <div class="license_Fee">
+        <h3 class="title_h3"><span>扣费授权</span></h3>
+        <dl>
+            <dt><span>第三方扣费授权</span><i class="license_Fee_arrow"></i></dt>
+            <dd>
+                <p><img src="../addons/ewei_shopv2/static/images/img/license_icon01.png"><span>微信支付</span>
+                    <i class="gray">
+                        {if !empty($tel['auth_type'])}
+                        {if in_array("Fwechat",$tel['auth_type']) && $tel['auth_status'] == 1}
+                        <a href="<?php echo mobileUrl('parking/auth/wechat');?>" class="blue">去解约</a>
+                        {else}
+                        <a href="http://shop.gogo198.cn/payment/Frx/Wxsfree.php?Tel={$tel['mobile']}" class="blue {$show}">去授权</a>
+                        {/if}
+                        {else}
+                        <a href="http://shop.gogo198.cn/payment/Frx/Wxsfree.php?Tel={$tel['mobile']}" class="blue {$show}">去授权</a>
+                        {/if}
+                    </i>
+                </p>
+                
+                <p><img src="../addons/ewei_shopv2/static/images/img/yiwen.png"><span>查看解约流程</span>
+                    <i class="gray">
+                        <a href="<?php echo mobileUrl('parking/auth/wechat');?>" class="blue">立即查看</a>
+                    </i>
+                </p>
+                
+                <!--<p><img src="../addons/ewei_shopv2/static/images/img/license_icon02.png"><span>支付宝支付</span><i class="gray">-->
+                    <!--{if !empty($tel['auth_type'])}-->
+                    <!--{if in_array("Falipay",$tel['auth_type'])}-->
+                    <!--<a href="#" class="blue {$show}">去解约</a>-->
+                    <!--{else}-->
+                    <!--<a href="#" class="blue {$show}">去授权</a>-->
+                    <!--{/if}-->
+                    <!--{else}-->
+                    <!--<a href="#" class="blue {$show}">去授权</a>-->
+                    <!--{/if}-->
+                <!--</i></p>-->
+            </dd>
+        </dl>
+        <dl>
+            <dt><span>银联卡扣费授权</span><i class="license_Fee_arrow"></i></dt>
+            <dd>
+                <p class="pp">
+                    <img src="../addons/ewei_shopv2/static/images/img/license_icon03.png">
+                    <span>银联标识信用卡</span>
+                    <i class="gray">
+                        {if !empty($tel['auth_type'])}
+                        
+                            {if in_array("FCreditCard",$tel['auth_type']) && $tel['auth_status'] == 1}
+                                <!--<a href="<?php echo mobileUrl('parking/auth/SignSurrender');?>" class="blue {$show}">去解约</a>-->
+                                <a href="<?php echo mobileUrl('parking/auth/SurrenList');?>" class="blue {$show}">去解约</a>
+                            {else}
+                            <a href="http://shop.gogo198.cn/payment/sign/Togrands.php?Tel={$tel['mobile']}" class="blue {$show}">去授权</a>
+                            {/if}
+                            
+                        {else}
+                        <a href="http://shop.gogo198.cn/payment/sign/Togrands.php?Tel={$tel['mobile']}" class="blue {$show}">去授权</a>
+                        {/if}
+                    </i>
+                </p>
+                <p class="pp"><img src="../addons/ewei_shopv2/static/images/img/license_icon04.png"><span>顺德农商行借记卡</span><i class="gray">
+                    {if !empty($tel['auth_type'])}
+                    {if in_array("FAgro",$tel['auth_type']) && $tel['auth_status'] == 1}
+                    <!--parking/auth/FagroSurrender-->
+                    <a href="<?php echo mobileUrl('parking/auth/SurrenList');?>" class="blue {$show}">去解约</a>
+                    {else}
+                    <a href="http://shop.gogo198.cn/payment/sign/Togrands.php?Tel={$tel['mobile']}" class="blue {$show}">去授权</a>
+                    {/if}
+                    {else}
+                    <a href="http://shop.gogo198.cn/payment/sign/Togrands.php?Tel={$tel['mobile']}" class="blue {$show}">去授权</a>
+                    {/if}
+                </i></p>
+            </dd>
+        </dl>
+    </div>
+    <a href="{php echo mobileUrl('parking/info')}" ><p class="order_tab_button" style="border-radius: 100px;">跳过这一步</p></a>
+    <div class="footer">Technology by </div>
+    <div class="footer_placeholder"></div>
+    <!--弹出框-->
+    <div class="black_bg"></div>
+    <div class="popup">
+        <h3>请扫码关注注册</h3>
+        <p><img src="<?php echo $_W['account']['qrcode'];?>"></p>
+    </div>
+    <!--弹出框 end-->
+</div>
+</body>
+<script type="text/javascript">
+    var height = $(window).height();
+    $(".wx_box").css({"min-height":height});
+    $(function(){
+        new Swipe(document.getElementById('focus'), {
+            speed:500,
+            auto:3000,
+            callback: function(){
+                var lis = $(this.element).next("ol").children();
+                lis.removeClass("on").eq(this.index).addClass("on");
+            }
+        });
+    });
+    function timer(opj){
+        $(opj).find('ul').animate({
+            marginTop : "-0.4rem"
+        },500,function(){
+            $(this).css({marginTop : "0rem"}).find("li:first").appendTo(this);
+        })
+    }
+    var num = $('.notice').find('li').length;
+    if(num > 1){
+        var time=setInterval('timer(".notice")',3500);
+        $('.notice ul li a').hover(function(){
+            clearInterval(time);
+        }).mouseout(function(){
+            time = setInterval('timer(".notice")',3500);
+        });
+    };
+    $(".license_Fee_arrow").click(function(){
+        $(this).toggleClass("license_Fee_arrow02");
+        $(this).parents("dl").find("dd").toggle();
+    });
+    $(".showPopup").click(function(){
+        $(".black_bg,.popup").show();
+    });
+
+    $(".license_Fee_arrow").parents("dl").find("a").bind("click",function (e) {
+        if($(this).is('.showPopup')){
+            $(this).attr("href","#");
+           return false;
+        }
+    })
+</script>
+{template "parking/base/footer"}

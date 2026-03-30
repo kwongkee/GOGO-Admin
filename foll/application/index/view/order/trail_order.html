@@ -1,0 +1,155 @@
+{include file="common/header"}
+<!--<form class="layui-form" action="">-->
+    <!--<div class="layui-form-item">-->
+        <!--<label class="layui-form-label">支付状态</label>-->
+        <!--<div class="layui-input-block">-->
+            <!--<input type="checkbox" name="pay['done']" value="1" title="支付完成" checked>-->
+            <!--<input type="checkbox" name="pay['no']" value="0" title="未支付">-->
+            <!--<input type="checkbox" name="pay['err']" value="2" title="支付失败">-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="layui-form-item">-->
+        <!--<label class="layui-form-label">付费类型</label>-->
+        <!--<div class="layui-input-block">-->
+            <!--<input type="checkbox" name="type['yufu']" value="0" title="预付费" checked>-->
+            <!--<input type="checkbox" name="type['houfu']" value="1  " title="后付费" checked>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="layui-form-item">-->
+        <!--<label class="layui-form-label">删除条件</label>-->
+        <!--<div class="layui-input-block">-->
+            <!--&lt;!&ndash;<input type="radio" name="del" value="all" title="删除所有">&ndash;&gt;-->
+            <!--<input type="radio" name="del" value="where" title="按条件删除" checked>-->
+        <!--</div>-->
+    <!--</div>-->
+
+    <!--<div class="layui-form-item">-->
+        <!--<div class="layui-input-block">-->
+            <!--<button class="layui-btn layui-btn-danger" lay-submit lay-filter="formDemo">立即提交</button>-->
+            <!--<button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</form>-->
+
+
+<form class="layui-form" action="" style="margin-top:60px;">
+    <div class="layui-form-item">
+        <label class="layui-form-label">更改结束范围</label>
+        <div class="layui-input-block">
+            <input type="text" name="end" id="end" required  lay-verify="required" placeholder="请选择时间" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">变更入场日期</label>
+        <div class="layui-input-block">
+            <input type="text" name="starttime" id="starttime" required  lay-verify="required" placeholder="请选择时间" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo2">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+
+
+<form class="layui-form layui-form-pane" action="" style="display: none;" id="yzm">
+    <div class="layui-form-item">
+        <label class="layui-form-label">验证码</label>
+        <div class="layui-input-block">
+            <input type="text" name="code" id="code" required  lay-verify="required" placeholder="请输入验证码" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo3">立即提交</button>
+        </div>
+    </div>
+</form>
+</body>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    //Demo
+
+
+    var resuce = null;
+    var url =null;
+    layui.use(['form','laydate','layer'], function(){
+        var form = layui.form;
+        var laydate = layui.laydate;
+        var layer = layui.layer;
+        laydate.render({
+            elem: '#starttime',
+            type:'datetime'//指定元素
+        });
+        laydate.render({
+            elem: '#end',
+            type:'datetime'//指定元素
+        });
+        //监听提交
+        // form.on('submit(formDemo)', function(data){
+        //     // layer.msg(JSON.stringify(data.field));
+        //     resuce = JSON.stringify(data.field);
+        //     url ="{:Url('trial_order/delTrailOrder')}";
+        //     sendYzm();
+        //     layer.open({
+        //         type: 1,
+        //         area:['446px','157px'],
+        //         content: $('#yzm') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+        //     });
+        //     return false;
+        // });
+
+        form.on('submit(formDemo2)', function(data){
+            // layer.msg(JSON.stringify(data.field));
+            resuce = JSON.stringify(data.field);
+            url = "{:Url('trial_order/changeParkingStartTime')}";
+            sendYzm();
+            layer.open({
+                type: 1,
+                area:['446px','157px'],
+                content: $('#yzm') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+            });
+            return false;
+        });
+
+
+        form.on('submit(formDemo3)', function(data){
+            // layer.msg(JSON.stringify(data.field));
+            layer.load(1);
+            resp(url,resuce,data.field.code);
+            return false;
+        });
+    });
+
+
+    function sendYzm() {
+        axios.get("{:Url('trial_order/send_code')}").then(function (reason) {
+            console.log(reason);
+        }).catch(function (reason) {
+            console.log(reason);
+        });
+        return false;
+    }
+
+    function resp(url,data,code) {
+        axios.post(url,{
+            'data':data,
+            'code':code
+        }).then(function (reason) {
+            console.log(reason);
+            layer.closeAll();
+            setTimeout(function () {
+                layer.msg(reason.data.msg);
+            },1300);
+        }).catch(function (err) {
+            layer.closeAll();
+            setTimeout(function () {
+                layer.msg(err);
+            },1300);
+        });
+    }
+</script>
+</html>

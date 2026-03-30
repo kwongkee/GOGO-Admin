@@ -1,0 +1,391 @@
+{template 'header'}
+<div class="container-fluid">
+<nav class="navbar navbar-default">
+	<div class="container-fluid">
+		<!-- Collect the nav links, forms, and other content for toggling -->
+		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			<ul class="nav navbar-nav">
+				<li class="dropdown">
+					<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+						<span>{if $vip_level === '1'}会员{elseif $vip_level==='0'}普通用户{else}全部身份{/if}</span>
+						<span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu">
+						<li>
+							<a href="javascript:void(0);" onclick="Search.searchVip('1')">会员</a>
+						</li>
+						<li>
+							<a href="javascript:void(0);" onclick="Search.searchVip('0')">普通用户</a>
+						</li>
+						<li>
+							<a href="javascript:void(0);" onclick="Search.searchVip('all')">全部</a>
+						</li>
+					</ul>
+				</li>
+				<li class="dropdown">
+					<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+						{if $sex === '1'}男{elseif $sex === '2'}女{else}全部性别{/if}
+						<span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu">
+						<li>
+							<a href="javascript:void(0);" onclick="Search.searchSex('1')">男</a>
+						</li>
+						<li>
+							<a href="javascript:void(0);" onclick="Search.searchSex('2')">女</a>
+						</li>
+						<li>
+							<a href="javascript:void(0);" onclick="Search.searchSex('all')">全部</a>
+						</li>
+					</ul>
+				</li>
+				<li class="dropdown">
+					<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+						<span>{if $mobile_status === 'y'}已认证{elseif $mobile_status==='n'}未认证{else}全部认证状态{/if}</span>
+						<span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu">
+						<li>
+							<a href="javascript:void(0);" onclick="Search.searchMobileStatus('y')">已认证</a>
+						</li>
+						<li>
+							<a href="javascript:void(0);" onclick="Search.searchMobileStatus('n')">未认证</a>
+						</li>
+						<li>
+							<a href="javascript:void(0);" onclick="Search.searchMobileStatus('all')">全部认证状态</a>
+						</li>
+					</ul>
+				</li>
+				<li class="dropdown">
+					<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+						<span>{if $forbid_status === 'y'}已踢出{elseif $forbid_status==='n'}未踢出{else}全部禁用状态{/if}</span>
+						<span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu">
+						<li>
+							<a href="javascript:void(0);" onclick="Search.searchForbidStatus('y')">已踢出</a>
+						</li>
+						<li>
+							<a href="javascript:void(0);" onclick="Search.searchForbidStatus('n')">未踢出</a>
+						</li>
+						<li>
+							<a href="javascript:void(0);" onclick="Search.searchForbidStatus('all')">全部禁用状态</a>
+						</li>
+					</ul>
+				</li>
+			</ul>
+			<div class="navbar-form navbar-left" role="search">
+				<input type="hidden" id="sex" name="sex">
+				<input type="hidden" id="vip_level" name="vip_level">
+				<input type="hidden" id="mobile_status" name="mobile_status">
+				<input type="hidden" id="forbid_status" name="forbid_status">
+				<div class="form-group">
+					<input type="text" id="keyword" name="keyword" class="form-control" placeholder="输入姓名进行模糊搜索" value="{$keyword}"></div>
+				<button type="button" class="btn btn-default" onclick="Search.searchKeyWord()">搜索</button>
+				<button type="button" class="btn btn-default" onclick="Search.resetSearch()">重置</button>
+			</div>
+			
+		</div>
+		<!-- /.navbar-collapse -->
+	</div>
+	<!-- /.container-fluid -->
+</nav>
+<script type="text/javascript">
+	var Search = (function() {
+		var vip_val = '{$vip_level}'||'all';
+		var sex_val = '{$sex}'||'all';
+		var mobile_status = '{$mobile_status}' || 'all';
+		var forbid_status = '{$forbid_status}' || 'all';
+		var keyword = '{$keyword}'||'';
+		var sort_type = '{$sort_type}' || 'update_time';
+		var sort_val = '{$sort_val}' || 'desc';
+
+		var searchVip = function(val) {
+			vip_val = val;
+			search();
+		}
+		var searchSex = function(val) {
+			sex_val = val;
+			search();
+		}
+		var searchMobileStatus = function(val) {
+			mobile_status = val;
+			search();
+		}
+		var searchForbidStatus = function(val) {
+			forbid_status = val;
+			search();
+		}
+		var searchKeyWord = function() {
+			keyword = $("#keyword").val();
+			search();
+		}
+
+		var sortByLoginTime = function() {
+			sort_type = 'update_time';
+			sort_val = sort_val == 'desc' ? 'asc' : 'desc';
+			search();
+		}
+
+		var sortByRegistTime = function() {
+			sort_type = 'add_time';
+			sort_val = sort_val == 'desc' ? 'asc' : 'desc';
+			search();
+		}
+
+		var search = function() {
+			var url = '';
+			url = '&sex='+sex_val+'&keyword='+keyword+'&vip_level='+vip_val+'&mobile_status='+mobile_status+'&sort_type='+sort_type+'&sort_val='+sort_val+'&forbid_status='+forbid_status;
+			window.location.href="{php echo $this->createWebUrl('usermanagelist')}"+url;
+		}
+
+		var resetSearch = function() {
+			window.location.href="{php echo $this->createWebUrl('usermanagelist')}";	
+		}
+
+		return {
+			searchVip:searchVip,
+			searchSex:searchSex,
+			searchMobileStatus:searchMobileStatus,
+			searchKeyWord:searchKeyWord,
+			sortByLoginTime:sortByLoginTime,
+			sortByRegistTime:sortByRegistTime,
+			searchForbidStatus:searchForbidStatus,
+			resetSearch:resetSearch
+		}
+	}())
+
+	window.onkeydown = function(e) {
+		if(e.keyCode == 13) {
+			Search.searchKeyWord();
+		}
+	}
+</script>
+	<table class="table">
+		<tr>
+			<th width="40">#</th>
+			<th width="70">头像</th>
+			<th width="100">用户</th>
+			<th width="40">性别</th>
+			<th width="50">身份</th>
+			<th width="120">手机</th>
+			<th title="点击排序">
+			最后在线时间&nbsp;&nbsp;
+			<span class="fa fa-unsorted" onclick="Search.sortByLoginTime()"></span>
+			</th>
+			<th title="点击排序">
+			注册时间&nbsp;&nbsp;
+			<span class="fa fa-unsorted" onclick="Search.sortByRegistTime()"></span>
+			</th>
+			<th>操作</th>
+		</tr>
+		{loop $list $key $item}
+		{if $item['forbid_status'] == 'y'}
+		<tr id="item_{$item['id']}" style="background-color:rgb(240,240,240)">
+		{else}
+		<tr id="item_{$item['id']}">
+		{/if}
+
+		{if $item['vip_level']}
+			<input type="hidden" id="openid_{$item['id']}" value="{$item['openid']}">
+			<td>{php echo $key +1+($page-1)*$pagesize}</td>
+			<td>
+				<img style="width:48px;height:48px;" src="{php echo $item['headimgurl']}">
+			</td>
+			<td style="color:red">{php echo $item['nickname']}</td>
+			<td>{if $item['sex'] == '2'}女{else}男{/if}</td>
+			<td style="color:red" title="（有效期：{$item['vip_end_time']}）">
+			会员
+			</td>
+			<td>{if $item['mobile_status'] == 'n'}未认证{else}{$item['mobile']}{/if}</td>
+			<td>
+			{$item['update_time']}
+			</td>
+			<td>
+			{$item['add_time']}
+			</td>
+			<td>
+				{if $item['forbid_status'] == 'y'}
+				<button class="btn btn-s btn-danger" onclick="restoreFromSystem('{$item['id']}')">解除限制</button>
+				{else}
+				<button class="btn btn-s btn-danger" onclick="removeOutFromSystem('{$item['id']}')">踢出系统</button>
+				{/if}
+				<button class="btn btn-s btn-info" onclick="removeVip('{$item['id']}')">取消会员</button>
+			</td>
+		</tr>
+		{else}
+			<input type="hidden" id="openid_{$item['id']}" value="{$item['openid']}">
+			<td>{php echo $key +1+($page-1)*$pagesize}</td>
+			<td>
+				<img style="width:48px;height:48px;" src="{php echo $item['headimgurl']}">
+			</td>
+			<td>{php echo $item['nickname']}</td>
+			<td>{if $item['sex'] == '2'}女{else}男{/if}</td>
+			<td>
+			普通
+			</td>
+			<td>{if $item['mobile_status'] == 'n'}未认证{else}{$item['mobile']}{/if}</td>
+			<td>
+			{$item['update_time']}
+			</td>
+			<td>
+			{$item['add_time']}
+			</td>
+			<td>
+				{if $item['forbid_status'] == 'y'}
+				<button class="btn btn-s btn-danger" onclick="restoreFromSystem('{$item['id']}')">解除限制</button>
+				{else}
+				<button class="btn btn-s btn-danger" onclick="removeOutFromSystem('{$item['id']}')">踢出系统</button>
+				{/if}
+				<button class="btn btn-s btn-info" onclick="openVip('{$item['id']}')">开通会员</button>
+			</td>
+		</tr>
+		{/if}
+		{/loop}
+	</table>
+	{php echo pagination($count,$page,$pagesize)}
+</div>
+<!-- 踢出模态框 -->
+<div class="modal fade bs-example-modal-sm"  tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" id="moment_detail_layer">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+			</div>
+			<div class="modal-body"></div>
+		</div>
+	</div>
+</div>
+<!-- 开通会员 -->
+<div class="modal fade bs-example-modal-sm"  id="openvip_layer">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+			</div>
+			<div class="modal-body"></div>
+			<div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+		        <button type="button" class="btn btn-primary" onclick="confirmVip(this)">确认开通会员</button>
+		     </div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	function openVip(id) {
+		$("#openvip_layer .modal-footer").find('button').eq(1).data('user_id',id);
+		var nickname = $("#item_"+id).find('td').eq(2).html();
+		var sex = $("#item_"+id).find('td').eq(3).html();
+		if(sex == '1') {
+			sex = '男';
+		}else {
+			sex = '女';
+		}
+		var html = '';
+		html += "<p>用户名："+nickname+"</p>";
+		html += "<p>性&nbsp;别："+sex+"</p>";
+		$("#openvip_layer .modal-body").html(html);
+		$("#openvip_layer").modal('show');
+	}
+	function confirmVip() {
+		var id = $("#openvip_layer .modal-footer").find('button').eq(1).data('user_id');
+		if(!id) {
+			alert("缺少id参数");
+			return false;
+		}
+		$.ajax({
+			type:'post',
+			data:{user_id:$("#openid_"+id).val()},
+			url:"{php echo $this->createWebUrl('openvipbyadmin')}",
+			success:function(d,s) {
+				if(d.res == '100') {
+					$("#openvip_layer .modal-body").append("<p style='color:red;font-weight:bold;'>"+d.msg+"</p>");
+					$("#openvip_layer .modal-footer").find('button').eq(1).html("已开通会员");	
+					setTimeout(function() {
+						window.location.href='';
+					},2000);
+				}else {
+					alert(d.msg);
+				}
+				
+			}
+		})
+	}
+	function removeVip(id) {
+		var openid = $("#openid_"+id).val();
+		var nickname = $("#item_"+id).find('td').eq(2).html();
+		if(!openid) {
+			return false;
+		}
+		if(!confirm('确认取消['+nickname+']的会员状态?')) {
+			return false;
+		}
+		if(!confirm('再次确认取消会员状态?')) {
+			return false;
+		}
+		$.ajax({
+			type:'post',
+			data:{user_id:$("#openid_"+id).val()},
+			url:"{php echo $this->createWebUrl('removevipbyadmin')}",
+			success:function(d,s) {
+				if(d.res == '100') {
+					alert("移除会员状态成功");
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+				
+			}
+		})
+
+	}
+	// 恢复系统权限
+	function restoreFromSystem(id) {
+		var openid = $("#openid_"+id).val();
+		var nickname = $("#item_"+id).find('td').eq(2).html();
+		if(!openid) {
+			return false;
+		}
+		if(!confirm('确认解除['+nickname+']的用户限制?')) {
+			return false;
+		}
+		$.ajax({
+			type:'post',
+			data:{user_id:$("#openid_"+id).val()},
+			url:"{php echo $this->createWebUrl('restoreFromSystem')}",
+			success:function(d,s) {
+				if(d.res == '100') {
+					alert("解除限制成功");
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+				
+			}
+		})
+	}
+	// 从系统中踢出
+	function removeOutFromSystem(id) {
+		var openid = $("#openid_"+id).val();
+		var nickname = $("#item_"+id).find('td').eq(2).html();
+		if(!openid) {
+			return false;
+		}
+		if(!confirm('确认踢出['+nickname+']?')) {
+			return false;
+		}
+		$.ajax({
+			type:'post',
+			data:{user_id:$("#openid_"+id).val()},
+			url:"{php echo $this->createWebUrl('removeOutFromSystem')}",
+			success:function(d,s) {
+				if(d.res == '100') {
+					alert("踢出用户成功");
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+				
+			}
+		})
+	}
+</script>
+{template 'footer'}

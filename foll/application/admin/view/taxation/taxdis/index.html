@@ -1,0 +1,191 @@
+{include file="public/header"}
+<body style="padding: 10px;background: white;">
+<!-- 上级ID -->
+<input type="hidden" id="pid" value="1">
+<div class="header">
+    <span>{$title}</span>
+
+    <button class="layui-btn layui-btn-sm" id="test2" style="margin-right: 15px;"><i class="layui-icon">&#xe67c;</i>更新税号</button>
+    <button class="layui-btn layui-btn-sm" id="test1" style="margin-right: 15px;"><i class="layui-icon">&#xe67c;</i>导入税号</button>
+
+    <div></div>
+</div>
+
+<script>
+    layui.use(['upload','form'], function(){
+        var upload = layui.upload;
+        var form = layui.form;
+        $   = layui.jquery;
+
+        //导入
+        upload.render({
+            elem: '#test1' //绑定元素
+            ,accept:'file'
+            ,exts:'xls|xlsx'
+            ,url: '{:Url("admin/taxation/imptax")}' //上传接口
+            ,done: function(res){
+                //上传完毕回调
+                if(res.code > 0) {
+                    layer.msg(res.msg,{icon:1});
+                } else {
+                    layer.msg(res.msg,{icon:2});
+                }
+            }
+            ,error: function(e){
+                //请求异常回调
+                console.log(e);
+            }
+        });
+
+        // 更新
+        upload.render({
+            elem: '#test2' //绑定元素
+            ,accept:'file'
+            ,exts:'xls|xlsx'
+            ,url: '{:Url("admin/taxation/imptaxup")}' //上传接口
+            ,done: function(res) {
+                //上传完毕回调
+                if(confirm(res.msg)) {
+                    setTimeout(function() {
+                        layer.closeAll();
+                        window.location.reload();
+                    },1000);
+                }
+            }
+            ,error: function(e) {
+                //请求异常回调
+                console.log(e);
+            }
+        });
+    });
+</script>
+
+<!--button class="layui-btn layui-btn-primary layui-btn-sm" style="float: right;margin: 5px 0px 5px 0px;" onclick="backs()">返回上级菜单</button-->
+
+<div style="margin: 5px auto;">
+
+    <form class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">请选择</label>
+            <div class="layui-input-inline">
+                <select name="cate" lay-verify="required">
+                    {volist name="cate" id="vo"}
+                        <option value="{$vo['type']}" {if condition="$type == $vo['type']"} selected {/if} >{$vo['title']}</option>
+                    {/volist}
+                </select>
+            </div>
+            <button class="layui-btn layui-btn-xm layui-btn-normal" lay-submit lay-filter="formDemo">搜 索</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    //Demo
+    layui.use('form', function(){
+        var form = layui.form;
+        var url = "{:Url('admin/taxation/lists')}";
+        //监听提交
+        form.on('submit(formDemo)', function(data) {
+
+            //layer.msg(JSON.stringify(data.field));
+            window.location.href = url + '&cate='+data.field.cate;
+            return false;
+        });
+    });
+</script>
+
+
+<table class="layui-table">
+    <thead>
+        <tr>
+            <th>序号</th>
+            <th>类别</th>
+            <th>HS编码</th>
+            <th>关税</th>
+            <th>关税优惠</th>
+            <th>增值税</th>
+            <th>增值税优惠</th>
+            <th>消费税</th>
+            <th>消费税优惠</th>
+            <th>新增时间</th>
+            <th>更新时间</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+    {volist name="lists" id="item" key="k"}
+        <tr>
+            <td>{$k}</td>
+            <td>{$cates[$item['type']]}</td>
+            <td>{$item['hscode']}</td>
+            <td>{$item['tariff']}</td>
+            <td>{$item['tariffdis']}</td>
+            <td>{$item['addtax']}</td>
+            <td>{$item['addtaxdis']}</td>
+            <td>{$item['excisetax']}</td>
+            <td>{$item['excisetaxdis']}</td>
+            <td>{$item['add_time']|date='Y-m-d H:i',###}</td>
+            <td>{$item['up_time']|date='Y-m-d H:i',###}</td>
+            <td>
+                <button class="layui-btn layui-btn-warm layui-btn-xs" onclick="edit({$item.id})">编辑</button>
+                <button class="layui-btn layui-btn-danger layui-btn-xs" onclick="del({$item.id})">删除</button>
+            </td>
+        </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<div class="layui-page">
+    {$page}
+</div>
+
+<script type="text/javascript">
+
+    layui.use(['layer'],function(){
+        layer = layui.layer;
+        $     = layui.jquery;
+    });
+
+    // 编辑操作
+    function edit(id)
+    {
+        layer.open({
+            type:2,
+            title:'编辑税号',
+            shade:0.3,
+            area:['480px','480px'],
+            content:'{:Url("admin/taxation/edit")}&id='+id
+        });
+    }
+
+    function del(id)
+    {
+        layer.confirm('确定要删除吗？',{icon:3,btn:['确定','取消']},function(){
+
+            $.post("{:Url('admin/taxation/del')}",{id:id},function(res){
+                if(res.code == 1) {
+                    layer.msg(res.msg,{icon:1});
+                    setTimeout(function() {
+                        layer.closeAll();
+                        parent.window.location.reload();
+                    },1500);
+                } else {
+                    layer.alert(res.msg,{icon:2});
+                }
+            },'json');
+        })
+    }
+
+
+    //返回上级菜单
+    function backs(pid) {
+        //var host = '{$_SERVER["SERVER_NAME"]}{$_SERVER["REQUEST_URI"]}&pid='+pid;
+        var host = '{:Url("agents/menu/list")}&pid='+pid;
+        window.location.href = host;
+    }
+</script>
+
+</body>
+</html>

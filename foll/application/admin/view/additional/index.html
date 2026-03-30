@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 14px;color: #fff;
+            font-size: 16px;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<div class="header">
+    <span>额外费用列表 [{$info['cname']}]</span>
+    <button class="layui-btn" style="margin-right: 3%;" onclick="add({$info['id']});">新增额外费用</button>
+    <a class="layui-btn" style="margin-right: 10%;" href="javascript:void(0);" onclick="black()">返回上一页</a>
+    <div></div>
+</div>
+
+<table class="layui-table">
+    <thead>
+    <tr class="ths">
+        <th>序号</th>
+        <th>所属提单</th>
+        <th>账单日期</th>
+        <th>项目名称</th>
+        <th>单位</th>
+        <th>金额</th>
+        <th>费用说明</th>
+        <th>是否确认</th>
+        <th>添加日期</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {volist name="list" id="lv" key="k"}
+        <tr class="boys">
+            <td>{$k}</td>
+            <td>{$lv['bill_num']}</td>
+            <td>{$lv['date']}</td>
+            <td>{$lv['project']}</td>
+            <td>{$lv['dis']}</td>
+            <td>{$lv['money']}</td>
+            <td>{$lv['desc']}</td>
+            <td>{if $lv['check'] == 1}
+                    <button class="layui-btn layui-btn-sm layui-btn-normal">已确认</button>
+                {else}
+                    <button class="layui-btn layui-btn-sm layui-btn-warm">待确认</button>
+                {/if}</td>
+            <td>{$lv['addtime']|date="Y-m-d H:i:s",###}</td>
+
+            <td>
+                <button class="layui-btn layui-btn-normal layui-btn-sm" onclick="Edit({$lv['id']},{$info['id']})">编辑</button>
+                <button class="layui-btn layui-btn-sm layui-btn-danger" onclick="Del({$lv['id']})">删除</button>
+            </td>
+        </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<div class="layui-box layui-laypage layui-laypage-default">
+    {$list->render()}
+</div>
+
+<script type="text/javascript">
+    layui.use(['layer','jquery'],function(){
+        layer = layui.layer;
+        $ = layui.jquery;
+    });
+
+    // 添加
+    function add(ids)
+    {
+        layer.open({
+            type: 2,
+            title: '添加额外项目',
+            shadeClose: true,
+            shade: 0.3,
+            area: ['600px', '560px'],
+            content: "{:Url('additional/add')}&uid="+ids, //iframe的url
+            yes:function(){
+                //setTimeout(function(){window.location.reload();},800);
+            },
+            end:function() {
+                setTimeout(function () {
+                    //window.location.reload();
+                }, 1200);
+            }
+        });
+    }
+
+    // 编辑
+    function Edit(id,uid)
+    {
+        layer.open({
+            type: 2,
+            title: '编辑额外费用',
+            shadeClose: true,
+            shade: 0.3,
+            area: ['600px', '560px'],
+            content: "{:Url('additional/edit')}&id="+id+'&uid='+uid, //iframe的url
+            yes:function(){
+                //setTimeout(function(){window.location.reload();},800);
+            },
+            end:function() {
+                setTimeout(function () {
+                    //window.location.reload();
+                }, 800);
+            }
+        });
+    }
+
+
+    // 删除操作
+    function Del(ids) {
+        layer.confirm('确定要删除吗?',{
+            icon:3,
+            btn:['确定','取消']
+        },function(){
+            $.ajax({
+                url:"{:url('additional/del')}",
+                type:'post',
+                dataType:'json',
+                data:{'id':ids},
+                success:function(res) {
+                    // var res = JSON.parse(data);
+                    if(res.code <= 0) {
+                        layer.msg(res.msg);
+                        return false;
+                    }
+                    layer.msg(res.msg,{icon:1});
+                    setTimeout(function(){window.location.reload();},1000);
+                }
+            })
+        })
+    }
+
+    // 返回上一页
+    function black() {
+        window.history.go(-1);
+    }
+
+</script>
+</body>
+</html>

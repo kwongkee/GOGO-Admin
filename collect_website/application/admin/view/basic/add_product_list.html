@@ -1,0 +1,292 @@
+{include file="common/header_inner_new"}
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .method1,.method1_1,.method1_2,.method2{display:none;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">产品类别</div>
+                            <div class="layui-input-block">
+                                <select name="type" id="type">
+                                    <option value="1">物流线路</option>
+                                    <option value="2">仓储服务</option>
+                                    <option value="3">电商服务</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">配置方式</div>
+                            <div class="layui-input-block">
+                                <select name="setting_method" id="setting_method" lay-filter="setting_method">
+                                    <option value="">请选择验证方式</option>
+                                    <option value="1">接口配置</option>
+                                    <option value="2">手动配置</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="method1">
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">获取方式</div>
+                                <div class="layui-input-block">
+                                    <select name="get_method" id="get_method" lay-filter="get_method">
+                                        <option value="">请选择获取方式</option>
+                                        <option value="1">API</option>
+                                        <option value="2">爬虫</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <!--API获取数据-->
+                        <div class="method1_1">
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">接口链接</div>
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input" name="api_url" placeholder="请输入接口链接">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">接口密匙</div>
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input" name="api_key" placeholder="请输入接口密匙">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">供应商</div>
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input" name="supplier" placeholder="请输入供应商" value="">
+                                </div>
+                            </div>
+                        </div>
+                        <!--爬虫获取数据-->
+                        <div class="method1_2">
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">网页链接</div>
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input" name="website_url" placeholder="请输入网页链接">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">供应商</div>
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input" name="supplier" placeholder="请输入供应商名称">
+                                </div>
+                            </div>
+                            <fieldset class="layui-elem-field">
+                                <legend>页面标签配置</legend>
+                                <div class="layui-field-box">
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">标签名称</div>
+                                        <div class="layui-input-block">
+                                            <input type="text" class="layui-input" name="label_name[]" placeholder="请输入标签名称">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">标签类别</div>
+                                        <div class="layui-input-block">
+                                            <select name="label_type[]" id="label_type">
+                                                <option value="">请选择标签类别</option>
+                                                <option value="1">id</option>
+                                                <option value="2">class</option>
+                                                <option value="3">无</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">标签属性</div>
+                                        <div class="layui-input-block">
+                                            <select name="label_attr[]" id="label_attr" lay-filter="label_attr">
+                                                <option value="">请选择标签属性</option>
+                                                <option value="1">href-获取a标签下的链接</option>
+                                                <option value="2">text-获取标签下的普通文本</option>
+                                                <option value="3">src-获取img标签的链接</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </fieldset>
+
+                        </div>
+                        <!--手动配置-->
+                        <div class="method2">
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">代码</div>
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input" name="code" placeholder="请输入产品代码" value="">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">供应商</div>
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input" name="supplier" placeholder="请输入供应商名称" value="">
+                                </div>
+                            </div>
+                            <fieldset class="layui-elem-field">
+                                <legend>详情</legend>
+                                <div class="layui-field-box">
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">名称</div>
+                                        <div class="layui-input-block">
+                                            <input type="text" class="layui-input" name="name" placeholder="请输入名称" value="">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">配图(200*200)</div>
+                                        <div class="layui-input-block">
+                                            <div class="layui-upload" style="margin-top: 10px;">
+                                                <button type="button" class="layui-btn" id="img_file2-upload">上传图片(一张)</button>
+                                                <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                                                    预览图：
+                                                    <div class="layui-upload-list" id="img_file2-upload-list">
+
+                                                    </div>
+                                                </blockquote>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">描述</div>
+                                        <div class="layui-input-block">
+                                            <script id="cont1" type="text/plain" style="width:100%;height:100px;">
+                                            </script>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即配置</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+
+        UE.getEditor('cont1', {
+            initialFrameHeight: 200,
+            serverUrl: 'static/cklein/plugins/ueditor/php/controller.php'
+        });
+
+        form.on('select(setting_method)',function(data){
+            let val = data.value;
+            if(val==1){
+                $('.method1').show();
+                $('.method1_1').hide();
+                $('.method1_2').hide();
+                $('.method2').hide();
+            }else if(val==2){
+                $('.method1').hide();
+                $('.method1_1').hide();
+                $('.method1_2').hide();
+                $('.method2').show();
+            }
+        });
+
+        form.on('select(get_method)',function(data){
+            let val = data.value;
+            if(val==1){
+                $('.method1_1').show();
+                $('.method1_2').hide();
+                $('.method2').hide();
+            }else if(val==2){
+                $('.method1_1').hide();
+                // $('.method1_2').show();
+                $('.method2').hide();
+                
+                var index = layer.open({
+                    type: 2,
+                    title: '配置爬虫网址',
+                    area:['100%','100%'],
+                    content: "{:url('admin/officialwebsite/crawl_content_list')}"
+                });
+            }
+        });
+
+        form.on('submit(component-form-element)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            $.ajax({
+                url:"{:Url('admin/basic/add_product_list')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+        // 轮播图内页文件
+        upload.render({
+            elem: '#img_file2-upload'
+            ,url: '{:Url("admin/basic/upload_file")}'
+            ,accept: 'image'
+            ,data: { folder: 'centralize', type: 'products'}
+            ,multiple: false
+            ,number:1
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+
+                    $('#img_file2-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="img[]" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+
+</script>
+</body>
+</html>

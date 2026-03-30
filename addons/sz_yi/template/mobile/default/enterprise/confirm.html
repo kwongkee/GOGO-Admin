@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>尽职调查</title>
+<!--手机端需要添加-->
+<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+
+<!--手机端需要添加---->
+<link rel="stylesheet" href="../addons/sz_yi/template/mobile/default/enterprise/static/css/test_rx.css">
+<script src="../addons/sz_yi/template/mobile/default/enterprise/static/js/jquery-1.8.3.min.js"></script>
+<script src="../addons/sz_yi/template/mobile/default/enterprise/static/js/jQuery.fontFlex.js"></script>
+<style type="text/css">
+	div{overflow: hidden;}
+    .hui-tab-item{border:0px;}
+    .dis{ background: #bbbbbb !important;}
+</style>
+<script>
+$(document).ready(function(e) {
+    var ishttps = 'https:' == document.location.protocol ? true: false;
+    //20210927-操作->注释
+// 	if(ishttps){
+// 		var url = window.location.href;
+// 		window.location.href = url.replace("https","http");
+//     }
+    
+    hui.formInit();
+	//320宽度的时候html字体大小是20px;、640宽度的时候html字体大小是40px;
+	$('html').fontFlex(20, 40, 16); 
+	//
+     $(".dxt_box li").click(function(){
+        var value = $(this).attr('data-value');
+        var elem = $(this).attr('data-elem');
+        $("#"+elem).val(value);
+		$(this).addClass("on").siblings().removeClass("on");
+		$(this).parent(".dxt_box").parent(".kcks_title_ts").attr("date-title",1);
+		$(this).parent(".dxt_box").parent(".last").attr("date-title",0);
+	});
+		
+	//判断选择是还是否	
+ 	$(".tj_zuotm").click(function(){
+		var dxq_li = $(".dtks_box .dxt_box li");
+        var refuse_url = '{php echo $this->createMobileUrl("enterprise/refuse")}';
+        var finish_url = '{php echo $this->createMobileUrl("enterprise/finish")}';
+        if( $("#question_2").val() == "不，来自线下采购或其他平台" )
+        {
+            $("#question_3_d").remove();
+        }
+
+        if( $("#question_5").val() == "不是" )
+        {
+            $("#question_6_d").remove();
+        }
+
+        if( $("#question_7").val() == "不是" )
+        {
+            $("#question_8_d").remove();
+        }
+
+        if( $("#question_11").val() == "有效期内" )
+        {
+            $("#question_12_d").remove();
+        }
+
+        if( $("#question_13").val() == "机构对个人（B2C）和个人对个人（C2C）的单笔交易金额超过人民币20万元" )
+        {
+            $("#question_14_d").attr('date-last',1);
+            $("#question_15_d").remove();
+        }
+
+        if( $("#question_13").val() == "机构对机构（B2B）的货物贸易单笔交易金额超过人民币20万元" )
+        {
+            $("#question_15_d").attr('date-last',1);
+            $("#question_14_d").remove();
+        }
+
+		if(dxq_li.hasClass("on")){
+				$(".dtks_box").children(".kcks_title_ts").each(function(index, element) {
+                    
+                    if( $("#question_1").val() == "不是" || $("#question_3").val() == "不能" || $("#question_4").val() == "是的" || $("#question_6").val() == "不能" || $("#question_8").val() == "不能" || $("#question_9").val() == "否" || $("#question_10").val() == "曾经" || $("#question_12").val() == "不能" || $("#question_14").val() == "不能" || $("#question_15").val() == "不能" )
+                    {
+                        location.href = refuse_url; 
+                    }
+                    else{
+                        if($(this).attr("date-title")==1&&$(this).attr("date-last")==0){
+                            $(this).children(".dxt_box").children("li").removeClass("on");
+                            $(this).hide().next().show(); 
+                        }
+                        
+                        if($(this).attr("date-title")==1&&$(this).attr("date-last")==1){
+                            // location.href = finish_url;
+                            // 提交保存
+                            var data = hui.getFormData('#form2');
+                            // console.log(data);
+                                hui.ajax({
+                                url  : 'https://shop.gogo198.cn/app/index.php?i=3&c=entry&p=confirm&do=enterprise&m=sz_yi&op=save_question',
+                                type : 'POST',
+                                data : data,
+                                beforeSend : function(){hui.loading();},
+                                complete   : function(){hui.closeLoading();},
+                                success : function(res){
+                                    console.log(res);
+                                    alert(res.result.msg);
+                                    if(res.status == 1)
+                                    {
+                                        location.href = finish_url;
+                                    }
+                                },
+                                error : function(e){
+                                    console.log(JSON.stringify(e));
+                                },
+                                'backType' : "JSON"
+                            });
+
+                        } 
+                    }
+					
+					 
+                });
+			    return;
+			}
+            else
+            {
+				alert("请选择！");
+			} 
+		});	 
+ 	
+});
+</script>
+
+</head>
+<body>
+     
+
+
+<div class="wjdt_title">
+    <div class="header">
+        <h3>尽职调查</h3>
+    </div>
+
+    
+<form class="hui-form" id="form1">
+    <div class="kcks_title_tss " id="infos" date-title="2" date-last="0">
+    <h4 class="kctm_zzbt" style="margin-left: 5%;">请输入企业名称</h4>
+    <ul class="dxt_box">
+      <li><input type="text" value="" placeholder="请输入要查询的公司全名或企业注册号" class="kctm_input" name="enterprise_name" id="enterprise_name"></li>
+    </ul>
+    <input type="hidden" name="basic_info[member_id]" value="{$enterprise_members['id']}">
+    <!-- <div class="kasj_db_but "> <a href="javascript:void(0);" class="tj_zuotms" onclick="queryInfo();">查询企业信息</a> </div> -->
+    <div class="kasj_db_but " id="searchBtn"> <button onclick="queryInfo(this);" type="button" class="tj_zuotms" style="border: unset;background: #3399fe;color: #fff;line-height: 1.8rem;font-size: 0.65rem;">查询企业信息</button> </div>
+    <div class="qiye" style="display: none;">
+    	<h3 id="title_text"></h3>
+        <div class="hui-wrap">
+	    	<div class="hui-tab">
+	            <!-- <div class="hui-tab-title">
+	                <div id="title1">工商照面</div>
+	                <div id="title2" style="display: none;">实际控制</div>
+	                <div id="title3" style="display: none;">纳税类型</div>
+	                <div id="title4" style="display: none;">海关登记</div>
+	            </div> -->
+	            <div class="hui-tab-body">
+	            	<div class="hui-tab-body-items">
+		                <div class="hui-tab-item hui-list" id="querens1">
+                            <div style="width: 100%;">
+                            
+                            <input type="hidden" name="basic_info[enterprise_id]" id="enterprise_id" value="" class="xxinput">
+                            <input type="hidden" name="basic_info[domain]" id="domain" value="" class="xxinput">
+                            <input type="hidden" name="basic_info[econKindCode]" id="econKindCode" value="" class="xxinput">
+                            <input type="hidden" name="basic_info[type_new]" id="type_new" value="" class="xxinput">
+		          			<div class="hui-list-text"><span>统一社会信用代码</span><input type="text" name="basic_info[creditNo]" id="creditNo" value="" class="xxinput"></div>
+	                        <div class="hui-list-text"><span>企业名称</span><input type="text" name="basic_info[name]" id="name" value="" class="xxinput"></div>
+	                        <div class="hui-list-text"><span>企业类型</span><input type="text" name="basic_info[econKind]" id="econKind" value="" class="xxinput"></div>
+	                        <div class="hui-list-text"><span>注册资本</span><input type="text" name="basic_info[registCapi]" id="registCapi" value="" class="xxinput"></div>
+	                        <div class="hui-list-text"><span>货币单位</span><input type="text" name="basic_info[currency_unit]" id="currency_unit" value="" class="xxinput"></div>
+	                        <div class="hui-list-text"><span>历史名称</span><input type="text" name="basic_info[historyNames]" id="historyNames" value="" class="xxinput"></div>
+	                       <div class="hui-list-text"><span>地址</span><input type="text" name="basic_info[address]" id="address" value="" class="xxinput"></div>
+	                        <div class="hui-list-text"><span>企业注册号</span><input type="text" name="basic_info[regNo]" id="regNo" value="" class="xxinput"></div>
+	                        <div class="hui-list-text"><span>经营范围</span><input type="text" name="basic_info[scope]" id="scope" value="" class="xxinput"></div>
+	                        <div class="hui-list-text"><span>营业开始日期</span><input type="text" name="basic_info[termStart]" id="termStart" value="" class="xxinput"></div>
+	                        <div class="hui-list-text"><span>营业结束日期</span><input type="text" name="basic_info[termEnd]" id="termEnd" value="" class="xxinput"></div>
+	                        <div class="hui-list-text"><span>所属工商局</span><input type="text" name="basic_info[belongOrg]" id="belongOrg" value="" class="xxinput"></div>
+	                        <div class="hui-list-text"><span>企业法定代表人</span><input type="text" name="basic_info[operName]" id="operName" value="" class="xxinput"></div>
+	                        <div class="hui-list-text"><span>成立日期</span><input type="text" name="basic_info[startDate]" id="startDate" value="" class="xxinput"></div>
+	                        <div class="hui-list-text"><span>注销日期</span><input type="text" name="basic_info[endDate]" id="endDate" value="" class="xxinput"></div>
+	                        <div class="hui-list-text"><span>核准日期</span><input type="text" name="basic_info[checkDate]" id="checkDate" value="" class="xxinput"></div>
+	                        <div class="hui-list-text"><span>经营状态</span><input type="text" name="basic_info[status]" id="status" value="" class="xxinput"></div>
+	                        <div class="hui-list-text"><span>组织机构号</span><input type="text" name="basic_info[orgNo]" id="orgNo" value="" class="xxinput"></div>
+	                        
+	                        <div class="hui-list-text"><span>地区代码</span><input type="text" name="basic_info[districtCode]" id="districtCode" value="" class="xxinput"></div>
+	                        <div class="hui-list-text"><span>实缴资本</span><input type="text" name="basic_info[actualCapi]" id="actualCapi" value="" class="xxinput"></div>
+	                        </div>
+							<input type="hidden" id="queren1">
+	                    <div class="kasj_db_but "> <a href="javascript:void(0);" class="tj_zuotms" onclick="queren(this,1);">确定</a> </div>
+		                    
+		                </div>
+		                <div class="hui-tab-item hui-list" id="querens2">
+		                	<div style="width: 100%;" id="beneficiaries_list">
+		                	
+		                	</div>
+		                    <input type="hidden" id="queren2">
+	                    	<div class="kasj_db_but "> <a href="javascript:void(0);" class="tj_zuotms" onclick="queren(this,2);">确定</a> </div>
+		                </div>
+		                <div class="hui-tab-item hui-list" id="querens3">
+		                    <div style="width: 100%;" id="taxpayerlist">
+		                	
+		                	</div>
+		                    <input type="hidden" id="queren3">
+	                    	<div class="kasj_db_but "> <a href="javascript:void(0);" class="tj_zuotms" onclick="queren(this,3);">确定</a> </div>
+		                </div>
+		                <div class="hui-tab-item hui-list" id="querens4">
+		                    <div style="width: 100%;" id="customslist">
+		                	
+		                	</div>
+		                    <input type="hidden" id="queren4">
+	                    	<div class="kasj_db_but "> <a href="javascript:void(0);" class="tj_zuotms" onclick="queren(this,4);">确定</a> </div>
+		                </div>
+		            </div>
+	            </div>
+	        </div>
+	    </div>
+	</div> 
+
+
+    <!--<div class="qiye" style="display: none;">
+        <h3>请核对企业信息</h3>
+        <div class="hui-wrap">
+            <div class="hui-accordion">
+                <div class="hui-accordion-title">工商照面</div>
+                <div class="hui-accordion-content hui-list">
+                    <ul>
+                        <li><div class="hui-list-text"><span>统一社会信用代码</span><input type="text" name="basic_info[creditNo]" id="creditNo" value="" class="xxinput"></div></li>
+                        <li style="display: none;"><div class="hui-list-text"><span>企业id</span><input type="text" name="basic_info[enterprise_id]" id="enterprise_id" value="" class="xxinput"></div></li>
+                        <li><div class="hui-list-text"><span>企业名称</span><input type="text" name="basic_info[name]" id="name" value="" class="xxinput"></div></li>
+                        <li><div class="hui-list-text"><span>企业类型</span><input type="text" name="basic_info[econKind]" id="econKind" value="" class="xxinput"></div></li>
+                        <li style="display: none;"><div class="hui-list-text"><span>企业类型代码</span><input type="text" name="basic_info[econKindCode]" id="econKindCode" value="" class="xxinput"></div></li>
+                        <li><div class="hui-list-text"><span>注册资本</span><input type="text" name="basic_info[registCapi]" id="registCapi" value="" class="xxinput"></div></li>
+                        <li><div class="hui-list-text"><span>货币单位</span><input type="text" name="basic_info[currency_unit]" id="currency_unit" value="" class="xxinput"></div></li>
+                        <li style="display: none;"><div class="hui-list-text" ><span>企业大类</span><input type="text" name="basic_info[type_new]" id="type_new" value="" class="xxinput"></div></li>
+                        <li><div class="hui-list-text"><span>历史名称</span><input type="text" name="basic_info[historyNames]" id="historyNames" value="" class="xxinput"></div></li>
+                        <li><div class="hui-list-text"><span>地址</span><input type="text" name="basic_info[address]" id="address" value="" class="xxinput"></div></li>
+                        <li><div class="hui-list-text"><span>企业注册号</span><input type="text" name="basic_info[regNo]" id="regNo" value="" class="xxinput"></div></li>
+                        <li><div class="hui-list-text"><span>经营范围</span><input type="text" name="basic_info[scope]" id="scope" value="" class="xxinput"></div></li>
+                        <li><div class="hui-list-text"><span>营业开始日期</span><input type="text" name="basic_info[termStart]" id="termStart" value="" class="xxinput"></div></li>
+                        <li><div class="hui-list-text"><span>营业结束日期</span><input type="text" name="basic_info[termEnd]" id="termEnd" value="" class="xxinput"></div></li>
+                        <li><div class="hui-list-text"><span>所属工商局</span><input type="text" name="basic_info[belongOrg]" id="belongOrg" value="" class="xxinput"></div></li>
+                        <li><div class="hui-list-text"><span>企业法定代表人</span><input type="text" name="basic_info[operName]" id="operName" value="" class="xxinput"></div></li>
+                        <li><div class="hui-list-text"><span>成立日期</span><input type="text" name="basic_info[startDate]" id="startDate" value="" class="xxinput"></div></li>
+                        <li><div class="hui-list-text"><span>注销日期</span><input type="text" name="basic_info[endDate]" id="endDate" value="" class="xxinput"></div></li>
+                        <li><div class="hui-list-text"><span>核准日期</span><input type="text" name="basic_info[checkDate]" id="checkDate" value="" class="xxinput"></div></li>
+                        <li><div class="hui-list-text"><span>经营状态</span><input type="text" name="basic_info[status]" id="status" value="" class="xxinput"></div></li>
+                        <li><div class="hui-list-text"><span>组织机构号</span><input type="text" name="basic_info[orgNo]" id="orgNo" value="" class="xxinput"></div></li>
+                        
+                        <li><div class="hui-list-text"><span>地区代码</span><input type="text" name="basic_info[districtCode]" id="districtCode" value="" class="xxinput"></div></li>
+                        <li><div class="hui-list-text"><span>实缴资本</span><input type="text" name="basic_info[actualCapi]" id="actualCapi" value="" class="xxinput"></div></li>
+                        <li style="display: none;"><div class="hui-list-text"><span>四级行业</span><input type="text" name="basic_info[domain]" id="domain" value="" class="xxinput"></div></li>
+
+                    </ul>
+                    <input type="hidden" id="queren1">
+                    <div class="kasj_db_but "> <a href="javascript:void(0);" class="tj_zuotms" onclick="queren(this,1);">确定</a> </div>
+                </div>
+            </div>
+            <div class="hui-accordion">
+                <div class="hui-accordion-title">实际控制</div>
+                <div class="hui-accordion-content hui-list">
+                    <ul id="beneficiaries_list">
+                        
+                    </ul>
+                    <input type="hidden" id="queren2">
+                    <div class="kasj_db_but "> <a href="javascript:void(0);" class="tj_zuotms" onclick="queren(this,2);">确定</a> </div>
+                </div>
+            </div>
+            <div class="hui-accordion">
+                <div class="hui-accordion-title">纳税类型</div>
+                <div class="hui-accordion-content hui-list">
+                    <ul id="taxpayerlist">
+                        
+                    </ul>
+                    <input type="hidden" id="queren3">
+                    <div class="kasj_db_but "> <a href="javascript:void(0);" class="tj_zuotms" onclick="queren(this,3);">确定</a> </div>
+                </div>
+            </div>
+            <div class="hui-accordion">
+                <div class="hui-accordion-title">海关登记</div>
+                <div class="hui-accordion-content hui-list">
+                    <ul id="customslist">
+
+                    </ul>
+                    <input type="hidden" id="queren4">
+                    <div class="kasj_db_but "> <a href="javascript:void(0);" class="tj_zuotms" onclick="queren(this,4);">确定</a> </div>
+                </div>
+            </div>
+        </div>
+    </div>-->
+    
+    </div>
+</form>
+
+<form class="hui-form" id="form2">
+
+
+    <div class="dtks_box" >
+    <!--题目-->
+    <div class="kcks_title_ts hide" id="question" date-title="2" date-last="0">
+        <h4 class="kctm_zzbt">你境外所收款项是否符合对合规反洗钱的要求，均来自实物出口贸易中您买家的直接付款（用于支付货款）。绝不是来自您其他银行或第三方账户的资金。</h4>
+        <input type="hidden" name="question_1" id="question_1">
+        <ul class="dxt_box">
+            <li data-value="不是" data-elem="question_1"> <em></em><span>不是</span> </li>
+            <li data-value="是的" data-elem="question_1"> <em></em><span>是的</span> </li>
+        </ul>
+    </div>
+    
+    <!--题目-->
+    <div class="kcks_title_ts hide" date-title="2" date-last="0">
+        <h4 class=" kctm_zzbt">您的境外货款是否来自Veem、WestUnion、TransferMate等第三方平台的买家汇款？</h4>
+        <input type="hidden" name="question_2" id="question_2">
+        <ul class="dxt_box">
+            <li data-value="是" data-elem="question_2"> <em></em><span>是</span> </li>
+            <li data-value="不，来自线下采购或其他平台" data-elem="question_2"> <em></em><span>不，来自线下采购或其他平台</span> </li>
+        </ul>
+    </div>
+
+    <!--题目-->
+    <div class="kcks_title_ts hide" date-title="2" date-last="0" id="question_3_d">
+        <h4 class="kctm_zzbt">是否可以提供：第三方平台内详细汇款水单（要求包含汇款人名称，汇款时间，汇款金额，收款人详细名称和账户号信息）、PI、合同？</h4>
+        <input type="hidden" name="question_3" id="question_3">
+        <ul class="dxt_box">
+            <li data-value="不能" data-elem="question_3"> <em></em><span>不能</span> </li>
+            <li data-value="可以" data-elem="question_3"> <em></em><span>可以</span> </li>
+        </ul>
+    </div>
+    
+    <!--题目-->
+    <div class="kcks_title_ts hide"  date-title="2" date-last="0">
+        <h4 class="kctm_zzbt">您的境外货款是否来自以下高危国家或地区：伊朗、古巴、朝鲜、苏丹、南苏丹、叙利亚，克里米亚</h4>
+        <input type="hidden" name="question_4" id="question_4">
+        <ul class="dxt_box">
+            <li data-value="不是" data-elem="question_4"> <em></em><span>不是</span> </li>
+            <li data-value="是的" data-elem="question_4"> <em></em><span>是的</span> </li>
+        </ul>
+    </div>
+
+    <!--题目-->
+    <div class="kcks_title_ts hide"  date-title="2" date-last="0">
+        <h4 class="kctm_zzbt">您的境外货款是否来自以下高风险国家：阿富汗、埃塞俄比亚、圭亚那、伊拉克、老挝、俄罗斯、塞尔维亚、斯里兰卡、阿联酋、特立尼达和多巴哥、突尼斯、土耳其、乌干达、乌克兰、瓦努阿图、委内瑞拉、也门</h4>
+        <input type="hidden" name="question_5" id="question_5">
+        <ul class="dxt_box">
+            <li data-value="是的" data-elem="question_5"> <em></em><span>是的</span> </li>
+            <li data-value="不是" data-elem="question_5"> <em></em><span>不是</span> </li>
+        </ul>
+    </div>
+    <!--题目-->
+    <div class="kcks_title_ts hide"  date-title="2" date-last="0" id="question_6_d">
+        <h4 class="kctm_zzbt">您是否能提供入账银行证明款项合法性和贸易真实性审查所需的材料：PI、合同、买卖家下单沟通记录、物流单据，及知悉银行风控审核时间为1到10个工作日</h4>
+        <input type="hidden" name="question_6" id="question_6">
+        <ul class="dxt_box">
+            <li data-value="不能" data-elem="question_6"> <em></em><span>不能</span> </li>
+            <li data-value="可以" data-elem="question_6"> <em></em><span>可以</span> </li>
+        </ul>
+    </div>
+
+    <!--题目-->
+    <div class="kcks_title_ts hide"  date-title="2" date-last="0">
+        <h4 class="kctm_zzbt">您的境外货款是否由买家以外的第三方付款</h4>
+        <input type="hidden" name="question_7" id="question_7">
+        <ul class="dxt_box">
+            <li data-value="是的" data-elem="question_7"> <em></em><span>是的</span> </li>
+            <li data-value="不是" data-elem="question_7"> <em></em><span>不是</span> </li>
+        </ul>
+    </div>
+    <!--题目-->
+    <div class="kcks_title_ts hide"  date-title="2" date-last="0" id="question_8_d">
+        <h4 class="kctm_zzbt">您是否能提供付款人和买家的关系，并确保付款人在汇款时添加附言备注买家名称、invoice number及产品品名，若无法添加附言，是否可由付款人出具替买家汇款的证明文件（需买家及付款人双方盖章）？</h4>
+        <input type="hidden" name="question_8" id="question_8">
+        <ul class="dxt_box">
+            <li data-value="不能" data-elem="question_8"> <em></em><span>不能</span> </li>
+            <li data-value="可以" data-elem="question_8"> <em></em><span>可以</span> </li>
+        </ul>
+    </div>
+
+    <!--题目-->
+    <div class="kcks_title_ts hide"  date-title="2" date-last="0">
+        <h4 class="kctm_zzbt">您是否知悉：基于真实贸易、合规反洗钱的原则，您不可以代任何人收取境款项</h4>
+        <input type="hidden" name="question_9" id="question_9">
+        <ul class="dxt_box">
+            <li data-value="否" data-elem="question_9"> <em></em><span>否</span> </li>
+            <li data-value="是" data-elem="question_9"> <em></em><span>是</span> </li>
+        </ul>
+    </div>
+
+    <!--题目-->
+    <div class="kcks_title_ts hide"  date-title="2" date-last="0">
+        <h4 class="kctm_zzbt">您结汇提供的外贸单证是否确认：同一合同项下的订单、 发票、报关单与费用清单、物流单等资料，保证均未曾用于办理结/售汇，也不会再向其它第三方支付公司、银行等机构提供用于办理重复结/售汇？</h4>
+        <input type="hidden" name="question_10" id="question_10">
+        <ul class="dxt_box">
+            <li data-value="曾经" data-elem="question_10"> <em></em><span>曾经</span> </li>
+            <li data-value="未曾" data-elem="question_10"> <em></em><span>未曾</span> </li>
+        </ul>
+    </div>
+
+    <!--题目-->
+    <div class="kcks_title_ts hide"  date-title="2" date-last="0">
+        <h4 class="kctm_zzbt">您结汇提供的外贸单证是否确认：交易清单明细交易日期在结算日期的近半年时间以内？</h4>
+        <input type="hidden" name="question_11" id="question_11">
+        <ul class="dxt_box">
+            <li data-value="已经超期" data-elem="question_11"> <em></em><span>已经超期</span> </li>
+            <li data-value="有效期内" data-elem="question_11"> <em></em><span>有效期内</span> </li>
+        </ul>
+    </div>
+
+    <!--题目-->
+    <div class="kcks_title_ts hide"  date-title="2" date-last="0" id="question_12_d">
+        <h4 class="kctm_zzbt">您是否能提供加盖公章的详细情况说明</h4>
+        <input type="hidden" name="question_12" id="question_12">
+        <ul class="dxt_box">
+            <li data-value="不能" data-elem="question_12"> <em></em><span>不能</span> </li>
+            <li data-value="可以" data-elem="question_12"> <em></em><span>可以</span> </li>
+        </ul>
+    </div>
+    
+    <!--题目-->
+    <div class="kcks_title_ts hide"  date-title="2" date-last="0">
+        <h4 class="kctm_zzbt">您的境内账户提现或转账若交易金额超过以下单笔限额，能否提供相关真实性证明材料</h4>
+        <input type="hidden" name="question_13" id="question_13">
+        <ul class="dxt_box">
+            <li data-value="机构对个人（B2C）和个人对个人（C2C）的单笔交易金额超过人民币20万元" data-elem="question_13"> <em></em><span>机构对个人（B2C）和个人对个人（C2C）的单笔交易金额超过人民币20万元</span> </li>
+            <li data-value="机构对机构（B2B）的货物贸易单笔交易金额超过人民币20万元" data-elem="question_13"> <em></em><span>机构对机构（B2B）的货物贸易单笔交易金额超过人民币20万元</span> </li>
+        </ul>
+    </div>
+
+    <!--题目-->
+    <div class="kcks_title_ts hide"  date-title="2" date-last="0" id="question_14_d">
+        <h4 class="kctm_zzbt">机构对个人（B2C）和个人对个人（C2C）的单笔交易金额超过人民币20万元</h4>
+        <input type="hidden" name="question_14" id="question_14">
+        <ul class="dxt_box">
+            <li data-value="不能" data-elem="question_14"> <em></em><span>不能</span> </li>
+            <li data-value="可以" data-elem="question_14"> <em></em><span>可以</span> </li>
+        </ul>
+    </div>
+
+    <!--题目-->
+    <div class="kcks_title_ts hide"  date-title="2" date-last="0" id="question_15_d">
+        <h4 class="kctm_zzbt">机构对机构（B2B）的货物贸易单笔交易金额超过人民币20万元</h4>
+        <input type="hidden" name="question_15" id="question_15">
+        <ul class="dxt_box">
+            <li data-value="不能" data-elem="question_15"> <em></em><span>不能</span> </li>
+            <li data-value="可以" data-elem="question_15"> <em></em><span>可以</span> </li>
+        </ul>
+    </div>
+</div>
+
+</form>
+
+
+
+<!--结束------------------------------------------>
+
+    <div class="kasj_db_but " id="next_btn" style="display: none;"> <a href="javascript:void(0);" class="tj_zuotms" onclick="confirmInfo();">下一步</a> </div>
+    <div class="kasj_db_but " id="confirm_btn" style="display: none;"> <a href="javascript:void(0);" class="tj_zuotm">确认</a> </div>
+    <div class="footer">
+        <img src="../addons/sz_yi/template/mobile/default/enterprise/static/images/logo.png" alt=""> &nbsp;&nbsp;技术支持
+    </div>
+</div>
+<!--<div id="qxbb" style="position:fixed;bottom:0;left:0;z-index:99999999999999999;width:100%;height:500px;border:1px solid #000;"></div>-->
+
+<script type="text/javascript" src="../addons/sz_yi/template/mobile/default/enterprise/static/js/hui.js" charset="UTF-8"></script>
+<script type="text/javascript" src="../addons/sz_yi/template/mobile/default/enterprise/static/js/hui-form.js" charset="UTF-8"></script>
+<!--<script type="text/javascript" src="../addons/sz_yi/template/mobile/default/enterprise/static/js/hui-accordion.js"></script>-->
+<script type="text/javascript" src="../addons/sz_yi/template/mobile/default/enterprise/static/js/hui-tab.js" type="text/javascript"></script>
+<script type="text/javascript">
+    hui.formInit();
+//	hui.accordion(true, true);
+    // hui.tab('.hui-tab');
+    
+    function queren(obj,id) {
+
+        window.scroll(0, 0); // 滚动到顶部
+        $(obj).text('已确认');
+        $("#queren"+id).val(id);
+        $("#querens"+id).hide();
+        
+        // if(id < 4)
+        // {
+        //     $("#title"+id).hide();
+        //     $("#title"+(id+1)).show();
+        // }
+        
+        if(id == 4)
+        {
+            confirmInfo();
+        }
+
+        switch (id) {
+            // case 1 :
+            //     texts = '请核对工商照面信息';
+            // break;
+            case 1 :
+                texts = '请核对实际控制人信息';
+            break;
+            case 2 :
+                texts = '请核对纳税人类型信息';
+            break;
+            case 3 :
+                texts = '请核对海关登记信息';
+            break;
+        }
+        $("#title_text").text(texts);
+    }
+
+    function confirmInfo() {
+        // 判断是否确认
+        var queren1 = $("#queren1").val();
+        var queren2 = $("#queren2").val();
+        var queren3 = $("#queren3").val();
+        var queren4 = $("#queren4").val();
+        
+        if( !queren1 )
+        {
+            alert('请先确认工商照面信息!');
+            return false;
+        }
+        if( !queren2 )
+        {
+            alert('请先确认受益人信息!');
+            return false;
+        }
+        if( !queren3 )
+        {
+            alert('请先确认纳税人类型信息!');
+            return false;
+        }
+        if( !queren4 )
+        {
+            alert('请先确认海关登记信息!');
+            return false;
+        }
+        // 储存企业信息
+        var d = {};
+        $("#form1 input").each(function(i, el) {
+            d[el.name] =$(this).val();
+        });
+
+        $("#infos").addClass('hide');
+        //$("#question").removeClass('hide');
+        $("#next_btn").hide();
+        $("#confirm_btn").show();
+
+        // var finish_url = '{php echo $this->createMobileUrl("enterprise/finish")}';
+        //2021-09-24
+        var finish_url = 'https://shop.gogo198.cn/app/index.php?i=3&c=entry&p=finish&do=enterprise&m=sz_yi';
+            hui.ajax({
+                url  : 'https://shop.gogo198.cn/app/index.php?i=3&c=entry&p=confirm&do=enterprise&m=sz_yi&op=save_enterprise_info',
+                type : 'POST',
+                data : d,
+                beforeSend : function(){hui.loading();},
+                complete   : function(){hui.closeLoading();},
+                success : function(res){
+                    console.log(res);
+                    alert(res.result.msg);
+                    if(res.status == 1)
+                    {
+                        // $(".qiye").show();
+                        // $("#next_btn").hide();
+                        location.href = finish_url;
+                    }
+                },
+                error : function(e){
+                    alert(JSON.stringify(e));
+                    console.log(JSON.stringify(e));
+                },
+                'backType' : "JSON"
+            });
+    }
+
+    function queryInfo(obj) {
+        $(obj).attr('disabled','disabled');
+        $("#searchBtn").addClass('dis');
+        $(obj).addClass('dis');
+        var enterprise_name = hui("#enterprise_name").val();
+        if( enterprise_name == '' )
+        {
+            $(obj).removeAttr('disabled');
+            $("#searchBtn").removeClass('dis');
+            $(obj).removeClass('dis');
+            alert('请输入企业全名或企业注册号！');
+            return false;
+        }
+        // 工商照面
+        $.ajax({
+            url  : 'https://declare.gogo198.cn/api/qxbquery/getBasicInfo?name='+enterprise_name,
+            type : 'GET',
+            success : function(res){
+                alert(res.message);
+                if(res.status == 200)
+                {
+                    if(res.data.new_status=='注销' || res.data.new_status=='吊销' || res.data.new_status=='撤销' || res.data.new_status=='设立中' || res.data.new_status=='清算中' || res.data.new_status=='停业' || res.data.new_status=='其他'){
+                        alert('你的企业状态为'+res.data.new_status+'，暂不能注册！如有问题请咨询客服。');return false;
+                    }
+                    if(res.data.status=='注销' || res.data.status=='吊销' || res.data.status=='撤销' || res.data.status=='设立中' || res.data.status=='清算中' || res.data.status=='停业' || res.data.status=='其他'){
+                        alert('你的企业状态为'+res.data.status+'，暂不能注册！如有问题请咨询客服。');return false;
+                    }
+                    $(obj).removeAttr('disabled');
+                    $("#searchBtn").removeClass('dis');
+                    $(obj).removeClass('dis');
+                    $("#title_text").text('请核对工商照面信息');
+                    $(".qiye").show();
+                    $("#searchBtn").hide();
+                    //$("#next_btn").show();
+                    $("#enterprise_id").val(res.data.id);
+                    $("#name").val(res.data.name);
+                    $("#econKind").val(res.data.econKind);
+                    $("#econKindCode").val(res.data.econKindCode);
+                    $("#registCapi").val(res.data.registCapi);
+                    $("#currency_unit").val(res.data.currency_unit);
+                    $("#type_new").val(res.data.type_new);
+                    $("#historyNames").val(res.data.historyNames);
+                    $("#address").val(res.data.address);
+                    $("#regNo").val(res.data.regNo);
+                    $("#scope").val(res.data.scope);
+                    $("#termStart").val(res.data.termStart);
+                    $("#termEnd").val(res.data.termEnd);
+                    $("#belongOrg").val(res.data.belongOrg);
+                    $("#operName").val(res.data.operName);
+                    $("#startDate").val(res.data.startDate);
+                    $("#endDate").val(res.data.endDate);
+                    $("#checkDate").val(res.data.checkDate);
+                    $("#status").val(res.data.status);
+                    $("#orgNo").val(res.data.orgNo);
+                    $("#creditNo").val(res.data.creditNo);
+                    $("#districtCode").val(res.data.districtCode);
+                    $("#domain").val(res.data.domain);
+                }else{
+                    $(obj).removeAttr('disabled');
+                    $("#searchBtn").removeClass('dis');
+                    $(obj).removeClass('dis');
+                }
+            },
+            error : function(e){
+                console.log(JSON.stringify(e));
+                // alert(JSON.stringify(e));
+                alert('查询失败');
+            },
+            'backType' : "JSON"
+        });
+        // 实际受益
+        $.ajax({
+            url  : 'https://declare.gogo198.cn/api/qxbquery/getBeneficiariesByName?name='+enterprise_name,
+            type : 'GET',
+            data : {},
+            beforeSend : function(){hui.loading();},
+            complete   : function(){hui.closeLoading();},
+            success : function(res){
+                console.log(res);
+                if(res.status == 200)
+                {
+                    $("#beneficiaries_list").empty();
+                    var items = res.data.items;
+                    for (var i = 0; i < items.length; i++) {
+                        var html = '<li><div class="hui-list-text"><span>受益人'+(i+1)+'：</span></li><li><div class="hui-list-text"><span>企业名称</span><input type="text" value="'+items[i].enterprise+'" name="beneficiaries['+i+'][enterprise]" class="xxinput"></div></li><li><div class="hui-list-text"><span>受益人</span><input type="text" value="'+items[i].beneficiary+'" name="beneficiaries['+i+'][beneficiary]" class="xxinput"></div></li><li><div class="hui-list-text"><span>受益所有人类型</span><input type="text" value="'+items[i].type+'" name="beneficiaries['+i+'][type]" class="xxinput"></div></li><li><div class="hui-list-text"><span>股权占比</span><input type="text" value="'+items[i].percent+'" name="beneficiaries['+i+'][percent]" class="xxinput"></div></li><li><div class="hui-list-text"><span>任职</span><input type="text" value="'+items[i].title+'" name="beneficiaries['+i+'][title]" class="xxinput"></div></li><li><div class="hui-list-text"><span>受益人说明</span><input type="text" value="'+items[i].reason+'" name="beneficiaries['+i+'][reason]" class="xxinput"></div></li><li><div class="hui-list-text"><span>条文依据</span><input type="text" value="'+items[i].law_desc+'" name="beneficiaries['+i+'][law_desc]" class="xxinput"></div></li>';
+                        
+                        $("#beneficiaries_list").append(html);
+                    }
+                }else{
+                    $("#beneficiaries_list").empty();
+                    var html = '<li><div class="hui-list-text"><span>受益人'+(1)+'：</span></li><li><div class="hui-list-text"><span>企业名称</span><input type="text" value="" name="beneficiaries[1][enterprise]" class="xxinput"></div></li><li><div class="hui-list-text"><span>受益人</span><input type="text" value="" name="beneficiaries[1][beneficiary]" class="xxinput"></div></li><li><div class="hui-list-text"><span>受益所有人类型</span><input type="text" value="" name="beneficiaries[1][type]" class="xxinput"></div></li><li><div class="hui-list-text"><span>股权占比</span><input type="text" value="" name="beneficiaries[1][percent]" class="xxinput"></div></li><li><div class="hui-list-text"><span>任职</span><input type="text" value="" name="beneficiaries[1][title]" class="xxinput"></div></li><li><div class="hui-list-text"><span>受益人说明</span><input type="text" value="" name="beneficiaries[1][reason]" class="xxinput"></div></li><li><div class="hui-list-text"><span>条文依据</span><input type="text" value="" name="beneficiaries[1][law_desc]" class="xxinput"></div></li>';
+                        
+                    $("#beneficiaries_list").append(html);
+                }
+            },
+            error : function(e){
+                console.log(JSON.stringify(e));
+            },
+            'backType' : "JSON"
+        });
+        // 纳税类型
+        $.ajax({
+            url  : 'https://declare.gogo198.cn/api/qxbquery/getTaxpayerListByName?name='+enterprise_name,
+            type : 'GET',
+            data : {},
+            beforeSend : function(){hui.loading();},
+            complete   : function(){hui.closeLoading();},
+            success : function(res){
+                console.log(res);
+                if(res.status == 200)
+                {
+                    $("#taxpayerlist").empty();
+                    var items = res.data;
+                    for (var i = 0; i < items.length; i++) {
+                        var html = '<li><div class="hui-list-text"><span>纳税人'+(i+1)+'：</span></li><li><div class="hui-list-text"><span>资格类型</span><input type="text" value="'+items[i].qualification+'" name="taxpayerlist['+i+'][qualification]" class="xxinput"></div></li><li><div class="hui-list-text"><span>登记时间</span><input type="text" value="'+items[i].judge_date+'" name="taxpayerlist['+i+'][judge_date]" class="xxinput"></div></li>';
+                        
+                        $("#taxpayerlist").append(html);
+                    }
+                }else{
+                    $("#taxpayerlist").empty();
+                    var html = '<li><div class="hui-list-text"><span>纳税人'+(1)+'：</span></li><li><div class="hui-list-text"><span>资格类型</span><input type="text" value="" name="taxpayerlist[1][qualification]" class="xxinput"></div></li><li><div class="hui-list-text"><span>登记时间</span><input type="text" value="" name="taxpayerlist[1][judge_date]" class="xxinput"></div></li>';
+                        
+                    $("#taxpayerlist").append(html);
+                }
+            },
+            error : function(e){
+                console.log(JSON.stringify(e));
+            },
+            'backType' : "JSON"
+        });
+        // 海关登记
+        $.ajax({
+            url  : 'https://declare.gogo198.cn/api/qxbquery/getCustomsListByName?name='+enterprise_name,
+            type : 'GET',
+            data : {},
+            beforeSend : function(){hui.loading();},
+            complete   : function(){hui.closeLoading();},
+            success : function(res){
+                console.log(res);
+                if(res.status == 200)
+                {
+
+                    $("#customslist").empty();
+                    var items = res.data;
+                    for (var i = 0; i < items.length; i++) {
+                        var html = '<li><div class="hui-list-text"><span>企业名称</span><input type="text" value="'+items[i].ename+'" name="customslist['+i+'][ename]" class="xxinput"></div></li><li><div class="hui-list-text"><span>数据来源</span><input type="text" value="'+items[i].url+'" name="customslist['+i+'][url]"  class="xxinput"></div></li><li><div class="hui-list-text"><span>海关编号</span><input type="text" value="'+items[i].customs_num+'" name="customslist['+i+'][customs_num]"  class="xxinput"></div></li><li><div class="hui-list-text"><span>注册海关</span><input type="text" value="'+items[i].customs_reg+'" name="customslist['+i+'][customs_reg]"  class="xxinput"></div></li><li><div class="hui-list-text"><span>经营类别</span><input type="text" value="'+items[i].business_category+'" name="customslist['+i+'][business_category]" class="xxinput"></div></li><li><div class="hui-list-text"><span>注册日期</span><input type="text" value="'+items[i].reg_date+'" name="customslist['+i+'][reg_date]"  class="xxinput"></div></li><li><div class="hui-list-text"><span>工商注册地址</span><input type="text" value="'+items[i].reg_area+'" name="customslist['+i+'][reg_area]"  class="xxinput"></div></li><li><div class="hui-list-text"><span>行政区划</span><input type="text" value="'+items[i].administrative_divisions+'" name="customslist['+i+'][administrative_divisions]"  class="xxinput"></div></li><li><div class="hui-list-text"><span>经济区划</span><input type="text" value="'+items[i].economic_regions+'" name="customslist['+i+'][economic_regions]" class="xxinput"></div></li><li><div class="hui-list-text"><span>特殊贸易区域</span><input type="text" value="'+items[i].special_area+'" name="customslist['+i+'][special_area]"  class="xxinput"></div></li><li><div class="hui-list-text"><span>行业种类</span><input type="text" value="'+items[i].industry_type+'" name="customslist['+i+'][industry_type]"  class="xxinput"></div></li><li><div class="hui-list-text"><span>报关有效期</span><input type="text" value="'+items[i].vail_date+'" name="customslist['+i+'][vail_date]"  class="xxinput"></div></li><li><div class="hui-list-text"><span>海关注销标志</span><input type="text" value="'+items[i].cancel_flag+'" name="customslist['+i+'][cancel_flag]" class="xxinput"></div></li><li><div class="hui-list-text"><span>年报情况</span><input type="text" value="'+items[i].annual_report+'" name="customslist['+i+'][annual_report]" class="xxinput"></div></li>';
+                        $("#customslist").append(html);
+                    }
+
+                }else{
+                    $("#customslist").empty();
+                    var html = '<li><div class="hui-list-text"><span>企业名称</span><input type="text" value="" name="customslist[1][ename]" class="xxinput"></div></li><li><div class="hui-list-text"><span>数据来源</span><input type="text" value="" name="customslist[1][url]"  class="xxinput"></div></li><li><div class="hui-list-text"><span>海关编号</span><input type="text" value="" name="customslist[1][customs_num]"  class="xxinput"></div></li><li><div class="hui-list-text"><span>注册海关</span><input type="text" value="" name="customslist[1][customs_reg]"  class="xxinput"></div></li><li><div class="hui-list-text"><span>经营类别</span><input type="text" value="" name="customslist[1][business_category]" class="xxinput"></div></li><li><div class="hui-list-text"><span>注册日期</span><input type="text" value="" name="customslist[1][reg_date]"  class="xxinput"></div></li><li><div class="hui-list-text"><span>工商注册地址</span><input type="text" value="" name="customslist[1][reg_area]"  class="xxinput"></div></li><li><div class="hui-list-text"><span>行政区划</span><input type="text" value="" name="customslist[1][administrative_divisions]"  class="xxinput"></div></li><li><div class="hui-list-text"><span>经济区划</span><input type="text" value="" name="customslist[1][economic_regions]" class="xxinput"></div></li><li><div class="hui-list-text"><span>特殊贸易区域</span><input type="text" value="" name="customslist[1][special_area]"  class="xxinput"></div></li><li><div class="hui-list-text"><span>行业种类</span><input type="text" value="" name="customslist[1][industry_type]"  class="xxinput"></div></li><li><div class="hui-list-text"><span>报关有效期</span><input type="text" value="" name="customslist[1][vail_date]"  class="xxinput"></div></li><li><div class="hui-list-text"><span>海关注销标志</span><input type="text" value="" name="customslist[1][cancel_flag]" class="xxinput"></div></li><li><div class="hui-list-text"><span>年报情况</span><input type="text" value="" name="customslist[1][annual_report]" class="xxinput"></div></li>';
+                        $("#customslist").append(html);
+                }
+            },
+            error : function(e){
+                console.log(JSON.stringify(e));
+
+            },
+            'backType' : "JSON"
+        });
+    }
+</script>
+</body>
+</html>
+

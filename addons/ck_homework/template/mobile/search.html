@@ -1,0 +1,163 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
+        <meta name="format-detection" content="telephone=no" />
+        <title>关键字搜索 - {$config['webtitle']}</title>
+        <link href="{$templateurl}css/foxui.min.css" rel="stylesheet" type="text/css" />
+    </head>
+
+    <body ontouchstart>
+
+		<div class='fui-page-group '>
+    <style>
+		ul,li{ list-style:none;margin:0; padding:0}
+		.fui-according-header{
+			font-size: .7rem;
+		}
+		.fui-according-header .text{
+			color: #666666;
+			font-size: .65rem;
+			text-align: right;
+		}
+		.fui-cell-group.recharge{
+			padding:.6rem 0 ;
+		}
+		.fui-cell-group.recharge .fui-cell{
+			padding:0;
+			font-size: .6rem;
+			height:1rem;
+			line-height:1rem;
+		}
+		.fui-cell-group.recharge .fui-cell .fui-cell-text{
+			color: #666;
+		}
+		.fui-cell-group.recharge .fui-cell:before{display: none}
+		.fui-cell-group.recharge:before{
+			content: " ";
+			position: absolute;
+			left: 0;
+			right: 0;
+			top: 0;
+			height: 1px;
+			border-top: 1px solid #ebebeb;
+			color: #D9D9D9;
+			-webkit-transform-origin: 0 0;
+			-ms-transform-origin: 0 0;
+			transform-origin: 0 0;
+			-webkit-transform: scaleY(0.5);
+			-ms-transform: scaleY(0.5);
+			transform: scaleY(0.5);
+		}
+		.fui-according.expanded .fui-according-header .text{
+			filter:alpha(opacity=0);
+			-moz-opacity:0;
+			-khtml-opacity: 0;
+			opacity: 0;
+		}
+		.fui-cell-group .fui-cell .fui-cell-icon {
+			width: auto;
+			margin-right: .75rem;
+		}
+		.fui-cell-group .fui-cell .fui-cell-icon img {
+			width: 1.7rem;
+			height: 1.7rem;
+		}
+		.fui-cell-info .title {
+			position: relative;
+			font-size: 0.7rem;
+			color: #000;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			overflow: hidden;
+			height: 1rem;
+			line-height: 1rem;
+		}
+		.fui-cell.applyradio{
+			height: 3.25rem;padding: .4rem .6rem;
+		}
+		.fui-cell.applyradio .fui-cell-info{
+			display: -webkit-box;
+			display: -webkit-flex;
+			display: -ms-flexbox;
+			display: flex;
+			height: 100%;
+			-webkit-box-orient: vertical;
+			-webkit-flex-direction: column;
+			-ms-flex-direction: column;
+			flex-direction: column;
+			-webkit-box-pack: justify;
+			-ms-flex-pack: justify;
+			-webkit-justify-content: space-around;
+			justify-content: space-around;
+		}
+		
+		.index_search_cont{border-bottom:1px solid #f2f2f2;padding:8px 10px; }
+		.index_formFiled{border:1px solid #eee;height:33px; overflow:hidden; background:#fff;  position:relative;border-radius:5px; padding-left:10px; }
+		.index_input_search{width:100%;height:33px; line-height:33px; padding:0; margin:0;border:none;font-size:14px ; background:#fff}
+		.index_input_btn_icon{ position:absolute; right:10px;top:3px; font-size:20px;color:#666; z-index:1}
+		.iconfont_index_search{width:25px;height:25px; background:url({$templateurl}/images/yun_wap_fotnav_user.png) no-repeat; background-size:100%;position:absolute; right:10px;top:3px; font-size:20px;color:#666; z-index:1}
+		
+		.kaoshizuoyetab{border:1px solid #f2f2f2; border-radius:6px;}
+		.kaoshizuoyetab .TabbedPanelsTabGroup{ background:#fff; height:30px; line-height:30px; color:#666; font-size:14px;}
+		.kaoshizuoyetab .TabbedPanelsTab{ float:left; width:33.33%; text-align:center;}
+		.kaoshizuoyetab .TabbedPanelsTab a{ color:#333333;}
+		.kaoshizuoyetab .TabbedPanelsTabSelected{ background:#9eea6a; color:#fff;}
+		.kaoshizuoyetab .TabbedPanelsTabSelected a{ color:#fff;}
+		
+	</style>
+<div class='fui-page  fui-page-current article-index-page' style="background:#fff;">
+
+	<div class="fui-header">
+		<div class="fui-header-left">
+			<a class="back" href="{php echo $this->createMobileUrl('index');}"></a>
+		</div>
+		<div class="title">关键字搜索</div> 
+		<div class="fui-header-right">&nbsp;</div>
+    </div>
+	<div class='fui-content'>
+		
+		<div class="fui-article-page" style="padding:10px 12px;">
+			<div class="fui-article-content">
+			
+			
+				<!--start-->
+				<div class="kaoshizuoyetab">
+					<ul class="TabbedPanelsTabGroup">
+					  <li class="TabbedPanelsTab {if $tab == 0}TabbedPanelsTabSelected{/if}" ><a href="{$urlt}&tab=0" style="display:block;">知识点</a></li>
+					  <li class="TabbedPanelsTab {if $tab == 1}TabbedPanelsTabSelected{/if}" ><a href="{$urlt}&tab=1" style="display:block;">文章</a></li>
+					  <li class="TabbedPanelsTab {if $tab == 2}TabbedPanelsTabSelected{/if}" ><a href="{$urlt}&tab=2" style="display:block;">作文</a></li>
+					</ul>
+				</div>
+				<div class="index_search_cont">
+					<form action="./index.php" method="get">
+					  <input type="hidden" name="i" value="{$_GPC['i']}">
+					  <input type="hidden" name="c" value="{$_GPC['c']}">
+					  <input type="hidden" name="do" value="{$doname}">
+					  <input type="hidden" name="m" value="{$_GPC['m']}">
+					  <input type="hidden" name="op" value="lsit">
+					  <div class="index_formFiled">
+						<input type="text" value="" name="keyword" class="index_input_search" placeholder="请输入关键词进行搜索">
+						<button class="index_input_btn_icon iconfont_index_search" style="border:1px solid #FFFFFF;"></button>
+					  </div>
+					</form>
+				</div>
+				<!--end-->
+			</div>
+		</div>
+		
+	</div>
+	
+	
+</div> 
+
+
+
+
+
+	
+
+	
+</body>
+</html>

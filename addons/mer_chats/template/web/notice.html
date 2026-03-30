@@ -1,0 +1,160 @@
+{template 'web/link'}
+    <style>
+        .layui-table thead tr{
+            background-color:#ecf6fc;
+        }
+        .layui-table thead tr th{
+            color: #1b7ab6;
+        }
+        .layui-input-block {
+            margin-left: 0;
+            min-height: 5px;
+        }
+        hr{
+            margin: 41px 0 0;
+        }
+        .layui-btn{
+            height: initial;
+            line-height: normal;
+            padding: 10px 15px;
+        }
+        .demoTable{
+            margin-top: 10px;
+        }
+        .pagination{
+            margin: 10px 0px;display: inline-block;
+            padding-left: 0px;
+            border-radius: 4px;
+        }
+
+        .pagination>li:first-child>a,.pagination>li:first-child>span
+        {
+            margin-left: 0px;border-top-left-radius: 4px;border-bottom-left-radius: 4px;
+        }
+        .pagination>li>a,.pagination>li>span
+        {
+            background-color: #FFF;border: 1px solid #DDD;color: inherit;float: left;line-height: 1.42857;
+            margin-left: 1px;padding: 4px 10px;position: relative;text-decoration: none;
+        }
+        .pagination>.active>a,.pagination>.active>span,.pagination>.active>a:hover,.pagination>.active>span:hover,.pagination>.active>a:focus,.pagination>.active>span:focus
+        {
+            background-color: #1ab394;border-color: #1ab394;color: #fff;cursor: default;z-index: 2;
+        }
+        .pagination>li{display: inherit;text-align: -webkit-match-parent;float: left;width: auto;text-align: center;font-size: 14px;}
+    </style>
+        <!-- 内容主体区域 -->
+        <div style="padding: 15px;">
+            <div class="laytitle"><span>业务通知</span></div>
+            <hr class="layui-bg-blue">
+
+            <div class="demoTable">
+                <span style="float: left; line-height: 40px;">选择通知人：</span>
+                <div class="layui-inline" style="float: left; width: 30%;">
+                    <input class="layui-input" name="id" id="demoReload" autocomplete="off">
+                </div>
+                <div class="site-demo-button" id="layerDemo" style="margin-bottom: 0; float: left;">
+                    <a href="javascript:void(0);" class="layui-btn" onclick="select()">选择通知人</a>
+                </div>
+            </div>
+            <div class="choose">订单生成后以模板消息的方式商家通知，可以指定多个人，如果不选择则不通知</div>
+            <div class="layui-form" id="tables">
+
+                <table class="layui-table">
+                    <thead>
+                        <tr>
+                            <th>微信头像</th>
+                            <th>用户昵称</th>
+                            <th>用户手机</th>
+                            <th>所属公众号</th>
+                            <th>选择时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    {loop $data $inx $item}
+                        <tr>
+                            <td><img src="{$item['avatar']}" class="layui-nav-img"></td>
+                            <td>{$item['nickname']}</td>
+                            <td>{$item['mobile']}</td>
+                            <td>{$item['puName']}</td>
+                            <td>{php echo date('Y-m-d H:i',$item['c_time'])}</td>
+                            <td>
+                                <a href="javascript:void(0);" onclick="del({$item['uid']})" class="layui-btn layui-btn-danger">移除通知人</a>
+                            </td>
+                        </tr>
+                    {/loop}
+                    </tbody>
+                </table>
+
+                <div  style="text-align: center;" id="pager">
+                    {$pager}
+                </div>
+
+            </div>
+
+        </div>
+
+    <script>
+        layui.use('layer', function(){ //独立版的layer无需执行这一句
+            var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
+
+            //触发事件
+            var active = {
+
+                cancel: function(index, layero){
+                    alert('close')
+                    if(confirm('确定要关闭么')){ //只有当点击confirm框的确定时，该层才会关闭
+                        layer.close(index)
+                    }
+                    return false;
+                }
+
+            };
+
+        });
+
+
+        // 选择通知人
+        function select(){
+            layer.open({
+                type:2,
+                closeBtn:2,
+                title:'选择通知人',
+                skin :'layui-layer-lan',
+                area:['650px','500px'],
+                content: "{php echo WebUrl('mer_chats',array('m'=>'mer_chats','do'=>'index','p'=>'selectnoti'))}",
+                cancel:function(res){
+                   window.location.reload();
+                }
+            })
+        }
+
+
+        // 移除通知人
+        function del(uid) {
+            layer.confirm('您确定要移除通知人吗？',{
+                btn:['确认','取消']
+            },function(){
+
+                $.ajax({
+                    url:"{php echo WebUrl('mer_chats',array('m'=>'mer_chats','do'=>'index','p'=>'selectdel'))}",
+                    type:'POST',
+                    data:{uid:uid},
+                    success:function(res) {
+                        var res = JSON.parse(res);
+                        if(res.code != 1) {
+                            layer.msg(res.msg,{icon:2})
+                            return false;
+                        }
+                        layer.msg(res.msg,{icon:1})
+                        setTimeout(function(){
+                            window.location.reload();
+                        },1200)
+                    }
+                });
+            },function(){
+                layer.msg('取消',{icon:2})
+            })
+        }
+    </script>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {include file="common/meta"}
+    <link rel="stylesheet" href="./static/hadmin/layui/css/layui.css"></link>
+</head>
+<body class="gray-bg">
+<div class="demoTable">
+    搜索：
+    <div class="layui-inline">
+        <input class="layui-input" name="goodssn" id="goodssn" autocomplete="off">
+    </div>
+    <button class="layui-btn" data-type="search" id="search" onclick="search();">搜索</button>
+    <button class="layui-btn" onclick="importExcelFile();return false;">上传导入</button>
+</div>
+<table class="layui-hide" id="list" lay-filter="list_filter"></table>
+</body>
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/layui/layui.all.js"></script>
+<script>
+
+    layui.use(['upload','form','table','layer'], function () {
+        layer = layui.layer;
+        upload = layui.upload;
+        form = layui.form;
+        table = layui.table;
+
+        //第一个实例
+        table.render({
+            elem: '#list'
+            ,id: 'listReload'
+            ,height: 512
+            ,url: "{:Url('admin/GoodsImportType/getGoodsList')}" //数据接口
+            ,page: true //开启分页
+            // ,toolbar: '#toolbar' //开启头部工具栏，并为其绑定左侧模板
+            ,defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示'
+                ,layEvent: 'LAYTABLE_TIPS'
+                ,icon: 'layui-icon-tips'
+            }]
+            ,loading:true
+            ,cols: [[ //表头
+                {field: 'goodssn', title: '商品编码'}
+                ,{field: 'goods_name', title: '商品名称'}
+                ,{field: 'price', title: '商品价格'}
+                ,{field: 'decl_type', title: '进口类型',fixed: 'right'}
+            ]]
+        });
+    });
+
+
+
+    function search() {
+        //执行重载
+        table.reload('listReload', {
+            page: {curr: 1}
+            ,where: {goodssn: $('#goodssn').val()
+            }
+
+        }, 'data');
+        return false;
+    }
+
+    function importExcelFile() {
+        layer.open({
+            type: 2,
+            title:false,
+            area: ['800px','200px'],
+            content: "{:Url('admin/GoodsImportType/goodsFileUpload')}",
+            success: function(layero, index){
+                // var body = layer.getChildFrame('body', index);
+                // var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+            }
+        });
+        return false;
+    }
+</script>
+</html>
+

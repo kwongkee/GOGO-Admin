@@ -1,0 +1,102 @@
+{template 'common/header'}
+<div class="panel panel-info">
+	<div class="panel-heading">
+		必须配置地区接口相关参数后，才能正常使用地区限制功能！
+	</div>
+	
+</div>	<form id="reply-form" class="form-horizontal form"  method="post" enctype="multipart/form-data">
+<div class="panel panel-success">
+
+	<div class="panel-heading">
+		参数设置
+	</div>
+
+	<div class="panel-body">
+		<div class="form-group">
+				  <label class="col-xs-12 col-sm-3 col-md-2 control-label">位置接口（腾讯地图）API_KEY</label>
+				  <div class="col-sm-9">
+					<input class="form-control" type="text" value="{$settings['tencent_lbs_api_key']}" class="span2" name="tencent_lbs_api_key">
+					<div class="help-block">设置地区限制时，请至”<a href="http://lbs.qq.com/mykey.html" target="_blank" >腾讯地图</a>“获取key，用qq登陆，并绑定手机号，即可获取。</div>
+				  </div>
+		</div>
+		<div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">是否绑定开发者</label>
+          <div class="col-sm-9">
+             <label><input type="radio" value="1" name="isopenweixin" {if $settings['isopenweixin'] == 1 }checked{/if}>绑定</label>
+			 <label><input type="radio" value="0" name="isopenweixin" {if $settings['isopenweixin'] == 0 }checked{/if}>未绑定</label>
+			 <div class="help-block">认证订阅号，和借权服务号同时绑定在同一个开发者账号时，可以通过URL直接获取用户信息！仅对认证订阅号有效，其他默认即可。<a href="https://open.weixin.qq.com/" >点击进入开发者平台</a></div>
+          </div>
+		  
+        </div>		
+    </div>
+</div>
+<div class="panel panel-success">
+<div class="panel-heading"> 红包证书配置 </div>
+<form id="reply-form" class="form-horizontal form"  method="post" enctype="multipart/form-data">
+  <div class="panel-body">
+     <div class="form-group">
+				  <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger">*</span>身份标识(AppId)</label>
+				  <div class="col-sm-9">
+					<input class="form-control" type="text" value="{$settings['key']}" class="span2" name="key">
+					<span class="help-block">请填写微信公众平台后台的AppId</span>
+				  </div>
+	</div>
+   <div class="form-group">
+				  <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger">*</span>微信支付商户号(MchId)</label>
+				  <div class="col-sm-9">
+					<input class="form-control" type="text" value="{$settings['mchid']}" class="span2" name="mchid">
+					<div class="help-block">公众号支付请求中用于加密的密钥Key</div>
+				  </div>
+	</div>
+   <div class="form-group">
+				  <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger">*</span>商户支付密钥(API密钥)</label>
+				  <div class="col-sm-9">
+					<input class="form-control" type="text" value="{$settings['apikey']}" class="span2" name="apikey">
+					<div class="help-block">此值需要手动在腾讯商户后台API密钥保持一致。<a href="http://bbs.012wz.com/" >查看设置教程</a></div>
+				  </div>
+	</div>		
+    <div class="form-group">
+      <label class="col-xs-12 col-sm-3 col-md-2 col-lg-2 control-label"><span class="text-danger">*</span>证书安全随机码<br>(第一次点击生成就可以)</label>
+      <div class="input-group  col-sm-9 col-sm-8 col-xs-12" style="padding-left:15px;">
+        <input type="text" name="certkey" class="form-control" value="{$settings['certkey']}" >
+        <span class="input-group-addon" style="cursor:pointer" onClick="tokenGen();">生成新的</span> </div>
+    </div>
+	
+    <div class="form-group">
+      <label class="col-xs-12 col-sm-3 col-md-2 col-lg-2 control-label">商户支付证书</label>
+      <div class="col-sm-8 col-xs-12">
+        <textarea class="form-control" name="apiclient_cert" rows="5" placeholder="为保证安全性, 不显示证书内容. 若要修改, 请直接输入"></textarea>
+        <span class="help-block">从商户平台上下载支付证书, 解压并取得其中的
+        <mark>apiclient_cert.pem</mark>
+        用记事本打开并复制文件内容, 填至此处</span> </div>
+    </div>
+    <div class="form-group">
+      <label class="col-xs-12 col-sm-3 col-md-2 col-lg-2 control-label">支付证书私钥</label>
+      <div class="col-sm-8 col-xs-12">
+        <textarea class="form-control" name="apiclient_key" rows="5" placeholder="为保证安全性, 不显示证书内容. 若要修改, 请直接输入"></textarea>
+        <span class="help-block">从商户平台上下载支付证书, 解压并取得其中的
+        <mark>apiclient_key.pem</mark>
+        用记事本打开并复制文件内容, 填至此处</span> </div>
+    </div>
+  </div>
+  </div>
+<div class="form-group">		
+<label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>			
+<div class="col-sm-4"><input name="submit" type="submit" value="保存" class="btn btn-success btn-block" />				<input type="hidden" name="token" value="{$_W['token']}" />			
+</div>		
+</div>	
+</div></form>
+<script type="text/javascript">
+
+function tokenGen() {
+		var letters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+		var token = '';
+		for(var i = 0; i < 32; i++) {
+			var j = parseInt(Math.random() * (31 + 1));
+			token += letters[j];
+		}
+		$(':text[name="certkey"]').val(token);
+	}
+
+</script>
+{template 'common/footer'}

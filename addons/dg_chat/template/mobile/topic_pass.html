@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>验证密码</title>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<meta name="format-detection" content="address=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="{TEMPLATE_PATH}/wtCommon.css?v={php echo time();}">
+<script src="//cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/json2/20150503/json2.min.js"></script>
+<script src="{TEMPLATE_PATH}/js/jq_addons.js"></script>
+<link rel="stylesheet" href="{TEMPLATE_PATH}/live.css?v={php echo time();}">
+
+</head>
+<body class="liveroom_bg">
+<div class="main_box_4 ">
+	<span class="img_p1"><img src="{$chat_room['room_icon']}"></span>
+	<span class="authentication_p2">{$chat_room['room_name']}正在直播</span>
+	<span class="authentication_p3">{$topic['topic_name']}</span>
+	
+	<span class="passwordsetbox">
+		<input type="email" placeholder="输入密码" class="yanzheng topicpassword_value">
+	</span>
+	<span class="passwordsetbox">
+		<a href="javascript:;" class="topicpassword_a">确定</a>
+	</span>
+	{if $topic['qrcode_desc']}
+	<span class="authentication_p3">{$topic['qrcode_desc']}</span>
+	{/if}
+	{if $topic['qrcode_url']}
+	<span class="password_p"><img src="{$topic['qrcode_url']}"></span>
+	{/if}
+</div>
+<div class="loadingBox"><span></span></div>
+
+
+<script type="text/javascript">
+$(function(){
+	var yanzhengbol=true;
+	$(".topicpassword_a").click(function(){
+		if($(".topicpassword_value").val()==""){
+			$(document).minTipsBox({	
+				tipsContent:"验证码不得为空", 
+				tipsTime:1
+			});
+			return false;
+		}else if($(".topicpassword_value").val().length>12){
+			$(document).minTipsBox({	
+				tipsContent:"验证码不得大于12", 
+				tipsTime:1
+			});
+			return false;
+		};
+
+			$(".loadingBox").show();
+			$.post(location.href,{password:$(".topicpassword_value").val()},function(result){    			
+				if(result.success==1){
+					location.href="{$topic_url}";
+				}else{
+					$(document).minTipsBox({	
+						tipsContent:"密码错误！", 
+						tipsTime:1
+					});
+				}
+				$(".loadingBox").hide();
+			});
+	});
+});
+
+</script>
+</body></html>

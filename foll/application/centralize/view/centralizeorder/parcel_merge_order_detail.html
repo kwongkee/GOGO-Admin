@@ -1,0 +1,208 @@
+{include file="public/header"}
+
+<style>
+    .disf {display: flex;align-items: center;}
+    .layui-card-header {background: #0a8ddf;color: #fff;}
+    .layui-input-block{line-height: 40px;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$data['id']}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">会员信息</div>
+                            <div class="layui-input-block">
+                                {$data['member_info']}
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">合并包裹单号</div>
+                            <div class="layui-input-block">
+                                {$data['package_no']}
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">包裹申报名称</div>
+                            <div class="layui-input-block">
+                                {$data['package_name']}
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">包裹价值（￥）</div>
+                            <div class="layui-input-block" style="color:#ff2222;">
+                                {$data['package_money']}
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">支付金额（HK$）</div>
+                            <div class="layui-input-block" style="color:#ff2222;">
+                                {$data['totalPrice']}
+                            </div>
+                        </div>
+                        {if !empty($data['pay_type'])}
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">支付方式</div>
+                            <div class="layui-input-block" style="color:#1790FF;">
+                                {if $data['pay_type']==1}
+                                    余额
+                                {elseif($data['pay_type']==2)}
+                                    微信支付（HK）
+                                {elseif($data['pay_type']==3)}
+                                    转数快
+                                {/if}
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">支付时间</div>
+                            <div class="layui-input-block" style="color:#1790FF;">
+                                {$data['pay_time']}
+                            </div>
+                        </div>
+                        {/if}
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">线路详情</div>
+                            <div class="layui-input-block">
+                                {$data['line_info']}
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">取货方式</div>
+                            <div class="layui-input-block">
+                                {$data['method_name']}
+                            </div>
+                        </div>
+                        {if $data['method_id']==1}
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">收货地址</div>
+                                <div class="layui-input-block">
+                                    {$data['address_info']['country_id']}-{$data['address_info']['country_id2']}-{$data['address_info']['country_id3']}-{$data['address_info']['address']}
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">地址类别</div>
+                                <div class="layui-input-block">
+                                    {$data['address_type']}
+                                </div>
+                            </div>
+                        {elseif($data['method_id']==2)}
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">自提点地址</div>
+                                <div class="layui-input-block">
+                                    {$data['address_info']['pick_point_id']['point_name']}
+                                </div>
+                            </div>
+                        {elseif($data['method_id']==3)}
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">仓库自提地址</div>
+                                <div class="layui-input-block">
+                                    {$data['address_info']['warehouse_id']['warehouse_name']}
+                                </div>
+                            </div>
+                        {/if}
+
+                        {foreach $data['parcel_order'] as $k=>$v}
+                            <table class="layui-table">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>快递单号</th>
+                                    <th>包裹申报名称</th>
+                                    <th>包裹价值（￥）</th>
+                                    <th>物品数量</th>
+                                    <th>允许操作项</th>
+                                    <th>包裹备注</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{$v['id']}</td>
+                                        <td>{$v['express_no']}</td>
+                                        <td>{$v['package_name']}</td>
+                                        <td>{$v['package_money']}</td>
+                                        <td>{$v['package_good_num']}</td>
+                                        <td>
+                                            拆除快递包装：{if $v['packingSwitch1']==1}是{else}否{/if}
+                                            <br>
+                                            拆除商品包装：{if $v['packingSwitch2']==1}是{else}否{/if}
+                                            <br>
+                                            赠品丢弃：{if $v['packingSwitch3']==1}是{else}否{/if}
+                                        </td>
+                                        <td>{$v['package_remark']}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        {/foreach}
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;display:none;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交
+                    </button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer', 'form', 'laydate', 'upload'], function () {
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+
+        form.on('submit(component-form-element)', function (data) {
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            if ($('#img_file-upload-list').children().length == 0) {
+                layer.msg('请上传轮播图！');
+                return false;
+            }
+
+            if (data.field['editorValue'] == '') {
+                layer.msg('请输入轮播图内容！');
+                return false;
+            }
+
+            $.ajax({
+                url: "{:Url('centralize/index/rotation_save')}",
+                method: 'post',
+                data: data.field,
+                dataType: 'JSON',
+                success: function (res) {
+                    layer.msg(res.msg, {time: 2000}, function () {
+                        if (res.code == 0) {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error: function (data) {
+                    layer.msg('系统错误', {time: 2000});
+                }
+            });
+            return false;
+        });
+    });
+
+    function delPic(obj) {
+        var layer = layui.layer, $ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除', '取消']
+        }, function () {
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function () {
+
+        });
+    }
+</script>
+</body>
+</html>

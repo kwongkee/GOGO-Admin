@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="Cache-Control" content="no-cache"/>
+<title>账目管理 - {$config['webtitle']}</title>
+<meta http-equiv="description" content="" />
+<meta name="renderer" content="webkit"/>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+<meta name="description" content="" id="description"/>
+<meta name="keywords" content=""/>
+<link rel="stylesheet" href="{$templateurl}css/wap_css.css" type="text/css"/>
+<script src="{$templateurl}js/jquery-1.8.0.min.js" language="javascript"></script>
+<!--分页 start-->
+<link rel="stylesheet" href="{$templateurl}css/pase.css" type="text/css"/>
+<!--分页 end-->
+</head>
+<body>
+<div class="banji">
+	<div class="tiobgbj" style="background:url({$templateurl}images/bg6.jpg);"><h1>订单管理</h1><a href="{php echo $this->createMobileUrl('m_index');}"> < 返回</a></div>
+    
+    
+    <div class="banjifld">
+          	<div style="overflow:scroll;">
+          	<font>            
+				<a href="{$urltk}" {if $op == '0'}class="active"{/if}>全部</a>
+            	<a href="{$urltk}&op=1" {if $op == 1}class="active"{/if}>未支付订单</a>
+				<a href="{$urltk}&op=2" {if $op == 2}class="active"{/if}>已支付订单</a>
+				<a href="{$urltk}&op=3" {if $op == 3}class="active"{/if}>作废订单</a>
+            </font>
+            </div>
+          </div>
+    
+</div>
+
+<style>
+.btn {
+	-moz-appearance: none;
+	background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+	border-radius: 0.25rem;
+	box-sizing: border-box;
+	cursor: pointer;
+	display: block;
+	font-family: inherit;
+	font-size: 0.75rem;
+	height: 2rem;
+	line-height: 1.9rem;
+	margin: 0;
+	padding: 0 0.6rem;
+	position: relative;
+	text-align: center;
+	text-decoration: none;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	border: 1px solid #f90;
+	margin: 0.6rem;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-moz-transition-duration: 300ms;
+	-webkit-transition-duration: 300ms;
+	transition-duration: 300ms;
+	-webkit-transition-property: background-color;
+	transition-property: background-color;
+	display:inline-block;
+	background-color:#FF6600;
+	color:#FFFFFF;
+}
+</style>
+<script>
+function invalid_ck(id){
+	$.get("{$urltk}&tab=invalid&id="+id, 
+		function (data){
+			if (data == '操作成功') { 
+				alert(data);
+				location.reload();
+				return false; 
+			} else {
+				alert('作废操作失败！');
+				return false;
+			}
+		}
+	);
+}
+</script>
+<div class="caiwuguanli">
+	{loop $list $key $value}
+	<div class="listpt">
+	{if $value[type]=='zsd' && $value[status]=='0'}<a href="{php echo $this->createMobileUrl('pay', array('type'=>$value['type'],'tab'=>'account','id'=>$value['parentid']));}">
+	{elseif $value[type]=='topup' && $value[status]=='0'}<a href="{php echo $this->createMobileUrl('pay', array('type'=>$value['type'],'tab'=>'account','paymoney'=>$value[paymoney]));}">
+	{elseif $value[type]=='vip' && $value[status]=='0'}<a href="{php echo $this->createMobileUrl('pay', array('type'=>$value['type'],'tab'=>'account','id'=>$value['parentid'],'numberd'=>$value['vipnumberd']));}">
+	{else}<a>{/if}
+    	<h1>{$value['moneydesc']}</h1>
+        <h2><span>￥{$value['paymoney']}</span> | {$typeall[$value['type']]} | <I>
+		{if $value[status] == 1}已付款{elseif $value[status] == 2}<font color="#FF9900">已作废</font>{else}<font color="#CC0000">未付款</font> {/if}</I> [ {$value[orderid]} ]<br />下单时间：{php echo date('Y-m-d H:i', $value['addtime']);}</h2>
+		</a>
+		{if $value[status] == '0'}
+		<button class="btn" onclick="invalid_ck({$value['id']})">作  废</button>
+		{/if}
+	</div>
+	{/loop}
+</div>
+      
+<div class="pagelist">{$pager}</div>
+          
+<div class="clear"></div>
+
+<!--footer strat-->
+{template 'footer'}
+</body>
+</html>

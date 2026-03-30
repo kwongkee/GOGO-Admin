@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>司机纸</title>
+    <!--<link rel="stylesheet" href="/layuiadmin/style/invoice2.css" />-->
+    <link rel="stylesheet" href="./static/home/css/driver.css" />
+    <!--<link rel="stylesheet" href="./static/agents/layui/css/layui.css"/>-->
+    <style type="text/css">
+        .btn{width:300px;line-height:40px}
+        body{overflow-y: auto;}
+        .page{width: 842.32pt;margin: 0;}
+        #printId{width: 100%;background: white;font-size: 10pt;}
+        .content>div{width: 100%;height: 610pt;padding-top: 5px;}
+        #barcode {width: 230px;height:60px;}
+        .driverseal,.driverseal2{width:fit-content;}
+        .diyform input{border:1px solid #333 !important;padding:5px 5px;box-sizing:border-box;}
+        .diyform .layui-form-label{width:100px;font-size:15px;}
+        .goodsinfo input{
+            font-size: 10pt;
+            color: #666;
+            text-align: center;
+            background:none;
+        }
+        .driver-mid input{text-align:center;background:none;color:#666;font-size:10pt;font-weight: bold;}
+        .layui-upload-file{display:none;}
+        .layui-btn{
+            background-color: #009688;
+            color: #fff;
+            white-space: nowrap;
+            text-align: center;
+            font-size: 14px;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            padding:4px 6px;
+            box-sizing:border-box;
+        }
+    </style>
+</head>
+
+<body>
+<div class="page root">
+    <div class="page_box">
+        <div id="printId">
+            <div class="content">
+                <div>
+                    <div class="driver-bg">
+
+                        <div class="driver-top">
+                            <h2 class="driver-title">内地海关及香港海关陆路进/出*境载货清单</h2>
+                        </div>
+
+                        <div class="driver-mid flex-grow-1">
+                            <div class="numbering">
+                                <div class="num-title">内地 载货清单编号：</div>
+                                <div class="bill-num">
+                                    <img id="barcode" />
+                                    <p class="mainland">{$shopOrder['driversn']}</p>
+                                </div>
+                            </div>
+                            <div class="statement">
+                                <p>车辆号码：&nbsp;&nbsp;（内地车牌：</p>
+                                <p class="dw3 statement-bottom driver-txt mainland_license">粤ZAG60港</p>
+                                <p>香港车牌：</p>
+                                <p class="dw3 statement-bottom driver-txt hongkong_license">UM3500</p>
+                                <p>）</p>
+                                <p style="width: 85mm; text-align: right;">香港 载货清单编号：</p>
+                                <p style="width: 60mm;" class="driver-txt hongkong"></p>
+                            </div>
+                            <div class="statement">
+                                <p>进<b>/</b>出*境日期：</p>
+                                <p class="dw3 statement-bottom driver-txt date">{$shopOrder['ie_date']}</p>
+                                <p>装货地点：</p>
+                                <p class="dw5 statement-bottom driver-txt load_place">{$shopOrder['port_code']}</p>
+                                <p>卸货地点：</p>
+                                <p class="dw5 statement-bottom driver-txt discharge_place">{$shopOrder['code_name']}</p>
+                                <p>此联载货清单共</p>
+                                <p class="dw2 statement-bottom driver-txt">1</p>
+                                <p>页</p>
+                            </div>
+                            <div style="display:flex;">
+                                <table class="driver-table">
+                                    <tr>
+                                        <th class="dw1">项目</th>
+                                        <th class="dw4">货物名称及规格</th>
+                                        <th class="dw3">标记及编号</th>
+                                        <th class="dw2">包装方式及数量</th>
+                                        <th class="dw2">重量<b>/</b>净重*（公斤）</th>
+                                        <th class="dw3">价格（币种）</th>
+                                    </tr>
+                                    {foreach $shopOrder['ginfo'] as $k=>$v}
+                                        <tr class="goodsinfo">
+                                            <td class="dw1 driver-txt">&nbsp;</td>
+                                            <td class="dw4 driver-txt gname{$k+1}"  onclick="changeGName('gname{$k+1}')">{$v['gname']}</td>
+                                            <td class="dw3 driver-txt"><input type="text" name="" id="" value="{$v['goodssn']}" style="width:100px;"/></td>
+                                            <td class="dw2 driver-txt"><input type="text" name="" id="" value="{$v['total']}" style="width:30px;"/>箱/<input type="text" name="" id="" value="{$v['total']}" style="width:30px;"/>件</td>
+                                            <td class="dw2 driver-txt"><input type="text" name="" id="" value="{$v['total_gross_weight']}" style="width:30px;" />KG/<input type="text" name="" id="" value="{$v['total_net_weight']}" style="width:30px;" />KG</td>
+                                            <td class="dw3 driver-txt">CNY <input type="text" name="" id="" value="{$v['total_price']}" style="width:50px;" /></td>
+                                        </tr>
+                                    {/foreach}
+                                </table>
+                                <table class="driver-table" style="border-left: 0;max-height: 180px;">
+                                    <tr>
+                                        <th class="dw5">付货人或货物转运代理名称及地址</th>
+                                        <th class="dw5">收货人名称及地址</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="dw5 driver-txt seller_name">{$shopOrder['company_name']}</td>
+                                        <td class="dw5 driver-txt buyer_name">{$shopOrder['realname']}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="dw5 driver-txt seller_address">{$shopOrder['decl_address']}</td>
+                                        <td class="dw5 driver-txt buyer_address">{$shopOrder['province']}{$shopOrder['city']}{$shopOrder['area']}{$shopOrder['address']}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="dw5 driver-txt ">联系人:<span class="seller_contact">{$shopOrder['user_name']}</span>&nbsp;&nbsp;<span class="seller_tel">{$shopOrder['user_tel']}</span></td>
+                                        <td class="dw5 driver-txt">联系人:<span class="buyer_contact">{$shopOrder['realname']}</span>&nbsp;&nbsp;<span class="buyer_tel">{$shopOrder['mobile']}</span></td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <table class="total-table">
+                                <tr>
+                                    <td class="dw6" style="text-align: right;">总件数：</td>
+                                    <td class="dw2 driver-txt"><div class="total-bottom"><input type="text" name="" id="" value="{$shopOrder['total']}"  style="width:40px;"/>件</div></td>
+                                    <td class="dw3" style="text-align: right;">总重量<b>/</b>总体积*：</td>
+                                    <td class="dw3 driver-txt"><div class="total-bottom"><input type="text" name="" id="" value="{$shopOrder['total_weight']}" style="width:40px;"/>KG</div></td>
+                                    <td class="dw4" style="text-align: right;">货柜箱数量<b>/</b>规格<b>/</b> 编号：</td>
+                                    <td class="dw9 driver-txt"><div class="total-bottom"><span class="container_info"></span></div></td>
+                                    <td class="dw7">（如果是冷藏柜，要注明）</td>
+                                </tr>
+                            </table>
+                            <div class="statement">
+                                <p>承运公司声明：兹证明，上列货物由</p>
+                                <p class="dw8 statement-bottom driver-txt"><input type="text" name="" id="" value="{$shopOrder['company_name']}" style="width:300px;"/></p>
+                                <p>公司委托承运，保证无讹。</p>
+                            </div>
+                            <div class="statement">
+                                <p>（香港<b>/</b>内地*）承运公司名称</p>
+                                <p class="dw5 statement-bottom driver-txt">&nbsp;<input type="text" name="" id="" value="粤港汽车运输联营有限公司" style="width:220px;" /></p>
+                                <p>地址及电话：</p>
+                                <p class="dw10 statement-bottom driver-txt driver_address">广东省广州市越秀区解放北路603号自编号八号楼旅游商务楼首层和二层</p>
+                                <p>内地运输公司（盖章）：</p>
+                            </div>
+                            <div class="statement">
+                                <p>司机姓名：(正楷)：</p>
+                                <p class="dw3 statement-bottom driver-txt"><input type="text" name="" id="" value="古承志" style="width:100px;"/></p>
+                                <p>签名：</p>
+                                <p class="dw3 statement-bottom driver-txt"></p>
+                                <p>日期：</p>
+                                <p class="dw3 statement-bottom driver-txt"></p>
+                            </div>
+                            <div class="mode">
+                                <div class="mode-left">
+                                    <table class="inland-table">
+                                        <tr>
+                                            <td rowspan="5" class="dw11" style="text-align: center; font-weight: bold;">内地适用</td>
+                                            <td class="dw3" style="height: 8mm;"><span>合同(协议)号</span></td>
+                                            <td class="dw4 driver-txt"><span></span></td>
+                                            <td rowspan="2" colspan="2" class="dw12" style="height: 16mm;vertical-align: baseline;">
+                                                <div style="height: 6mm; line-height: 6mm;"><span>海关关锁号(条形码)NO</span></div>
+                                                <div style="height: 10mm;"class="driver-txt"><span></span></div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="height: 8mm;"><span>监管方式</span></td>
+                                            <td class="driver-txt"><span><input type="text" name="" id="" value="电子商务/{$shopOrder['trade_mode']}" /></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="height: 12mm;"><span>原产国(地区) <b>/</b></span><br/><span>最终目的国(地区)</span></td>
+                                            <td class="driver-txt"><span><input type="text" name="" id="" value="中国" style="width:70px;text-align:right;"/><b>/</b></span><span><input type="text" name="" id="" value="{$shopOrder['country']}" style="width:70px;text-align:left;" /></span></td>
+                                            <td rowspan="3" class="dw13" style="height: 34mm; vertical-align: baseline;">
+                                                <div style="height: 6mm; line-height: 6mm;">(进境地<b>/</b>启运地)海关批注、签章：</div>
+                                                <div style="height: 14mm;" class="driver-txt"></div>
+                                                <div style="height: 8mm; line-height: 8mm;">关员签名：<span class="driver-txt"></span></div>
+                                                <div style="height: 6mm; line-height: 6mm;">日&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;期：<span class="driver-txt"></span></div>
+                                            </td>
+                                            <td rowspan="3" class="dw13" style="height: 34mm; vertical-align: baseline;">
+                                                <div style="height: 6mm; line-height: 6mm;">(指运地<b>/</b>出境地)海关批注、签章：</div>
+                                                <div style="height: 14mm;" class="driver-txt"></div>
+                                                <div style="height: 8mm; line-height: 8mm;">关员签名：<span class="driver-txt"></span></div>
+                                                <div style="height: 6mm; line-height: 6mm;">日&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;期：<span class="driver-txt"></span></div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="height: 8mm;"><span>车辆海关编号</span></td>
+                                            <td class="driver-txt"><span><input type="text" name="" id="" value="5340026077" /></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="height: 14mm;">
+                                                <span>进（出）境地 <b>/</b></span><br/><span>指（启）运地*</span></td>
+                                            <td class="driver-txt"><span><input type="text" name="" id="" value="{$shopOrder['port_code']}" /></span><br/><span><input type="text" name="" id="" value="{$shopOrder['code_name']}" /></span></td>
+                                        </tr>
+                                    </table>
+
+                                </div>
+                                <div class="mode-right">
+                                    <table class="hk-table">
+                                        <tr>
+                                            <td rowspan="4" class="dw11" style="text-align: center; font-weight: bold;">香港适用</td>
+                                            <td class="dw14" style="height: 12mm;"><span>转运货物</span></td>
+                                            <td class="dw15"><span>是 <b>/</b> 否*</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="height: 12mm;"><span>进<b>/</b>出口*</span><br/><span>许可证编号：</span></td>
+                                            <td class="driver-txt"><span></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="height: 14.7mm;"><span>提单<b>/</b>空运*</span><br/><span>提单或空运</span><br/><span>托运单编号：</span></td>
+                                            <td class="driver-txt"><span></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="height: 12mm;"><span>香港货柜车</span><br/><span>拖架号码：</span></td>
+                                            <td class="driver-txt"><span></span></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="mode-txt">*请删去不适用者</div>
+                            <span style="position: relative;top: -21mm;left: 8mm;z-index: 999;font-weight: bolder;color: #69686d;font-size: 30px;"><strong>\</strong></span>
+                            <span style="position: relative;top: -15mm;left: 13mm;z-index: 999;font-weight: bolder;color: #69686d;font-size: 30px;"><strong>\</strong></span>
+                            <div class="driverseal"><img class="transportSeal" src="./static/doc/images/ju-logo.png" alt="" /></div>
+                            <div class="driverseal2"><img class="carrierSeal" src="./static/doc/images/yg-logo.png" alt="" /></div>
+                        </div>
+
+                        <div class="driver-foot">
+                            第一联 <br><br>进境地 <br><b>\</b> <br>启运地海关存
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="diyform" style='background: #fff;margin-bottom: 10px;padding: 10px;width: 320px;height:700px;overflow-y:scroll;position: fixed;top: 10px;right: 50px;'>
+        <div class="layui-form-item" style="width: auto;">
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label" style="display: inline-block;">内地编号</label>
+                <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                    <input type="text" placeholder="请输入内地载货清单编号" name="mainland" id="mainland" value="" />
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item" style="width: auto;margin-top:10px;">
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label" style="display: inline-block;">香港编号</label>
+                <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                    <input type="text" placeholder="请输入香港载货清单编号" name="hongkong" id="hongkong" value="" />
+                </div>
+            </div>
+        </div> 
+        <div class="layui-form-item" style="width: auto;margin-top:10px;">
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label" style="display: inline-block;">内地车牌</label>
+                <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                    <input type="text" placeholder="请输入内地车牌" name="mainland_license" id="mainland_license" value="" />
+                </div>
+            </div>
+        </div> 
+        <div class="layui-form-item" style="width: auto;margin-top:10px;">
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label" style="display: inline-block;">香港车牌</label>
+                <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                    <input type="text" placeholder="请输入香港车牌" name="hongkong_license" id="hongkong_license" value="" />
+                </div>
+            </div>
+        </div> 
+        <div class="layui-form-item" style="width: auto;margin-top:10px;">
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label" style="display: inline-block;">进/出*境日期</label>
+                <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                    <input type="text" placeholder="2021年07月14日" name="date" id="date" value="" />
+                </div>
+            </div>
+        </div> 
+        <div class="layui-form-item" style="width: auto;margin-top:10px;">
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label" style="display: inline-block;">装货地点</label>
+                <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                    <input type="text" placeholder="请输入装货地点" name="load_place" id="load_place" value="" />
+                </div>
+            </div>
+        </div> 
+        <div class="layui-form-item" style="width: auto;margin-top:10px;">
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label" style="display: inline-block;">卸货地点</label>
+                <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                    <input type="text" placeholder="请输入装货地点" name="discharge_place" id="discharge_place" value="" />
+                </div>
+            </div>
+        </div> 
+        <div class="layui-form-item" style="width: auto;margin-top:10px;">
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label" style="display: inline-block;">代理名称</label>
+                <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                    <input type="text" placeholder="请输入货物转运代理名称" name="seller_name" id="seller_name" value="" />
+                </div>
+            </div>
+        </div> 
+        <div class="layui-form-item" style="width: auto;margin-top:10px;">
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label" style="display: inline-block;">代理地址</label>
+                <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                    <input type="text" placeholder="请输入货物转运代理地址" name="seller_address" id="seller_address" value="" />
+                </div>
+            </div>
+        </div> 
+        <div class="layui-form-item" style="width: auto;margin-top:10px;">
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label" style="display: inline-block;">代理联系人</label>
+                <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                    <input type="text" placeholder="请输入货物转运代理联系人" name="seller_contact" id="seller_contact" value="" />
+                </div>
+            </div>
+        </div> 
+        <div class="layui-form-item" style="width: auto;margin-top:10px;">
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label" style="display: inline-block;">代理联系电话</label>
+                <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                    <input type="text" placeholder="请输入货物转运代理联系电话" name="seller_tel" id="seller_tel" value="" />
+                </div>
+            </div>
+        </div> 
+        <div class="layui-form-item" style="width: auto;margin-top:10px;">
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label" style="display: inline-block;">收货人名称</label>
+                <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                    <input type="text" placeholder="请输入收货人名称" name="buyer_name" id="buyer_name" value="" />
+                </div>
+            </div>
+        </div> 
+        <div class="layui-form-item" style="width: auto;margin-top:10px;">
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label" style="display: inline-block;">收货人地址</label>
+                <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                    <input type="text" placeholder="请输入收货人地址" name="buyer_address" id="buyer_address" value="" />
+                </div>
+            </div>
+        </div> 
+        <div class="layui-form-item" style="width: auto;margin-top:10px;">
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label" style="display: inline-block;">收货联系人</label>
+                <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                    <input type="text" placeholder="请输入收货联系人" name="buyer_contact" id="buyer_contact" value="" />
+                </div>
+            </div>
+        </div> 
+        <div class="layui-form-item" style="width: auto;margin-top:10px;">
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label" style="display: inline-block;">收货联系电话</label>
+                <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                    <input type="text" placeholder="请输入收货联系电话" name="buyer_tel" id="buyer_tel" value="" />
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item" style="width: auto;margin-top:10px;">
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label" style="display: inline-block;">货柜箱</label>
+                <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                    <input type="text" placeholder="请输入货柜箱数量/规格/ 编号" name="container_info" id="container_info" value="" />
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item" style="width: auto;margin-top:10px;">
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label" style="display: inline-block;">承运公司章</label>
+                <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                    <button type="button" class="layui-btn" id="carrier_file-upload">上传承运公司专用章</button>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item" style="width: auto;margin-top:10px;">
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label" style="display: inline-block;">转运代理章</label>
+                <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                    <button type="button" class="layui-btn" id="transport_file-upload">上传转运代理专用章</button>
+                </div>
+            </div>
+        </div>
+         <div class="layui-form-item gnameInput" style="width: auto;margin-top:10px;display:none;">
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label" style="display: inline-block;">商品名</label>
+                <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                    <input type="text" name="gname" id="gname" value="" />
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item driverAddressInput" style="width: auto;margin-top:10px;display:none;">
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label" style="display: inline-block;">承运公司地址</label>
+                <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                    <input type="text" name="driver_address" id="driver_address" value="" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="padding: 30px 0;text-align: center;">
+    <button type="button"  class="btn" onclick="createPDF()">生成</button>
+</div>
+
+    <script src="./static/doc/JsBarcode.all.min.js"></script>
+    <script src="./static/doc/jquery.min.js"></script>
+    <script src="./static/doc/html2canvas.min.js"></script>
+    <script src="./static/doc/jspdf.min.js"></script>
+    <script src="./static/hadmin/assets/layui/layui.js"></script>
+    <script>
+        //条形码生成器
+        var barcode = document.getElementById('barcode'),
+        str = "{$shopOrder['driversn']}",
+        options = {
+            format: "CODE128",
+            displayValue: false,
+            fontSize: 18,
+            height: 60
+        };
+        JsBarcode(barcode, str, options); //原生
+        
+        layui.use(['upload'],function(){
+            var upload = layui.upload;
+            // 承运公司章
+            upload.render({
+                elem: '#carrier_file-upload'
+                ,url: '{:Url("admin/entrymanage/upload_seal_file")}'
+                ,accept: 'image'
+                ,data: { folder: 'highway_manifest', type: 'seal_file'}
+                ,multiple: false
+                ,before: function(obj){
+                    layer.load(); //上传loading
+                }
+                ,done: function(res){
+                    layer.closeAll('loading'); //关闭loading
+                    if(res.code == 1)
+                    {
+                        $('.carrierSeal').attr('src','/'+res.file_path);
+                    }
+                }
+            });
+            // 转运代理章
+            upload.render({
+                elem: '#transport_file-upload'
+                ,url: '{:Url("admin/entrymanage/upload_seal_file")}'
+                ,accept: 'image'
+                ,data: { folder: 'highway_manifest', type: 'seal_file'}
+                ,multiple: false
+                ,before: function(obj){
+                    layer.load(); //上传loading
+                }
+                ,done: function(res){
+                    layer.closeAll('loading'); //关闭loading
+                    if(res.code == 1)
+                    {
+                        $('.transportSeal').attr('src','/'+res.file_path);
+                    }
+                }
+            });
+        });
+        
+        //点击当前的商品名
+        function changeGName(classname){
+            $('.gnameInput').show();
+            $('.gnameInput #gname').val($('.'+classname).text()).attr('data-classname',classname);
+        }
+        
+        $(function(){
+            
+            // 内地编号
+            $('#mainland').bind('input propertychange',function() {
+                $('.mainland').text($(this).val());
+                str = $(this).val(),
+                options = {
+                    format: "CODE128",
+                    displayValue: false,
+                    fontSize: 18,
+                    height: 60
+                };
+                JsBarcode(barcode, str, options); //原生
+            });
+            // $('#shipper').change(function(){  
+            //     $(".shipper").text( $(this).find("option:selected").attr('name') );
+            // });
+            // 香港编号
+            $('#hongkong').bind('input propertychange',function() {
+                $('.hongkong').text($(this).val());
+            });
+            // $('#consigner').change(function(){  
+            //     $(".consigner").text( $(this).find("option:selected").attr('name') );
+            //     $(".address").text( $(this).find("option:selected").attr('address') );
+            // });
+            //内地车牌
+            $('#mainland_license').bind('input propertychange',function() {
+                $('.mainland_license').text($(this).val());
+            });
+            //香港车牌
+            $('#hongkong_license').bind('input propertychange',function() {
+                $('.hongkong_license').text($(this).val());
+            });
+            //进/出*境日期
+            $('#date').bind('input propertychange',function() {
+                $('.date').text($(this).val());
+            });
+            //装货地点
+            $('#load_place').bind('input propertychange',function() {
+                $('.load_place').text($(this).val());
+            });
+            //卸货地点
+            $('#discharge_place').bind('input propertychange',function() {
+                $('.discharge_place').text($(this).val());
+            });
+            //代理名称
+            $('#seller_name').bind('input propertychange',function() {
+                $('.seller_name').text($(this).val());
+            });
+            //代理地址
+            $('#seller_address').bind('input propertychange',function() {
+                $('.seller_address').text($(this).val());
+            });
+            //代理联系人
+            $('#seller_contact').bind('input propertychange',function() {
+                $('.seller_contact').text($(this).val());
+            });
+            //代理联系电话
+            $('#seller_tel').bind('input propertychange',function() {
+                $('.seller_tel').text($(this).val());
+            });
+            //收货人名称
+            $('#buyer_name').bind('input propertychange',function() {
+                $('.buyer_name').text($(this).val());
+            });
+            //收货人地址
+            $('#buyer_address').bind('input propertychange',function() {
+                $('.buyer_address').text($(this).val());
+            });
+            //收货联系人
+            $('#buyer_contact').bind('input propertychange',function() {
+                $('.buyer_contact').text($(this).val());
+            });
+            //收货联系电话
+            $('#buyer_tel').bind('input propertychange',function() {
+                $('.buyer_tel').text($(this).val());
+            });
+            //货柜箱
+            $('#container_info').bind('input propertychange',function() {
+                $('.container_info').text($(this).val());
+            });
+
+            //更换商品名
+            $('#gname').bind('input propertychange',function() {
+                let classname = $(this).attr('data-classname');
+                $('.'+classname).text($(this).val());
+            });
+            
+            //承运公司地址
+            $('.driver_address').click(function(){
+              $('.driverAddressInput').show();
+            })
+            $('#driver_address').bind('input propertychange',function() {
+                $('.driver_address').text($(this).val());
+            });
+            
+        })
+        
+        // 生成pdf
+        function createPDF() {
+    
+    
+            html2canvas(document.querySelector("#printId"), {
+                allowTaint: !0,
+                scale: 2
+            }).then((function(canvas) {
+    
+                var contentWidth = canvas.width;
+                var contentHeight = canvas.height;
+    
+                //一页pdf显示html页面生成的canvas高度;
+                var pageHeight = contentWidth / 595.28 * 841.89;
+                //未生成pdf的html页面高度
+                var leftHeight = contentHeight;
+                //pdf页面偏移
+                var position = 0;
+                //a4纸的尺寸[595.28,841.89]，html页面生成的canvas在pdf中图片的宽高
+                var imgWidth = 801.89 ;
+                var imgHeight = 575.28;
+    
+                var pageData = canvas.toDataURL('image/jpeg', 1.0);
+    
+                // document.body.appendChild(canvas);
+    
+                var pdf = new jsPDF('l', 'pt', 'a4');
+                //有两个高度需要区分，一个是html页面的实际高度，和生成pdf的页面高度(841.89)
+                //当内容未超过pdf一页显示的范围，无需分页
+                if (leftHeight < pageHeight) {
+                    pdf.addImage(pageData, 'JPEG', 30, 0, imgWidth, imgHeight );
+                } else {
+                    while(leftHeight > 0) {
+                        pdf.addImage(pageData, 'JPEG', 30, position, imgWidth, imgHeight)
+                        leftHeight -= pageHeight;
+                        position -= 821.89;
+                        //避免添加空白页
+                        if(leftHeight > 0) {
+                            pdf.addPage();
+                        }
+                    }
+                }
+    
+                var pdfName = "{$doc_data['pdf_sn']}.pdf";
+                // 将pdf输入为base格式的字符串
+                var buffer = pdf.output("datauristring");
+                // 将base64格式的字符串转换为file文件
+                var myfile = dataURLtoFile(buffer, pdfName);
+                var formdata = new FormData();
+                formdata.append('file', myfile);
+                formdata.append('folder', 'payer_pay');
+                formdata.append('type', 'highway_manifest');
+    
+                $.ajax({
+                    url:'{:Url("/admin/entryManage/check_pdf")}',
+                    method:'get',
+                    data:{ trade_id: {$doc_data['trade_id']}, 'trade_type': 1, type: 'highway_manifest' },
+                    dataType:'JSON',
+                    success:function(res){
+                        if(res.code == 1)
+                        {
+                            alert(res.msg);
+                        }else{
+                            $.ajax({
+                                url:'{:Url("/admin/entryManage/upload_file")}',
+                                method:'post',
+                                data:formdata,
+                                processData: false,
+                                contentType : false,
+                                dataType:'JSON',
+                                success:function(res){
+                                    if(res.code == 1)
+                                    {
+                                        $.ajax({
+                                            url:'{:Url("/admin/entryManage/save_pdf")}',
+                                            method:'post',
+                                            data:{ trade_id: {$doc_data['trade_id']}, 'trade_type': 1, type: 'highway_manifest', pdf_sn: '{$doc_data['pdf_sn']}', file_path: res.file_path},
+                                            dataType:'JSON',
+                                            success:function(res){
+                                                if(res.code == 1)
+                                                {
+                                                    alert('生成成功');
+                                                    pdf.save('Highway_manifest_'+pdfName);
+                                                    setTimeout(function(){
+                                                        parent.window.location.reload();
+                                                        var index = parent.layer.getFrameIndex(window.name);
+                                                        parent.layer.close(index);
+                                                    }, 1000);
+                                                }else{
+                                                    alert(res.msg);
+                                                }
+                                            },
+                                            error:function (data) {
+                                                layer.msg('系统错误',{time:2000});
+                                            }
+                                        });
+    
+                                    }
+                                },
+                                error:function (data) {
+                                    layer.msg('系统错误',{time:2000});
+                                }
+                            });
+                        }
+                    },
+                    error:function (data) {
+                        layer.msg('系统错误',{time:2000});
+                    }
+                });
+    
+                // pdf.save("download.pdf");
+    
+            }))
+        }
+    
+        //将base64转换为文件对象
+        function dataURLtoFile(dataurl, filename) {
+            var arr = dataurl.split(',');
+            var mime = arr[0].match(/:(.*?);/)[1];
+            var bstr = atob(arr[1]);
+            var n = bstr.length;
+            var u8arr = new Uint8Array(n);
+            while(n--){
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            //转换成file对象
+            return new File([u8arr], filename, {type:mime});
+            //转换成成blob对象
+            //return new Blob([u8arr],{type:mime});
+        }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html style="font-size: 100px;"><head>
+        <meta charset="UTF-8">
+        <title>我的礼品</title>
+        <script src="{$modulePublic}shop/js/SetSize.js"></script>
+        <style>body,input,textarea{font-size:10px;}</style>
+        <meta name="screen-orientation" content="portrait/landscape">
+        <meta content="yes" name="apple-mobile-web-app-capable">
+        <meta content="yes" name="apple-touch-fullscreen">
+        <meta content="black" name="apple-mobile-web-app-status-bar-style">
+        <meta content="telephone=no" name="format-detection">
+
+        <link href="{$modulePublic}shop/css/content.css" rel="stylesheet" type="text/css">
+        <link href="{$modulePublic}shop/css/mall.css" rel="stylesheet" type="text/css">
+    </head>
+    <body style="font-size: 10px;">
+        <script>
+            document.body.style.fontSize = SetSize.getScreenRatio() * 10 + 'px';
+        </script>
+        <script src="{$modulePublic}shop/js/svgPackage.js"></script>
+
+        <style>
+            .biglink{ display:block;}
+        </style>
+
+
+        <header id="header">
+            <div class="titleField">
+                <h2>我的礼品</h2>
+            </div>
+            <div class="btnField">
+                <a href="javascript:history.go(-1);" class="btn back"><i></i></a>
+                <a href="javascript:location.reload();" class="btn"><i><svg>
+                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_reload_1"></use></svg></i>
+                </a>
+            </div>
+        </header>
+        <section id="main">
+
+            <div class="ordertit">
+                <a {if $_GPC['status']==1}class="current"{/if} href="{php echo $this->createMobileUrl('user_award_list_credit',array('status'=>1))}" >待兑换</a>
+                <a {if $_GPC['status']==2}class="current"{/if} href="{php echo $this->createMobileUrl('user_award_list_credit',array('status'=>2))}">已完成</a>
+                <a {if $_GPC['status']==0}class="current"{/if} href="{php echo $this->createMobileUrl('user_award_list_credit',array('status'=>0))}">全部</a>
+            </div>
+
+            <div class="orderlist">
+                <div class="listField">
+                    <ul>
+                          {loop $list $row}
+                        <li>
+                            <div class="ordertitle">					
+                                <a class="biglink" href="{php echo $this->createMobileUrl('user_credit_verification',array('id'=>$row['log_id']))}">
+                                    <!--<h1 class="mallname"><i><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_mallorder"></use></svg></i>凯德集团</h1>-->
+                                    <span class="ordernum">
+<!--                                        未支付
+                                        （快递）-->
+                                    </span>
+                                </a>
+                            </div>
+                            <a class="biglink" href="{php echo $this->createMobileUrl('user_credit_verification',array('id'=>$row['log_id']))}">
+                                <div class="orderinfo">
+                                    <div class="img" style=" background: url('{php echo $attach_url . '/'.$row['img']}') 50% 50% no-repeat; background-size: cover;"></div>
+                                    <div class="txt">
+                                        <h2>{$row['name']}</h2>
+                                        <p>兑换时间：{php echo date('Y-m-d',$row['create_at'])}</p>
+                                        <h3>{php echo $row['credit']}积分</h3>
+                                        <span class="amount">x1 </span>  
+                                    </div>
+                                </div>
+                            </a>
+                            <div class="orderall"><p>共1件商品 共：{php echo $row['credit']}积分 <em></em></p></div>
+                        </li>
+                        {/loop}
+                    </ul>
+                </div>
+            </div>
+
+        </section>
+
+        <nav id="nav" class="mainNav">
+             <div class="linkField">
+            <ul>
+                 <li>
+                     <a href="{php echo $this->createMobileUrl('index2')}" >
+                         <i><svg><use xlink:href = "#icon_index_1"/></svg></i>
+                         <span>逛商场</span>
+                     </a>
+                 </li>
+                 <li >
+                     <a href="{php echo $this->createMobileUrl('shop_activity_list')}" >
+                         <i><svg><use xlink:href = "#icon_star_1"/></svg></i>
+                         <span>活动</span>
+                     </a>
+                 </li>
+
+                 <li>
+                     <a href="{php echo $this->createMobileUrl('award_list')}">
+                         <i><svg><use xlink:href = "#icon_gift_1"/></svg></i>
+                         <span>换礼品</span>
+                     </a>
+                 </li>
+
+                 <li>
+                     <a href="{php echo $this->createMobileUrl('index')}" class="current">
+                         <i><svg><use xlink:href = "#icon_user_2"/></svg></i>
+                         <span>我</span>
+                     </a>
+                 </li>
+             </ul>
+             </div>
+         </nav>
+
+
+        <script src="{$modulePublic}shop/js/template.js"></script>
+        <script src="{$modulePublic}shop/js/idangerous.swiper.min.js"></script>
+        <script src="{$modulePublic}shop/js/PRselector.js"></script>
+        <script src="{$modulePublic}shop/js/LazyLoad.js"></script>
+        <script src="{$modulePublic}shop/js/PullLoad.js"></script>
+
+        <script>
+
+        </script>
+
+    </body></html>

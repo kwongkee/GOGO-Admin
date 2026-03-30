@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.baidu.com" versionCode="0.6">
+	<application setting="false">
+		<name><![CDATA[小猪导航]]></name>
+		<identifie><![CDATA[amouse_biz_nav]]></identifie>
+		<version><![CDATA[2.6.6]]></version>
+		<type><![CDATA[activity]]></type>
+		<ability><![CDATA[参考 小猪导航 公众号，人脉互粉+产品秀]]></ability>
+		<description><![CDATA[参考 小猪导航 公众号，免费加粉互粉第一平台，没有任何门槛，关注即可使用所有功能。在这里你可以寻找朋友，兼职，微商代理等一系列的朋友]]></description>
+		<author><![CDATA[微赞]]></author>
+		<url><![CDATA[http://www.baidu.com]]></url>
+	</application>
+	<platform>
+		<subscribes>
+			<message type="text" />
+			<message type="image" />
+			<message type="voice" />
+			<message type="video" />
+			<message type="location" />
+			<message type="link" />
+			<message type="subscribe" />
+			<message type="unsubscribe" />
+			<message type="qr" />
+			<message type="click" />
+			<message type="view" />
+		</subscribes>
+		<handles>
+			<message type="image" />
+			<message type="voice" />
+			<message type="video" />
+			<message type="location" />
+			<message type="link" />
+			<message type="subscribe" />
+			<message type="qr" />
+			<message type="click" />
+			<message type="text" />
+		</handles>
+		<rule embed="true" />
+		<card embed="false" />
+	</platform>
+	<bindings>
+		<cover>
+			<entry title="首页" do="index" state="" direct="false" />
+			<entry title="好友圈" do="board" state="" direct="false" />
+			<entry title="微信群名片" do="groups" state="" direct="false" />
+			<entry title="QQ群名片" do="qun" state="" direct="false" />
+			<entry title="QQ名片" do="qq" state="" direct="false" />
+			<entry title="会员中心" do="me" state="" direct="false" />
+			<entry title="发布二维码" do="add" state="" direct="false" />
+			<entry title="置顶名片" do="vip" state="" direct="false" />
+			<entry title="每日签到" do="sign" state="" direct="false" />
+			<entry title="积分商场" do="exchange" state="" direct="false" />
+			<entry title="产品秀" do="show" state="" direct="false" />
+			<entry title="我的名片" do="myinfo" state="" direct="false" />
+		</cover>
+		<menu call="getMenus">
+		</menu>
+	</bindings>
+	<install><![CDATA[
+CREATE TABLE IF NOT EXISTS `ims_amouse_biz_commission_sysset` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) DEFAULT '0',
+  `is_level` tinyint(3) DEFAULT '0' COMMENT '超级会员佣金',
+  `become_child` tinyint(3) DEFAULT '0' COMMENT '超级会员佣金',
+  `level_type` tinyint(3) DEFAULT '1' COMMENT '超级会员奖励方式 积分 1/余额 2',
+  `level_type2` tinyint(3) DEFAULT '1' COMMENT '普通会员奖励方式 积分 1/余额 2',
+  `member_type` tinyint(3) DEFAULT '1' COMMENT '普通会员佣金',
+  `first_level_credit` decimal(10,2) DEFAULT '0.00' COMMENT '一级',
+  `second_level_credit` decimal(10,2) DEFAULT '0.00' COMMENT '二级',
+  `three_level_credit` decimal(10,2) DEFAULT '0.00' COMMENT '三级',
+  `first_level_text` varchar(255) DEFAULT '',
+  `second_level_text` varchar(255) DEFAULT '',
+  `three_level_text` varchar(255) DEFAULT '',
+  `vip1_level_credit` decimal(10,2) DEFAULT '0.00' COMMENT '一级',
+  `vip2_level_credit` decimal(10,2) DEFAULT '0.00' COMMENT '二级',
+  `vip3_level_credit` decimal(10,2) DEFAULT '0.00' COMMENT '三级',
+  `vip1_level_text` varchar(255) DEFAULT '',
+  `vip2_level_text` varchar(255) DEFAULT '',
+  `vip3_level_text` varchar(255) DEFAULT '',
+  `withdraw1` decimal(10,2) DEFAULT '0.00' COMMENT '会员提现',
+  `withdraw2` decimal(10,2) DEFAULT '0.00' COMMENT '普通会员提现',
+  `settledays1` int(11) DEFAULT '0' COMMENT '超级会员结算天数',
+  `settledays2` int(11) DEFAULT '0' COMMENT '普通会员结算天数',
+  PRIMARY KEY (`id`),
+  KEY `idx_uniacid` (`uniacid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_amouse_biz_creditshop_goods` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) DEFAULT '0',
+  `displayorder` int(11) DEFAULT '0',
+  `title` varchar(255) DEFAULT '',
+  `thumb` varchar(255) DEFAULT '',
+  `price` decimal(10,2) DEFAULT '0.00',
+  `type` tinyint(3) DEFAULT '0',
+  `credit` int(11) DEFAULT '0',
+  `credit2` int(11) DEFAULT '0',
+  `money` decimal(10,2) DEFAULT '0.00',
+  `total` int(11) DEFAULT '0',
+  `totalday` int(11) DEFAULT '0',
+  `detail` text,
+  `status` tinyint(3) DEFAULT '0',
+  `vip` tinyint(3) DEFAULT '0',
+  `istop` tinyint(3) DEFAULT '0',
+  `isrecommand` tinyint(3) DEFAULT '0',
+  `createtime` int(11) DEFAULT '0',
+  `endtime` int(11) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `idx_uniacid` (`uniacid`),
+  KEY `idx_endtime` (`endtime`),
+  KEY `idx_createtime` (`createtime`),
+  KEY `idx_status` (`status`),
+  KEY `idx_displayorder` (`displayorder`),
+  KEY `idx_istop` (`istop`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_amouse_biz_creditshop_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) DEFAULT '0',
+  `address_phone` varchar(255) DEFAULT '',
+  `address_name` varchar(255) DEFAULT '' COMMENT '收货人',
+  `address` varchar(255) DEFAULT '' COMMENT '收货地址',
+  `openid` varchar(255) DEFAULT '',
+  `goodsid` int(11) DEFAULT '0',
+  `createtime` int(11) DEFAULT '0',
+  `status` tinyint(3) DEFAULT '0' COMMENT '0-未发货 1-已发货 3 取消',
+  `usetime` int(11) DEFAULT '0',
+  `express` varchar(255) DEFAULT '',
+  `expresscom` varchar(255) DEFAULT '',
+  `expresssn` varchar(255) DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `idx_uniacid` (`uniacid`),
+  KEY `idx_openid` (`openid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_amouse_biz_group` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `weid` int(10) unsigned NOT NULL,
+  `openid` varchar(200) NOT NULL COMMENT '个人名片ID',
+  `title` varchar(100) NOT NULL COMMENT '微信群名称',
+  `qrcode` varchar(250) DEFAULT '' COMMENT '二维码',
+  `avater` varchar(250) DEFAULT '' COMMENT '头像',
+  `pcateid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '分类ID',
+  `hot` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '关注人数',
+  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '审核',
+  `desc` varchar(400) DEFAULT '' COMMENT '描述',
+  `location_p` varchar(100) NOT NULL DEFAULT '' COMMENT '省',
+  `location_c` varchar(100) NOT NULL DEFAULT '' COMMENT '市',
+  `createtime` int(10) unsigned NOT NULL DEFAULT '0',
+  `uptime` int(10) unsigned NOT NULL DEFAULT '0',
+  `isauto` tinyint(2) DEFAULT '0' COMMENT '自动爆机',
+  `autotime` int(11) DEFAULT '0' COMMENT '自动爆机时间',
+  `shuaxin` tinyint(2) NOT NULL DEFAULT '0' COMMENT '刷新

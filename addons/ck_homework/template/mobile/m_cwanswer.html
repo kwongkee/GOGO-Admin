@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="Cache-Control" content="no-cache"/>
+<title>错题管理 - {$config['webtitle']}</title>
+<meta http-equiv="description" content="" />
+<meta name="renderer" content="webkit"/>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+<meta name="description" content="" id="description"/>
+<meta name="keywords" content=""/>
+<link rel="stylesheet" href="{$templateurl}css/wap_css.css" type="text/css"/>
+<script src="{$templateurl}js/jquery-1.8.0.min.js" language="javascript"></script>
+
+</head>
+
+<body>
+<div class="kaoshizuoyetab">
+  <div id="TabbedPanels1" class="TabbedPanels">
+   
+    <div class="TabbedPanelsContentGroup">
+      <div class="TabbedPanelsContent" style="margin:0;">
+        <div class="warp_content clear">
+          <div class="job_list_content">
+          <div class="cuoti2018">
+          	<h1>{$tiltename}错题</h1>
+            <h2><a href="{$urlt}&op=1&xkid={$xkid}">今天</a><a href="{$urlt}&op=2&xkid={$xkid}">昨日</a><a href="{$urlt}&op=3&xkid={$xkid}">近七天</a><a href="{$urlt}&op=4&xkid={$xkid}">当月</a><a href="{$urlt}&xkid={$xkid}">全部</a></h2>
+            <div class="clear" style="height:36px;"></div>
+          </div>
+          <div class="banjifld">
+          	<div style="overflow:scroll;">
+          	<font>            
+            	<a href="{$urlt}&op={$op}" {if $xkid == '0'}class="active"{/if}>全部</a>
+          		{loop $category $value}
+            	<a href="{$urlt}&op={$op}&xkid={$value['cid']}" {if $xkid == $value['cid']}class="active"{/if}>{$value['name']}</a>
+				{/loop}
+            </font>
+            </div>
+          </div>
+          
+			  {loop $list $key $value}
+              <div class="job_list_box"> <a href="{$urlt}&tab=show&qid={$value['qid']}&fid={$value['fid']}&wid={$value['wid']}&bjid={$value['bjid']}">
+			  <h3>{php echo html_entity_decode($value['titlename']);}</h3>
+			  <div class="index_wap_joblist_yq_p" style=" margin-top:5px;"><span>累计错误：<small>{$cwtotal[$value['qid']]}</small>次&nbsp;&nbsp;&nbsp;&nbsp;累计正确：<small>{$zqtotal[$value['qid']]}</small>次 <a href="{$urlt}&tab=show&qid={$value['qid']}&fid={$value['fid']}&wid={$value['wid']}&bjid={$value['bjid']}&ob=s_comment"><small>添加总结</small></a>&nbsp;&nbsp;<a onclick="show_teacher_comment('{$key}');"><small {if empty($value['teacher_comment'])} style="display:none;"{/if}>查看老师评语</small></a></span></div>
+			  </a>
+			  <div class="index_wap_joblist_flbox" style="padding:2px 0 0 0; color:#999;">所属知识点： 
+			  <a href="{php echo $this->createMobileUrl('knowledge', array('op'=>'show','id'=>$value[qid]));}"> <span class="index_wap_joblist_fl">《{$zsdname[$value['qid']]}》</span> <span  {if $value['stateh']==1}style="color:#CC0000;"{else}style="color:#9eea6a;"{/if}>
+			  {if $value['type'] > 4}
+			  	老师{if $value['pgstast']}已{else}未{/if}批改
+			  {else}
+			  	本次：{if $value['stateh']==1}错误{else}正确{/if}
+			  {/if}
+			  </span></a>
+			  </div>
+			  <div id="teacher_comment_{$key}" style="display: none; font-size: 12px;">老师评语：{$value['teacher_comment']}</div>
+			  </div>
+			  {/loop} 
+              <div style="text-align:center;">{$pager}</div>
+              
+          </div>
+        </div>
+      </div>
+      
+      
+    </div>
+  </div>
+</div>
+<div class="clear"></div>
+<div class="clear"></div>
+<script>
+	function show_teacher_comment(num){
+		var div = document.getElementById('teacher_comment_'+num);
+		if(div.style.display=="none"){
+            div.style.display="block"
+		}else{
+            div.style.display="none"
+		}
+	}
+</script>
+
+<!--footer strat-->
+{template 'footer'}
+</body>
+</html>

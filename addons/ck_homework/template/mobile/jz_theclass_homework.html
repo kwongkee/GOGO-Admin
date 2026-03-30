@@ -1,0 +1,65 @@
+{template 'jz_theclass_header'}            
+     
+	 <style type="text/css">
+	 	.TabbedPanelsTabSelected a{ color:#FFFFFF;}
+	 </style>
+	 <div class="kaoshizuoyetab kaoshizuoyetabbjzy">
+	  <div id="TabbedPanels1" class="TabbedPanels">
+	  
+		<ul class="TabbedPanelsTabGroup">
+		  <li class="TabbedPanelsTab {if $tab == '0'}TabbedPanelsTabSelected{/if}" ><a href="{$urltk}&op={$op}&tab=0" style="display:block;">未完成</a></li>
+		  <li class="TabbedPanelsTab {if $tab == '1'}TabbedPanelsTabSelected{/if}" ><a href="{$urltk}&op={$op}&tab=1" style="display:block;">已批改</a></li>
+		  <li class="TabbedPanelsTab {if $tab == '2'}TabbedPanelsTabSelected{/if}" style="border:none;"><a href="{$urltk}&op={$op}&tab=2" style="display:block;">待批改</a></li>
+		</ul>
+		<div class="TabbedPanelsContentGroup">
+		
+		  <div class="TabbedPanelsContent zhishidiantab">
+			<div class="warp_content clear">
+			  <div class="job_list_content">
+			  	
+				  {if $tab > 0}
+		  
+				  {loop $list_yz $key $value}
+				  <div class="job_list_box"> <a href="{php echo $this->createMobileUrl('jz_homework_result');}&fid={$value['fid']}&wid={$value['wid']}&bjid={$value['bjid']}">
+				  <h3>{$value['titlename']}</h3>
+				  <div> <span class="index_wap_joblist_comname_p">本次作业共[{$value['total_q']}]道题 </span> </div>
+				  {if $tab == 1}
+				  <div class="index_wap_joblist_yq_p" style=" margin-top:-5px;"><span>本次错题数：<small>{$value['total_cwq']}</small></span>  </div>
+				  {else}
+				  <div class="index_wap_joblist_yq_p" style=" margin-top:-5px;"><span>作业完成：{php echo date('Y年m月d日 H:i', $value['dateline']);}</span>  </div>
+				  {/if}
+				  
+				  {if $value['state'] == 0}
+				  <div class="index_wap_joblist_flbox" style="padding-top:0; color:#9eea6a;">主观题等待老师批改中！可查看客观题结果</div>
+				  {/if}
+				  </a> </div>
+				  {/loop}
+				  
+				  <div style="text-align:center;">{$pager}</div>
+				  
+				  {else}
+				  
+				  {loop $list_wz $key $value}
+					<div class="job_list_box">
+						<a>
+						<h3>{$value['titlename']}</h3>
+						<div> <span class="index_wap_joblist_comname_p">本次作业共[{$value['total_q']}]道题</span> </div>
+						<div class="index_wap_joblist_yq_p" style=" margin-top:-5px; font-size:12px;">
+						<span {if $value['endtimes'] < $newstmes}style="color:#CC0000;"{/if}>作业截止时间：{php echo date('Y年m月d日 H:i', $value['endtimes']);}</span>
+						</div>
+						</a>
+					</div>
+				  {/loop}
+				  
+				  {/if}
+				   
+			  </div>
+			</div>
+		  </div>
+		  
+		</div>
+		
+	  </div>
+	</div>
+	  
+{template 'm_theclass_footer'} 

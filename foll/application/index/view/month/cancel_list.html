@@ -1,0 +1,90 @@
+{include file="common/header"}
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<body>
+<div class="x-nav">
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:window.location.reload();" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<table class="layui-table">
+    <thead>
+    <tr>
+        <th>月卡方案</th>
+        <th>手机号</th>
+        <th>退款账户</th>
+        <th>退款用户名</th>
+        <th>是否已付款</th>
+        <th>注销时间</th>
+        <th style="width:199px;">操作</th></tr>
+    </thead>
+    <tbody>
+    {volist name='list.data' id="vo" empty='没有注销数据'}
+    <tr>
+        <td>{$vo.scheme_name}</td>
+        <td>{$vo.mobile}</td>
+        <td>{$vo.ref_account}</td>
+        <td>{$vo.ref_name}</td>
+        <td>{$isPay[$vo.pay_status]}</td>
+        <td>{$vo.update_at|date='Y-m-d H:i',###}</td>
+        <td><a href="#" onclick="cancelRequest(this,'{$vo.id}')" class="layui-btn layui-btn-sm layui-btn-danger">已退</a></td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+<div class="page">
+    <div>
+        {$page}
+    </div>
+</div>
+</div>
+
+<form class="layui-form" action="" style="display: none;" id="form">
+    <div class="layui-form-item">
+        <label class="layui-form-label">候补支付金额</label>
+        <div class="layui-input-block">
+            <input type="text" name="money" id="money" required  placeholder="请填写候补支付金额,不填为月卡原金额" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <a class="layui-btn" lay-submit lay-filter="formDemo" id="formDemo">立即提交</a>
+        </div>
+    </div>
+</form>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    layui.use('laydate','layer', function(){
+        var laydate = layui.laydate;
+        layer = layui.layer;
+        //执行一个laydate实例
+    });
+var ob = null;
+var uid = null;
+    function cancelRequest(obj,id) {
+        ob = obj;
+        uid = id;
+        layer.open({
+            type: 1,
+            area:['500px','200px'],
+            content: $('#form') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+        });
+
+    }
+
+    $("#formDemo").bind("click",function () {
+        axios.post("{:Url('month_card/month_cancelhandle')}",{id:uid,money:$("#money").val()}).then(function (reason) {
+            if (reason.data.code==0){
+                layer.msg(reason.data.msg);
+                $(ob).parent().parent().remove();
+            }else{
+                layer.msg(reason.data.msg);
+            }
+        }).catch(function (err) {
+            layer.msg(err);
+        });
+        layer.closeAll();
+       return false;
+    });
+</script>
+</body>
+</html>

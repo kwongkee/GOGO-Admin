@@ -1,0 +1,78 @@
+{include file="public/header"}
+<body style="padding: 10px;">
+
+<div class="header">
+    <span>代理商列表</span>
+    <!--button class="layui-btn layui-btn-sm" onclick="add()">添加</button-->
+    <div></div>
+</div>
+
+<table class="layui-table">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>用户名</th>
+        <th>真实姓名</th>
+        <th>角色</th>
+        <th>注册时间</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    {volist name="admin" id="vo"}
+    <tr>
+        <td>{$vo.id}</td>
+        <td>{$vo.uname}</td>
+        <td>{$vo.uphone}</td>
+        <td>{$vo.g_id|getRole}</td>
+        <td>{$vo.c_time|date='Y-m-d H:i:s',###}</td>
+        <td>
+            <button class="layui-btn layui-btn-sm" onclick="edit({$vo.id})">配置商户</button>
+            <button class="layui-btn layui-btn-warm layui-btn-sm" onclick="fee({$vo.id},{$vo.uid})">配置费率</button>
+        </td>
+    </tr>
+    {/volist}
+
+    </tbody>
+</table>
+
+</body>
+<script type="text/javascript">
+    layui.use(['layer'],function(){
+        layer = layui.layer;
+        $     = layui.jquery;
+    });
+
+    // 编辑操作
+    function edit(id)
+    {
+        layer.open({
+            type:2,
+            title:'配置商户',
+            shade:0.3,
+            area:['480px','420px'],
+            content:'{:Url("agents/config/edit")}&id='+id
+        });
+    }
+
+
+    // 子菜单
+    function fee(mid,uid)
+    {
+        //var host = '{$_SERVER["SERVER_NAME"]}{$_SERVER["REQUEST_URI"]}&pid='+mid;
+        var host = '{:Url("agents/fee/list")}&id='+mid+'&uid='+uid;
+        // 跳转
+        window.location.href = host;
+    }
+
+    //返回上级菜单
+    function backs(pid) {
+        //var host = '{$_SERVER["SERVER_NAME"]}{$_SERVER["REQUEST_URI"]}&pid='+pid;
+        var host = '{:Url("agents/admin/list")}&pid='+pid;
+        window.location.href = host;
+    }
+
+</script>
+</html>

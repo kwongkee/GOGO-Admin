@@ -1,0 +1,99 @@
+{include file="common/header_inner_new"}
+<link rel="stylesheet" href="static/agents/layui/css/layui.css">
+<script src="static/agents/layui/layui.js"></script>
+<style>
+    body{background:#fff;}
+</style>
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+
+<body style="padding:15px;box-sizing: border-box;">
+<form class="layui-form" action="">
+    <input type="hidden" name="id" value="{$data['id']}">
+    <div class="layui-form-item">
+        <label class="layui-form-label">标题</label>
+        <div class="layui-input-block">
+            <input type="text" name="title" value="{$data['title']}"  lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">源网址</label>
+        <div class="layui-input-block">
+            <a href="{$data['url']}" target="_blank" style="color:#1790FF;">{$data['url']}</a>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-form-label">内容</div>
+        <div class="layui-input-block">
+            <script id="content" type="text/plain" style="width:100%;height:100px;">
+                {$data['content']|htmlspecialchars_decode|stripslashes}
+            </script>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    //Demo
+    layui.use(['layer','form','laydate','upload'], function(){
+        var laydate = layui.laydate;
+        var layer = layui.layer;
+        var form  = layui.form;
+        var $ = layui.jquery;
+        var upload = layui.upload;
+
+        UE.getEditor('content', {
+            initialFrameHeight: 400,
+            serverUrl: 'static/cklein/plugins/ueditor/php/controller.php'
+        });
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            $.ajax({
+                url:"{:Url('admin/officialwebsite/pfc_detail')}",
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (res) {
+                    layer.msg(res.msg);
+                    if(res.code==0){
+                        setTimeout(function () {
+                            window.location.reload();
+                        },2000);
+                    }
+
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            return false;
+        });
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+</script>
+</body>
+</html>

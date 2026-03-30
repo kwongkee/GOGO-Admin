@@ -1,0 +1,47 @@
+{template 'common/header'}
+<script>
+	require([ 'jquery', 'util' ], function($, util) {
+		$(function() {
+			util.colorpicker($("#choicebgcolor"),function(color){
+			    $("input[name='nbf_dailydraw_bgcolor']").val(color);
+			});
+			util.clip($("#cpeurl")[0], $("#cpeurl").prev().children().first().val());
+		});
+	});
+</script>
+<div class="col-md-12 panel">
+	<div role="alert" class="alert alert-warning alert-dismissible fade in">
+      <button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>
+      <h4>温馨提示</h4>
+      <p>直接设置参数保存就可以使用，无需进行关键字触发设置，如发现关注未有提示，请看微擎<code>订阅管理</code>中，要打开该模块的订阅权限</p>
+    </div>
+	<form class="form-horizontal" action="" method="post">
+		<div class="form-group">
+			<label class="col-xs-12 col-sm-3 col-md-2 control-label">关注人数基数</label>
+			<div class="col-sm-6 col-xs-6">
+				<input class="form-control" name="nbf_followtip_usr_startcount" type="number" value="{$settings['nbf_followtip_usr_startcount']}"/>
+				<div class="help-block">
+					可以设置关注人数累加基数，如设置10000，那么新增一个用户后提示就是第10001位关注者
+					<p class="text-danger">注意该值是和系统中已经存在的用户总数累加的</p>
+				</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-xs-12 col-sm-3 col-md-2 control-label">关注提示信息</label>
+			<div class="col-sm-9 col-xs-12">
+				<textarea id="nbf_followtip_usr" style="height:150px;" name="nbf_followtip_usr" class="form-control" cols="60">{$settings['nbf_followtip_usr']}</textarea>
+				<div class="help-block">填写提示用户的信息，和默认的关注欢迎语不冲突,支持使用超链接,例如:<code>&lt;a href="http://www.baidu.com"&gt;点击进入&lt;/a&gt;</code>，
+				填写"<code>usercount</code>"代表第多少位关注者,填写"<code>nick</code>"代表关注者昵称，填写"<code>date</code>"代表关注时间，例子：您是第usercount位关注者，则新增关注后会提示用户您是第xxx位关注者</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-10">
+				<input type="hidden" name="token" value="{$_W['token']}" /> <input
+					name="submit" value="submit" type="hidden" />
+				<hr />
+				<button class="btn btn-primary" type="submit">提交</button>
+			</div>
+		</div>
+	</form>
+</div>
+{template 'common/footer'}

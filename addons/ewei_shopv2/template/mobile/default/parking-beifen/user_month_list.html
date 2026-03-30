@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <link href="../addons/ewei_shopv2/static/css/verified/base.css" rel="stylesheet" type="text/css"/>
+    <link href="../addons/ewei_shopv2/static/css/verified/iconfont.css" rel="stylesheet" type="text/css"/>
+    <link href="../addons/ewei_shopv2/static/css/verified/layout.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="../addons/ewei_shopv2/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../addons/ewei_shopv2/static/js/rem.js"></script>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.2/style/weui.min.css">
+    <title>我的卡</title>
+</head>
+<body class="" style="background: #eee;">
+<header class="header">我的卡</header>
+{if !empty($allMonth)}
+{loop $allMonth $index $item}
+<div class="myBox">
+    <div class="card_all">
+        <div class="my_card_item">
+            <div class="card_ta">
+                <div class="card_p">
+                    <div class="card_p_a">
+                        <div class="desc">
+                            <span>{$item['month_name']}</span>
+                        </div>
+                    </div>
+                    <div class="all_more all_more_a">有效期：<?php echo floor(($item['expir_end']-$item['expir_start'])/86400)?>天</div>
+                </div>
+                <div class="card_date_a">
+                    <span>{$item['month_money']}元</span>
+                    {if $item['fit_type'] == 2}
+                    <span>适用范围：泊位</span>
+                    {else if $item['fit_type'] == 3}
+                    <span>适用范围：时段</span>
+                    {/if}
+                </div>
+            </div>
+            <div class="card_tb">
+                {$item['month_name']}<br/>
+                {if $item['status'] == 'A'}
+                <span class="status" style="float: left;">有效</span>
+                {if $item['pay_status']==1}
+                <span style="color: black;margin-left: 13px;margin-top: 5px;" onclick="out({$item['muid']});">点击注销</span>
+                {else}
+                <span style="color: black;margin-left: 13px;margin-top: 5px;" onclick="pay({$item['id']});">点击支付</span>
+                {/if}
+                {else}
+                <span class="status">无效</span>
+                {/if}
+
+                <div class="q_date">过期日：{php echo date('Y-m-d', $item['expir_end'])}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{/loop}
+
+<div class="card_none" style="margin-top:153px;height: 1.5rem;">
+    <a href="{php echo mobileUrl('parking/month_card')}" class="vm">
+        <i class="iconfont icon-add"></i>
+        <p>还没有点击申请</p>
+    </a>
+</div>
+<div class="my_tips text-center">仅显示最新十张的卡片记录</div>
+{else}
+
+<div class="card_none" style="margin-top:153px;">
+    <a href="{php echo mobileUrl('parking/month_card')}" class="vm">
+        <i class="iconfont icon-add"></i>
+        <p>还没有点击申请</p>
+    </a>
+</div>
+{/if}
+
+</body>
+<script>
+    function out(id) {
+       window.location.href = "{php echo mobileUrl('parking/user_month/month_out')}&id="+id;
+    }
+
+    function pay(id) {
+        window.location.href = "{php echo mobileUrl('parking/monthcardpay')}&mid="+id;
+    }
+</script>
+</html>

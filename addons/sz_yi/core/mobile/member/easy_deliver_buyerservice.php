@@ -1,0 +1,7 @@
+<?php
+
+defined('IN_IA') or exit('Access Denied');
+
+global $_W;
+$title = '买家服务';
+include $this->template('member/easy_deliver_buyerservice');

@@ -1,0 +1,31 @@
+{template "parking/_header"}
+<body>
+<div style="margin-top: 140px;">
+    <a style="height:90px;line-height: 90px;background-color:rgb(0, 178, 238);position:relative;" href="{php echo mobileUrl('parking/num')}" class="weui_btn weui_btn_primary"><img src="http://shop.gogo198.cn/addons/ewei_shopv2/static/images/icon/shuru.png" style="width:30px;height:30px;position:absolute;margin-top:30px;margin-left:-40px;"/>输车位码</a>
+    <a style="height:90px;line-height: 90px;background-color: rgb(0, 178, 238);position:relative;" href="javascript:;" id="s" class="weui_btn weui_btn_primary"><img src="http://shop.gogo198.cn/addons/ewei_shopv2/static/images/icon/saoma.png" style="width:30px;height:30px;position:absolute;margin-top:30px;margin-left:-40px;"/>扫二维码</a>
+</div>
+<script>
+     var appIdstr = "{$wx['appId']}";
+        var timestampstr = "{$wx['timestamp']}";
+        var nonceStrstr = "{$wx['nonceStr']}";
+        var signaturestr = "{$wx['signature']}";
+     wx.config({
+        debug: false,
+        appId: appIdstr,
+        timestamp: timestampstr,
+        nonceStr: nonceStrstr,
+        signature: signaturestr,
+        jsApiList: ['scanQRCode',]
+     });
+     document.getElementById("s").onclick=function () {
+         wx.scanQRCode({
+           needResult:0,//0是微信处理,1是结果
+           desc: '',
+           scanType: ["qrCode"],
+           success: function (res) {
+           var result = res.resultStr;
+           }
+         });
+       };
+</script>
+{template "parking/_footer"}

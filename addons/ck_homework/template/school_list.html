@@ -1,0 +1,151 @@
+{template 'common/header'}
+
+<ul class="nav nav-tabs">
+    <li {if $_GPC['do']=='school_list'}class="active"{/if}><a href="{$urlt1}">学校管理</a></li>
+    <li {if $_GPC['do']=='theclass_list'}class="active"{/if}><a href="{$urlt}">班级管理</a></li>
+</ul>
+
+<style>
+    #modeladd li,#modelal li{ padding-top:5px; padding-bottom:5px; list-style: none;}
+    .t_input{ height:35px; border: 1px solid #cccc; line-height: 35px; border-radius: 5px;}
+    .btnptspt{
+        padding-left:8px; padding-right:8px; padding-bottom:5px; padding-top:5px;
+        color:#fff;
+        border-radius:5px;
+        background-color:#EF4F4F;
+    }
+</style>
+
+<div class='main'>
+    <div class="panel panel-info">
+        <div class="panel-heading">筛选</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get" class="form-inline" role="form">
+                <input type="hidden" name="c" value="{$_GPC['c']}">
+                <input type="hidden" name="a" value="{$_GPC['a']}">
+                <input type="hidden" name="do" value="{$_GPC['do']}">
+                <input type="hidden" name="m" value="{$_GPC['m']}">
+                <div class="form-group">
+                    <label for="exampleInputEmail2">学校编号：</label>
+                    <input type="txt" class="form-control" name="school_code" value="{$_GPC['school_code']}" >
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail2">学校名称：</label>
+                    <input type="txt" class="form-control" name="school_name" value="{$_GPC['school_name']}" >
+                </div>
+                <button type="submit" class="btn btn-primary">搜索</button>
+
+            </form>
+            <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#myModal">添加</button>
+        </div>
+    </div>
+</div>
+
+<script language="javascript" type="text/javascript">
+    function checkAll(form, name) {
+        for(var i = 0; i < form.elements.length; i++) {
+            var e = form.elements[i];
+            if(e.name.match(name)) {
+                e.checked = form.elements['chkall'].checked;
+            }
+        }
+    }
+    const add =()=>{
+        var school_code = $('#school_code').val();
+        var school_name = $('#school_name').val();
+        var school_addr = $('#school_addr').val();
+        if (school_code==""||school_name==""||school_addr==""){
+            alert('请填写完整信息');
+            return ;
+        }
+        $.ajax({
+            url: "{php echo  $this->createWebUrl('school_list')}&op=add",
+            type: 'POST',
+            dataType:"json",
+            data: {school_code:school_code,school_name:school_name,school_addr:school_addr},
+            cache: false,
+            success:function (res) {
+                res = JSON.parse(res);
+                console.dir(res);
+                alert(res.message);
+            },error:function () {
+                alert('添加失败');
+            }
+        });
+        return false;
+    }
+</script>
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <form method="post" class="form" action="{$urlt1}&op=delete">
+            <input name="token" type="hidden" value="{$_W['token']}" />
+            <div class="table-responsive">
+                <table class="table">
+                    <tr>
+                        <th>选择</th>
+                        <th>编号</th>
+                        <th>名称</th>
+                        <th>地址</th>
+                        <th>时间</th>
+                        <th>操作</th>
+                    </tr>
+                    {loop $list $key $value}
+                    <tr >
+                        <td>
+                            <input type="checkbox" name="ids[]" value="{$value[id]}">
+                        </td>
+                        <td>{$value['school_code']}</td>
+                        <td>{$value['school_name']}</td>
+                        <td>{$value['school_addr']}</td>
+                        <td>{php echo date('Y-m-d H:i',$value['create_time'])}</td>
+                        <td>
+                            <a href="{$urlt1}&op=delete&id={$value[id]}" class="btn btn-danger btn-sm" title="删除" onclick="return confirm('本操作不可恢复，确认删除？');"><i class="fa fa-remove"></i></a>
+                        </td>
+                    </tr>
+                    {/loop}
+                    {if $pager}
+                    <tr >
+                        <td colspan="4">{$pager}</td>
+                    </tr>
+                    {/if}
+                    <tr >
+                        <td colspan="6" align="center">
+                            <input type="checkbox" id="chkall" name="chkall" onclick="checkAll(this.form, 'ids')">&nbsp;全选 &nbsp;&nbsp;
+                            <input type="submit" name="deletesubmit" value="批量删除" class="btn btn-primary" onclick="return confirm('本操作不可恢复，确认删除？');">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" id="myModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">添加学校</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="school_code">学校编号</label>
+                    <input type="text" name="school_code" value="" class="form-control" id="school_code" placeholder="编号">
+                </div>
+                <div class="form-group">
+                    <label for="school_name">学校名称</label>
+                    <input type="text" name="school_name" value="" class="form-control" id="school_name" placeholder="学校名称">
+                </div>
+                <div class="form-group">
+                    <label for="school_addr">学校地址</label>
+                    <input type="text" name="school_addr" value="" class="form-control" id="school_addr" placeholder="学校地址">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" onclick="add(this);">保存</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+{template 'common/footer'}

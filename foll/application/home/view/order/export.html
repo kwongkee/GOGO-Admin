@@ -1,0 +1,149 @@
+{include file="public/header" /}
+<body>
+    <!-- 中部开始 -->
+    <div class="wrapper">
+        <!-- 右侧主体开始 -->
+        <div class="page-content">
+          <div class="content">
+            <!-- 右侧内容框架，更改从这里开始 -->
+            <form class="layui-form" >
+            	
+                <div class="layui-form-item">
+                    <label for="L_email" class="layui-form-label">
+                        <span class="x-red">*</span>开始时间
+                    </label>
+                    <div class="layui-input-inline">
+                        <input class="layui-input" placeholder="开始日期" name="startTime" value="" id="LAY_demorange_s">
+                    </div>
+                </div>
+                
+                <div class="layui-form-item">
+                    <label for="L_username" class="layui-form-label">
+                        <span class="x-red">*</span>结束时间
+                    </label>
+                    <div class="layui-input-inline">
+                        <input class="layui-input" placeholder="截止日期" name="endTime" value="" id="LAY_demorange_e">
+                    </div>
+                </div>
+                
+                <div class="layui-form-item" id="emails" style="display: none;">
+                    <label for="L_email" class="layui-form-label">
+                        <span class="x-red">*</span>电子邮箱
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="email" id="L_email" name="email" lay-verify="email"
+                        autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">
+                        <span class="x-red" style="color: red;" id="emailText">*数据将会发送至该邮箱</span>
+                    </div>
+                </div>
+                               
+                <div class="layui-form-item">
+                    <label for="L_repass" class="layui-form-label">操作：</label>
+                    <input type="hidden" name="exportUrl" id="exportUrl" value="{:Url('order/getExecl')}" />
+                    <input type="hidden" name="emailUrl" id="emailUrl" value="{:Url('order/sendEmail')}" />
+                    <button class="layui-btn" id="export" type="button">导出<i class="layui-icon">&#xe615;</i></button>                    
+                    <button  class="layui-btn" id="sendEmail" type="button" lay-filter="add">发送电子邮件</button>
+                </div>
+                
+            </form>
+            <!-- 右侧内容框架，更改从这里结束 -->
+          </div>
+        </div>
+        <!-- 右侧主体结束 -->
+    </div>
+    <!-- 中部结束 -->
+    
+    
+     <!-- 页面动态效果 -->
+    <script>
+
+        layui.use(['laydate'], function(){
+          laydate = layui.laydate;//日期插件
+			
+          //以上模块根据需要引入          
+          var start = {
+//          min: laydate.now()
+            min: '1970-01-01 00:00:00'
+            ,max: '2099-06-16 23:59:59'
+            ,istoday: false
+            ,choose: function(datas){
+              end.min = datas; //开始日选好后，重置结束日的最小日期
+              end.start = datas //将结束日的初始值设定为开始日
+            }
+          };
+          
+          var end = {
+            min: laydate.now()
+            ,max: '2099-06-16 23:59:59'
+            ,istoday: false
+            ,choose: function(datas){
+              start.max = datas; //结束日选好后，重置开始日的最大日期
+            }
+          };
+          //开始日期
+          document.getElementById('LAY_demorange_s').onclick = function(){
+            start.elem = this;
+            laydate(start);
+          }
+          document.getElementById('LAY_demorange_e').onclick = function(){
+            end.elem = this
+            laydate(end);
+          }
+          
+        });
+        
+	</script>
+	<script type="text/javascript">
+		$(function(){
+			//导出excel 数据；
+			$('#export').bind('click',function(){
+				var start = $('#LAY_demorange_s').val();
+				var end = $('#LAY_demorange_e').val();
+				var expUrl = $('#exportUrl').val();
+				if(start != '' && end != ''){
+					location.href = expUrl+'&startTime='+start+'&endTime='+end;
+				}else {
+					alert('请选择导出数据日期')
+				}
+			});
+			
+			$('#sendEmail').bind('click',function(){
+				var start = $('#LAY_demorange_s').val();
+				var end = $('#LAY_demorange_e').val();
+				
+				$('#emails').css('display','block');
+				var emailVal = $('#L_email').val();//邮箱值
+//				var emailUrl = $('#emailUrl').val();//请求链接
+				var expUrl = $('#exportUrl').val();
+				if(emailVal == ''){
+					$('#emailText').html('请输入您的电子邮箱');
+					return false;
+				}else if(!checkEmail(emailVal)){
+					$('#emailText').html('你的邮箱输入不正确');
+					return false;
+				}else if(start == ''){
+					alert('请选择开始日期')
+					return false;
+				}else if(end == ''){
+					alert('请选择结束时间')
+					return false;
+				}else {
+					location.href = expUrl+'&email='+emailVal+'&startTime='+start+'&endTime='+end;
+				}
+				
+			});
+			
+			function checkEmail(str){
+				var reg = /\w+[@]{1}\w+[.]\w+/;
+			    if(reg.test(str)){
+			    	return true;
+			    }else{
+			    	return false;
+			    }
+			}
+		});
+	</script>
+</body>
+</html>

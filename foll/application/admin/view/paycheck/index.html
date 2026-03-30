@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{$title}}</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+
+<body style="padding-top: 10px;">
+<div class="demoTable">
+
+    <form class="layui-form" action="admin/fina/paycheck" method="post">
+
+        <div class="layui-form-item">
+
+            <div class="layui-input-block">
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">支付企业</label>
+                    <div class="layui-input-block">
+                        <select name="pay_id" lay-verify="">
+                            <option value="2" selected>邦付宝</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">账单类型</label>
+                    <div class="layui-input-block">
+                        <select name="payType" lay-verify="">
+                            <option value="pay" selected>支付账单</option>
+                            <option value="identify">身份账单</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <input type="text" class="layui-input" name="month" id="test1" placeholder="请选择月份">
+                </div>
+
+                <div class="layui-inline">
+                    <button class="layui-btn" lay-submit lay-filter="formDemo">查询</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+
+            </div>
+        </div>
+
+    </form>
+
+    <script>
+        //Demo
+        layui.use(['form','laydate'], function() {
+            var form = layui.form;
+            var laydate = layui.laydate;
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#test1', //指定元素
+                type: 'month'
+            });
+
+            //监听提交
+            form.on('submit(formDemo)', function(data){
+                //layer.msg(JSON.stringify(data.field));
+                window.location.href = '?s=admin/fina/paycheck&payType='+data.field.payType+'&month='+data.field.month;
+                // admin/fina/paycheck
+                return false;
+            });
+        });
+    </script>
+
+</div>
+
+<table class="layui-table">
+    <thead>
+    <tr class="ths">
+        <th>序号</th>
+        <th>账单月份</th>
+        <th>支付企业</th>
+        <th>账单类型</th>
+        <th>账单票数</th>
+        <th>交易金额</th>
+        <th>应付金额</th>
+        <th>生成时间</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    {volist name="datas" id="vo" key='ks'}
+    <tr class="boys">
+        <td>{$ks}</td>
+        <td>{$vo.month}</td>
+        <td>{$payList[$vo.pay_id]}</td>
+        <td>{$type[$vo.payType]}</td>
+        <td>{$vo.num}票</td>
+        <td>{$vo.money}</td>
+        <td>{$vo.total}</td>
+        <td>{$vo.add_time|date='Y-m-d H:i:s',###}</td>
+    </tr>
+    {/volist}
+
+    </tbody>
+</table>
+
+<div class="layui-box layui-laypage layui-laypage-default">{$datas->render()}</div>
+
+<script type="text/javascript">
+    layui.use(['layer','jquery'],function(){
+        layer = layui.layer;
+        $ = layui.jquery;
+    });
+
+    function loding() {
+        layer.load();
+        setTimeout(function () {
+            layer.closeAll();
+        },1000);
+    }
+</script>
+</body>
+</html>

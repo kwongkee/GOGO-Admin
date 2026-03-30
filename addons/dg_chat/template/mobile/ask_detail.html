@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>问题详情</title>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<meta name="format-detection" content="address=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<script src="http://cdn.bootcss.com/zepto/1.1.6/zepto.min.js"></script>
+<link rel="stylesheet" href="{TEMPLATE_PATH}/wtCommon.css?v={php echo time();}">
+<link rel="stylesheet" href="{TEMPLATE_PATH}/live.css?v={php echo time();}">
+<link rel="stylesheet" href="{TEMPLATE_PATH}/whisper.css?v={php echo time();}">
+<link rel="stylesheet" href="{TEMPLATE_PATH}/thousandLive.css?v={php echo time();}">
+
+{php echo register_jssdk();}
+<script type="text/javascript">
+var clock_index=0;
+var clock_handler=null,current_voiclocalid=null;
+var globalObj=new Object();
+var ask_id={$ask_id};
+
+/*微信支付开始*/
+function jsApiCall(parameters){
+		WeixinJSBridge.invoke(
+			'getBrandWCPayRequest',
+			 parameters,
+			function(res){
+				WeixinJSBridge.log(res.err_msg);
+				if(res.err_msg == "get_brand_wcpay_request:ok") {
+					location.href=location.href;
+                } else if(res.err_msg == "get_brand_wcpay_request:cancel"){
+                   //alert("已取消赞赏!");
+               }else{
+               	  alert(res.err_msg);
+               }
+			}
+		);
+}
+
+function callpay(parameters){
+	if (typeof WeixinJSBridge == "undefined"){
+		    if( document.addEventListener ){
+		        document.addEventListener('WeixinJSBridgeReady', jsApiCall, false);
+		    }else if (document.attachEvent){
+		        document.attachEvent('WeixinJSBridgeReady', jsApiCall); 
+		        document.attachEvent('onWeixinJSBridgeReady', jsApiCall);
+		    }
+		}else{
+		    jsApiCall(parameters);
+	}
+}	
+/*微信支付结束*/
+
+//当前正在播放语音信息
+function startRec(){
+	$(".second_dd var").eq(0).text(clock_index);
+	clock_index++;
+	if(clock_index==58){
+		clock_index=60;
+		$("#btnStopRec").click();
+	}
+}
+/*声音播放完毕事件*/
+function voicePlayOver(){
+	if(globalObj.voicePlaying){
+		globalObj.voicePlaying.removeClass("isWhisperPlay");
+		globalObj.isPlaying=false;
+	}
+}
+function voicePlay(){
+	$(".audio_box").click(function(){
+		var recordVoice=$(this).children("i");
+		var recordMsg=$(this);
+		var voice_str=recordVoice.attr('attr-src');
+		
+		if(voice_str=='pay'){
+			   //设置当前支付的问答信息
+			globalObj.recordPay=recordMsg;
+		    $.getJSON(location.href, {submit: true,ask_type:'public',ask_id:ask_id,pay_type:'listen'}, function(json){
+			    callpay(json);
+			});
+		    return;
+		}
+		
+		if(voice_str.indexOf('http')==0){
+ 		  	var media = $('#dgAudioPlayer')[0];
+ 		  	if($("#dgAudioPlayer").attr('src')!=voice_str)
+ 		  	   $("#dgAudioPlayer").attr('src',voice_str);
+ 		  	if(media.paused) { 
+ 		  		media.play();
+ 		  		recordMsg.addClass("isWhisperPlay");
+ 		  		globalObj.isPlaying=true;
+ 		    } else {  
+ 		    	media.pause(); 
+ 		    	recordMsg.removeClass('isWhisperPlay')
+ 		    }
+ 		  	globalObj.voicePlaying=recordMsg;
+
+ 		  	media.removeEventListener("ended",voicePlayOver,false);
+		  	media.addEventListener("ended",voicePlayOver,false);
+		  	return;
+		  	
+		}
+		 if(recordVoice.attr("localid")){
+		    var localId=recordVoice.attr("localid");
+		    if($(this).hasClass('isWhisperPlay')){
+		    	wx.pauseVoice({
+		    	    localId: localId // 需要暂停的音频的本地ID，由stopRecord接口获得
+		    	});
+		    	$(this).removeClass('isWhisperPlay')
+		    }else{
+		    	wx.playVoice({
+		    	    localId: localId // 需要播放的音频的本地ID，由stopRecord接口获得
+		    	});
+		    	$(this).addClass("isWhisperPlay");
+		    	wx.onVoicePlayEnd({
+		    	    success: function (res) {
+		    	    	recordMsg.removeClass("isWhisperPlay");
+		    	    }
+		    	});
+		    }
+		    return;	 
+		 }
+		
+		  wx.downloadVoice({
+			    serverId: recordVoice.attr('attr-src'), // 需要下载的音频的服务器端ID，由uploadVoice接口获得
+			    isShowProgressTips: 0, // 默认为1，显示进度提示
+			    success: function (res) {
+			        var localId = res.localId; // 返回音频的本地ID
+			        recordMsg.addClass("isWhisperPlay");
+			        recordVoice.attr('localid',localId);
+			        wx.playVoice({
+			            localId: localId // 需要播放的音频的本地ID，由stopRecord接口获得
+			        });
+			        wx.onVoicePlayEnd({
+			    	    success: function (res) {
+			    	    	recordMsg.removeClass("isWhisperPlay");
+			    	    }
+			    	});
+			    }
+			});  
+	  });
+}
+
+//上传语音接口
+function uploadVoic(localId){
+	wx.uploadVoice({
+	    localId: localId, // 需要上传的音频的本地ID，由stopRecord接口获得
+	    isShowProgressTips: 1, // 默认为1，显示进度提示
+	    success: function (res) {
+	    var serverId = res.serverId; // 返回音频的服务器端ID
+	     var posturl=location.href;
+			var json_data={submit:true,content:serverId,time_last:clock_index};
+			$.post(posturl,json_data,function(result){
+				 $(".recording_tab_box").hide();
+				 $(".qlbtna_add_answer ").show();
+				 
+				 var text='<ul class="whisper_answer_wkBox">';
+				   text+='<li class="uesr_head"><img src="{$head_imgurl}"></li>';
+				   text+='<li class="wl_answer_boxFl">';
+				   text+='<div class="audio_box">';
+				   text+='<i attr-src="'+serverId+'" class="ico_audio"></i><p>点击播放</p><b class="second">'+clock_index+'"</b><a class="audio_box_play" href="javascript:;"></a>';
+				   text+='</div></li></ul>';
+				 $('.whisper_answer').append(text);
+				 clock_index=0;
+				 voicePlay();
+			});
+	    }
+	});
+}
+
+ $(function(){
+	 voicePlay();
+	 $(".qlbtna_add_answer ").click(function(){
+		 $(this).hide();
+		 $(".recording_tab_box").show();
+	 });
+	//开始录音
+ 	$("#btnStartRec").click(function(){
+ 		$(".rec_Title_box").hide();
+ 		$(".tab_recordingType").hide();
+ 		$(".btn_dd").addClass('startRec');
+ 		$(".second_dd").show();
+ 		wx.startRecord();
+ 		startRec();
+ 		$("#btnStopRec").show();
+ 		clock_handler=setInterval(startRec,1000);
+ 	});
+	
+ 	//停止录音 
+ 	$("#btnStopRec").click(function(){
+ 		clearInterval(clock_handler);
+ 		$(".btn_dd").removeClass('startRec');
+ 		$(".btn_dd").addClass('stopRec');
+ 		$("#btnStopRec").hide();
+ 		$("#btnSentRec").show();
+ 		wx.stopRecord({
+ 		    success: function (res) {
+ 		    	current_voiclocalid = res.localId;
+ 		    }
+ 		});
+ 	});
+ 	//发送录音 
+ 	$("#btnSentRec").click(function(){
+ 		if(current_voiclocalid!=null){
+ 			uploadVoic(current_voiclocalid);
+ 		}
+ 		$("#btnSentRec").hide();
+ 		$(".btn_dd").removeClass('stopRec');
+ 		$(".second_dd var").eq(0).text(0);
+ 		
+ 		$(".rec_Title_box").show();
+ 		$(".tab_recordingType").show();
+ 		$(".second_dd").hide();
+ 	});	 
+ 	
+ 	$("#btnCancelRec").click(function(){
+ 		current_voiclocalid==null
+ 		$("#btnSentRec").hide();
+	    	$(".btn_dd").removeClass('stopRec');
+	    	$(".second_dd var").eq(0).text(0);
+	    		
+	    	$(".rec_Title_box").show();
+	    	$(".tab_recordingType").show();
+	    	$(".second_dd").hide();
+	    	 clock_index=0;
+ 	});
+ 
+ 	$(".menu_expland").click(function(){
+		  $(".popBox").show();
+	  });
+	  $(".btn_cancel").click(function(){
+		  $(".popBox").hide();
+	  });
+	 $(".s_item").click(function(){
+		 $(".s_item.on").removeClass('on');
+		 $(this).addClass('on');
+		 var index = $(".feedback_box .s_item.on").index();
+		 $(this).parent().removeClass();
+		 $(this).parent().addClass('start_bar');
+		 $(this).parent().addClass('sc_'+index);
+		 var showtext="完全未解决";
+		 if(index==2) showtext="未解决";
+		 if(index==3) showtext="回答一般";
+		 if(index==4) showtext="满意";
+		 if(index==5) showtext="非常满意 ";
+		 $(".feeback_word").text(showtext);
+	 });
+	 //提交评分
+	 $(".btn_fb_submit").click(function(){
+		 var index = $(".feedback_box .s_item.on").index();
+		 if(index<0){
+			 alert('请选择您的评分!');
+			 return;
+		 }
+		 if(!confirm("确认提交您的评分吗？")){
+			 return;
+		 }
+		 //提交分数
+		 $.post(location.href,{score:index},function(result){
+			 alert(result.data);
+		 });
+	 });
+ });
+</script>
+</head>
+<body class="bind">
+<div class="main_box_4">
+{if $is_show_tips}
+		<div class="ws_top_tips">
+			分享此页面，每被旁听一次，你从中分成¥0.5
+		</div>
+{/if}
+	<audio id="dgAudioPlayer" >Your browser does not support the audio element.您的浏览器不支持 audio 标签。</audio>
+	<dl class="whisper_list sharewhisperPage">
+		<dd class="wl_msg_item">
+			<div class="wl_top_wkBox">
+				<span class="wl_top_boxFl">
+					<i class="uesr_head">
+						<img src="{$ask_record['pay_avatar']}">
+					</i>
+					<b>{$ask_record['pay_nickname']}</b>
+				</span>
+				<span class="wl_price">¥<var>{$ask_record['pay_money']}</var></span>
+			</div>
+			<div class="whisper_question">{$ask_record['ask_content']}</div>
+
+				<div class="whisper_answer">
+				{loop $answer_records $record}
+				<ul class="whisper_answer_wkBox">
+					<li class="uesr_head">
+						<img src="{$record['avatar']}">
+					</li>
+					<li class="wl_answer_boxFl">
+						<div class="audio_box">
+							{if $ask_record['show']==true}
+							<i attr-src="{$record['answer_content']}" class="ico_audio"></i>
+							<p>点击播放</p>
+						    {else}
+						     <i attr-src="pay" class="ico_audio"></i>
+							 <p>1元旁听</p>
+						    {/if}	
+						  	
+							<b class="second">{$record['time_last']}"</b><a class="audio_box_play" href="javascript:;"></a>
+						</div>
+					</li>
+				</ul>
+				{/loop}
+				
+				</div>
+
+			<div class="whisper_info_bar">
+				<var  class="answer_score">{$ask_record['avg_score']}</var>
+				<ul   class="start_bar {if $ask_record['avg_score']>0}sc_{$ask_record['avg_score']}{/if}"><li class="score"></li>
+				</ul>
+				<b class="q_date">{php echo date('Y-m-d H:i', $record[create_time]);}</b>
+				<b class="listened_total">{$pay_count}人旁听</b>
+			</div>
+				<div class="whisper_tips_2">多条语音只需支付其中一条即可旁听全部</div>		
+		</dd>
+	</dl>
+	{if $is_answer==1}
+		<div class="feedback_box" style="{if $is_show_tips}display:block;{/if}">
+			<div class="main">
+				<span class="fb_title">评个分吧</span>
+				<span class="feeback_word">回答一般</span>
+				<ul class="start_bar"><li class="score"></li><li class="s_item"></li><li class="s_item"></li><li class="s_item"></li><li class="s_item"></li><li class="s_item"></li></ul>
+			</div>
+			<a class="btn_fb_submit" href="javascript:;">确定</a>
+		</div>	
+	{/if}
+	<div class="submit_answer" style="">
+			<a class="qlbtnb_submit_answer" href="javascript:;">确定发送</a>
+			<div class="whisper_tips_2">发送后，将获得回答收益</div>
+	</div>
+</div>
+<div class="menu_wkBox">
+	<a href="{php echo $this->createMobileUrl('my_chat')}" class="menu_boxFl menu_back">返回我的主页</a>
+	<a href="javascript:;" class="menu_boxFl menu_expland">推广本页面</a>
+</div>
+
+
+<div class="popBox" style="display: none;"><b class="pop_bg"></b><div class="main"><div class="pop_content"><span><ul class="menu_expland_ul"><li>1.微信客户端打开 点击页面右上角 <i class="menu_expland_i4"></i>，选择<b>“转发给好友”</b></li><li>2.用浏览器端打开<b> “复制链接”</b>发送给朋友</li></ul></span></div><div class="pop_bottom"><span><a href="javascript:;" class="pop_btn btn_cancel">关闭</a></span></div></div></div>
+<script type="text/javascript">
+wx.ready(function () {
+    sharedata = {
+        title: "{$sharedata['title']}",
+        desc: "{$sharedata['desc']}",
+        link: "{$sharedata['link']}",
+        imgUrl: "{$sharedata['imgUrl']}",
+        success:function(){
+        	//ajax
+        }
+    };
+    wx.onMenuShareAppMessage(sharedata);
+    wx.onMenuShareTimeline(sharedata);
+});
+</script>
+</body></html>

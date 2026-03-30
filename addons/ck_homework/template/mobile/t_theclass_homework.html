@@ -1,0 +1,65 @@
+{template 't_theclass_header'}            
+     
+	 
+	 <div class="kaoshizuoyetab kaoshizuoyetabbjzy">
+	  <div id="TabbedPanels1" class="TabbedPanels">
+	  
+		<ul class="TabbedPanelsTabGroup">
+		  <li class="TabbedPanelsTab {if $tab == '0'}TabbedPanelsTabSelected{/if}" ><a href="{$urltk}&op={$op}&tab=0" style="display:block;">未完成</a></li>
+		  <li class="TabbedPanelsTab {if $tab == '1'}TabbedPanelsTabSelected{/if}" ><a href="{$urltk}&op={$op}&tab=1" style="display:block;">已批改</a></li>
+		  <li class="TabbedPanelsTab {if $tab == '2'}TabbedPanelsTabSelected{/if}" style="border:none;"><a href="{$urltk}&op={$op}&tab=2" style="display:block;">待批改</a></li>
+		</ul>
+		<div class="TabbedPanelsContentGroup">
+		
+		  <div class="TabbedPanelsContent zhishidiantab">
+			<div class="warp_content clear">
+			  <div class="job_list_content">
+			  	
+				{if $list}
+					{loop $list $key $value}
+					{if $tab == 1}
+					<div class="job_list_box">
+						<a href="{php echo $this->createMobileUrl('t_work', array('bjid'=>$value['bjid'],'wid'=>$value['wid']));}">
+							<h3>{$value['titlename']}</h3>
+							<div> <span class="index_wap_joblist_comname_p">本次作业共[{$que_total[$value['wid']]}]道题 </span> </div>
+							<div class="index_wap_joblist_yq_p" style=" margin-top:-5px;"><span>本次错题数：<small>{$que_error[$value['wid']]}</small></span></div>
+						</a>
+					</div> 
+					{elseif $tab == 2}
+					<div class="job_list_box">
+						<a href="{php echo $this->createMobileUrl('t_work', array('bjid'=>$value['bjid'],'wid'=>$value['wid']));}">
+							<h3>{$value['titlename']}</h3>
+							<div> <span class="index_wap_joblist_comname_p">本次作业共[{$que_total[$value['wid']]}]道题 </span> </div>
+							<div class="index_wap_joblist_yq_p" style=" margin-top:-5px; font-size:12px;"><span>作业截止时间：{php echo date('Y-m-d H:i', $value['endtimes']);}</span></div>
+							{if $xs_total[$value['wid']] > 0}
+							<div class="index_wap_joblist_flbox" style="padding-top:0; color:#F60;">学生已经交作业，有主观题需要老师批改！</div>
+							{else}
+							<div class="index_wap_joblist_flbox" style="padding-top:0; color:#F60;">还未有学生交作业！</div>
+							{/if}
+						</a> 
+					</div>
+					{else}
+					<div class="job_list_box">
+						<a href="{$urltk}&ob=wordadd&wid={$value['wid']}">
+							<h3>{$value['titlename']}</h3>
+							<div> <span class="index_wap_joblist_comname_p">本次作业共[{$que_total[$value['wid']]}]道题 </span> </div>
+							<div class="index_wap_joblist_yq_p" style=" margin-top:-5px; font-size:12px;"><span>作业截止时间：{php echo date('Y-m-d H:i', $value['endtimes']);}</span></div>
+						</a>
+					</div>
+					{/if} 
+					{/loop}
+				{else}
+				<div class="job_list_box" style="text-align:center;">抱歉！未找到相应作业！</div>
+				{/if}
+				<div style="text-align:center;">{$pager}</div>
+				   
+			  </div>
+			</div>
+		  </div>
+		  
+		</div>
+		
+	  </div>
+	</div>
+	  
+{template 't_theclass_footer'} 

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑额外费用</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+</head>
+<body>
+
+<form class="layui-form" action="">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <input type="hidden" name="method" value="edit">
+        <input type="hidden" name="uid" value="{$uid}">
+        <input type="hidden" name="id" value="{$infos['id']}">
+    </div>
+
+    <div class="layui-form-item">
+        <lable class="layui-form-label">提单编号</lable>
+        <div class="layui-input-block">
+            <select name="bill_num" id="" lay-verify="required">
+                <option value="">请选择提单</option>
+                {volist name="bol" id="vo"}
+                <option value="{$vo}" {if $vo == $infos['bill_num']} selected {/if}>{$vo}</option>
+                {/volist}
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">对账日期</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" name="date" value="{$infos['date']}" id="dates" placeholder="请选择日期" lay-verify="required">
+        </div>
+    </div>
+
+    <!-- 需要动态添加 -->
+    <div class="content">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">项目名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="project[]" value="{$infos['project']}" placeholder="请填写项目名称" lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">金额</label>
+            <div class="layui-input-block">
+                <input type="text" name="money[]" value="{$infos['money']}"  placeholder="请填写金额" required lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">单位</label>
+            <div class="layui-input-block">
+                <input type="text" name="dis[]" value="{$infos['dis']}"  placeholder="请填写单位"  lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">计费说明</label>
+            <div class="layui-input-block">
+                <input type="textarea" name="desc[]" value="{$infos['desc']}"  placeholder="请填写计费说明" class="layui-input">
+            </div>
+        </div>
+
+    </div>
+
+    <!--div class="layui-form-item">
+        <div class="layui-input-block">
+            <a href="javascript:void(0)" id="addPro" class="layui-btn layui-btn-warm">新增项目</a>
+        </div>
+    </div-->
+
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">确认编辑</button>
+            <button type="reset" class="layui-btn layui-btn-danger">重置数据</button>
+        </div>
+    </div>
+</form>
+
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+
+<script>
+    //Demo
+    layui.use(['form','laydate'], function(){
+        var form = layui.form,laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#dates' //指定元素
+        });
+
+
+        $(document).on('click','#addPro',function() {
+
+
+            $.ajax({
+                url:"{:Url('additional/getadd')}",
+                type:"GET",
+                dataType:"json",
+                success:function(res) {
+                    if(res.code <= 0) {
+                        layer.msg('添加失败，请稍后重试！');
+                        return false;
+                    }
+
+                    $('.content').append(res.msg);
+
+                    form.render();
+                    console.log(res);
+                }
+            })
+
+        })
+
+
+        //监听提交
+        form.on('submit(formDemo)', function(data) {
+            // 获取通道名称
+            // var pay = $('#pay option:selected').html();
+            // data.field.payName = pay;
+
+            $.ajax({
+                url:"{:Url('additional/doadd')}",
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (red) {
+                    // var red = JSON.parse(res);
+                    if(red.code <= 0) {
+                        layer.msg(red.msg);
+                        return false;
+                    }
+                    layer.msg(red.msg);
+                    setTimeout(function(){
+                        layer.closeAll();
+                        parent.window.location.reload();
+                    },1200)
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</html>

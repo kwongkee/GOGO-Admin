@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  	<meta charset="utf-8">
+  	<title>{$info.title}</title>
+  	<meta name="renderer" content="webkit">
+  	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  	<link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+	<script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+	<style type="text/css">
+		.hrsd{margin: 15px auto;}
+	</style>
+</head>
+
+<body>
+<div style="margin-top: 10px;"></div>
+<p><h2 style="text-align: center;color: green;font-weight: bold;">{$info.title}</h2></p>
+<div class="hrsd">
+	
+</div>
+<form action="" class="layui-form layui-form-pane">
+	
+	<div class="layui-form-item">
+		<label class="layui-form-label">订单编号</label>
+		<div class="layui-input-block">
+			<input type="text" readonly="readonly" lay-verify="title" autocomplete="off" class="layui-input" value="{$info.orderId}"/>
+		</div>
+	</div>
+	
+	<div class="layui-form-item">
+		<div class="layui-form-label">用户姓名</div>
+		<div class="layui-input-block">
+			<input type="text" readonly="readonly" lay-verify="required" autocomplete="off" class="layui-input" value="{$info.userName}" />
+		</div>
+	</div>
+	
+	<div class="layui-form-item">
+	    <label class="layui-form-label">用户身份证</label>
+	    <div class="layui-input-block">
+	      <input type="text" readonly="readonly" lay-verify="required"  autocomplete="off" class="layui-input" value="{$info.userId}">
+	    </div>
+	</div>
+	
+	<div class="layui-form-item">
+	    <label class="layui-form-label">认证费用</label>
+	    <div class="layui-input-block">
+	      <input type="text" readonly="readonly" lay-verify="required"  autocomplete="off" class="layui-input" value="{$info.fee/100}元">
+	    </div>
+	</div>
+	
+	<div class="layui-form-item">
+	    <label class="layui-form-label">认证时间</label>
+	    <div class="layui-input-block">
+	      <input type="text" readonly="readonly" lay-verify="required"  autocomplete="off" class="layui-input" value="{$info.completeTime}">
+	    </div>
+	</div>
+	
+	<div class="layui-form-item">
+	    <label class="layui-form-label">认证状态</label>
+	    <div class="layui-input-block">
+	      <input type="text" readonly="readonly" lay-verify="required"  autocomplete="off" class="layui-input" value="{$info.resultMsg}">
+	    </div>
+	</div>
+	
+</form>
+
+<script>
+layui.use(['layer','form','jquery','laypage','table','flow'],function() {
+		var $ = layui.jquery,form=layui.form,layer=layui.layer,laypage=layui.laypage,table=layui.table,element=layui.element,flow=layui.flow;
+		
+		//下一页
+		$(document).on('click','#auth',function(vals) {
+			var v = vals.currentTarget;//获取document
+			var authval = v.attributes.hrs.value;//选中ID 记录表ID
+			console.dir(authval)
+			
+			layer.open({
+				type:2,
+				title:gid>0?'编辑角色':'添加角色',
+				shade:0.3,
+				area:['580px','420px'],
+				content:"{:Url('Roles/add')}&gid="+authval
+			});
+		});
+		
+		
+		table.on('tool(demo)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+    	var data = obj.data //获得当前行数据
+    	,layEvent = obj.event; //获得 lay-event 对应的值
+    	console.dir(data)
+    	console.dir(layEvent)
+    	
+    	if(layEvent === 'detail'){
+      	layer.msg('查看操作');
+    	} else if(layEvent === 'del'){
+      	layer.confirm('真的删除行么', function(index){
+        	obj.del(); //删除对应行（tr）的DOM结构
+        	layer.close(index);
+        	//向服务端发送删除指令
+      	});
+    	} else if(layEvent === 'edit'){
+     	 layer.msg('编辑操作');
+    	}
+  	});
+		
+});
+</script>
+</body>
+</html>

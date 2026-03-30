@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {include file="common/meta"}
+</head>
+<body class="gray-bg">
+<div class="col-sm-12">
+    <a class="btn btn-info" href="#"  type="button" id="add" style="line-height:28px;width: 120px;"><i class="fa fa-file-excel-o"></i>添加</a>
+    <div class="ibox float-e-margins">
+        <div class="ibox-content" style="display:block;" id="list1">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>名称</th>
+                    <th>地址</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name='data' id='vo'}
+                <tr>
+                    <td>{$vo.system_name}</td>
+                    <td>{$vo.url}</td>
+                    <td>{$status[$vo.status]}</td>
+                    <td>
+                        <a href="#" class="btn btn-info" onclick="edit({$vo.id})" >编辑</a>
+                        <a href="#" class="btn btn-danger" onclick="del(this,{$vo.id})">删除</a>
+                    </td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+</body>
+<script>
+$('#add').bind("click",function () {
+    parent.layer.open({
+        type: 2,        //弹窗类型
+        title: "添加应用",   //显示标题
+        closeBtn: 1,     //是否显示关闭按钮
+        // shadeClose: true, //显示模态窗口
+        area: ['420px', '380px'], //宽高
+        content: "{:url('SystemAppManage/add')}",
+        cancel:function () {
+            // $('#f').css('display','none');
+            window.location.reload();
+        }
+
+    });
+});
+function edit(id) {
+    parent.layer.open({
+        type: 2,        //弹窗类型
+        title: "编辑",   //显示标题
+        closeBtn: 1,     //是否显示关闭按钮
+        // shadeClose: true, //显示模态窗口
+        area: ['420px', '380px'], //宽高
+        content: "{:url('SystemAppManage/edit')}&id="+id,
+        cancel:function () {
+            // $('#f').css('display','none');
+            window.location.reload();
+        }
+
+    });
+}
+
+function del(obj,id) {
+    parent.layer.confirm('是否执行删除?', {
+        btn: ['YES', 'NO'], //按钮
+        title: false,
+    }, function () {
+        $.ajax({
+            url:"{:url('SystemAppManage/del')}&id="+id,
+            type: "get",
+            dataType:"json",
+            success:function (res) {
+                parent.layer.msg(res.message, {icon: 1});
+                if (res.code==0){
+                    $(obj).parent().parent().remove();
+                }
+            }
+        })
+    }, function () {
+        console.log('no');
+    });
+}
+</script>
+</html>

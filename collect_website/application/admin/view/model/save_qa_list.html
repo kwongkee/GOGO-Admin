@@ -1,0 +1,313 @@
+{include file="common/header_inner_new"}
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+
+    /*自定义问题-答案对*/
+    .sampleDiv{width:100%;min-height:100px;border:1px solid #000;}
+    .sampleDiv .inline-block{position: relative;display:inline-block;padding:10px;box-sizing: border-box;}
+    .sampleDiv .inline-block .layui-input{}
+    .sampleDiv .inline-block .closeBtn{position: absolute;background: #ff2222;color: #fff;font-size: 15px;top: 0;right: 0;width: 15px;height: 15px;text-align: center;line-height: 15px;cursor: pointer;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <input type="text" style="display:none;" name="pid" id="pid" value="{$pid}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">类别-场景</div>
+                            <div class="layui-input-block" style="line-height: 38px;">
+                                {$category['name']}-{$environment['name']}
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">配置问题</div>
+                            <div class="layui-input-block">
+                                <div class="questionDiv sampleDiv">
+                                    {if $id>0}
+                                        {volist name="data.question_label" key="key" id="vo"}
+                                            {if $vo==1}
+                                                <div class="inputBox inline-block">
+                                                    <input name="quest[]" class="layui-input" type="text" value="{$data['question'][$key-1]}">
+                                                    <input name="qlabel[]" type="hidden" value="1">
+                                                    <div class="closeBtn" onclick="q_del(this)">×</div>
+                                                </div>
+                                            {elseif($vo==2)}
+                                                <?php $q_val = $data['question'][$key-1];?>
+                                                <div class="selectBox inline-block">
+                                                    <input name="qlabel[]" type="hidden" value="2">
+                                                    <select name="quest[]" lay-search>
+                                                    {volist name="column" key="key2" id="vo2"}
+                                                        {if !empty($vo2['Comment'])}
+                                                            <option value="{$vo2['Comment']}" {if $q_val==$vo2['Comment']}selected{/if}>{$vo2['Comment']}</option>
+                                                        {/if}
+                                                    {/volist}
+                                                    </select>
+                                                    <div class="closeBtn" onclick="q_del(this)">×</div>
+                                                </div>
+                                            {/if}
+                                        {/volist}
+                                    {/if}
+                                </div>
+
+                                <div class="questionDiy">
+                                    <div class="disf" style="justify-content: right;">
+                                        <select class="selectBox">
+                                            <option value="1">文本输入框</option>
+                                            <option value="2">字段选择框</option>
+                                        </select>
+                                        <div class="addBtn layui-btn layui-btn-success" onclick="q_add(this)">添加</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">配置答案</div>
+                            <div class="layui-input-block">
+                                <table class="layui-table answer_table">
+                                    <thead>
+                                        <th>答案内容</th>
+                                        <th style="width:110px;max-width:110px;min-width: 110px;">操作</th>
+                                    </thead>
+                                    <tbody>
+                                        {if $id>0}
+                                            {volist name="data.answer_label" key="key" id="vo"}
+                                                <?php $akey=$key-1;?>
+                                                <tr>
+                                                    <td>
+                                                        <div class="answerDiv sampleDiv">
+                                                            {volist name="vo" key="key2" id="vo2"}
+                                                                {if $vo2==1}
+                                                                    <div class="inputBox inline-block">
+                                                                        <input name="alabel[{$akey}][]" type="hidden" value="1">
+                                                                        <input name="answer[{$akey}][]" class="layui-input" value="{$data['answer'][$akey][$key2-1]}">
+                                                                        <div class="closeBtn" onclick="a_del(this)">×</div>
+                                                                    </div>
+                                                                {elseif($vo2==2)}
+                                                                    <div class="selectBox inline-block">
+                                                                        <input name="alabel[{$akey}][]" type="hidden" value="2">
+                                                                        <select name="answer[{$akey}][]" lay-search>
+                                                                            {volist name="column" key="key3" id="vo3"}
+                                                                                {if !empty($vo3['Comment'])}
+                                                                                    <option value="{$vo3['Comment']}" {if $data['answer'][$akey][$key2-1]==$vo3['Comment']}selected{/if}>{$vo3['Comment']}</option>
+                                                                                {/if}
+                                                                            {/volist}
+                                                                        </select>
+                                                                        <div class="closeBtn" onclick="a_del(this)">×</div>
+                                                                    </div>
+                                                                {/if}
+                                                            {/volist}
+                                                        </div>
+
+                                                        <div class="answerDiy">
+                                                            <div class="disf" style="justify-content: right;">
+                                                                <select class="selectBox">
+                                                                    <option value="1">文本输入框</option>
+                                                                    <option value="2">字段选择框</option>
+                                                                </select>
+                                                                <div class="addBtn layui-btn layui-btn-success" onclick="a_add(this)">添加</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        {if $akey>0}
+                                                        <div class="layui-btn layui-btn-danger" onclick="del_answer_tr(this)">×</div>
+                                                        {/if}
+                                                        <div class="layui-btn layui-btn-success" onclick="add_answer_tr(this)">＋</div>
+                                                    </td>
+                                                </tr>
+                                            {/volist}
+                                        {else}
+                                            <tr>
+                                                <td>
+                                                    <div class="answerDiv sampleDiv">
+
+                                                    </div>
+
+                                                    <div class="answerDiy">
+                                                        <div class="disf" style="justify-content: right;">
+                                                            <select class="selectBox">
+                                                                <option value="1">文本输入框</option>
+                                                                <option value="2">字段选择框</option>
+                                                            </select>
+                                                            <div class="addBtn layui-btn layui-btn-success" onclick="a_add(this)">添加</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="layui-btn layui-btn-success" onclick="add_answer_tr(this)">＋</div>
+                                                </td>
+                                            </tr>
+                                        {/if}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload','colorpicker'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+        var colorpicker = layui.colorpicker;
+
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+
+            $.ajax({
+                url:"{:Url('admin/model/save_qa_list')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+    });
+
+    //添加-配置问题
+    function q_add(t){
+        var layer = layui.layer,
+            $ = layui.jquery,
+            form = layui.form;
+
+        let val = $(t).parent().find('.selectBox').val();
+        let html = '';
+        if(val==1){
+            html = '<div class="inputBox inline-block"><input name="quest[]" class="layui-input" type="text"><input name="qlabel[]" type="hidden" value="1"><div class="closeBtn" onclick="q_del(this)">×</div></div>';
+        }
+        else if(val==2){
+            html = '<div class="selectBox inline-block"><input name="qlabel[]" type="hidden" value="2"><select name="quest[]" lay-search>';
+            {volist name="column" id="vo"}
+                {if !empty($vo['Comment'])}
+                    html += '<option value="{$vo['Comment']}">{$vo['Comment']}</option>';
+                {/if}
+            {/volist}
+            html += '</select><div class="closeBtn" onclick="q_del(this)">×</div></div>';
+        }
+
+        $('.questionDiv').append(html);
+        form.render(null, 'component-form-element');
+    }
+
+    //删除-配置问题
+    function q_del(t){
+        var layer = layui.layer,
+            $ = layui.jquery,
+            form = layui.form;
+
+        $(t).parent().remove();
+    }
+
+    //添加-配置回答
+    function a_add(t){
+        var layer = layui.layer,
+            $ = layui.jquery,
+            form = layui.form;
+        let tr_num = $('.answer_table').find('tbody tr').length - 1;
+
+        let val = $(t).parent().find('.selectBox').val();
+        let html = '';
+        if(val==1){
+            html = '<div class="inputBox inline-block"><input name="alabel['+tr_num+'][]" type="hidden" value="1"><input name="answer['+tr_num+'][]" class="layui-input"><div class="closeBtn" onclick="a_del(this)">×</div></div>';
+        }
+        else if(val==2){
+            html = '<div class="selectBox inline-block"><input name="alabel['+tr_num+'][]" type="hidden" value="2"><select name="answer['+tr_num+'][]" lay-search>';
+            {volist name="column" id="vo"}
+                {if !empty($vo['Comment'])}
+                    html += '<option value="{$vo['Comment']}">{$vo['Comment']}</option>';
+                {/if}
+            {/volist}
+            html += '</select><div class="closeBtn" onclick="a_del(this)">×</div></div>';
+        }
+
+        $(t).parents(':eq(2)').find('.answerDiv').append(html);
+        form.render(null, 'component-form-element');
+    }
+
+    //删除-配置问题
+    function a_del(t){
+        var layer = layui.layer,
+            $ = layui.jquery,
+            form = layui.form;
+
+        $(t).parent().remove();
+    }
+
+    //添加答案
+    function add_answer_tr(t){
+        var layer = layui.layer,
+            $ = layui.jquery,
+            form = layui.form;
+
+        let tr_num = $('.answer_table').find('tbody tr').length;
+
+        if(tr_num>=1){
+            let html = '<tr>\n' +
+                '                                            <td>\n' +
+                '                                                <div class="answerDiv sampleDiv">\n' +
+                '                                                </div>\n' +
+                '                                                <div class="answerDiy">\n' +
+                '                                                    <div class="disf" style="justify-content: right;">\n' +
+                '                                                        <select class="selectBox">\n' +
+                '                                                            <option value="1">文本输入框</option>\n' +
+                '                                                            <option value="2">字段选择框</option>\n' +
+                '                                                        </select>\n' +
+                '                                                        <div class="addBtn layui-btn layui-btn-success" onclick="a_add(this)">添加</div>\n' +
+                '                                                    </div>\n' +
+                '                                                </div>\n' +
+                '                                            </td>\n' +
+                '                                            <td>\n' +
+                '                                                <div class="layui-btn layui-btn-danger" onclick="del_answer_tr(this)">×</div>\n' +
+                '                                                <div class="layui-btn layui-btn-success" onclick="add_answer_tr(this)">＋</div>\n' +
+                '                                            </td>\n' +
+                '                                        </tr>';
+
+            $('.answer_table').find('tbody').append(html);
+            form.render(null,'component-form-element');
+        }
+    }
+
+    //删除答案
+    function del_answer_tr(t){
+        var layer = layui.layer,
+            $ = layui.jquery,
+            form = layui.form;
+
+        $(t).parents(':eq(1)').remove();
+    }
+</script>
+</body>
+</html>

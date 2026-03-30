@@ -1,0 +1,86 @@
+<div id="Reward">
+    {if $question['status']==2}
+    <div class="reward"style="background: white;">
+        <button class="reward-btn">赞赏</button>
+        {php $rewards = M('reward')->getList(1," AND question_id = :question_id AND status = 1",array(':question_id'=>$question['id']))}
+        {if !empty($rewards['list'])}
+        {loop $rewards['list'] $reward}
+        {php $user = M('member')->getInfo($reward['openid'])}
+        {if !empty($user['nickname'])}
+        <a href="">
+            <span>{$user['nickname']}</span>
+            <spanx>，</spanx>
+        </a>
+        {/if}
+        {/loop}
+        <span>等</span>
+        <span>{php echo M('reward')->gettotal($question['id'])}</span>
+        <span>人赞赏</span>
+        <span></span>
+        {/if}
+    </div>
+    {/if}
+</div>
+
+<script>
+    var html = "";
+    html += "<button data-credit='2' style='margin-right: 5px;font-size: 16px;background-color: #fafafc;border-color: red;border-style: solid;border-width: 1px;color: red;' class='weui_btn weui_btn_mini weui_btn_primary reward_btn'>2元</button>";
+    html += "<button data-credit='5'style='margin-right: 5px;font-size: 16px;background-color: #fafafc;border-color: red;border-style: solid;border-width: 1px;color: red;' class='weui_btn weui_btn_mini weui_btn_primary reward_btn'>5元</button>";
+    html += "<button data-credit='10'style='margin-right: 5px;font-size: 16px;background-color: #fafafc;border-color: red;border-style: solid;border-width: 1px;color: red;' class='weui_btn weui_btn_mini weui_btn_primary reward_btn'>10元</button>";
+    html += '<br><span style="color:red;">任意赏</span><input id="reward_credit" style="padding: 10px;margin-top: 10px;width: 8em;margin-right: 5px;margin-left: 5px;border: none;background-color: #cac8c8;" type="number"><span style="color:red;">元</span>';
+    function reward(){
+        $.modal({
+            title: "每赏赞N元，可邀请N个朋友免费听<br><span style='color:gray;'>(赞赏收入归答主)</span>",
+            text: html,
+            buttons: [
+                {
+                    text: "微信支付",
+                    onClick: function(){
+                        var credit = $('#reward_credit').val();
+                        if(!credit){
+                            $.toast('请输入赞赏金额',2000);
+                            return ;
+                        }
+                        $.post("",{act:'reward',credit:credit},function(data){
+                            if(data.status == 8){
+                                $.toast(data.message,2000,function(){});
+                                return '';
+                            }
+                            wx.chooseWXPay({
+                                timestamp: data.timeStamp,
+                                nonceStr: data.nonceStr,
+                                package: data.package,
+                                signType: data.signType,
+                                paySign: data.paySign,
+                                success: function (res) {
+                                    if(res.errMsg == 'chooseWXPay:ok') {
+                                        data.act == 'paySuccess';
+                                        $.post("",{act:'reward_success',reward_id:data.reward_id},function(d){
+                                            window.location.href = "{php echo $_W['siteurl']}";
+                                        },'json');
+                                    }else{
+                                        window.location.href = "{php echo $_W['siteurl']}";
+                                    }
+                                }
+                            });
+                        },'json');
+                    }
+                },
+                {
+                    text: "取消",
+                    className: "default",
+                    onClick: function(){}
+                },
+            ]
+        });
+    }
+    $(document.body).on('click','.reward-btn',function(){
+        reward();
+    });
+    $(document.body).on('click','.reward_btn',function(){
+        $('.reward_btn').removeClass('active');
+        $(this).addClass('active');
+        var credit = $(this).data('credit');
+        $('#reward_credit').val(credit);
+    });
+</script>

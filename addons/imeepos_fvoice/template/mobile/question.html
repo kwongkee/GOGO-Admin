@@ -1,0 +1,366 @@
+{template 'common/header'}
+<link rel="stylesheet" href="{MODULE_URL}public/css/question_detail.css" />
+<style>.active{color:#fff !important;background-color:red !important;}</style>
+<style>
+    .weui-photo-browser-modal .photo-container img{
+        margin:0 auto;
+    }
+    .weui-photo-browser-modal.weui-photo-browser-modal-visible{
+        z-index:999;
+    }
+    .action-btn {
+        margin-bottom: .5rem;
+        width: 3.75rem;
+        height: 1.45rem;
+        line-height: 1.45rem;
+        border: 1px solid #ababab;
+        border-radius: .15rem;
+        color: #ffffff;
+        background: #f85f48;
+    }
+</style>
+<audio id="player" autoplay preload src=""></audio>
+<div class="main">
+    <div id="header">
+        <div>
+            {if $question['status'] == 1}
+                {if $question['openid'] == $_W['openid']}
+                    <p style="font-size:.8em;padding:0.5em;line-height:2em;">超过48小时未回答，付款将按原支付路径全额退回</p>
+                {/if}
+            {/if}
+        </div>
+    </div>
+    <ul id="Question">
+        <li class="aq">
+            <div class="question">
+                <div class="question-title">
+                    <div class="avatar" style="position:relative;width:1.25rem;height:1.25rem;border-radius:50%;display:inline-block;" data-reactid=".13qenjtvthc.0.0.0">
+                        <img style="position:relative;width:1.25rem;height:1.25rem;border-radius:50%;display:inline-block;"
+                             class="avatarImg" src="{php echo $member['avatar']}"/>
+                        <span></span>
+                    </div>
+                    <span class="question-name">{$member['nickname']}</span>
+                    <span class="question-price">￥{$question['credit']}</span>
+                </div>
+                <div>
+                    <p class="question-content">
+                        <span></span>
+                        <span>{$question['title']}</span>
+                    </p>
+                </div>
+            </div>
+            <span></span>
+            <div class="footer">
+                <a class="action-btn reanswer" onclick="voice.show()" href="javascript:;">我要评论</a>
+                {if $question['to_openid'] == $_W['openid']}
+                {if $question['status'] == 1}
+                <a class="action-btn reanswer" href="javascript:;" onclick="voice.show()">现在解答</a>
+                {else}
+                <a class="action-btn reanswer" href="javascript:;" onclick="voice.show()">追加回答</a>
+                {/if}
+                {/if}
+                {if $question['openid'] == $_W['openid']}
+                <a class="action-btn reanswer" href="javascript:;" onclick="voice.show()">追问</a>
+                {/if}
+            </div>
+        </li>
+    </ul>
+
+    <ul id="Inquiry">
+        <style>
+            .imageview{
+                width:30%;
+            }
+        </style>
+        {php $images = unserialize($question['images'])}
+        {loop $images $image}
+        <img class="imageview" src="{php echo tomedia($image)}" alt=""/>
+        {/loop}
+    </ul>
+    <div>
+        <span></span>
+    </div>
+    <div id="content">
+        {if $question['status'] == 1}
+        <div style="font-size:.65rem;color:#999;padding:.75rem .6rem;text-align:center;">
+            <strong style="font-weight:normal;color:#00C287;">公开</strong>
+            <span>提问公开回答，答案每被偷偷听1次，你就赚￥
+                {if $_W['openid'] == $question['openid']}{php echo $this->system['listen_get_price']}元{/if}
+                {if $_W['openid'] == $question['to_openid']}{php echo ($this->system['listen_price'] - $this->system['listen_get_price'])}元{/if}
+            </span>
+        </div>
+        {/if}
+        {if $question['status']==2}
+        <div>
+            <div class="tutor-card">
+                <a href="" class="tutor-content">
+                    <h3 class="tutor-name">
+                        <span>{$answer['nickname']}</span>
+                        <span class="count">
+                        <span>{$answer['follow']}</span>
+                        <span>人收听</span></span>
+                    </h3>
+                    <p class="tutor-title">{$answer['desc']}</p>
+                </a>
+            </div>
+        </div>
+        {/if}
+    </div>
+    {template 'common/reward'}
+    <ul id="Question2">
+        <li class="aq">
+            {php $check = M('listen_log')->getOpenid($question['id'],$_W['openid'])}
+            {php $answers = M('answer')->getall(array('question_id'=>$question['id']))}
+            {loop $answers $anser}
+            {php $user = M('member')->getInfo($anser['openid'])}
+            <div class="answer">
+                <div class="avatar" style="position:relative;width:1.85rem;height:1.85rem;border-radius:50%;display:inline-block;">
+                    <img style="position:relative;width:1.85rem;height:1.85rem;border-radius:50%;display:inline-block;"
+                         class="avatarImg" src="{php echo $user['avatar']}"/>
+                    <img class="verified" style="position:absolute;width:0.6166666666666667rem;height:0.6166666666666667rem;right:0;bottom:0;"
+                         src="http://hangjia.qiniudn.com/Ft5o9F6sVsq8s1oAMi8ZfJ5wzhIw"/>
+                </div>
+                <a class="bubble {if $anser['openid'] == $question['openid']}{else}bubble-red{/if} listen" style="width:11rem;margin-top:10px;" data-id="{$anser['id']}" data-timelong="{$anser['timelong']}" href="javascript:;">
+                    <span class="bubble-tail"></span>
+                    <div id="voice">
+                        <span class="wave3"></span>
+                    </div>
+
+                    {if $question['isfree'] ==1}
+                    <span>限时免费</span>
+                    {else if ($question['openid']==$_W['openid'] || $question['to_openid'] == $_W['openid'])}
+                    <span>点击播放</span>
+                    {else}
+                    <span>{if !empty($check)}点击播放{else}{php echo $this->system['listen_price']}元偷偷听{/if}</span>
+                    {/if}
+                </a>
+                        <span class="duration">
+                            <span>&quot;</span>
+                        </span>
+                <span></span>
+            </div>
+            <span></span>
+            <div class="footer">
+                <span>{php echo M('common')->format_create_time($anser['create_time'])}</span>
+                <span>
+                    {if $anser['openid'] == $question['openid']}【追问】
+                    {else if $anser['openid'] == $question['to_openid']}【答主回答】
+                    {else}【评论】{/if}
+                </span>
+                <span></span>
+            </div>
+            {/loop}
+        </li>
+    </ul>
+
+</div>
+<style>
+    .seccondTip{
+        display:inline-block;
+        vertical-align:middle;
+        line-height:5rem;
+        font-size: 1.2rem;
+        color: #F85F48;
+        text-align: center;
+        position: absolute;
+        left: 2.6rem;
+    }
+</style>
+<div id="voicePanel" style="display:none;">
+    <div style="margin-top:10px;">
+        <style>
+            .startIcon{
+                background-color: red;
+                width: 6em;
+                height: 6em;
+                border-radius: 3em;
+            }
+            .active{
+                background-color:#0a6fe5;
+            }
+        </style>
+        <a href="javascript:;" class="seccondTip"></a>
+        <div style="text-align: center;">
+            <button class="startIcon" id="startRecord">
+                <img style="width: 2.5em;" src="{MODULE_URL}public/img/voice.png" onclick="voice.start();" alt=""/>
+            </button>
+        </div>
+        <span style="margin: 0 auto;display: block;text-align: center;margin-top: 10px;">点击开始录音，最多可录制60"</span>
+        <div style="text-align: center;">
+            <button class="playVoice btn_voice" onclick="voice.play();" style="">
+                <i class="fa fa-volume-up"></i>
+            </button>
+            <button class="startRecord btn_voice" onclick="voice.start(this);" style="">
+                <i class="fa fa-play"></i>
+            </button>
+            <button class="restart btn_voice" onclick="voice.restart();" style="">
+                <i class="fa fa-repeat"></i>
+            </button>
+            <button class="restart btn_close" onclick="voice.close();" style="">
+                <i class="fa fa-times"></i>
+            </button>
+        </div>
+        <div style="margin-top:5px;">
+            <textarea class="btn_text text_desc" id="text_desc" name="desc" id="" cols="30" rows="5"></textarea>
+        </div>
+        <style>
+            .btn_voice{
+                font-size: 1.5em;background-color: red;color: #fff;padding: 5px 10px;
+                border-radius: 5px;margin-top: 5px;
+            }
+            .btn_close{
+                position: absolute;
+                top: 10px;
+                right: 5px;
+                height: 2em;
+                width: 4em;
+                background-color: #777777;
+                color: #fff;
+                line-height:2em;
+            }
+            .btn_text{
+                width: 90%;
+                border: none;
+                background-color: #dadada;
+                padding: 5px;
+                font-size: 15px;
+            }
+        </style>
+        <div style="text-align: center;">
+            <button class="postVoice btn_voice" onclick="postVoice()" style="margin-top: 5px;font-size:1.2em;">
+                <i class="fa fa-paper-plane"></i>
+                发送
+            </button>
+        </div>
+    </div>
+</div>
+<div class="h44"></div>
+<div class="h44"></div>
+{template 'common/footerbar'}
+
+<script>
+    var pb = $.photoBrowser({
+        items: {php echo json_encode($images)}
+    });
+    $('.imageview').click(function(){
+        pb.open();
+    });
+    function postTo(){
+        posting = true;
+        wx.ready(function(){
+            if(!post.localId){
+                $.toast("你说话了么？我怎么没听到！");
+                return '';
+            }
+            wx.uploadVoice({
+                localId: post.localId,
+                isShowProgressTips: 1,
+                success: function (res) {
+                    post.serverId = res.serverId;
+                    post.act = 'reanswer';
+                    console.log(post);
+                    if(!post.serverId){
+                        $.toast("你说话了么？我怎么没听到！");
+                        return '';
+                    }
+                    $.showLoading("正在发送数据");
+                    $.post("{php echo $this->createMobileUrl('answer_detail',array('id'=>$question['id']))}",post,function(data){
+                        if(data.status == 1){
+                            $.hideLoading();
+                            $.toast(data.message,2000,function(){
+                                window.location.href = "{php echo $this->createMobileUrl('question',array('id'=>$question['id']))}";
+                            });
+                        }else{
+                            $.toast(data.message,2000,'cancel');
+                            $.hideLoading();
+                        }
+                        posting = false;
+                    },'json');
+                }
+            });
+        });
+    }
+    function postVoice(){
+        posting = true;
+        wx.ready(function(){
+            posting = true;
+            if(recording){
+                voice.stop(function(){
+                    postTo();
+                });
+            }else{
+                postTo();
+            }
+        });
+    }
+</script>
+<script>
+    var player = document.getElementById('player');
+    function playData(data){
+        console.log(data);
+        $('.wave3').removeClass('voicing');
+        $(data.target).find('.wave3').addClass('voicing');
+        player.src = data.src;
+        player.play();
+        var timelong = parseInt(data.timelong) * 1000;
+        setTimeout(function(){
+            $(data.target).find('.wave3').removeClass('voicing');
+        },timelong);
+    }
+    $(document.body).on('click','.listen',function(){
+        var question_id = $(this).data('question_id');
+        var target = $(this)[0];
+        var timelong = $(this).data('timelong');
+        $.get("",{answer_id:$(this).data('id'),act:'src'},function(data){
+            if(data.status == 8){
+                $.toast(data.message,2000,function(){});
+                return '';
+            }
+            if(data.status == 0){
+                var d = {};
+                d.target = target;
+                d.src = data.src;
+                d.timelong = timelong;
+                playData(d);
+                return '';
+            }
+            if(!data.listen_id){
+                $.toast('listen_id为空');
+                return '';
+            }
+            if(!data.answer_id){
+                $.toast('answer_id为空');
+                return '';
+            }
+            wx.ready(function(){
+                wx.chooseWXPay({
+                    timestamp: data.timeStamp,
+                    nonceStr: data.nonceStr,
+                    package: data.package,
+                    signType: data.signType,
+                    paySign: data.paySign,
+                    success: function (res) {
+                        if(res.errMsg == 'chooseWXPay:ok') {
+                            data.act == 'paySuccess';
+                            $.post("",{act:'paySuccess',listen_id:data.listen_id,answer_id:data.answer_id},function(d){
+                                if(d.status == 1){
+                                    var dd = {};
+                                    dd.target = target;
+                                    dd.src = d.src;
+                                    dd.timelong = timelong;
+                                    playData(dd);
+                                    return '';
+                                }else{
+                                    $.toast('系统错误',2000,'cancel');
+                                }
+                            },'json');
+                        }else{
+                            window.location.href = "{php echo $_W['siteurl']}";
+                        }
+                    }
+                });
+            });
+        },'json');
+    });
+</script>
+{template 'common/footer'}

@@ -1,0 +1,22 @@
+<?php defined('IN_IA') or exit('Access Denied');?><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>详情</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="../addons/sz_yi/static/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="./css/layui.css"> -->
+    <link rel="stylesheet" href="../addons/sz_yi/static/css/common_1.css">
+    <link rel="stylesheet" href="../addons/sz_yi/static/css/details.css">
+    <link rel="stylesheet" href="../addons/sz_yi/static/css/font-awesome.min.css">
+    <link type="text/css" rel="stylesheet" href="../addons/sz_yi/static/css/alert/common.css">
+    <link type="text/css" rel="stylesheet" href="../addons/sz_yi/static/css/alert/shCoreDefault.css">
+    <link type="text/css" rel="stylesheet" href="../addons/sz_yi/static/css/alert/alert.css">
+    <link type="text/css" rel="stylesheet" href="../addons/sz_yi/static/css/alert/style.css">
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript" src="../addons/sz_yi/static/js/framework7.bundle.min.js"></script>
+    <script type="text/javascript" src='../addons/sz_yi/static/js/alert/shCore.js'></script>
+    <script type="text/javascript" src='../addons/sz_yi/static/js/alert/makeSy.js'></script>
+    <script type="text/javascript" src='../addons/sz_yi/static/js/alert/alert.js'></script>
+    <script type="text/javascript" src='../addons/sz_yi/static/js/alert/alert-api.js'></script>
+</head>

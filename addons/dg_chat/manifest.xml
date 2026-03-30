@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.baidu.com" versionCode="0.6">
+	<application setting="true">
+		<name><![CDATA[直播教室-微课神器]]></name>
+		<identifie><![CDATA[dg_chat]]></identifie>
+		<version><![CDATA[2.2.3]]></version>
+		<type><![CDATA[business]]></type>
+		<ability><![CDATA[直播教室-微课神器]]></ability>
+		<description><![CDATA[直播教室-微课神器]]></description>
+		<author><![CDATA[微赞]]></author>
+		<url><![CDATA[http://www.baidu.com]]></url>
+	</application>
+	<platform>
+		<subscribes>
+		</subscribes>
+		<handles>
+		</handles>
+		<rule embed="false" />
+		<card embed="false" />
+	</platform>
+	<bindings>
+		<cover>
+			<entry title="教室入口" do="room" state="" direct="false" />
+		</cover>
+		<menu>
+			<entry title="支付设置" do="pay_setting" state="" direct="false" />
+			<entry title="管理员设置" do="manager_setting" state="" direct="false" />
+			<entry title="计划任务设置" do="chat_taskset" state="" direct="false" />
+			<entry title="直播间管理" do="chat_manage" state="" direct="false" />
+			<entry title="话题管理" do="topic_manage" state="" direct="false" />
+			<entry title="财务结算" do="chat_payment" state="" direct="false" />
+			<entry title="首页幻灯片" do="banner_manage" state="" direct="false" />
+			<entry title="直播间参数" do="im_setting" state="" direct="false" />
+		</menu>
+	</bindings>
+	<install><![CDATA[CREATE TABLE IF NOT EXISTS `ims_chat_banner` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) unsigned NOT NULL,
+  `bannername` varchar(50) DEFAULT '',
+  `link` varchar(255) DEFAULT '',
+  `thumb` varchar(255) DEFAULT '',
+  `displayorder` int(11) DEFAULT '0',
+  `enabled` int(11) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_chat_blacklist` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) DEFAULT NULL,
+  `room_id` int(10) DEFAULT NULL,
+  `topic_id` int(10) DEFAULT NULL,
+  `black_uid` int(10) DEFAULT NULL,
+  `black_openid` varchar(100) DEFAULT NULL,
+  `black_nickname` varchar(100) DEFAULT NULL,
+  `black_ip` varchar(20) DEFAULT NULL,
+  `create_time` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_chat_cron` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) DEFAULT NULL,
+  `module_name` varchar(50) DEFAULT NULL,
+  `task_name` varchar(100) DEFAULT NULL,
+  `ext_info` varchar(1000) DEFAULT NULL,
+  `create_time` int(11) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_chat_discuss` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) DEFAULT NULL,
+  `room_id` int(10) DEFAULT NULL,
+  `topic_id` int(10) DEFAULT NULL,
+  `owner_uid` int(10) DEFAULT NULL,
+  `owner_openid` varchar(100) DEFAULT NULL,
+  `owner_avatar` varchar(200) DEFAULT NULL,
+  `owner_nickname` varchar(20) DEFAULT NULL,
+  `dis_type` varchar(10) DEFAULT NULL,
+  `dis_content` varchar(1000) DEFAULT NULL,
+  `ask_type` tinyint(3) DEFAULT '0' COMMENT '是否是提问',
+  `dis_status` tinyint(3) DEFAULT '1' COMMENT '0-不是ask,1-是ask,2-已回复',
+  `create_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_chat_imsetting` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) DEFAULT NULL,
+  `sdkappid` varchar(50) DEFAULT NULL,
+  `account_type` varchar(50) DEFAULT NULL,
+  `admin_account` varchar(50) DEFAULT NULL,
+  `check_type` varchar(10) DEFAULT NULL,
+  `create_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_chat_invite` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) NOT NULL,
+  `invite_id` varchar(100) NOT NULL,
+  `invite_encrypt` varchar(50) DEFAULT NULL,
+  `invite_type` varchar(10) NOT NULL,
+  `room_id` int(10) DEFAULT NULL,
+  `topic_id` int(10) DEFAULT NULL,
+  `invite_time` int(10) DEFAULT '0',
+  `invite_openid` varchar(100) DEFAULT NULL,
+  `click_openid` varchar(100) DEFAULT NULL,
+  `click_nickname` varchar(100) DEFAULT NULL,
+  `click_time` int(10) DEFAULT '0' COMMENT '接受邀请时间',
+  `invite_status` tinyint(3) DEFAULT '1' COMMENT '1-发出 2-已使用',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_chat_joinusers` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) DEFAULT NULL,
+  `room_id` int(10) DEFAULT NULL,
+  `topic_id` int(10) DEFAULT NULL,
+  `user_uid` int(10) DEFAULT NULL,
+  `create_time` int(11) DEFAULT NULL,
+  `last_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_chat_logs` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) DEFAULT NULL COMMENT '公众号id',
+  `content` text COMMENT '内容',
+  `time` int(11) DEFAULT NULL COMMENT '执行时间',
+  `test` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_chat_manager` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) DEFAULT NULL,
+  `uid` int(10) DEFAULT NULL,
+  `create_time` int(11) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_chat_mycashsum` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) DEFAULT NULL,
+  `room_id` int(10) DEFAULT NULL,
+  `topic_id` int(10) DEFAULT NULL,
+  `max_id` int(10) DEFAULT '0',
+  `payto_uid` int(10) DEFAULT NULL,
+  `pay_money` decimal(10,2) DEFAULT '0.00',
+  `reward_percent` decimal(10,2) DEFAULT '0.00',
+  `my_money` decimal(10,2) DEFAULT '0.00',
+  `batch_num` varchar(100) DEFAULT NULL,
+  `create_time` int(11) DEFAULT '0' COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_chat_mycashsum_last` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) DEFAULT NULL,
+  `pay_money` decimal(10,2) DEFAULT '0.00' COMMENT '原始汇总金额',
+  `payto_uid` int(10) DEFAULT NULL COMMENT '数量',
+  `payto_openid` varchar(100) DEFAULT NULL,
+  `room_id` int(10) DEFAULT NULL,
+  `pay_type` int(10) DEFAULT NULL COMMENT '1-个人,2-房间',
+  `status` tinyint(3) DEFAULT '1' COMMENT '1-处理中,2-已打款',
+  `create_time` int(11) DEFAULT '0',
+  `pay_time` int(11) DEFAULT '0' COMMENT '结算时间',
+  `transaction_id` varchar(200) DEFAULT NULL COMMENT '结算号',
+  `batch_num` varchar(100) DEFAULT NULL COMMENT '批次号',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_chat_payment` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) DEFAULT NULL,
+  `room_id` int(10) DEFAULT NULL,
+  `topic_id` int(10) DEFAULT NULL,
+  `pay_money` decimal(10,2) DEFAULT '0.00',
+  `pay_uid` int(10) DEFAULT NULL,
+  `pay_type` varchar(10) DEFAULT NULL COMMENT '支付类型1-赞赏 2-付费直播 3-分答',
+  `pay_openid` varchar(100) DEFAULT NULL,
+  `pay_nickname` varchar(100) DEFAULT NULL,
+  `pay_avatar` varchar(100) DEFAULT NULL,
+  `pay_time` int(11) DEFAULT '0',
+  `payto_uid` int(10) DEFAULT NULL,
+  `payto_openid` varchar(100) DEFAULT NULL,
+  `payto_nickname` varchar(100) DEFAULT NULL,
+  `payto_avatar` varchar(100) DEFAULT NULL,
+  `pay_status` tinyint(3) DEFAULT NULL,
+  `transaction_id` varchar(100) DEFAULT NULL COMMENT '交易流水号',
+  `out_trade_no` varchar(100) DEFAULT NULL COMMENT '订单号',
+  `create_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_chat_ppt` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) DEFAULT NULL,
+  `topic_id` int(10) DEFAULT NULL,
+  `img_url` varchar(500) DEFAULT NULL,
+  `img_order` int(10) DEFAULT '0',
+  `create_uid` int(10) DEFAULT NULL,
+  `is_send` tinyint(3) DEFAULT '0' COMMENT '是否已发',
+  `is_current` tinyint(3) DEFAULT '0' COMMENT '是否当前',
+  `create_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_chat_room` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) DEFAULT NULL COMMENT '所属公众号',
+  `room_id` int(11) DEFAULT NULL COMMENT '房间ID',
+  `room_name` varchar(200) DEFAULT NULL COMMENT '房间名字',
+  `room_desc` varchar(1000) DEFAULT NULL COMMENT '房间描述',
+  `create_uid` int(10) DEFAULT NULL COMMENT '创建人uid',
+  `create_openid` varchar(100) DEFAULT NULL COMMENT '创建人openid',
+  `create_nickname` varchar(100) DEFAULT NULL,
+  `create_avatar` varchar(150) DEFAULT NULL,
+  `room_icon` varchar(200) DEFAULT NULL COMMENT '直播间图标',
+  `qrcode_url` varchar(150) DEFAULT NULL COMMENT '二维码图片地址',
+  `qrcode_desc` varchar(1000) DEFAULT NULL COMMENT '二维码图片描述',
+  `room_status` tinyint(3) DEFAULT NULL COMMENT '直播间状态',
+  `reward_status` tinyint(3) DEFAULT '0' COMMENT '0-不开启,1-开启',
+  `reward_percent` decimal(10,2) DEFAULT '-1.00' COMMENT '分成比例',
+  `create_time` int(11) DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_chat_roombrowse` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) DEFAULT NULL,
+  `uid` int(10) NOT NULL,
+  `openid` varchar(100) DEFAULT NULL,
+  `room_id` int(10) DEFAULT NULL,
+  `topic_id` int(10) DEFAULT NULL,
+  `brow_type` varchar(10) DEFAULT NULL COMMENT 'room,topic',
+  `update_time` int(11) DEFAULT NULL,
+  `create_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_chat_roomcashsum` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) DEFAULT NULL,
+  `room_id` int(11) DEFAULT NULL COMMENT '直播间id',
+  `topic_id` int(10) DEFAULT NULL,
+  `max_id` int(10) DEFAULT '0',
+  `pay_type` varchar(10) DEFAULT NULL,
+  `pay_money` decimal(10,2) DEFAULT '0.00' COMMENT '赞赏原始金额',
+  `room_money` decimal(10,2) DEFAULT '0.00' COMMENT '最终赞赏金额',
+  `reward_percent` decimal(10,2) DEFAULT '0.00',
+  `batch_num` varchar(100) DEFAULT NULL,
+  `create_time` int(11) DEFAULT '0' COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_chat_roomcashsum_last` (
+  `id` int(10) NOT NULL DEFAULT '0',
+  `uniacid` int(10) DEFAULT NULL,
+  `pay_money` decimal(10,2) DEFAULT '0.00' COMMENT '原始汇总金额',
+  `room_id` int(10) DEFAULT NULL COMMENT '数量',
+  `status` tinyint(3) DEFAULT '1' COMMENT '1-处理中,2-已打款',
+  `create_time` int(11) DEFAULT '0',
+  `pay_time` int(11) DEFAULT '0' COMMENT '结算时间',
+  `transaction_id` varchar(200) DEFAULT NULL COMMENT '结算号',
+  `batch_num` varchar(100) DEFAULT NULL COMMENT '批次号'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_chat_roommanager` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) DEFAULT NULL,
+  `room_id` int(10) DEFAULT NULL COMMENT '所属公众号',
+  `uid` int(10) DEFAULT NULL,
+  `manage_openid` varchar(100) DEFAULT NULL COMMENT '嘉宾openid',
+  `manage_avatar` varchar(150) DEFAULT NULL,
+  `manage_nickname` varchar(100) DEFAULT NULL COMMENT '嘉宾昵称',
+  `manage_desc` varchar(1000) DEFAULT NULL COMMENT '嘉宾简介',
+  `create_time` int(10) DEFAULT '0' COMMENT '加入时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_chat_sign` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) DEFAULT NULL,
+  `uid` int(10) NOT NULL,
+  `user_name` varchar(100) DEFAULT NULL,
+  `sign_result` varchar(1500) DEFAULT NULL,
+  `sign_time` int(11) DEFAULT NULL,
+  `expire_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_chat_subjects` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) DEFAULT NULL,
+  `room_id` int(10) DEFAULT NULL,
+  `topic_id` int(10) DEFAULT NULL,
+  `sub_type` varchar(10) DEFAULT NULL,
+  `sub_content` varchar(1000) DEFAULT NULL,
+  `sub_content_down` varchar(200) DEFAULT NULL COMMENT '文件下载后的路径(定时下载)',
+  `sub_content_downtime` int(11) DEFAULT '0',
+  `sub_content_ext` varchar(100) DEFAULT NULL COMMENT '扩展信息（声音时长）',
+  `sub_status` tinyint(10) DEFAULT '1' COMMENT '话题状态(1-正常,2-撤回)',
+  `owner_uid` int(10) DEFAULT NULL,
+  `owner_openid` varchar(200) DEFAULT NULL,
+  `owner_nickname` varchar(200) DEFAULT NULL,
+  `owner_avatar` varchar(200) DEFAULT NULL,
+  `role_name` varchar(100) DEFAULT NULL COMMENT '角色',
+  `create_time` int(11) DEFAULT NULL,
+  `ppt_id` int(10) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `roomindex` (`room_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_chat_subscribe` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) DEFAULT NULL,
+  `openid` varchar(100) DEFAULT NULL,
+  `nickname` varchar(100) DEFAULT NULL,
+  `sub_type` varchar(10) DEFAULT NULL COMMENT 'room,topic 房间和话题',
+  `uid` int(10) DEFAULT NULL,
+  `room_id` int(10) DEFAULT NULL COMMENT '关注的room_id',
+  `topic_id` int(10) DEFAULT NULL COMMENT '关注的话题',
+  `create_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_chat_topic` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) DEFAULT NULL,
+  `room_id` int(10) DEFAULT NULL,
+  `create_openid` varchar(100) DEFAULT NULL,
+  `topic_name` varchar(500) DEFAULT NULL,
+  `topic_desc` varchar(1000) DEFAULT NULL,
+  `topic_type` varchar(10) DEFAULT NULL,
+  `topic_icon` varchar(200) DEFAULT NULL,
+  `begin_time` int(11) DEFAULT '0',
+  `end_time` int(11) DEFAULT '0',
+  `room_paymoney` decimal(10,2) DEFAULT '0.00',
+  `room_password` varchar(50) DEFAULT NULL,
+  `qrcode_url` varchar(200) DEFAULT NULL,
+  `qrcode_desc` varchar(1000) DEFAULT NULL,
+  `look_numbers` int(10) DEFAULT '0',
+  `comment_numbers` int(10) DEFAULT '0',
+  `is_showguid` tinyint(3) DEFAULT '1',
+  `topic_status` tinyint(3) DEFAULT '1',
+  `is_allshutup` tinyint(3) DEFAULT '0' COMMENT '是否讨论区禁言',
+  `reward_percent` decimal(10,2) DEFAULT '0.00',
+  `im_group_id` varchar(100) DEFAULT NULL COMMENT '云通讯聊天室id',
+  `create_time` int(11) DEFAULT '0',
+  `x_look_numbers` int(10) DEFAULT '0',
+  `is_opendm` tinyint(3) DEFAULT '1',
+  `guest_name` varchar(500) DEFAULT NULL,
+  `guest_info` varchar(1500) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_chat_topicguest` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) DEFAULT NULL,
+  `room_id` int(10) DEFAULT NULL COMMENT '所属公众号',
+  `topic_id` int(10) DEFAULT NULL,
+  `uid` int(10) DEFAULT NULL COMMENT '嘉宾uid',
+  `guest_openid` varchar(100) DEFAULT NULL COMMENT '嘉宾openid',
+  `guest_avatar` varchar(150) DEFAULT NULL,
+  `guest_nickname` varchar(100) DEFAULT NULL COMMENT '嘉宾昵称',
+  `guest_desc` varchar(1000) DEFAULT NULL COMMENT '嘉宾简介',
+  `create_time` int(10) DEFAULT '0' COMMENT '加入时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_chat_topictype` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `topic_typeid` int(10) DEFAULT NULL,
+  `topic_typename` varchar(20) DEFAULT NULL,
+  `topic_text` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_chat_users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) DEFAULT NULL,
+  `openid` varchar(100) DEFAULT NULL,
+  `nickname` varchar(80) DEFAULT NULL,
+  `avatar` varchar(200) DEFAULT NULL,
+  `province` varchar(30) DEFAULT NULL,
+  `city` varchar(30) DEFAULT NULL,
+  `unionid` varchar(100) DEFAULT NULL,
+  `sex` tinyint(3) DEFAULT NULL,
+  `mobile` varchar(11) DEFAULT NULL COMMENT '电话号码',
+  `real_name` varchar(50) DEFAULT NULL COMMENT '真实姓名',
+  `subscribe_time` int(11) DEFAULT NULL,
+  `is_openask` tinyint(3) DEFAULT '0' COMMENT '0-不开,1-开启,-1-被禁用',
+  `user_title` varchar(100) DEFAULT NULL,
+  `user_desc` varchar(1000) DEFAULT NULL,
+  `pay_money` decimal(10,2) DEFAULT '0.00',
+  `is_recommend` tinyint(4) DEFAULT NULL COMMENT '0-正常,1-推荐',
+  `answer_num` int(10) DEFAULT '0',
+  `follow_num` int(10) DEFAULT '0',
+  `tags` varchar(1000) DEFAULT NULL COMMENT '标签',
+  `create_time` int(11) DEFAULT '0',
+  `vstatus` int(1) DEFAULT '0' COMMENT '认证状态（0=未认证；1=认证通过；2=认证未通过）',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+]]></install>
+	<uninstall><![CDATA[DROP TABLE IF EXISTS `ims_chat_banner`;
+DROP TABLE IF EXISTS `ims_chat_blacklist`;
+DROP TABLE IF EXISTS `ims_chat_cron`;
+DROP TABLE IF EXISTS `ims_chat_discuss`;
+DROP TABLE IF EXISTS `ims_chat_imsetting`;
+DROP TABLE IF EXISTS `ims_chat_invite`;
+DROP TABLE IF EXISTS `ims_chat_joinusers`;
+DROP TABLE IF EXISTS `ims_chat_logs`;
+DROP TABLE IF EXISTS `ims_chat_manager`;
+DROP TABLE IF EXISTS `ims_chat_mycashsum`;
+DROP TABLE IF EXISTS `ims_chat_mycashsum_last`;
+DROP TABLE IF EXISTS `ims_chat_payment`;
+DROP TABLE IF EXISTS `ims_chat_ppt`;
+DROP TABLE IF EXISTS `ims_chat_room`;
+DROP TABLE IF EXISTS `ims_chat_roombrowse`;
+DROP TABLE IF EXISTS `ims_chat_roomcashsum`;
+DROP TABLE IF EXISTS `ims_chat_roomcashsum_last`;
+DROP TABLE IF EXISTS `ims_chat_roommanager`;
+DROP TABLE IF EXISTS `ims_chat_sign`;
+DROP TABLE IF EXISTS `ims_chat_subjects`;
+DROP TABLE IF EXISTS `ims_chat_subscribe`;
+DROP TABLE IF EXISTS `ims_chat_topic`;
+DROP TABLE IF EXISTS `ims_chat_topicguest`;
+DROP TABLE IF EXISTS `ims_chat_topictype`;
+DROP TABLE IF EXISTS `ims_chat_users`;
+]]></uninstall>
+	<upgrade><![CDATA[upgrade.php]]></upgrade>
+</manifest>

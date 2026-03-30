@@ -1,0 +1,128 @@
+{include file="common/header_inner_new"}
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    #service_ids{width:200px;}
+    .addService,.delService{font-size:20px;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">同步类型</div>
+                            <div class="layui-input-block">
+                                <select name="type" id="type">
+                                    <option value="0" {if $data['type']=='0'}selected{/if}>商品</option>
+                                    <option value="1" {if $data['type']=='1'}selected{/if}>订单</option>
+                                    <option value="2" {if $data['type']=='2'}selected{/if}>物流</option>
+                                    <option value="3" {if $data['type']=='3'}selected{/if}>会员</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">同步方式</div>
+                            <div class="layui-input-block">
+                                <select name="sync_type" id="sync_type">
+                                    <option value="1" {if $data['sync_type']=='1'}selected{/if}>系统自动按顺序同步</option>
+                                    <option value="2" {if $data['sync_type']=='2'}selected{/if}>系统从头来开始同步</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">同步数量</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" lay-verify="required" name="sync_num" id="sync_num" value="{$data['sync_num']}" placeholder="同步数量">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">同步时间</div>
+                            <div class="layui-input-block">
+                                <div class="disf">
+                                    <div class="train_time">
+                                        <select name="method" lay-filter="method">
+                                            <option value="1" {if $data['method']==1}selected{/if}>现在</option>
+                                            <option value="2" {if $data['method']==2}selected{/if}>定时</option>
+                                        </select>
+                                    </div>
+                                    <div class="regular_time" style="display:{if $data['method']==2}block{else}none{/if}">
+                                        <input type="text" class="layui-input" id="starttime" name="starttime" value="{$data['starttime']}" placeholder="同步时间">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+<script src="./static/hadmin/assets/layui/xm-select.js"></script>
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload','colorpicker'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+        var colorpicker = layui.colorpicker;
+
+        laydate.render({
+            elem: '#starttime',
+            format: 'yyyy-MM-dd HH:mm:ss',
+            min: '-0',
+            type:'datetime'//指定元素
+        });
+
+        form.on('select(method)',function(data){
+            let val = data.value;
+
+            if(val==1){
+                $(this).parents(':eq(3)').find('.regular_time').hide();
+            }
+            else if(val==2){
+                $(this).parents(':eq(3)').find('.regular_time').show();
+            }
+        });
+
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            layer.load();
+            $.ajax({
+                url:"{:Url('admin/model/save_sync_info_to_local')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.closeAll('loading');
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

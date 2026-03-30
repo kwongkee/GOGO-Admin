@@ -1,0 +1,151 @@
+{template "parking/_header"}
+<div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">列表</a>
+        <a>
+          <cite>导航元素</cite></a>
+      </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"
+       href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<div class="x-body">
+    <div class="layui-row">
+        <form class="layui-form layui-col-md12 x-so" method="post" action="{php echo webUrl('parking/card/AuditList')}">
+            <input type="text" name="username" placeholder="请输入姓名" value="" autocomplete="off" class="layui-input">
+            <button class="layui-btn" lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+    </div>
+    <!-- <xblock>
+        <button class="layui-btn layui-btn-danger" onclick="updateAll()"><i class="layui-icon"></i>批量受理</button>
+    </xblock> -->
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <!-- <th>
+                <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe618;</i></div>
+            </th> -->
+            <th>姓名</th>
+            <th>认证状态</th>
+            <th>已上传资料</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {loop $data $index $item}
+        <tr>
+            <input type="hidden" name="id" value="{$item['id']}">
+            <td>{$item['uname']}</td>
+            {if !empty($item['license'])}
+            <td>已认证</td>
+            {else}
+            <td>未完成认证</td>
+            {/if}
+            <td id="imgs">
+                <div id="layer-photos-demo" class="layer-photos-demo">
+                    <?php $d=explode(",",trim($item['name'],',')); foreach($d as $key => $value){
+                    echo "<img style='height:40px;' src='../addons/ewei_shopv2/static/images/".$value.".jpg'>";
+                    }?>
+                </div>
+            </td>
+            <td class="td-manage">
+                <a href="javascript:;" onclick="update(this,{$item['id']},'{$item['openid']}')" class="layui-btn">通过</a>
+                <a href="javascript:;" onclick="member_del(this,'{$item['openid']}')"
+                   class="layui-btn layui-btn-danger">删除</a>
+            </td>
+        </tr>
+        {/loop}
+        </tbody>
+    </table>
+    <div class="page">
+        <div>
+            {$pager}
+        </div>
+    </div>
+
+</div>
+<script>
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#start' //指定元素
+        });
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#end' //指定元素
+        });
+    });
+
+
+    /*用户-删除*/
+    function member_del(obj, id) {
+        layer.confirm('确认要删除吗？', function (index) {
+            //发异步删除数据
+            $.get("{php echo webUrl('parking/card/DelUserInfo')}&oid=" + id, {}, function (res) {
+                if (res == 'success') {
+                    $(obj).parents("tr").remove();
+                    layer.msg('已删除!', {icon: 1, time: 1000});
+                }
+            });
+        });
+    }
+
+    function updateAll() {
+        var data = tableCheck.getData();
+        $.get("{php echo webUrl('parking/card/updateStatusId')}&id=" + data, {}, function (res) {
+            if (res == 'success') {
+                layer.msg('审核成功', {icon: 1});
+                $(".layui-form-checked").not('.header').parents('tr').remove();
+            }
+        })
+    }
+
+    function update(obj, id, openid) {
+        layer.open({
+            content: '<form class="layui-form" action=""><div class="layui-form-item"><label class="layui-form-label">时间段</label><div class="layui-input-block"><input type="text" id="t" name="periodTime" value="" required  lay-verify="required" placeholder="请输入时间段00:00-20:59" autocomplete="off" class="layui-input"></div></div><div class="layui-form-item"><label class="layui-form-label">车位段</label><div class="layui-input-block"><input type="text" name="parspaces" value="" id="pa" required  lay-verify="required" placeholder="请输入车位段" autocomplete="off" class="layui-input"></div></div><div class="layui-form-item"><label class="layui-form-label">月卡有效期</label><div class="layui-input-block"><input type="text" id="time" name="entime" value="" required  lay-verify="required" placeholder="比如30天就输入30" autocomplete="off" class="layui-input"></div></div><div class="layui-form-item"><label class="layui-form-label">是否需要抽签</label><div class="layui-input-block"><select id="shifou" name="sf" style="display:block;height:38px;" lay-verify="required"><option value="">请选择</option><option value="1">是</option><option value="2">否</option></select></div></div><div class="layui-form-item"><label class="layui-form-label">支付月卡金额</label><div class="layui-input-block"><input type="text" id="moneys" name="moneys" value="" required  lay-verify="required" placeholder="不需要抽签时填入支付金额" autocomplete="off" class="layui-input"></div></div></form>'
+            , btn: ['确认'],
+            area: ['600px', '300px']
+            , yes: function (index, layero) {
+                var times = $("#t").val();
+                var par = $("#pa").val();
+                var shifou = $("#shifou").val();
+                var t = $("#time").val();
+                var mm=$("#moneys").val();
+                $.get("{php echo webUrl('parking/card/updateStatusId')}&id=" + id, {
+                    "monthtime": times,
+                    "monthnum": par,
+                    "openid": openid,
+                    "sf": shifou,
+                    "cardtime": t,
+                    "moneys":mm
+                }, function (res) {
+                    if (res == 'success') {
+                        layer.msg('审核成功', {icon: 1});
+                        $(obj).parent('td').parent('tr').remove();
+                    } else {
+                        alert('服务链接失败');
+                    }
+                })
+            }
+        });
+    }
+
+    $("#imgs img").each(function (index) {
+        $(this).bind("click", function () {
+            layer.msg("<img height='500' width='800' src='" + $(this).attr('src') + "'>", {
+                time: 50000,
+                area: 'auto',
+                maxWidth: 1000,
+                maxHeight: 1000,
+                Boolean: true,
+                btn: '关闭'
+            });
+        });
+    });
+
+</script>
+{template "parking/_footer"}

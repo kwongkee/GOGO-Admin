@@ -1,0 +1,123 @@
+{template 'common/header'}
+<style>
+    .l_tableWrap .l_table_tit .l_formBar {
+        border: 0;
+        float: left;
+        font-size: 0;
+    }
+    .y_sele {
+        display: inline-block;
+        padding: 5px 0 12px 12px;
+    }
+    .y_sele_tit {
+        font-size: 14px;
+        padding: 0 0 0 10px;
+    }
+    .l_table_search{
+        margin-left: 10px;
+        margin-bottom: 5px;
+    }
+</style>
+<div class="clearfix">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            兑换记录
+        </div>
+        <div class="table-responsive panel-body" style="overflow:visible;">
+            <div class="l_table_tit clearfix">
+                <form method="get" action="" name="frm" class="l_formBar" id="frm1">
+                    <span class="y_sele_tit">奖品ID:</span>
+                    <div class="y_sele y_size02">
+                        <input type="text" class="form-control" name="id" value="{$_GPC['id']}">
+                    </div>
+                    <span class="y_sele_tit">奖品类型:</span>
+                    <div class="y_sele y_size02">
+                        <select class="form-control" name="event_type">
+                            <option value="0">不限</option>
+                            {php foreach($eventTypes as $k=>$row) {}
+                            <option value="{$k}" {if $_GPC['event_type']==$k}selected="selected"{/if}>{php echo $row}</option>
+                            {php } }
+                        </select>
+                    </div>
+                    <input type="hidden" name="c" value="{$_GPC['c']}" />
+                    <input type="hidden" name="a" value="{$_GPC['a']}" />
+                    <input type="hidden" name="eid" value="{$_GPC['eid']}" />
+                    <div class="btn-group l_table_search">
+                        <button type="submit" class="btn btn-success">搜 索</button> &nbsp;&nbsp;
+                    </div>
+                </form>
+            </div>
+
+            <table class="table table-hover">
+                <tr>
+                    <th>ID</th>
+                    <th>用户id</th>
+                    <th>用户昵称</th>
+                    <th>用户名</th>
+                    <th>用户手机号</th>
+                    <th>兑换类型</th>
+                    <th>奖品ID</th>
+                    <th>奖品名称</th>
+                    <th>状态</th>
+                </tr>
+                {loop $list $row}
+                <tr>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['id']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['fans_id']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['fans_info']['nickname']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['fans_info']['username']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['fans_info']['mobile']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$eventTypes[$row['event_type']]}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['award_info']['id']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['award_info']['name']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {if $row['status'] == 1}  
+                            已兑换
+                            {else}
+                            已领取
+                            {/if}
+                        </p>
+                    </td>
+                </tr>
+                {/loop}
+            </table>
+        </div>
+        <div class="panel-body text-right">
+            {$pager}
+        </div>
+    </div>
+</div>
+{template 'common/footer'}

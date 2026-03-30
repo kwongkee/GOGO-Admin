@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+	<script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+	<style>
+		.header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+		.header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+		.header button{float: right;margin-top: -5px;}
+		#formli {width: 100%;float: left;}
+		#formli li{float: left;}
+		
+		#formli2 {width: 100%;float: left;}
+		#formli2 li{float: left;margin-right: 10px;}
+	</style>
+</head>
+<body style="padding: 10px;">
+	
+	<div class="header">
+		<span>支付企业信息</span>
+		<!--<button class="layui-btn layui-btn-xs" style="float: right;" onclick="add();">添加</button>-->
+		<div></div>
+	</div>
+	
+	<div style="margin: 15px 0px;"></div>
+	
+	<form class="layui-form layui-form-pane" id="form1">
+		
+		<!--<input type="hidden" name="id" value="1">-->
+		
+	  	<ul id="formli">
+	  		<li>
+			  	
+	  			<div class="layui-form-item">
+			  		<label class="layui-form-label" style="width: 150px;">支付企业名称:</label>
+			  		<div class="layui-input-inline">
+			  			<input type="text" class="layui-input" name="domain[paymentname]" value="<?php if(isset($info['paymentname'])){echo $info['paymentname'];}?>" placeholder="请输入支付企业名称"/>
+			  		</div>
+			  	</div>
+			  	
+			  	<div class="layui-form-item">
+			  		<label class="layui-form-label" style="width: 150px;">统一信用代码:</label>
+			  		<div class="layui-input-inline">
+			  			<input type="text" class="layui-input" name="domain[unifiedcode]" value="<?php if(isset($info['unifiedcode'])){echo $info['unifiedcode'];}?>" placeholder="请输入统一信用代码"/>
+			  		</div>
+			  	</div>
+			  	
+			  	<div class="layui-form-item">
+			  		<label class="layui-form-label" style="width: 150px;">单一窗口编号:</label>
+			  		<div class="layui-input-inline">
+			  			<input type="text" class="layui-input" name="domain[gzeportCode]" value="<?php if(isset($info['gzeportCode'])){echo $info['gzeportCode'];}?>" placeholder="请输入单一窗口编号"/>
+			  		</div>
+			  	</div>
+	  		</li>
+	  		
+	  		<li>
+		  		<div class="layui-form-item">
+			  		<label class="layui-form-label" style="width: 150px;">中国检验检疫编号:</label>
+			  		<div class="layui-input-inline">
+			  			<input type="text" class="layui-input" name="domain[ciqCode]" value="<?php if(isset($info['ciqCode'])){echo $info['ciqCode'];}?>" placeholder="请输入中国检验检疫编号"/>
+			  		</div>
+			  	</div>
+			  	
+	  			<div class="layui-form-item">
+			  		<label class="layui-form-label" style="width: 150px;">中国海关注册编码:</label>
+			  		<div class="layui-input-inline">
+			  			<input type="text" class="layui-input" name="domain[gzCusCode]" value="<?php if(isset($info['gzCusCode'])){echo $info['gzCusCode'];}?>" placeholder="请输入中国海关注册编码"/>
+			  		</div>
+			  	</div>
+			  	
+			  	<div class="layui-form-item">
+			  		<label class="layui-form-label" style="width: 150px;">金融支付业务许可:</label>
+			  		<div class="layui-input-inline">
+			  			<input type="text" class="layui-input" name="domain[paymentlicense]" value="<?php if(isset($info['paymentlicense'])){echo $info['paymentlicense'];}?>" placeholder="请输入金融支付业务许可"/>
+			  		</div>
+			  	</div>
+				
+	  		</li>
+	  	</ul>
+	</form>
+	
+	{if condition="$role eq 1"}
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				
+				<button class="layui-btn layui-btn-lx" onclick="save()">保 存</button>
+				
+				<button type="reset" class="layui-btn layui-btn-danger layui-btn-lx">重 置</button>
+			</div>
+		</div>
+	{/if}
+	
+	<script type="text/javascript">
+		layui.use(['layer','form','jquery'],function(){
+			form = layui.form;
+			layer = layui.layer;
+			$ = layui.jquery;
+		});
+		
+		// 保存管理员
+		function save() {
+			var paymentname = $.trim($('input[name="domain[paymentname]"]').val());//电商企业名称
+			var unifiedcode = $.trim($('input[name="domain[unifiedcode]"]').val());//统一信用代码
+			var gzeportCode = $.trim($('input[name="domain[gzeportCode]"]').val());//单一窗口编号
+			var ciqCode = $.trim($('input[name="domain[ciqCode]"]').val());//中国检验检疫编号
+			var gzCusCode = $.trim($('input[name="domain[gzCusCode]"]').val());//中国海关注册编码
+			var paymentlicense = $.trim($('input[name="domain[paymentlicense]"]').val());//中国海关注册编码
+
+			if(paymentname == ''){layer.alert('请输入支付企业名称',{icon:2});return false;}
+			if(unifiedcode == ''){layer.alert('请输入统一信用代码',{icon:2});return false;}
+			if(gzeportCode == ''){layer.alert('请输入单一窗口编号',{icon:2});return false;}
+			if(ciqCode == ''){layer.alert('请输入中国检验检疫编号',{icon:2});return false;}
+			if(gzCusCode == ''){layer.alert('请输入中国海关注册编码',{icon:2});return false;}
+			if(paymentlicense == ''){layer.alert('请输入金融支付业务许可',{icon:2});return false;}
+	
+			$.post("{:Url('Record/messagesSave')}",$('#form1').serialize(),function(res){
+				console.dir(res);
+				
+				if(res.code > 0){
+					layer.alert(res.msg,{icon:2});
+				} else {
+					layer.alert(res.msg,{icon:1});
+					setTimeout(function(){
+						window.location.reload();
+					},1000);
+				}
+			});
+		}
+		
+	</script>
+</body>
+</html>

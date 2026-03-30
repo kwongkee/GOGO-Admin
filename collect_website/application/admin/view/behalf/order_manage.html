@@ -1,0 +1,172 @@
+{include file="common/header_new"}
+
+<style>
+    img{ width:20px;height:20px;}
+</style>
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <h3 style="text-align: center;">订单管理</h3>
+
+<!--                <div id="toolbar1" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;float: left;">-->
+<!--                    <button type="button" href="javascript:;" onclick="add(1);" class="btn btn-default">-->
+<!--                        新增物流-->
+<!--                    </button>-->
+<!--                </div>-->
+                <table id="table"
+                /*默认排序项*/
+                data-sort-name="id"
+                data-sort-order="desc"
+                /*工具栏相关*/
+                data-toolbar="#toolbar"
+                data-search="false"          /*搜索框*/
+                data-search-on-enter-key="true"
+                data-show-refresh="true"    /*刷新按钮*/
+                /*分页相关*/
+                data-side-pagination="server"
+                data-pagination="true"      /*显示分页*/
+                data-page-size="10"         /*每页显示条数*/
+                /*移动端相关*/
+                data-mobile-responsive="true"
+                data-card-view="true"
+                data-show-columns="true"
+                /*radio or checkbox字段名称*/
+                data-select-item-name="id" >
+                <thead>
+                <tr>
+                    <th data-field="ordersn"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">订单编号</th>
+                    <th data-field="totalprice"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">订单金额</th>
+                    <th data-field="buyername"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">买家名称</th>
+                    <th data-field="sellername"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">卖家名称</th>
+                    <th data-field="status_name"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">状态</th>
+                    <th data-field="createtime"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">创建时间</th>
+                    <th data-field="manage"
+                        data-align="center"
+                        data-sortable="true"
+                        data-formatter="actionFormatter">操作</th>
+                </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    var table;
+
+    $(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:url('admin/behalf/order_manage')}&pa=1",
+            queryParams: queryParams,
+        });
+
+        $('.form-control').attr('placeholder','搜索商户名称');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.id;
+        var name = row.name;
+
+        var result = "";
+
+        result += '<button style="margin-right: 5px;" type="button" onclick="openWindow('+id+',\''+name+'\',\''+1+'\')" class="btn btn-primary btn-xs">输出运单</button>';
+        result += '<button style="margin-right: 5px;" type="button" onclick="openWindow('+id+',\''+name+'\',\''+2+'\')" class="btn btn-primary btn-xs">输出小票</button>';
+        result += '<button style="margin-right: 5px;" type="button" onclick="openWindow('+id+',\''+name+'\',\''+3+'\')" class="btn btn-normal btn-xs">查看订单</button>';
+        // result += '<button style="margin-right: 5px;" type="button" onclick="del('+id+',\''+name+'\',\''+2+'\')" class="btn btn-danger btn-xs">删除</button>';
+        return result;
+    }
+
+    function del(id,title){
+        layer.confirm('确认删除该物流企业吗？',function(index){
+            $.ajax({
+                url: "<?php echo Url('admin/behalf/del_logistics'); ?>",
+                data:{'id':id},
+                type:'post',
+                cache:false,
+                dataType:'json',
+                success:function(data){
+                    if(data.code==0)
+                    {
+                        layer.msg(data.msg, {
+                            icon: 1,
+                            time: 2000
+                        }, function(){
+                            window.location.reload();
+                        });
+                        return true;
+                    }else {
+                        layer.msg(data.msg, {icon:2, time:2000});
+                        return false;
+                    }
+                },
+                error:function() {
+                    layer.msg('系统出错,请重试',{icon:2,time:1000});
+                }
+            });
+        });
+    }
+
+    function openWindow(id,name,type){
+        if(type==1){
+            var index = layer.open({
+                type: 2,
+                title: '输出运单PDF',
+                area:['100%','100%'],
+                content: "{:url('admin/behalf/make_express')}&id="+id
+            });
+        }else if(type==2){
+            var index = layer.open({
+                type: 2,
+                title: '输出小票JPG',
+                area:['100%','100%'],
+                content: "{:url('admin/behalf/make_ticket')}&id="+id
+            });
+        }else if(type==3){
+            var index = layer.open({
+                type: 2,
+                title: '查看订单',
+                area:['100%','100%'],
+                content: "{:url('admin/behalf/order_detail')}&id="+id
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

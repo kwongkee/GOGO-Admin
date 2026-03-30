@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>阿里云身份验证</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+
+<body style="padding-top: 10px;">
+<div class="demoTable">
+
+    <form class="layui-form" action="admin/fina/paycheck" method="post">
+
+        <div class="layui-form-item">
+
+            <div class="layui-input-block">
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">用户姓名</label>
+                    <div class="layui-input-block">
+                        <input type="text" class="layui-input" required name="user" id="user" placeholder="用户姓名">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">用户证件号</label>
+                    <div class="layui-input-block">
+                        <input type="text" class="layui-input" required name="idCard" id="idCard" placeholder="请输入身份号码">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <button class="layui-btn" lay-submit lay-filter="formDemo">查询</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+
+            </div>
+        </div>
+
+    </form>
+
+    <script>
+        //Demo
+        layui.use(['form','laydate'], function() {
+            var form = layui.form;
+            var laydate = layui.laydate;
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#test1', //指定元素
+                type: 'month'
+            });
+
+            //监听提交
+            form.on('submit(formDemo)', function(data){
+                //layer.msg(JSON.stringify(data.field));
+
+                if($('#user').val() == '') {
+                    alert('请输入用户姓名');
+                    return false;
+                }
+
+                if($('#idCard').val() == '') {
+                    alert('请输入证件号码');
+                    return false;
+                }
+
+                $.post("{:Url('admin/Vertify/DoAli')}",{
+                    'uname':$('#user').val(),
+                    'idCard':$('#idCard').val(),
+                },function(res){
+                    $('#uname').text(res.name);
+                    $('#idCards').text(res.idCard);
+                    $('#code').text(res.code);
+                    $('#msg').text(res.msg);
+                    $('#time').text(res.time);
+                })
+                // admin/fina/paycheck
+                return false;
+            });
+        });
+    </script>
+
+</div>
+
+
+<table class="layui-table">
+    <colgroup>
+        <col width="150">
+        <col width="200">
+        <col>
+    </colgroup>
+
+    <thead>
+    <tr>
+        <th></th>
+        <th>信息类型</th>
+        <th>验证信息</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    <tr>
+        <td></td>
+        <td>用户姓名</td>
+        <td id="uname">张三</td>
+    </tr>
+
+    <tr>
+        <td></td>
+        <td>用户证件号</td>
+        <td id="idCards">452424199336658123</td>
+    </tr>
+
+    <tr>
+        <td></td>
+        <td>代码编号</td>
+        <td id="code">202</td>
+    </tr>
+
+    <tr>
+        <td></td>
+        <td>信息描述</td>
+        <td id="msg">无法验证</td>
+    </tr>
+
+    <tr>
+        <td></td>
+        <td>验证时间</td>
+        <td id="time">2019-04-28</td>
+    </tr>
+
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    layui.use(['layer','jquery'],function(){
+        layer = layui.layer;
+        $ = layui.jquery;
+    });
+
+    function loding() {
+        layer.load();
+        setTimeout(function () {
+            layer.closeAll();
+        },5000);
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,241 @@
+{include file="common/header"}
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<script src="http://apps.bdimg.com/libs/jquery-qrcode/1.0.0/jquery.qrcode.min.js"></script>
+<style>
+	.choice_pay{
+		width: 80%;
+		margin: auto;
+	}
+	
+	.choice_pay h1{text-align: center;color: #666;font-size: 16px;}
+	.choice_pay form{margin-top: 5%;}
+	.type{
+		float: left;
+	}
+	.type2{
+		float:right
+	}
+	.is_pay{
+		display: inline-block;
+		width: 50%;
+		height: 40px;
+		background: #ccc;
+		margin:5% 0 0 22%;
+		line-height: 40px;
+		text-align: center;
+		color: #666;
+	}
+	.clear{clear: both;}
+	#qrcode canvas{margin: auto;}
+</style>
+<body>
+<div class="x-nav">
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<div class="x-body">
+	 <div class="layui-btn-group demoTable">
+        <button class="layui-btn" onclick="getCheck()">确定</button>
+    </div>
+        <div class="layui-row" style="float:right;">
+        <form class="layui-form layui-col-md12 x-so" action="{:Url('advertising/index')}" method="post">
+        	{if $pay_status neq ''}<input type="hidden" value="{$pay_status}" id="pay_status"/> {/if}
+        	选择订单支付状态：
+            <select name="pay_status" id="">
+            	<option value="">请选择...</option>
+            	<option value="0">未支付</option>
+            	<option value="1">已支付</option>
+            	<option value="2">支付失败</option>
+            </select>
+            <button class="layui-btn"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+    </div>
+    <table class="layui-table">
+        <thead>
+        <tr>
+        	<th><div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div></th>
+        	<th>序号</th>
+            <th>订单号</th>
+            <th>开始时间</th>
+            <th>结束时间</th>
+            <th>基本费用</th>
+            <th>下单时间</th>
+            <th>支付状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        	{volist name="data" id="vo"}
+        	<tr class="i_tr">
+        	<td><div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='{$vo.id}'><i class="layui-icon">&#xe605;</i></div></td>
+        	<!--<td><div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id="array('id'=>{$vo.id},'status'=>{$vo.pay_status})"><i class="layui-icon">&#xe605;</i></div></td>-->
+   			<td>{$vo.id}</td>
+   			<td class="i_td">{$vo.ordersn}</td>
+   			<td>{$vo.s_time|date="Y-m-d",###}</td>
+   			<td>{$vo.e_time|date="Y-m-d",###}</td>
+   			<td>{$vo.adv_money}￥</td>
+   			<td>{$vo.create_time|date="Y-m-d",###}</td>
+   			<td>{$Pay_status['pay_status'][$vo.pay_status]}</td>
+            <td>
+            	{if $vo.pay_status neq '1'}<a href="javascript:choice_pay({$vo.id},{$i})">支付</a>{/if}
+				{if $vo.pay_status eq '1'}<a href="javascript:invoice({$vo.id},{$vo.pay_status})" target="x-iframe">申请发票</a>{/if}
+            </td>
+            {/volist}
+        </tr>
+        </tbody>
+    </table>
+    <div id="qrcode" style="display: none;"></div>
+    <div class="page">
+        <div>
+           {$page}
+        </div>
+    </div>
+</div>
+</body>
+<div class="choice_pay" style="display: none;">
+	<h1>请选择支付方式</h1>
+	<form action="">
+		<input type="hidden" value="" id="order_id"/>
+		<input type="hidden" value="" id="index"/>
+	<div class="type">
+		<h3>支付方式一</h3>
+		<span>微信支付</span><input type="radio" class="pay_type" name="pay_type" data-msg="Tgwechat_scode"/><img src="./static/images/wechat.jpg" alt="" width="80"/>
+	</div>
+	<div class="type2">
+		<h3>支付方式二</h3>
+		<span>微信支付</span><input type="radio" class="pay_type" name="pay_type" data-msg="Tgalipay_scode"/><img src="./static/images/alipay.jpg" alt="" width="80"/>
+	</div>
+	<div class="clear"></div>
+		<a href="javascript:void(0)" class="is_pay">确认支付</a>
+	</form>
+</div>
+<script>
+function choice_pay(order_id,index){
+	$('#order_id').val(order_id)	
+	$('#index').val(index)	
+	layer.open({
+	  type: 1,
+	  title: false,
+	  closeBtn: 1,
+	  shadeClose: true,
+	  skin: 'yourclass',
+	  area:['600px','300px;'],
+	  content: $('.choice_pay')
+	});
+}
+
+$('.pay_type').click(function(){
+	var pay_type=$(this).attr('data-msg');
+	var order_id = $('#order_id').val()
+	var index = $('#index').val()
+	if(pay_type !=''){
+		$('.is_pay').attr('href','javascript:is_payurl('+order_id+','+index+',"'+pay_type+'")');
+	}
+})
+
+//是否已经点过支付,存在支付二维码,如果存在则修改订单号
+function is_payurl(order_id,index,pay_type){
+	layer.close()
+	$.post('{:Url('advertising/is_payurl')}',{'order_id':order_id},function(data){
+		var obj = JSON.parse(data);
+		if(obj['status']=='1'){
+			$('.i_tr').eq((index-1)).children('.i_td').html(obj['msg'])
+			add_order(order_id,pay_type);
+			//该订单已存在二维码,修改该订单的订单号
+			
+//			$('#qrcode').html('');
+//			jQuery(function(){
+//			    jQuery('#qrcode').qrcode({
+//				    render: "canvas", //也可以替换为table
+//				    width: 150,
+//				    height: 150,
+//				    text: obj['msg']
+//				});
+//			});
+//			layer.open({
+//			  type: 1,
+//			  title: '请扫描二维码支付',
+//			  closeBtn: 0,
+//			  shadeClose: true,
+//			  skin: 'yourclass',
+//			  content: $('#qrcode')
+//			}); 
+//			
+		}else{
+			add_order(order_id,pay_type);
+		}
+	});
+}
+
+function add_order(order_id,pay_type){
+  	$.post('{:Url('advertising/add_order')}',{'order_id':order_id,'pay_type':pay_type},function(data){
+  		var obj = JSON.parse(data);
+//	  		alert(obj);
+  		if(obj['status']=='101'){
+  			layer.msg('该订单不可重复操作')
+  		}else{
+  			$('#qrcode').html('')
+			jQuery(function(){
+			    jQuery('#qrcode').qrcode({
+				    render: "canvas", //也可以替换为table
+				    width: 150,
+				    height: 150,
+				    text: obj['payurl']
+				});
+			})
+			layer.open({
+			  type: 1,
+			  title: '请扫描二维码支付',
+			  closeBtn: 0,
+			  shadeClose: true,
+			  skin: 'yourclass',
+			  content: $('#qrcode')
+			}); 
+  		}
+	})
+}
+	
+</script>
+<script>
+function invoice(id,status){
+	if(status !='1'){
+		//1为已支付
+		layer.msg('此订单未完成支付!');
+		return false;
+	}else{
+		window.location.href='{:Url('Advertising/invoice')}&o_id='+id;
+	}
+}
+
+</script>
+<script>
+
+	    var data=null;
+	    var datas='';
+    function getCheck(argument) {
+        data = tableCheck.getData();
+        var pay_status = $('#pay_status').val();
+        //如果有订单未支付,则不能开发票,需要表单筛选已支付的订单,1为已支付
+        if(pay_status !='1'){
+        	layer.msg('有订单未支付,请筛选');
+        	return false;
+        }
+        if(data.length<1){
+            alert('请选择');
+            return false;
+        }else{
+        	if(confirm('确定开发票？')==true){
+        		datas=data+',';
+        		//跳转到申请发票页面,传订单ID参数
+        		window.location.href='{:Url('Advertising/invoice')}&o_id='+datas;
+//      		$.post('{:Url('advertising/invoice_apply')}',{'order_id':datas},function(){
+//      			
+//      		})
+        	}else{
+        		layer.msg('您取消了')
+        	}
+        }
+    }
+</script>
+</html>

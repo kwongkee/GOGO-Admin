@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{$title}}</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<table class="layui-table">
+    <thead>
+    <tr class="ths">
+        <th>用户名称</th>
+        <th>账单类型</th>
+        <th>预警值</th>
+        <th>超出预警值</th>
+        <th>账单截止时间</th>
+        <th>预警生成时间</th>
+    </tr>
+    </thead>
+
+    <tbody>
+        {volist name="data.data" id="v"}
+            <tr class="boys">
+                <td>{$v.user_name}</td>
+                <td>{$type[$v.dayType]}</td>
+                <td style="color: #DAA520;">{$v.warValue}</td>
+                <td style="color: red;">{$v.value}</td>
+                <td>{$v.billDate|date='Y-m-d H:i:s',###}</td>
+                <td>{$v.addtime|date='Y-m-d H:i:s',###}</td>
+            </tr>
+        {/volist}
+    </tbody>
+
+</table>
+
+<div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+
+</body>
+</html>

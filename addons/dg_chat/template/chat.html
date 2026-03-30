@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>{$topic['topic_name']}</title>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<meta name="format-detection" content="address=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="{TEMPLATE_PATH}/wtCommon.css">
+<style type="text/css">
+  .video-discuss-face {
+    background: url({TEMPLATE_PATH}/img/face.png) no-repeat;
+    background-size: 2rem 2rem;
+    width: 2rem;
+    height: 2rem;
+    display: inline-block;
+    right: 1rem;
+    top: 12px;
+    position: absolute;
+}
+
+.video-discuss-face2 {
+    background: url(../../addons/dg_chat/resource/img/face.png) no-repeat;
+    background-size: 2rem 2rem;
+    width: 2rem;
+    height: 2rem;
+    display: inline-block;
+    right: 1rem;
+    bottom: 12px;
+    position: absolute;
+}
+</style>
+<script src="//cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/json2/20150503/json2.min.js"></script>
+
+<script type="text/javascript">
+	var user_info={$user_info_encode};
+	var topic_setting={$topic_setting};
+	var istopic_end={$istopic_end};
+	var istopic_begin={$istopic_begin};
+	var down_url='{$downmedia_url}';
+	var sub_pages={$pages};
+	var discuss_pages={$pages_discuss};
+	var reward_url='{$reward_url}';
+	var topic_overurl="{php echo $this->createMobileUrl('chat_over');}";
+	var begin_time={$topic['begin_time']};
+	var current_ppt_id=0;
+</script>
+
+<script type="text/javascript" src="{TEMPLATE_PATH}/tencent/sdk/webim.js"></script>
+<script type="text/javascript" src="{TEMPLATE_PATH}/tencent/js/im_base.js"></script>
+<script type="text/javascript" src="{TEMPLATE_PATH}/tencent/js/im_group_notice.js"></script>
+
+<script type="text/javascript" src="{TEMPLATE_PATH}/js/chat_main.js"></script>
+
+{php echo register_jssdk();}
+
+<script type="text/javascript">
+
+var Im_setting={$im_setting};
+                        //帐号模式，0-表示独立模式，1-表示托管模式
+                        var accountMode=0;
+                        //官方 demo appid,需要开发者自己修改（托管模式）
+                        var sdkAppID = Im_setting.sdkAppID;
+                        var accountType = Im_setting.accountType;
+                        var avChatRoomId = Im_setting.avChatRoomId; //默认房间群ID，群类型必须是直播聊天室（AVChatRoom），这个为官方测试ID(托管模式)
+                        
+                        if(webim.Tool.getQueryString("groupid")){
+                            avChatRoomId=webim.Tool.getQueryString("groupid");//用户自定义房间群id
+                        }
+                        
+                        var selType=webim.SESSION_TYPE.GROUP;
+                        var selToID = avChatRoomId;//当前选中聊天id（当聊天类型为私聊时，该值为好友帐号，否则为群号）
+                        var selSess = null;//当前聊天会话
+                        
+                        //默认群组头像(选填)
+                        var selSessHeadUrl = '{TEMPLATE_PATH}/tencent/img/2017.jpg';
+                       
+                        
+                        //当前用户身份
+                        var loginInfo = {
+                                'sdkAppID': sdkAppID, //用户所属应用id,必填
+                                'appIDAt3rd': sdkAppID, //用户所属应用id，必填
+                                'accountType': accountType, //用户所属应用帐号类型，必填
+                                'identifier': Im_setting.identifier, //当前用户ID,必须是否字符串类型，选填
+                                'identifierNick': Im_setting.identifierNick, //当前用户昵称，选填
+                                'userSig': Im_setting.userSig, //当前用户身份凭证，必须是字符串类型，选填
+                                'headurl': '{TEMPLATE_PATH}/tencent/img/2016.gif'//当前用户默认头像，选填
+                        };
+                        //监听（多终端同步）群系统消息方法，方法都定义在demo_group_notice.js文件中
+                        //注意每个数字代表的含义，比如，
+                        //1表示监听申请加群消息，2表示监听申请加群被同意消息，3表示监听申请加群被拒绝消息等
+                        var onGroupSystemNotifys = {
+                                "5": onDestoryGroupNotify, //群被解散(全员接收)
+                                "11": onRevokeGroupNotify, //群已被回收(全员接收)
+                                "255": onCustomGroupNotify//用户自定义通知(默认全员接收)
+                        };
+                        
+                        
+                        //监听连接状态回调变化事件
+                        var onConnNotify=function(resp){
+                            switch(resp.ErrorCode){
+                                case webim.CONNECTION_STATUS.ON:
+                                    break;
+                                case webim.CONNECTION_STATUS.OFF:
+                                    webim.Log.warn('连接已断开，无法收到新消息，请检查下你的网络是否正常');
+                                    break;
+                                default:
+                                    webim.Log.error('未知连接状态,status='+resp.ErrorCode);
+                                    break;
+                            }
+                        };
+                        
+                        
+                        //监听事件
+                        var listeners = {
+                                "onConnNotify": onConnNotify, //选填
+                                "jsonpCallback": jsonpCallback, //IE9(含)以下浏览器用到的jsonp回调函数,移动端可不填，pc端必填
+                                "onBigGroupMsgNotify": onBigGroupMsgNotify, //监听新消息(大群)事件，必填
+                                "onMsgNotify": onMsgNotify,//监听新消息(私聊(包括普通消息和全员推送消息)，普通群(非直播聊天室)消息)事件，必填
+                                "onGroupSystemNotifys": onGroupSystemNotifys //监听（多终端同步）群系统消息事件，必填
+                        };
+                        
+                        var isAccessFormalEnv=true;//是否访问正式环境
+                        
+                        if(webim.Tool.getQueryString("isAccessFormalEnv")=="false"){
+                            isAccessFormalEnv=false;//访问测试环境
+                        }
+                        
+                        var isLogOn=false;//是否在浏览器控制台打印sdk日志
+                        
+                        //其他对象，选填
+                        var options={
+                            'isAccessFormalEnv': isAccessFormalEnv,//是否访问正式环境，默认访问正式，选填
+                            'isLogOn': isLogOn//是否开启控制台打印日志,默认开启，选填
+                        };
+                        var curPlayAudio=null;//当前正在播放的audio对象
+                        var openEmotionFlag=false;//是否打开过表情
+                        if(accountMode==1){//托管模式
+                            //判断是否已经拿到临时身份凭证
+                            if (webim.Tool.getQueryString('tmpsig')) {
+                                if (loginInfo.identifier == null) {
+                                    webim.Log.info('start fetchUserSig');
+                                    //获取正式身份凭证，成功后会回调tlsGetUserSig(res)函数
+                                    TLSHelper.fetchUserSig();
+                                }
+                            } else {
+                                sdkLogin();
+                            }
+                        }else{//独立模式
+                            sdkLogin();
+                        }
+</script>
+
+<link rel="stylesheet" href="{TEMPLATE_PATH}/thousandLive.css">
+<style type="text/css" media="screen">#flashcontent {visibility:hidden}</style></head>
+<link rel="stylesheet" href="{TEMPLATE_PATH}/css/swiper.css">
+<script src="{TEMPLATE_PATH}/js/swiper.jquery.min.js"></script>
+<body class="BdSwitch">
+
+<div class="slideT" style="display: none;">
+	<div class="swiper-container swiper-container-horizontal">
+
+		<div class="swiper-wrapper">
+			{loop $ppt_list_top $index $ppt}
+			<div class="swiper-slide" attr-id="{$ppt['id']}" attr-index="{$index}">
+				<img src="{$ppt['img_url']}" width="100%">
+			</div>
+			{/loop}
+		</div>
+
+		<!-- Add Pagination -->
+		<div class="swiper-pagination swiper-pagination-fraction"><span class="swiper-pagination-current">1</span> / <span class="swiper-pagination-total">3</span></div>
+	</div>
+	
+</div>
+
+
+<div class="pptBtn">
+	<ul>
+		<li class="pptSwitch">PPT</li>
+		{if $is_manager}
+		   <li class="btnControlBox">操作</li>
+	    {/if}
+		<li><a href="{$chat_url}" style="color:#fff;">直播间</a></li>
+		
+		<li> <a style="color:#fff;" href="javascript:;" onclick="window.location.href = '{$topic_url}&_='+new Date().getTime();">刷新</a></li>
+	</ul>
+</div>
+
+<div class="speakBox {if ($is_guest||$is_manager)&&$istopic_end==0 }hasTabBottom{/if}{if !($is_guest||$is_manager)}hasUserTabBottom{/if}">
+
+	<audioup id="audioUploadBox" ></audioup>
+	<div class="details" style="position: relative; z-index: 100;">  
+            <input type="hidden" id="qrecordId">  
+        </div>  
+        <form id="uploadForm" name="uploadForm" action="#" method="post" enctype="multipart/form-data">
+        </form>
+	<b class="sharetopicPage" style="display:none;"></b>
+	<div class="liveHeader">
+		<a class="guest_head" href="{$guest_manager_url}">
+		<i><img src="{$chat_room['create_avatar']}"></i>
+		{loop $guests $guest}
+				<i><img src="{$guest['guest_avatar']}"></i>
+		{/loop}		
+			<b></b>
+		</a>
+	</div>
+	<ul class="pageMenu" style="bottom:6rem;">
+	{if $is_guest||$is_manager}
+		<li class="tabToComment">讨论</li>
+		<br>
+		<li class="tab_ppt">课件</li>
+	{/if}
+	
+	
+	</ul>
+	<a class="btn_frist_msg" id="fristMsg" href="javascript:;">点击此处 回到首条</a>
+	<div class="speakContentBox">
+		<a class="btn_load_history btnLoadSpeakEnd" href="javascript:;">
+			<i></i>
+		</a>
+		<div class="scrollContentBox" id="scrollContentBox">
+			<audio id="audioPlayer" autoplay="autoplay">Your browser does not support the audio element.您的浏览器不支持 audio 标签。</audio>
+			<a class="btn_load_history btnLoadSpeak" href="javascript:;">
+				<i></i>
+			</a>
+
+			<div class="ql_start_box qlTimerShow">
+			
+				<div class="ql_start_date qlStartDate">
+                {if  $istopic_end }
+				   本次直播于{php echo date('Y/m/d H:i', $topic['end_time']);}结束
+				{else}
+			             本次直播于{php echo date('Y/m/d H:i', $topic['begin_time']);}开始
+				{/if}
+                 </div>
+				
+				{if !$istopic_begin }
+				<div class="ql_timer">
+					<span>倒计时</span>
+					<dl>
+						<dd><var id="day">0</var>天</dd>
+						<dd><var id="hour">0</var>时</dd>
+						<dd><var id="mini">0</var>分</dd>
+						<dd><var id="sec">0</var>秒</dd>
+					</dl>
+				</div>
+				<div class="ql_st_buttons">
+					<a class="start_remind" href="javascript:;">
+					{if $is_subscribe==1}开播前将会提醒您{else}点击设置开播提醒{/if}
+					</a><b class="ql_remind_b" style="display: none;">开播前将会提醒你</b>
+				</div>
+			  {/if}
+				
+			</div>
+			
+			{if $is_manager&&$istopic_begin==0}
+			<div class="guide_tips_box setGuestTips" style="display: block;">
+				<a href="javascript:;" class="btn_gtb_close"></a>
+				<dl>
+					<dd class="gtb_dd1">嘉宾</dd>
+					<dd class="gtb_dd2">
+						<ul>
+							<li>此卡片仅创建者和管理员可见</li>
+							<li>点击【操作】按钮也可以邀请嘉宾</li>
+						</ul>
+					</dd>
+				</dl>
+				<div class="gtbbtn"><a href="{$invite_url}">立即邀请</a></div>
+			</div>
+			{/if}
+			
+			<dl id="BubblesTemp" class="bubbles_dl"></dl>
+
+			<dl id="speakBubbles" class="bubbles_dl">
+			{if $istopic_end}
+				<dt class="bubble_dt"><b>直播已经结束</b></dt>
+			{/if}
+			
+			</dl>
+			
+			<div id="#div_bottom"></div>
+		</div>
+	</div>
+	<div class="recing_bg"></div>
+	
+	{if $is_guest || $is_manager}
+	<div id="speakBottom" class="speakBottom">
+		<ul class="tab_speak">
+			<li class="tab_voice">语音</li><li class="tab_text">文字</li><li class="tab_others">更多</li>
+		</ul>
+		
+		<div class="recording_tab_box">
+			 <span id="save_button" style="position: absolute; left: 0px; top: 0px; z-index: 100;"> 
+                <object type="application/x-shockwave-flash" id="recorderApp" name="recorderApp" data="resource/recorder.swf" width="10px" height="10px" class=""><param name="flashvars" value="upload_image=http://m.qlchat.com/styles/flashWavRecorder/images/upload.png"></object>   
+            </span>  
+			<dl class="recording_click">
+				<dd class="btn_dd ">
+					<i></i>
+					<div id="btnStartRec" class="btn_recording start_rec" onmousedown="return false"></div>
+					<div id="btnStopRec" class="btn_recording stop_rec" onmousedown="return false"></div>
+					<div id="btnSentRec" class="btn_recording send_rec" onmousedown="return false"><b>点击发送</b></div>
+					<div id="btnCancelRec" class="btn_cancel_clickRec" onmousedown="return false">重录</div>
+				</dd>
+				<!--<dd class="tips_dd">点击按钮录音</dd>-->
+			</dl><dl class="recording_box">
+				<dd class="btn_dd">
+					<i></i>
+					<div id="btnRecording" class="btn_recording"></div>
+				</dd>
+				<!--<dd class="tips_dd">按住说话</dd>-->
+			</dl>
+			<span class="second_dd"><i></i><var>0</var>s/60s<i></i></span>
+			<span class="rec_Title_box"><b>点击一下录音</b><b>按住说话</b></span>
+			<span class="tab_recordingType">
+				<a class="recType_1" href="javascript:;">单击模式</a><a class="recType_2" href="javascript:;" style="display: none;">长按模式</a>
+			</span>
+		</div>
+		
+		<ul class="others_box">
+			<li class="btn_img"><i class="btnImgUpload" style="overflow: hidden; position: relative;">图片
+			<input type="file" onmousedown="return false" name="file" id="file" multiple="multiple" style="position: absolute; right: 0px; bottom: 0px; opacity: 0; margin: 0px; padding: 0px; font-size: 480px; cursor: pointer; z-index: 10;">
+			</i></li>			
+		</ul>
+		
+		
+		
+		<div class="text_input_box">
+
+			<a href="javascript:;" class="btnBackVoice">返回</a>
+			<span class="boxFlex">
+				<b class="ql_input_front"></b>
+				<textarea class="speakInput" placeholder="来说点什么吧..." onfocus="if(this.getAttribute(&#39;placeholder&#39;)==&#39;来说点什么吧...&#39;)this.setAttribute(&#39;placeholder&#39;,&#39;&#39;)" onblur="if(this.getAttribute(&#39;placeholder&#39;)==&#39;&#39;)this.setAttribute(&#39;placeholder&#39;,&#39;来说点什么吧...&#39;)"></textarea>
+			    <a href="javascript:void(0);" class="video-discuss-face" onclick="showEmotionDialog('main')"></a>
+			</span>
+			<i class="btnLiveTalk" onmousedown="return false">发送</i>
+			
+		</div>
+		
+
+		
+		<div class="recordingTips rTips_1">录满60秒将自动发送</div>
+		<div class="recordingTips rTips_2"><var>3</var>秒后将自动发出</div>
+		<div class="recordingTips rTips_3">手指划出此区域，取消发送</div>
+		<div class="recordingTips rTips_4">松开手指，取消录音</div>
+		<div class="recordingTips rTips_5">发送后即可录制下一条</div>
+	</div>
+	{else}
+	  <div class="userTabBottom">
+		<ul>
+			<li class="gzBtn">关注</li>
+			<li class="commBtn">讨论(<span id="common_num"></span>)</li>
+		</ul>
+	  </div>
+	{/if}
+</div>	
+
+
+<div class="commentBox">
+	<div class="commentHeader">
+		<a class="backToLive" href="javascript:;">回到直播</a>
+	</div>
+		
+	<div class="commentContentBox">
+		<div class="btn_load_history btnLoadComment">
+			<i></i>
+		</div>
+		<div class="scrollContentBox" id="scrollContentBox_common">
+		<div class="none_record none_pic5" id="loadNone" style="display: block;"><span class="none_tip">在此处留言或提问～</span></div>
+		<dl id="commentDlTemp" class="comment_dl"></dl>
+		<dl id="commentDl" class="comment_dl">
+					   
+		</dl>
+		</div>
+	</div>
+	<div class="comment_bottom commentBottom">
+		<div class="comment_input_box">
+		{if $topic['is_allshutup']==1}
+			 <b class="shutupbox">本直播当前为禁言状态</b>
+	    {else}
+	       <b class="commentInput">来说点什么吧...</b>
+	    {/if}
+		</div>
+	</div>
+</div>
+
+
+<div class="recordingSending"><b>语音正在发送...</b></div>
+
+<!--提问评论-->
+<div class="geneBox commentaskBox">
+	<div class="main">
+	<div class="gene_content">
+		<textarea class="reply_textarea" placeholder="请输入评论内容" onfocus="if(this.getAttribute(&#39;placeholder&#39;)==&#39;请输入评论内容&#39;)this.setAttribute(&#39;placeholder&#39;,&#39;&#39;)" onblur="if(this.getAttribute(&#39;placeholder&#39;)==&#39;&#39;)this.setAttribute(&#39;placeholder&#39;,&#39;请输入评论内容&#39;)" onkeyup=" if($(this).val().length &gt;= 2000) $(this).val($(this).val().substr(0,2000))"></textarea>
+	</div>
+	<div class="gene_bottom both">
+		<span><a href="javascript:;" class="gene_btn gene_cancel">取消</a></span>
+		<span><a href="javascript:;" class="gene_btn gene_confirm">确定</a></span>
+	</div>
+	</div>
+</div>
+
+<!--评论上墙-->
+<div class="geneBox commentReplyBox">
+	<div class="main">
+	<div class="gene_content">
+		<textarea class="reply_textarea" placeholder="点击发送后，回复内容会同步到直播主屏。回复内容可以为空" onkeyup=" if($(this).val().length &gt;= 2000) $(this).val($(this).val().substr(0,2000))"></textarea>
+	</div>
+	<div class="gene_bottom both">
+		<span><a href="javascript:;" class="gene_btn gene_cancel">取消</a></span>
+		<span><a href="javascript:;" class="gene_btn gene_confirm">确定</a></span>
+	</div>
+	</div>
+</div>
+
+<!-- 弹幕 -->
+<div class="danmu_bar on">
+	<div class="main">
+		<span class="isdan_btn"><a class="isdan_btn_a" href="javascript:;">关</a></span>
+		{if $is_manager || $is_guest}
+		  <span class="allcount">当前人气<i></i><var class="qlOLPeople">{$topic['look_numbers']}</var></span>
+		{else}
+		  <span class="allcount">当前人气<i></i><var class="qlOLPeople">{$topic['look_numbers']}</var></span>
+		{/if}
+		<span class="write_dan"><a class="write_dan_a" href="javascript:;"></a> </span>
+	</div>
+</div>
+{if $topic['is_opendm']==1}
+<div class="danmuBox" style="display: block;">
+	<dl class="danmulist">
+	
+	</dl>
+</div>
+{/if}
+
+<!-- 弹幕评论 -->
+<div class="blackBg qlDanmuBg"></div>
+<div class="comment_bottom danmuBottom">
+	<div class="cb_top btnBar">
+		<i class="btnLiveTalk" id="btn_discuss_send" onmousedown="return false">发送</i>
+		<i class="btnCommentCancel" onmousedown="return false">取消</i>
+	</div>
+	<div class="comment_input_box">
+		<textarea class="danmuInput" placeholder="提问或者发表你的看法" onfocus="if(this.getAttribute(&#39;placeholder&#39;)==&#39;提问或者发表你的看法&#39;)this.setAttribute(&#39;placeholder&#39;,&#39;&#39;)" onblur="if(this.getAttribute(&#39;placeholder&#39;)==&#39;&#39;)this.setAttribute(&#39;placeholder&#39;,&#39;提问或者发表你的看法&#39;)"></textarea>
+	</div>
+	<div class="cb_top selectBar">
+		<span class="btn_ask"><i></i>向嘉宾或主持人提问</span>
+		<span><a href="javascript:void(0);" class="video-discuss-face2" onclick="showEmotionDialog('discuss')"></a></span>
+	</div>
+	
+</div>
+
+<!-- 支付二维码 -->
+<div class="geneBox payQrBox" style="display:none;">	
+	<div class="main">
+		<div class="gene_top">使用微信扫码支付</div>
+		<span class="payQr_span_1">遇到不允许夸号支付？</span>
+		<div class="gene_content">
+			<img src="http://m.qlchat.com/topic/100000095172457.htm?_=1462870226856" class="payQrPic">
+		</div>
+		<span class="payQr_span_2">长按二维码，识别图中二维码</span>
+	</div>
+</div>
+
+<!-- 夺冠直播 -->
+<div class="blackBg qlSpeakBg"></div>
+<div class="comment_bottom qlSpeakTop">
+	<div class="comment_input_box">
+		<textarea class="qlSpeakInput" placeholder="来说点什么吧..." onfocus="if(this.getAttribute(&#39;placeholder&#39;)==&#39;来说点什么吧...&#39;)this.setAttribute(&#39;placeholder&#39;,&#39;&#39;)" onblur="if(this.getAttribute(&#39;placeholder&#39;)==&#39;&#39;)this.setAttribute(&#39;placeholder&#39;,&#39;来说点什么吧...&#39;)"></textarea>
+	</div>
+	<div class="cb_top">
+		<i class="btnLiveTalk" onmousedown="return false">发送</i>
+		<i class="btnCommentCancel" onmousedown="return false">取消</i>
+	</div>
+</div>
+
+
+<!-- 赞赏 -->
+<div class="redbag_box redbagBox">
+<div class="main_box_4 redbag" id="redbag">
+	<div class="redbag_inbox">
+		<div class=" live_redbag">
+			<a href="javascript:;" class="gene_btn redbag_cancel"></a>
+			<div class="live_headpic"><img src=""></div>
+			<div class="live_towho" attr-id=""></div>
+			<div class="live_towhy">爱赞赏的人，运气不会太差～</div>
+			<div class="live_redbaglist">
+				<ul>
+					<li><a class="rglist" href="javascript:;"><var class="rglist payli">2</var>元</a></li>
+					<li><a class="rglist" href="javascript:;"><var class="rglist payli">5</var>元</a></li>
+					<li><a class="rglist" href="javascript:;"><var class="rglist payli">10</var>元</a></li>
+					<li><a class="rglist" href="javascript:;"><var class="rglist payli">50</var>元</a></li>
+					<li><a class="rglist" href="javascript:;"><var class="rglist payli">100</var>元</a></li>
+					<li><a class="rglist" href="javascript:;"><var class="rglist payli">200</var>元</a></li>
+				</ul>
+			</div>
+			<div class="live_othermoney"><a href="javascript:;" class="rglist"> 其他金额 </a></div>
+		</div>
+	</div>
+</div>
+</div>
+
+<div class="redbag_box LmTipsBox" style="display: none;">
+<div class="main_box_4 redbag">
+  <div class="redbag_inbox">
+	<div class=" live_redbag">
+		<a href="javascript:;" class="gene_btn redbag_cancel"></a>
+		<div class="live_headpic"><img src=""></div>
+		<div class="live_towhy"></div>
+		<div class="thank_money"><var>30</var>元</div>
+		<dl class="thank_p1 rgdetail" style="display:none;"><dd class="rglist">赏金明细</dd></dl>
+		<div class="redbag_reply">
+			<div class="thank_box managerThankBox" style="display:none;"><!--管理员 -->
+			
+				<dl class="redbag_rule">
+					<dd>微信官方手续费2%</dd>
+					<dd>被赞赏人得90%</dd>
+					<dd>直播间得8%</dd>
+					<dd>微信规定：单人每天只能到账100个红包，超过的红包第二天会到账。</dd>
+				</dl>
+				<span class="redbag_rule_2">请在直播间设置页面查看收益明细</span>
+				<span class="redbag_rule_3" style="display:none;">请关注【夺冠】公众号查看赞赏金额总计</span>
+			</div>
+			<span class="replyresult">
+				<var class="r1">sdfds</var>给了<var class="r2">sdfs</var>一个
+				<var class="r3"></var>
+			</span>
+		
+	 		<div class="thank_box thankBox" style="display:none;"><!--被赞赏人 -->
+				<div style="padding-left:2rem;color:#999;">回复Ta</div>
+				<dl class="thank_choose">
+					<dd class="rglist" attr-action="baobao">拥抱</dd>
+					<dd class="rglist" attr-action="loveyou">握手</dd>
+					<dd class="rglist" attr-action="meme">么么哒</dd>
+				</dl>
+			</div>
+			<div class="thank_box replyresultNone"></div><!--没有回复 -->
+		</div>		
+	</div>
+  </div>
+</div>
+</div>
+
+<!--弹框-->
+<div class="geneBox otherRedmoneyBox">
+	<div class="main">
+	<div class="otherredmoney_content">
+		<span class="redbag_head">其他金额<a href="javascript:;" class="gene_btn gene_cancel"></a></span>
+		<span class="redbag_countarea"><label class="redbag_count_label" for="money">金额(元)</label><input type="text" value="" id="money" class="money_count" placeholder="可填写2-200"></span>
+		<span><a href="javascript:;" class="gene_btn gene_confirm">确定</a></span>
+	</div>
+	</div>
+</div>
+
+<div class="qlMsgTips enterLiveTips" style="display: none;">
+	<div class="main" style="margin-top: -188px;">
+		<div class="banner">
+			<i class="ico_1"></i><b class="banner_title">成功进入直播</b>
+		</div>
+			<div class="enter_live_status">
+				<span class="status_tips">
+				{if $istopic_end}
+				   直播已结束
+				{else}
+				   直播已经开始，赶紧收听吧~~
+				{/if}
+				</span>
+				<span class="span_1">
+					历史的内容可以复听
+				</span>
+				
+				<a style="display:none;" class="wt_btn_1 justPlayAudio" href="javascript:;">从第一条听</a>
+				
+			</div>
+			<div class="elt_bottom">
+				<a class="btn_1 close_elt" href="javascript:;">点击进入</a>
+			</div>
+	</div>
+</div>
+
+<!-- 邀请嘉宾引导弹框 -->
+
+<div class="control_box">
+	<b class="cbBg"></b>
+	<div class="collecttips" style="display:none;">点击<i></i>收藏即可</div>
+	<div class="backtips" style="display:none;">点击<i class="backtips_i1"></i>在浏览器中打开，进行后台收听</div>
+	<div class="cbox_main">
+		<a class="btn_closeCBox" href="javascript:;"></a>
+		
+		<dl>
+			<dt class="dt_1"><b>操作</b></dt>
+			{if $istopic_end==0}
+			<dd class="dd_1"><a href="{$invite_url}">邀请嘉宾</a></dd>
+			{/if}
+			<dd class="dd_2"><span id="allShutup" class="btn_switch {if $topic['is_allshutup']==1} swon {/if}"></span><b>讨论区禁言模式</b></dd>
+		
+				<dd class="finish_live_box">
+				{if $istopic_end==0}
+					<span>结束直播</span>
+					<a class="btn_finish_live" attr-topicid='{$topic_id}' href="javascript:;">结束本次直播</a>
+				{else}
+				    <span>该直播已结束</span>
+				{/if}
+					<b class="finish_tips">结束后可以从头开始回放本次直播</b>
+				</dd>
+		 
+			<dd class="dd_2"><span id="btnAutoPlay" class="btn_switch"></span><b>新语音自动播放</b></dd>
+			<dd class="dd_1" style="display:none;"><a href="javascript:;" class="shoucang_btn">收藏本次直播</a></dd>
+	
+		</dl>
+	</div>
+</div>
+
+<div class="control_emojbox">
+	<ul id="emoj_list" >
+	    
+	</ul>
+</div>
+
+<div id="imgViewWin" class="img_view_window">
+	<b class="ivwBg"></b>
+	<a class="btn_closed" href="javascript:;"></a>
+</div>
+
+<!-- 关注二维码 -->
+<div class="geneBox focusQr2Box">
+	<b class="qlGbBg"></b>
+	<div class="main">
+		<div class="gene_content">
+			<img class="focusPic" src="{$_W['account']['qrcode']}">
+		</div>
+		<span class="focusQr_span_1">长按二维码，识别图中二维码</span>
+	</div>
+</div>
+
+<div id="pageLoadBox" style="display: none;"></div>
+
+<div class="loadingBox"><span></span></div>
+
+{if $is_manager || $is_guest}
+<div class="pptBox" style="display: none;">
+	
+	<div class="backSpeak courseware">返回主屏</div>
+	
+	<div class="pptList">
+		<div class="info">点击选中图片即可在主屏放出。最佳尺寸375*200</div>
+		{loop $ppt_list $ppt}
+		<div class="pptItem" ppt-id="{$ppt['id']}" ppt-order="{$ppt['img_order']}">
+			<div class="leftBox">
+				<div class="imgBox"><img src="{$ppt['img_url']}"></div>
+				<div class="state">{if $ppt['is_current']==1}当前{/if}</div>
+				<div class="cancel">{if $ppt['is_send']==1}撤回{/if}</div>
+			</div>
+			<div class="up"></div>
+			<div class="down"></div>
+			<div class="delBtn"></div>
+		</div>
+		{/loop}
+	</div>
+	
+	<div class="pptFooter">
+		<button class="ppt_add">添加图片课件</button>
+	</div>
+	
+</div>
+{/if}
+
+<div class="popBox" style="display: none;"><b class="bg"></b><div class="main">
+<div class="pop_content"><span>确定撤回吗？</span></div>
+<div class="pop_bottom both"><span>
+<a href="javascript:;" class="pop_btn btn_cancel">取消</a></span><span>
+<a href="javascript:;" class="pop_btn btn_confirm">确定</a></span></div>
+</div></div>
+
+
+</body>
+<script type="text/javascript">
+wx.ready(function () {
+    sharedata = {
+        title: "{$sharedata['title']}",
+        desc: "{$sharedata['desc']}",
+        link: "{$sharedata['link']}",
+        imgUrl: "{$sharedata['imgUrl']}",
+        success:function(){
+        	//ajax
+        }
+    };
+    wx.onMenuShareAppMessage(sharedata);
+    wx.onMenuShareTimeline(sharedata);
+});
+</script>
+</html>

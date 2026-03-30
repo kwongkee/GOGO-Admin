@@ -1,0 +1,132 @@
+{template 'header'}
+{template 'mobilecheck'}
+<div class="ui-container">
+	<div class="weui_cell">
+		<div class="weui_cell_bd weui_cell_primary">
+			<textarea class="weui_textarea" id="dongtai_content" rows=5 placeholder="这一刻的想法..." style="font-size:16px;"></textarea>
+			<ul class="weui_uploader_files" id="uploader_files">
+			</ul>
+			<div class="weui_uploader_input_wrp" id="uploader_files_btn">
+				<button class="weui_uploader_input" onclick="doSelect()"></button>
+			</div>
+		</div>
+	</div>
+	<br>
+	<br>
+	<div class="ui-btn-wrap">
+		<button class="weui_btn weui_btn_primary" id="save_btn" onclick="doUpload(this)">发布</button>
+	</div>
+</div>
+<div id="cover" class="mcover">
+<div>删除</div>
+<img src="">
+</div>
+
+<script type="text/javascript">
+	var images = {
+		localId: [],
+		serverId: [],
+		count:9
+	};
+	function doSelect () {
+		// 判断图片数量
+		if($('#uploader_files li').size() > 9)
+		{
+			alert("最多上传9张照片");
+			return;
+		}
+
+		wx.chooseImage({
+			count: images.count, // 默认9
+			sizeType: ['compressed'], // 可以指定是原图还是压缩图，默认二者都有
+			sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+			success: function (res) {
+				images.localId = res.localIds;
+				// alert('已选择 ' + res.localIds.length + ' 张图片');
+				// doUpload();
+				for(var i in res.localIds) {
+					addImg(res.localIds[i]);
+				}
+				images.count -= res.localIds.length;
+				if(!images.count)
+				{
+					$("#uploader_files_btn").hide();
+				}
+			}
+		});
+	};
+	// 添加上传图片
+	function addImg(localId) {
+		var html = "";
+		html += "<li class='weui_uploader_file' onclick='doDelete(this)'>";
+		html += "<a><img src='"+localId+"'></a>";
+		html +="</li>";
+		$("#uploader_files").append(html);
+	}
+
+	function doDelete(obj) {
+		if(!confirm('确认删除？')) {
+			return false;
+		}
+		$(obj).remove();
+	}
+
+	// 5.3 上传图片
+	function doUpload () {
+
+		if(images.localId.length == 0 && !$("#dongtai_content").val()) {
+			alert("请填写内容或者上传图片");
+			return;
+		}
+		$("#save_btn").attr('disabled',true);
+		if (images.localId.length == 0) {
+			doSave(0);
+
+		}else {
+			var i = 0, length = images.localId.length;
+			images.serverId = [];
+			function upload() {
+				wx.uploadImage({
+					localId: images.localId[i],
+					success: function (res) {
+						i++;
+						images.serverId.push(res.serverId);
+						if (i < length) {
+							upload();
+						}
+						else
+						{
+							var media_ids = images.serverId.join(',')
+							doSave(media_ids);
+						}
+					},
+					fail: function (res) {
+						alert(JSON.stringify(res));
+					}
+				});
+			}
+			upload();
+		}
+	};
+
+	function doSave(media_ids) {
+		$("#save_btn").html("发布中...");
+		$.ajax({
+			type:'post',
+			url:"{php echo $this->createMobileUrl('momentaddajax')}",
+			data:{media_ids:media_ids,dongtai_content:$("#dongtai_content").val()},
+			success:function(d,s) {
+				if(d.res == '100') {
+					$("#save_btn").html("发布成功");
+					window.location.href="{php echo $this->createMobileUrl('moments')}";	
+				}else {
+					$("#save_btn").attr('disabled','');
+					$("#save_btn").html("发布");
+					alert(d.msg);
+				}
+				
+			}
+		});
+	}
+</script>
+{template 'footer'}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {include file="common/meta"}
+</head>
+<body class="gray-bg">
+<div class="col-sm-12">
+
+    <div class="ibox float-e-margins">
+        <div class="ibox-content" style="display:block;" id="list1">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>操作人员</th>
+                    <th>公司名称</th>
+                    <th>提单编号</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name='list' id='vo'}
+                <tr>
+                    <td>{$vo.user_name}</td>
+                    <td>{$vo.company_name}</td>
+                    <td>{$vo.bill_num}</td>
+                    <td>
+                        <a href="#" class="btn btn-info" onclick="detail('{$vo.bill_num}');">详情</a>
+                        <a href="{:Url('order/exportrawpayinfo')}&billnum={$vo.bill_num}" class="btn btn-info" >导出支付原数据</a>
+                    </td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+</body>
+<script>
+    function detail(billNum){
+        parent.layer.open({
+            type: 2,
+            title: false,
+            area: ['920px', '620px'], //宽高
+            content: "{:Url('order/orderCheckList')}&bill_num="+billNum,
+        });
+        return false;
+    }
+</script>
+</html>

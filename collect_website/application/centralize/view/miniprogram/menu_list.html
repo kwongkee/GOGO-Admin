@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>海关申报系统菜单管理</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <style>
+        body{padding:20px;}
+        .layui-table-view .layui-table td, .layui-table-view .layui-table th,.layui-table td,td,.layui-table td,.layui-table th{border-color:#000;}
+    </style>
+</head>
+<body>
+<div class="layui-btn-group" style="margin-top: 12px;">
+    <button style="background-color:#23b7e5;" class="layui-btn" id="btn-add" onclick="addMenu(0);">添加一级菜单</button>
+</div>
+
+<table id="auth-table" class="layui-table" lay-filter="auth-table" style="border-color:#000;"></table>
+
+<!-- 操作列 -->
+<script type="text/html" id="auth-state">
+    <div class="" style="text-align: left;width:100%;">
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="add" onclick="addMenu('{{d.id}}');">增加</a>
+        <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit" onclick="edit('{{d.id}}');">修改</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" onclick="del('{{d.id}}')">删除</a>
+    </div>
+</script>
+
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+<script>
+    layui.config({
+        base: './static/hadmin/assets/module/'
+    }).extend({
+        treetable: 'treetable-lay/treetable'
+    }).use(['table', 'treetable'], function () {
+        var $ = layui.jquery;
+        var table = layui.table;
+        var treetable = layui.treetable;
+
+        // 渲染表格
+        layer.load(2);
+        treetable.render({
+            treeColIndex: 1,
+            treeSpid: 0,
+            treeIdName: 'id',
+            treePidName: 'pid',
+            elem: '#auth-table',
+            url: '{:Url("centralize/miniprogram/menu_list")}&system_id={$system_id}',
+            page: true,
+            treeDefaultClose:false,
+            cols: [[
+                {type: 'numbers'},
+                {field: 'name',width:200, title: '名称'},
+                {templet: '#auth-state', align: 'center', title: '操作'}
+            ]],
+            done: function () {
+                layer.closeAll('loading');
+            }
+        });
+    });
+    function addMenu(pid=0) {
+        layer.open({
+            type: 2,
+            shadeClose:true,
+            cancel:function(){
+                //location.reload();
+            },
+            title:'添加菜单',
+            area:['100%','100%'],
+            content: '{:Url("centralize/miniprogram/save_menu")}&system_id={$system_id}&pid='+pid //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+        });
+        return false;
+    }
+    function edit(id=0) {
+        layer.open({
+            type: 2,
+            shadeClose:true,
+            cancel:function(){
+                //location.reload();
+            },
+            title:'编辑菜单',
+            area:['100%','100%'],
+            content: '{:Url("centralize/miniprogram/save_menu")}&system_id={$system_id}&id='+id //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+        });
+        return false;
+    }
+
+    function del(id) {
+        $.ajax({
+            url:"{:Url('centralize/miniprogram/del_menu')}",
+            type:"GET",
+            dataType:"json",
+            data:{id:id},
+            success:function (res) {
+                layer.msg(res.msg);
+                if (res.code==0){
+                    setTimeout(function () {
+                        location.reload();
+                    },2000);
+                }
+            },
+            error:function (xhr) {
+                layer.msg('连接服务器错误！');
+            }
+        });
+        return false;
+    }
+</script>
+</body>
+</html>

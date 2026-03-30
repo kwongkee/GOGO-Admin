@@ -1,0 +1,115 @@
+{include file="public/header_new"}
+<body class="gray-bg">
+
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+              <div class="ibox-content">
+                <div class="col-md-2">
+                  <select class="form-control" id="decl_user">
+                    <option value></option>
+                    {volist name="declusers" id="vo"}
+                      <option value="{$vo['id']}">{$vo['company_name']}</option>
+                    {/volist}
+                  </select>
+                </div>
+
+                <div id="toolbar" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;">
+
+                </div>
+                <table id="table"
+
+                  /*默认排序项*/
+                  data-sort-name="up.create_time"
+                  data-sort-order="desc"
+                  /*工具栏相关*/
+                  data-toolbar="#toolbar"
+                  data-search="true"          /*搜索框*/
+                  data-search-on-enter-key="false"
+                  data-show-refresh="true"    /*刷新按钮*/
+                  /*分页相关*/
+                  data-side-pagination="server"
+                  data-pagination="true"      /*显示分页*/
+                  data-page-size="15"         /*每页显示条数*/
+                  /*移动端相关*/
+                  data-mobile-responsive="true"
+                  data-card-view="true"
+                  data-show-columns="true"
+                  /*radio or checkbox字段名称*/
+                  data-select-item-name="tids" >
+
+                  <thead>
+                    <tr>
+                      <th data-field="checkbox"
+                        data-align="center"
+                        data-checkbox="true"></th>
+                      <th data-field="id"
+                        data-align="center"
+                        data-sortable="true"
+                      data-visible="false">ID</th>
+                      <th data-field="ordersn"
+                        data-align="center"
+                        data-sortable="true">运单号</th>
+                      <th data-field="company_name"
+                        data-align="center"
+                        data-sortable="true">所属商户</th>
+                      <th data-field="goods_num"
+                        data-align="center"
+                        data-sortable="true">商品数量</th>
+                      <th data-field="ordersn_type"
+                        data-align="center"
+                        data-sortable="true">运单类型</th>
+                      <th data-field="create_time"
+                        data-align="center"
+                        data-sortable="true">打包时间</th>
+
+                      </tr>
+                    </thead>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+  <script type="text/javascript">
+
+var table;
+
+$(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:url('admin/package/datalist')}",
+            queryParams: queryParams,
+
+        });
+        $('.form-control').attr('placeholder','搜索运单号');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+            decl_user_id: $("#decl_user").val(),
+
+        };
+        return temp;
+    };
+
+    var declUser = $("#decl_user");
+    declUser.select2({
+        placeholder: "选择商户",
+        allowClear: true
+    });
+
+    declUser.change(function(){
+      table.bootstrapTable('selectPage',1);
+    });
+
+
+</script>
+
+</body>
+</html>

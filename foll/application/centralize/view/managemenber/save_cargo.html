@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>配置货物信息</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <link href="static/cklein/css/style.css" rel="stylesheet">
+    <link href="static/cklein/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        form{
+            margin-top: 47px;
+            margin-right: 32px;
+        }
+        .layui-form-label{
+            width:110px;
+        }
+    </style>
+</head>
+<body class="gray-bg">
+<form class="layui-form" action="">
+    <input type="text" name="id" value="{$id}" style="display:none;">
+    <div class="layui-form-item">
+        <label class="layui-form-label">货物属性名称</label>
+        <div class="layui-input-inline">
+            <input type="text" name="title" lay-verify="required" value="{$data['title']}" placeholder="请输入货物属性名称" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">详情</label>
+        <div class="layui-input-inline">
+            <textarea name="remark" class="layui-textarea" lay-verify="required">{$data['remark']}</textarea>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <div class="layui-footer" style="left: 0;">
+                <button class="layui-btn" lay-submit="" lay-filter="component-form-demo1">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </div>
+</form>
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+<script src="./static/hadmin/assets/layui/xm-select.js"></script>
+<script>
+    layui.use(['form','upload'], function(){
+        var form = layui.form,upload = layui.upload;
+
+        //监听提交
+        form.on('submit(component-form-demo1)', function(data){
+            // if(data.field['isCustomsDeclUnit']==1 && data.field['enterprise_id']==''){
+            //     layer.msg('请选择报关单位！');
+            //     return false;
+            // }
+            data.field['pa'] = 1;
+            $.ajax({
+                url:"{:Url('centralize/managemenber/save_cargo')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 1)
+                        {
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                            parent.window.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+
+</script>
+</html>

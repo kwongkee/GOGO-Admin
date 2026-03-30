@@ -1,0 +1,111 @@
+{extend name="common/_header"}
+
+{block name="conten"}
+<table class="layui-table" style="margin-left:22px;width:98%;">
+    <thead>
+    <tr>
+        <th>商家名</th>
+        <th>投放位置</th>
+        <th>投放开始时间</th>
+        <th>投放结束时间</th>
+        <th>审核状态</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {volist name="data.data" id="vo" empty="<td>没有数据</td>"}
+    <tr>
+        <td>{$vo.company_name}</td>
+        <td>{switch name=$vo.position}
+                {case value="1"}轮播{/case}
+                {case value="2"}瀑布流{/case}
+            {/switch}
+        </td>
+        <td>{$vo.s_time|date="Y-m-d H:i:s",###}</td>
+        <td>{$vo.e_time|date="Y-m-d H:i:s",###}</td>
+        <td>{switch name=$vo.status}
+                {case value="10"}未审批{/case}
+                {case value="20"}已审批{/case}
+            {/switch}
+        </td>
+        <td><a class="btn btns" onclick="review(this,'{$vo.id}')">审核</a></td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+<script>
+    var index='';
+    function review(obj,id) {
+        index=layer.open({
+            type:1,
+            area:['400px','300px'],
+            shadeClose:true,
+            shade:0.5,
+            title: '参数'
+            ,content: '<div><form class="layui-form">\n' +
+            '                <input type="hidden" name="id" value="'+id+'">\n' +
+            '                <div class="layui-form-item">\n' +
+            '                    <label for="L_email" class="layui-form-label">\n' +
+            '                        <span class="x-red">*</span>每天广告流量费\n' +
+            '                    </label>\n' +
+            '                    <div class="layui-input-inline">\n' +
+            '                        <input type="text" id="charges" name="charges" value="" required="" autocomplete="off" class="layui-input">\n' +
+            '                    </div>\n' +
+            '                </div>\n' +
+            '                <div class="layui-form-item">\n' +
+            '                    <label for="L_username" class="layui-form-label">\n' +
+            '                        <span class="x-red">*</span>计算倍数\n' +
+            '                    </label>\n' +
+            '                    <div class="layui-input-inline">\n' +
+            '                        <input type="text" id="multiple" name="multiple" required="" value=""  autocomplete="off" class="layui-input">\n' +
+            '                    </div>\n' +
+            '                </div>\n' +
+            '                <div class="layui-form-item">\n' +
+            '                    <label for="L_pass" class="layui-form-label">\n' +
+            '                        <span class="x-red">*</span>每天计算增长率\n' +
+            '                    </label>\n' +
+            '                    <div class="layui-input-inline">\n' +
+            '                        <input type="tel" id="rate" name="rate" required="" value="" autocomplete="off" class="layui-input">\n' +
+            '                    </div>\n' +
+            '                </div>\n' +
+            '                <div class="layui-form-item">\n' +
+            '                    <label for="L_repass" class="layui-form-label">\n' +
+            '                    </label>\n' +
+            '                    <a class="layui-btn"  onclick="onbtn(id)">\n' +
+            '                        增加\n' +
+            '                    <a/>\n' +
+            '                </div>\n' +
+            '            </form></div>'
+        });
+        return false;
+    }
+
+
+    function onbtn(id) {
+        var str=$("form").serialize();
+        console.dir(str);
+        $.ajax({
+            url:"{:Url('admin/adver/save')}",
+            type:"post",
+            dataType:"text",
+            data:str,
+            success:function (e) {
+                var s=JSON.parse(e);
+                console.log(e);
+                layer.close(index);
+                layer.msg(s.msg);
+                setTimeout(function () {
+                    location.reload();
+                },2000);
+            },
+            error:function () {
+                console.log("failed");
+            }
+        });
+        return false;
+    }
+</script>
+{$page}
+{/block}
+
+{extend name="common/_footer"}

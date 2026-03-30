@@ -1,0 +1,136 @@
+{include file="public/header_new"}
+<style>
+    img{ width:20px;height:20px;}
+</style>
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <h3 style="text-align: center;">HS编码归类</h3>
+                <div id="toolbar" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;">
+                    <button type="button" href="javascript:;" onClick="addBody('导入HsCode','')" class="btn btn-default">
+                        导入HsCode
+                    </button>
+                </div>
+                <!--<p style="color:red;">*查找不到时，可以输入空格分词查询（如：隔热 垫）</p>-->
+                <table id="table"
+
+                /*默认排序项*/
+                data-sort-name="id"
+                data-sort-order="desc"
+                /*工具栏相关*/
+                data-toolbar="#toolbar"
+                data-search="true"          /*搜索框*/
+                data-search-on-enter-key="true"
+                data-show-refresh="true"    /*刷新按钮*/
+                /*分页相关*/
+                data-side-pagination="server"
+                data-pagination="true"      /*显示分页*/
+                data-page-size="10"         /*每页显示条数*/
+                /*移动端相关*/
+                data-mobile-responsive="true"
+                data-card-view="true"
+                data-show-columns="true"
+                /*radio or checkbox字段名称*/
+                data-select-item-name="id" >
+
+                <thead>
+                <tr>
+                    <th data-field="checkbox"
+                        data-align="center"
+                        data-checkbox="true"></th>
+                    <th data-field="two"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">第二位</th>
+                    <th data-field="four"
+                        data-align="center"
+                        data-sortable="true">第四位</th>
+                    <th data-field="five"
+                        data-align="center"
+                        data-sortable="true">第五位</th>
+                    <th data-field="six"
+                        data-align="center"
+                        data-sortable="true">第六位</th>
+                    <th data-field="seven"
+                        data-align="center"
+                        data-sortable="true">第七位</th>
+                    <th data-field="eight"
+                        data-align="center"
+                        data-sortable="true">第八位</th>
+                    <th data-field="hscode"
+                        data-align="center"
+                        data-sortable="true">hs编码</th>
+                    <th data-field="name"
+                        data-align="center"
+                        data-sortable="true">中文名称</th>
+                    <th data-field="manage"
+                        data-align="center"
+                        data-sortable="true"
+                        data-formatter="actionFormatter">操作</th>
+                </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var table;
+
+    $(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:url('admin/exportRisk/import_info')}",
+            queryParams: queryParams,
+        });
+        $('.form-control').attr('placeholder','搜索hscode或品名');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.id;
+        var name = row.name;
+        var result = "";
+        result += '<button style="margin-right: 5px;" type="button" onclick="info('+id+',\''+name+'\')" class="btn btn-primary btn-xs">查看</button>';
+        return result;
+    }
+
+    function info(id,name){
+        var index = layer.open({
+            type: 2,
+            title: name+'的信息',
+            content: "{:url('admin/exportRisk/hscode_info')}&id="+id
+        });
+        layer.full(index);
+    }
+
+
+    function addBody(title) {
+        var index = layer.open({
+            type: 2,
+            title: title,
+            area:['50%','50%'],
+            content: "{:url('admin/exportRisk/import_excel')}"
+        });
+        // layer.full(index);
+    }
+
+</script>
+
+</body>
+</html>

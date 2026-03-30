@@ -1,0 +1,128 @@
+{include file="public/header_new"}
+<body class="gray-bg">
+
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+              <div class="ibox-content">
+
+                <div id="toolbar" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;">
+
+                </div>
+                <table id="table"
+
+                  /*默认排序项*/
+                  data-sort-name="create_time"
+                  data-sort-order="desc"
+                  /*工具栏相关*/
+                  data-toolbar="#toolbar"
+                  data-search="true"          /*搜索框*/
+                  data-search-on-enter-key="false"
+                  data-show-refresh="true"    /*刷新按钮*/
+                  /*分页相关*/
+                  data-side-pagination="server"
+                  data-pagination="true"      /*显示分页*/
+                  data-page-size="15"         /*每页显示条数*/
+                  /*移动端相关*/
+                  data-mobile-responsive="true"
+                  data-card-view="true"
+                  data-show-columns="true"
+                  /*radio or checkbox字段名称*/
+                  data-select-item-name="tids" >
+
+                  <thead>
+                    <tr>
+                      <th data-field="checkbox"
+                        data-align="center"
+                        data-checkbox="true"></th>
+                      <th data-field="id"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="false">ID</th>
+                      <th data-field="avatarurl"
+                        data-align="center"
+                        data-sortable="true">头像</th>
+                      <th data-field="openid"
+                        data-align="center"
+                        data-sortable="true">openid</th>
+                      <th data-field="nickname"
+                        data-align="center"
+                        data-sortable="true">昵称</th>
+                      <th data-field="gender"
+                        data-align="center"
+                        data-sortable="true">性别</th>
+                      <th data-field="phonenumber"
+                        data-align="center"
+                        data-sortable="true">手机号码</th>
+                      <th data-field="create_time"
+                        data-align="center"
+                        data-sortable="true">授权时间</th>
+                      <th data-field="manage"
+                        data-align="center"
+                        class="td-manage">操作</th>
+                      </tr>
+                    </thead>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+  <script type="text/javascript">
+
+var table;
+
+$(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:Url('admin/smallwechat/userlist')}",
+            queryParams: queryParams,
+
+        });
+        $('.form-control').attr('placeholder','搜索昵称或手机号');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+
+        };
+        return temp;
+    };
+
+    //添加微信好友
+    function sendAddWxFriend(id) {
+        $.ajax({
+            url:"{:Url('admin/smallwechat/sendAddWxFriend')}",
+            type:"GET",
+            dataType:"json",
+            data:{id:id},
+            success:function (ret) {
+                layer.msg(ret.msg);
+                if (ret.code==0){
+                    table.bootstrapTable('selectPage',1);
+                }
+            }
+        })
+        return false;
+    }
+    //配置权限
+    function setAuth(title,url,id)
+    {
+        var index = layer.open({
+            type: 2,
+            title: title,
+            content: url + '/user_id/' + id
+        });
+        layer.full(index);
+    }
+
+
+</script>
+
+</body>
+</html>

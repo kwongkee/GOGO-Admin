@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+    <link rel="stylesheet" href="./static/agents/layui/css/layui.css"></link>
+    <link rel="stylesheet" type="text/css" href="./static/index/admin/css/formSelects-v4.css" />
+    <script src="./static/index/admin/js/formSelects-v4.js" type="text/javascript" charset="utf-8"></script>
+    <style>
+        .disf{display:flex;align-items: center;justify-content: center;}
+    </style>
+</head>
+
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <form action="javascript:submit();" id="form">
+                <div class="layui-card">
+                <div class="layui-card-header">提单信息</div>
+                <div class="layui-card-body">
+                    <table class="layui-table" lay-size="sm">
+                        <thead>
+                        <tr>
+                            <th>电商企业</th>
+                            <th>电商平台</th>
+                            <th>支付企业</th>
+                            <th>物流企业</th>
+                            <th>监管场所</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <div class="layui-inline disf">
+                                    <input type="text" class="layui-input" name="ebcCode" value="{$data['ebcCode']}">
+                                    <input type="text" class="layui-input" name="ebcName" value="{$data['ebcName']}">
+                                    <input type="text" class="layui-input" name="ebc_tele_phone" value="{$data['ebc_tele_phone']}">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="layui-inline disf">
+                                    <input type="text" class="layui-input" name="ebpCode" value="{$data['ebpCode']}">
+                                    <input type="text" class="layui-input" name="ebpName" value="{$data['ebpName']}"
+                                </div>
+                            </td>
+                            <td>
+                                <div class="layui-inline disf">
+                                    <input type="text" class="layui-input" name="payCode" value="{$data['payCode']}">
+                                    <input type="text" class="layui-input" name="payName" value="{$data['payName']}">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="layui-inline disf">
+                                    <input type="text" class="layui-input" name="logisticsCode" value="{$data['logisticsCode']}">
+                                    <input type="text" class="layui-input" name="logisticsName" value="{$data['logisticsName']}">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="layui-inline disf">
+                                    <select name="loctNo" id="loctNo" lay-search>
+                                        {volist name="loctcode" id="vo"}
+                                        <option value="{$vo.code_value}" {if  $data['loctNo']==$vo.code_value}selected{/if}>{$vo.code_value}:{$vo.code_name}</option>
+                                        {/volist}
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+
+                </div>
+
+                <div class="layui-card-header">报关信息</div>
+                <div class="layui-card-body">
+                    <table class="layui-table" lay-size="sm">
+                        <thead>
+                        <tr>
+                            <th style="width:200px;">申报海关</th>
+                            <th>出口日期</th>
+                            <th>起止国地</th>
+                            <th>境内运抵</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <div class="layui-inline disf">
+                                    <select name="customs_code" id="customs_code" lay-search>
+                                        {volist name="customs_codes" id="vo"}
+                                        <option value="{$vo.AreaCode}" {if  $data['customs_code']==$vo.AreaCode}selected{/if}>{$vo.AreaCode}</option>
+                                        {/volist}
+                                    </select>
+                                    <select name="port_code" id="port_code" lay-search>
+                                        {volist name="customs_codes" id="vo"}
+                                        <option value="{$vo.AreaCode}" {if  $data['port_code']==$vo.AreaCode}selected{/if}>{$vo.AreaCode}</option>
+                                        {/volist}
+                                    </select>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="layui-inline disf">
+                                    <input type="text" class="layui-input" name="ie_date" value="{$data['ie_date']}">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="layui-inline disf">
+                                    <select name="pod" id="pod" lay-search>
+                                        {volist name="port_code" id="vo"}
+                                        <option value="{$vo.code_value}" {if  $data['pod']==$vo.code_value}selected{/if}>{$vo.code_name}</option>
+                                        {/volist}
+                                    </select>
+                                    <select name="country_code" id="country_code" lay-search>
+                                        {volist name="country_code" id="vo"}
+                                        <option value="{$vo.code_value}" {if  $data['country_code']==$vo.code_value}selected{/if}>{$vo.code_name}</option>
+                                        {/volist}
+                                    </select>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="layui-inline disf">
+                                    <input type="text" class="layui-input" name="voyage_no" value="{$data['voyage_no']}">
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+
+                        <thead>
+                            <th colspan="4" style="text-align:center;">跨境运输</th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>运输方式</th>
+                                <th>运输工具编号</th>
+                                <th>提单编号</th>
+                                <th>文件</th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select name="transport_code" id="transport_code">
+                                        {volist name="transport" id="vo"}
+                                        <option value="{$vo.code_value}" {if $data['transport_code']==$vo.code_value}selected{/if}>{$vo.code_name}</option>
+                                        {/volist}
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="text" class="layui-input" name="traf_name" value="{$data['traf_name']}">
+                                </td>
+                                <td>
+                                    <input type="text" class="layui-input" name="oceanLad" value="{$data['oceanLad']}">
+                                </td>
+                                <td>
+                                    <div style="display:inline-block;">
+                                        {volist name="data.transport_file" id="vo"}
+                                        <a href="https://shop.gogo198.cn/attachment/{$vo}" target="_blank">
+                                            <img src="https://shop.gogo198.cn/attachment/{$vo}" alt="">
+                                        </a>
+                                        {/volist}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>区内企业名称</th>
+                                <th>区内企业代码</th>
+                                <th>账册编号</th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" class="layui-input" name="iac_name" value="{$data['iac_name']}">
+                                </td>
+                                <td>
+                                    <input type="text" class="layui-input" name="iac_code" value="{$data['iac_code']}">
+                                </td>
+                                <td>
+                                    <input type="text" class="layui-input" name="ems_no" value="{$data['ems_no']}">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+                <div class="layui-form-item" style="margin-top: 15px;text-align: center;">
+                    <div>
+                        <button class="layui-btn layui-btn-normal submit" lay-submit="" lay-filter="component-form-element" style="background:#F7931E !important;">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+
+
+<script src="./static/hadmin/layui/layui.all.js"></script>
+
+</html>
+
+<script>
+    layui.use('form', function() {
+        var form = layui.form;
+    });
+    formSelects.render();
+
+    function submit(){
+        var value = $('#form').serializeArray();
+        $.post("{:url('admin/predeclare/lading_save')}",{id:"{$id}",value:value},function(res){
+            if(res.status==1){
+                alert(res.msg);
+                window.location.reload();
+            }
+        });
+    }
+
+    function check(obj, id, status) {
+        var sel = formSelects.value('rule'+id);
+        var url = "{:url('buss/user/review')}";
+        if (status == 0) {
+            if (sel.length <= 0) {
+                // parent.layer.msg('请选择授权应用！', {
+                //     icon: 5
+                // });
+                alert('请选择授权应用！');
+                return;
+            }
+        }
+        var data = {
+            id: id,
+            status: status,
+            select: sel
+        };
+        requsetServer(url,data);
+        return;
+    }
+
+
+    function update(obj,id){
+        var sel = formSelects.value('rule'+id);
+        var url = "{:url('buss/user/update')}";
+        if (sel.length <= 0) {
+            // parent.layer.msg('请选择授权应用！', {
+            //     icon: 5
+            // });
+            alert('请选择授权应用！');
+            return;
+        }
+        var data = {
+            id: id,
+            select: sel
+        };
+        requsetServer(url,data);
+        return;
+    }
+
+    function requsetServer(url,data) {
+        $.ajax({
+            url: url,
+            type: "POST",
+            dataType: "json",
+            data: data,
+            success: function (res) {
+                if (res.code === 0) {
+                    // layer.msg(res.message, {
+                    //     icon: 6
+                    // });
+                    alert(res.message);
+                    setTimeout(() => {
+                        window.location.reload;
+                    }, 1200);
+                } else {
+                    // layer.msg(res.message, {
+                    //     icon: 5
+                    // });
+                    alert(res.message);
+                }
+            }
+        })
+    }
+</script>

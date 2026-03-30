@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>ems单号提取</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+</head>
+
+<body class="gray-bg">
+<form class="layui-form" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">提取数量</label>
+        <div class="layui-input-block">
+            <input type="number" name="num" required  lay-verify="required" placeholder="提取数量" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="getStart">立即提交</button>
+        </div>
+    </div>
+</form>
+
+
+</body>
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script>
+    layui.use(['layer','form'], function(){
+        layer = layui.layer;
+        var form = layui.form;
+        //监听提交
+        form.on('submit(getStart)', function(data){
+            var index = layer.load(1);
+            $.ajax({
+                url:"{:url('admin/WaybillNumebrExtract/ems')}",
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (ret){
+                    layer.close(index);
+                    if (ret.code==1){
+                        layer.msg(ret.msg);
+                    }else{
+                        window.location.href="https://shop.gogo198.cn/foll/public/"+ret.data;
+                    }
+                },
+                error:function (xhr){
+                    layer.close(index);
+                    layer.msg('系统错误！');
+                }
+            });
+            return false;
+        });
+    });
+
+</script>
+</html>

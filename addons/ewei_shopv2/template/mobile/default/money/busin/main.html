@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<!-- 控制浏览器缓存 -->
+		<meta http-equiv="Cache-Control" content="no-store" />
+		<!-- 优先使用 IE 最新版本和 Chrome -->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<!-- 页面描述 -->
+		<meta name="description" content="不超过150个字符" />
+		<!-- 页面关键词 -->
+		<meta name="keywords" content="" />
+		<link rel="stylesheet" href="../addons/ewei_shopv2/static/css/frozenui/css/frozen.css">
+		<link rel="stylesheet" href="../addons/ewei_shopv2/static/ydui/ydui.css">
+		<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+		<!-- 引入YDUI脚本 -->
+		<script src="../addons/ewei_shopv2/static/ydui/ydui.js"></script>
+		
+		<link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.2/style/weui.min.css">
+		<link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.0/css/jquery-weui.min.css">
+		
+		<style>
+			* {margin: 0;padding: 0;box-sizing: border-box;}
+			
+			html,body {height: 100%;overflow: hidden;}
+			#form1{margin-top: 0px;}
+		</style>
+	</head>
+	<body>
+		
+		{template "money/busin/menu"}
+		
+		  
+		<!-- 容器 -->
+		<div class="weui-tab">
+			
+		  	<div class="weui-tab__bd">
+		    
+			    <div id="tab1" class="weui-tab__bd-item weui-tab__bd-item--active">
+			      <!-- 用户认证 -->
+					<div id="div1" class="">
+						<form method="post" id="form1" name="form1" class="weui-cells weui-cells_form tops">
+						  <div class="tops1">
+						  	<p style="text-align: center;color: green;line-height: 35px;font-size: 26px;font-weight: bold;">商家认证</p>
+						  </div>
+						  
+						  <div class="weui-cell">
+						    <div class="weui-cell__hd"><label class="weui-label">法人姓名:</label></div>
+						    <div class="weui-cell__bd">
+						      <input class="weui-input" type="text" name="userName" maxlength="6" id="userName" placeholder="请输入法人姓名">
+						    </div>
+						  </div>
+						  <div class="weui-cells__title" id="userText" style="color: red;text-align: center;display: none;">表单报错</div>
+						  
+						  <div class="weui-cell">
+						    <div class="weui-cell__hd"><label class="weui-label">法人手机:</label></div>
+						    <div class="weui-cell__bd">
+						      <input class="weui-input" type="text" name="phone" maxlength="11" id="phone" placeholder="请输入法人手机号码">
+						    </div>
+						  </div>
+						  <div class="weui-cells__title" id="phoneText" style="color: red;text-align: center;display: none;">表单报错</div>
+						  
+						  <div class="weui-cell">
+						    <div class="weui-cell__bd">
+						      <input class="weui-btn weui-btn_primary" type="button" id="btn" value="认 证">
+						    </div>
+						  </div>
+						  
+						  <input type="hidden" id="ischeck" value="false"/>
+						  <input type="hidden" id="nexitUrl" value="<?php echo mobileUrl('money/business/UserCheck');?>" />
+						</form>
+					</div>
+			    </div>
+			    
+			</div>
+		</div>
+	</body>
+	
+	<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/jquery-weui/1.2.0/js/jquery-weui.min.js"></script>
+	<script src="https://cdn.bootcss.com/jquery-weui/1.2.0/js/swiper.min.js"></script>
+	<script src="https://cdn.bootcss.com/jquery-weui/1.2.0/js/city-picker.min.js"></script>
+	
+	<script type="text/javascript">
+	
+		// 验证手机号码
+		$('#phone').bind('input propertychange', function() { 
+		 //进行相关操作 
+		 	var value = $(this).val();//当前值
+		 	var lent = value.length;//当前值的长度；
+		 	if(lent == 11){
+		 		if(checkPhone(value)){//验证手机号码通过  通过false,不通过true
+					$('#phoneText').css('display','none');
+					$('#ischeck').val('false');
+				}else{
+					$('#phoneText').html('您输入的手机号码格式不正确');
+					$('#phoneText').css('display','block');
+					$('#Phone').val('').focus().val('');
+					$('#ischeck').val('true');
+				}
+		 	}else {
+		 		$('#phoneText').css('display','none');
+		 		$('#ischeck').val('true');
+		 	}
+		});
+		
+		//提交用户登录
+		$('#btn').click(function(){
+			
+			if(checkForm1()){//如果没有空值
+				//判断标志是否为true;
+				if($('#ischeck').val() == 'false'){
+					$.ajax({
+						type:'POST',
+						url :$('#nexitUrl').val(),//请求地址 赵金如
+						async : false,
+						dataType:'json',
+		    			data: $('#form1').serialize(),
+		    			success : function(json) {
+		    				console.dir(json);
+						 	if(json.status >= 1) {//验证通过
+						 		
+								$.toast(json.result.message);
+								
+						 	}else {//验证不通过
+								$.toast(json.result.message, "cancel");
+						 	}
+		    			}
+				  	});
+				}else{
+					$.toast("请填写必填项", "cancel");
+				}
+			}else{//有空值
+				$.toast("请填写必填项", "cancel");
+			}
+		});
+		
+
+		
+		//判断表单是否有空值 表单一
+    	function checkForm1()
+    	{
+    		var inputs = document.form1.getElementsByTagName("input");
+			
+			for(var i = 0; i < inputs.length; i++) {
+//				console.dir(inputs[i].value);
+			    if(inputs[i].value == ''){
+			    	return false;
+			    }
+			}
+			return true;
+    	}
+    	
+    	
+    	//判断表单是否有空值 表单二
+    	function checkForm2()
+    	{
+    		var inputs = document.form2.getElementsByTagName("input");
+			
+			for(var i = 0; i < inputs.length; i++) {
+//				console.dir(inputs[i].value);
+			    if(inputs[i].value == ''){
+			    	return false;
+			    }
+			}
+			return true;
+    	}
+		
+		// 验证手机号
+		function checkPhone(phone){
+			var pattern = /^1[345678]\d{9}$/;
+			return pattern.test(phone);
+		}
+		
+		//验证中文名称
+		function isChinaName(name) {
+			var pattern = /^[\u4E00-\u9FA5]{1,6}$/;
+			return pattern.test(name);
+		}
+		
+		
+		//身份证判断正则；
+		function checkCertNo(obj)
+		{
+	        var aCity = {11: "北京", 12: "天津", 13: "河北", 14: "山西", 15: "内蒙古", 21: "辽宁", 22: "吉林", 23: "黑龙 江", 31: "上海", 32: "江苏", 33: "浙江", 34: "安徽", 35: "福建", 36: "江西", 37: "山东", 41: "河南", 42: "湖 北", 43: "湖南", 44: "广东", 45: "广西", 46: "海南", 50: "重庆", 51: "四川", 52: "贵州", 53: "云南", 54: "西 藏", 61: "陕西", 62: "甘肃", 63: "青海", 64: "宁夏", 65: "新疆", 71: "台湾", 81: "香港", 82: "澳门", 91: "国 外"};
+	        var iSum = 0;
+	        //var info = "";
+	        var strIDno = obj;
+	        var idCardLength = strIDno.length;
+//	        if (!/^\d{17}(\d|x)$/i.test(strIDno) && !/^\d{15}$/i.test(strIDno))
+	        if(!/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/.test(strIDno))
+	            return false; //非法身份证号
+	
+	        if (aCity[parseInt(strIDno.substr(0, 2))] == null)
+	            return false;// 非法地区
+	
+	        // 15位身份证转换为18位
+	        if (idCardLength == 15)
+	        {
+	            sBirthday = "19" + strIDno.substr(6, 2) + "-" + Number(strIDno.substr(8, 2)) + "-" + Number(strIDno.substr(10, 2));
+	            var d = new Date(sBirthday.replace(/-/g, "/"))
+	            var dd = d.getFullYear().toString() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+	            if (sBirthday != dd)
+	                return false; //非法生日
+	            strIDno = strIDno.substring(0, 6) + "19" + strIDno.substring(6, 15);
+	            strIDno = strIDno + GetVerifyBit(strIDno);
+	        }
+	
+	        // 判断是否大于2078年，小于1900年  1990
+	        var year = strIDno.substring(6, 10);
+	        if (year < 1900 || year > 2078)
+	            return false;//非法生日
+	
+	        //18位身份证处理
+	
+	        //在后面的运算中x相当于数字10,所以转换成a
+	        strIDno = strIDno.replace(/x$/i, "a");
+	
+	        sBirthday = strIDno.substr(6, 4) + "-" + Number(strIDno.substr(10, 2)) + "-" + Number(strIDno.substr(12, 2));
+	        var d = new Date(sBirthday.replace(/-/g, "/"))
+	        if (sBirthday != (d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate()))
+	            return false; //非法生日
+	        // 身份证编码规范验证
+	        for (var i = 17; i >= 0; i --)
+	            iSum += (Math.pow(2, i) % 11) * parseInt(strIDno.charAt(17 - i), 11);
+	        if (iSum % 11 != 1)
+	            return false;// 非法身份证号
+	
+	        // 判断是否屏蔽身份证
+	        var words = new Array();
+	        words = new Array("11111119111111111", "12121219121212121");
+	
+	        for (var k = 0; k < words.length; k++) {
+	            if (strIDno.indexOf(words[k]) != -1) {
+	                return false;;
+	            }
+	        }
+	        return true;
+    	}
+
+	</script>
+</html>

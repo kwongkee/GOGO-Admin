@@ -1,0 +1,231 @@
+{template 'common/header'}
+<title>留言页</title>
+<link href="../addons/sz_yi/static/css/layui.css" rel="stylesheet">
+<style>
+    .layui-fluid{background:#f8f8f8;}
+    .disf{display:flex;align-items:center;}
+    /**聊天模板**/
+    .conatact_info{padding:10px;box-sizing: border-box;}
+    .chat_content{border:1px solid #eee;height:300px;margin-bottom:5px;overflow-y:scroll;background:rgb(240,230,221);}
+    .chat_content .center{width: fit-content;margin: 0 auto;padding: 5px 20px;box-sizing: border-box;background: unset;border-radius: 8px;margin-top: 10px;font-weight:bolder;}
+    .conatact_info .right{float:right;margin-top:5px;}
+    .conatact_info .left{float:left;margin-top:5px;}
+    .conatact_info .disflex{display:flex;align-items:center;max-width:80%;}
+    /**右**/
+    .conatact_info .right .my_txt{background:rgb(230,254,218);color:#000;font-size:15px;padding:10px 15px;padding-right:70px;box-sizing: border-box;border-radius: 10px;border-top-right-radius:5px;margin-right:15px;box-shadow:0px 0px 10px 2px #efeded;position:relative;max-width:100%;}
+    /*calc(50% - 10px)*/
+    .conatact_info .right .my_txt::after{content: '';width: 0;height: 0;border-top: 10px solid transparent;border-left: 10px solid rgb(230,254,218);border-bottom: 10px solid transparent;position: absolute;right: -8px;top: 0;}
+    .conatact_info .right .my_txt .time_info{position:absolute;bottom:0;right:6px;}
+    .conatact_info .right .my_txt .time_info .time{font-size:12px;font-weight:bold;color:#666;margin-right: 8px;}
+    /**左**/
+    .conatact_info .left .my_txt{background:#fff;color:#000;font-size:15px;padding:10px 15px;padding-left:50px;box-sizing: border-box;border-radius: 10px;border-top-left-radius:5px;margin-left:15px;box-shadow:0px 0px 10px 2px #efeded;position: relative;max-width: 100%;}
+    .conatact_info .left .my_txt::after{width: 0;height: 0;border-top: 10px solid transparent;border-right: 10px solid #fff;border-bottom: 10px solid transparent;content: '';position: absolute;left: -10px;top: 0;}
+    .conatact_info .left .my_txt .time_info{position:absolute;bottom:0;left:8px;}
+    .conatact_info .left .my_txt .time_info .time{font-size:12px;font-weight:bold;color:#666;margin-right: 8px;}
+    .conatact_info .my_ava img{width:30px;height:30px;}
+    .my_txt img,.my_txt video{width:100%;}
+
+    /**对号样式**/
+    .check-style-unequal-width {width: 3px;height: 10px;border-color: #1790FF;border-style: solid;border-width: 0 3px 3px 0;transform: rotate(35deg);}
+    .check-style-unequal-width-1 {width: 3px;height: 10px;border-color: #666;border-style: solid;border-width: 0 3px 3px 0;transform: rotate(35deg);}
+    .check-style-unequal-width2 {width: 2px;height: 10px;border-color: #1790FF;border-style: solid;border-width: 0 3px 3px 0;transform: rotate(35deg);}
+    .check-style-unequal-width2-1 {width: 2px;height: 10px;border-color: #666;border-style: solid;border-width: 0 3px 3px 0;transform: rotate(35deg);}
+</style>
+<!--百度富文本-->
+<script type="text/javascript" src="../addons/sz_yi/static/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="../addons/sz_yi/static//ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="../addons/sz_yi/static/ueditor/lang/zh-cn/zh-cn.js"></script>
+
+<!--聊天-->
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-card" style="width:100%;">
+            <div class="layui-card-header">{if $identify==1}咨询客服{/if}{if $identify==2}回复用户{/if}</div>
+            <div class="layui-card-body" style="padding: 15px;">
+                <form class="layui-form" action="" lay-filter="chat-demo">
+                    <input type="hidden" name="id" value="{$id}">
+                    <div class="layui-col-xs12 chat_content">
+                        {if !empty($chat_group)}
+                        {loop $chat_group $k $v}
+                        <div class="center">{$v['time']}</div>
+                        {loop $v['info'] $kk $vv}
+                        {if $identify==2}
+                        <!--管理员-->
+                        {if $vv['who_send']==2}
+                        <div class="conatact_info layui-col-xs12">
+                            <div class="right disflex">
+                                <div class="my_txt">
+                                    {if $vv['content_type']==1}
+                                    {$vv['content']}
+                                    {elseif $vv['content_type']==2}
+                                    <?php echo html_entity_decode($vv['content']);?>
+                                    {/if}
+                                    <div class="disf time_info">
+                                        <div class="time">{$vv['createtime']}</div>
+                                        <div class="status disf">
+                                            <div class="{if $vv['is_send']==1}
+                                                            check-style-unequal-width
+                                                        {elseif $vv['is_send']==0}
+                                                            check-style-unequal-width-1
+                                                        {/if}" style="margin-right:3px;"></div>
+                                            <div class="{if $vv['is_read']==0}
+                                                            check-style-unequal-width2-1
+                                                        {elseif $vv['is_read']==1}
+                                                            check-style-unequal-width2
+                                                        {/if}"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {elseif $vv['who_send']==1}
+                        <div class="conatact_info layui-col-xs12">
+                            <div class="left disflex">
+                                <div class="my_txt">
+                                    {if $vv['content_type']==1}
+                                    {$vv['content']}
+                                    {elseif $vv['content_type']==2}
+                                    <?php echo html_entity_decode($vv['content']);?>
+                                    {/if}
+                                    <div class="disf time_info">
+                                        <div class="time">{$vv['createtime']}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {/if}
+                        {else}
+                        <!--用户-->
+                        {if $vv['who_send']==1}
+                        <div class="conatact_info layui-col-xs12">
+                            <div class="right disflex">
+                                <div class="my_txt">
+                                    {if $vv['content_type']==1}
+                                    {$vv['content']}
+                                    {elseif $vv['content_type']==2}
+                                    <?php echo html_entity_decode($vv['content']);?>
+                                    {/if}
+                                    <div class="disf time_info">
+                                        <div class="time">{$vv['createtime']}</div>
+                                        <div class="status disf">
+                                            <div class="{if $vv['is_send']==1}
+                                                            check-style-unequal-width
+                                                        {elseif $vv['is_send']==0}
+                                                            check-style-unequal-width-1
+                                                        {/if}" style="margin-right:3px;"></div>
+                                            <div class="{if $vv['is_read']==0}
+                                                            check-style-unequal-width2-1
+                                                        {elseif $vv['is_read']==1}
+                                                            check-style-unequal-width2
+                                                        {/if}"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {elseif $vv['who_send']==2}
+                        <div class="conatact_info layui-col-xs12">
+                            <div class="left disflex">
+                                <div class="my_txt">
+                                    {if $vv['content_type']==1}
+                                    {$vv['content']}
+                                    {elseif $vv['content_type']==2}
+                                    <?php echo html_entity_decode($vv['content']);?>
+                                    {/if}
+                                    <div class="disf time_info">
+                                        <div class="time">{$vv['createtime']}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {/if}
+                        {/if}
+                        {/loop}
+                        {/loop}
+                        {/if}
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-tab layui-tab-card">
+                            <ul class="layui-tab-title">
+                                <li class="layui-this" data-i='1'>普通文本</li>
+                                <li data-i='2'>富文本</li>
+                            </ul>
+                            <div class="layui-tab-content">
+                                <div class="layui-tab-item layui-show">
+                                    <textarea class="layui-textarea" name="content" placeholder="开始聊天~~"></textarea>
+                                </div>
+                                <div class="layui-tab-item">
+                                    <script id="content" type="text/plain" style="width:100%;height:100px;">
+
+                                    </script>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-col-xs12" style="text-align: center;margin-top:10px;">
+                            <div class="layui-btn layui-btn-md back">返回主页</div>
+                            <button class="layui-btn layui-btn-warm" lay-submit="" lay-filter="chat-demo1">立即提交</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="../addons/sz_yi/static/js/layui/layui.js"></script>
+<script>
+    layui.use(['layer','jquery','element','laydate','form'], function() {
+        var layer = layui.layer
+            , $ = layui.jquery
+            , element = layui.element
+            , laydate = layui.laydate
+            , form = layui.form;
+
+        var ue = UE.getEditor('content', {
+            initialFrameHeight: 200,
+            serverUrl: '../addons/sz_yi/static/ueditor/php/controller.php'
+        });
+        $('.chat_content').scrollTop($('.chat_content').height(), -1);
+
+        $('.back').click(function(){
+            window.history.back(-1);
+        });
+
+        /* 监听提交 */
+        form.on('submit(chat-demo1)', function (data) {
+            data.field['content_type']=1;
+            if($('.layui-tab-title').find('.layui-this').attr('data-i')==2){
+                data.field['content_type']=2;
+                data.field['content'] = data.field['editorValue'];
+            }
+
+            if(data.field['content']==''){
+                layer.msg('请输入内容！');
+                return false;
+            }
+
+            $.ajax({
+                url: "https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=warehouse&p=warehouse&op=warehouse_chat&m=sz_yi&id={$id}",
+                method: 'post',
+                data: data.field,
+                dataType: 'JSON',
+                success: function (res) {
+                    layer.msg(res.msg, {time: 2000}, function () {
+                        if (res.code == 0) {
+                            // var index = parent.layer.getFrameIndex(window.name);
+                            // parent.layer.close(index);
+                            window.location.reload();
+                        }
+                    });
+                },
+                error: function (data) {
+                    layer.msg('系统错误', {time: 2000});
+                }
+            });
+            return false;
+        });
+    });
+</script>

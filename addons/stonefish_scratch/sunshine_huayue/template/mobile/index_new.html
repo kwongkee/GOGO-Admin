@@ -1,0 +1,447 @@
+{template 'header'}
+<link rel="stylesheet" href="{$_W['siteroot']}/addons/sunshine_huayue/common/index/css/index_v7.css">
+<div class="ui-container" style="min-height:500px;background-color:white">
+
+    <div style="background-image: url({$_W['siteroot']}/addons/sunshine_huayue/common/img/banner.jpg);background-size: 100% 100%;">
+	{if $this->settings['public_notice']}
+    <marquee direction="left" style="positon:fixed;top:0px;color: white">{php echo $this->settings['public_notice']}</marquee>
+    {/if}
+	<div style="overflow:hidden;padding:20px 0px;color:white;">
+		<img  src="{$userinfo['headimgurl']}" style="width:80px;height:80px;border-radius:5px;margin:0px 10px;float:left;" onclick="window.location.href='{php echo $this->createMobileUrl('usercenter')}'">
+        <div style="float:left;width:60%;">
+    		<h4>{$userinfo['nickname']}</h4>
+    		<div onclick="window.location.href='{php echo $this->createMobileUrl('ranking')}'">
+    			<?php
+                if ($growth_level['king']) 
+                {
+                    for($i = 0;$i<$growth_level['king'] ;$i++)
+                    {
+                        ?>
+                        <span class="ui-icon-qqlevel ui-icon-qqlevel-king"></span>
+                        <?php
+                    }
+                }
+                if ($growth_level['sun']) 
+                {
+                    for($i = 0;$i<$growth_level['sun'] ;$i++)
+                    {
+                         ?>
+                        <span class="ui-icon-qqlevel ui-icon-qqlevel-sun"></span>
+                        <?php
+                    }
+                }
+                if ($growth_level['moon'])
+                {
+                    for($i = 0;$i<$growth_level['moon'] ;$i++)
+                    {
+                         ?>
+                        <span class="ui-icon-qqlevel ui-icon-qqlevel-moon"></span>
+                        <?php
+                    }
+                }
+                if ($growth_level['star']) 
+                {
+                    for($i = 0;$i<$growth_level['star'] ;$i++)
+                    {
+                         ?>
+                        <span class="ui-icon-qqlevel ui-icon-qqlevel-star"></span>
+                        <?php
+                    }
+                }
+                ?>
+    		</div>
+             <div class="ui-label-list">
+                {if $userinfo['sex'] == 1}
+                <label class="ui-label-me ui-label-s-3"><span class="fa fa-mars"></span></label>
+                {else}
+                <label class="ui-label-me ui-label-s-1"><span class="fa fa-venus"></span></label>
+                {/if}
+                {if $userinfo['province'] || $userinfo['city']}
+                {php $userinfo['city'] = $userinfo['province'] == $userinfo['city'] ? '':$userinfo['city']}
+                <label class="ui-label-me ui-label-s-2">{$userinfo['province']}{$userinfo['city']}</label>
+                {/if}
+            </div>
+        </div>
+    </div>
+    <!-- 积分等数字显示 -->
+    <ul style="list-style: none;color: white;overflow: hidden;text-align: center">
+        <li style="width: 33%;float: left;">
+        积分{$credit['credit1']}
+        </li>
+        <li style="width: 33%;float: left;">
+        可提现{$userinfo['avaliable_money']}元
+        </li>
+        <li style="width: 33%;float: left;">
+        已提现{$userinfo['draw_money']}元
+        </li>
+    </ul>
+</div>
+    <!-- btn -->
+    <ul  style="height:40px;text-align:center;line-height:40px;color:rgb(0,0,0)">
+        <li class="ui-border"  style="float:left;width:33%;" onclick="window.location.href='{php echo $this->createMobileUrl('ranking')}'"><span class="fa fa-line-chart"></span>&nbsp;成长排行</li>
+        {if $this->settings['index_credit_jump_url']}
+        <li class="ui-border"  style="float:left;width:33%;" onclick="window.location.href='{php echo $this->settings['index_credit_jump_url']}'"><span class="fa fa-rocket"></span>&nbsp;积分记录</li>
+        {else}
+        <li class="ui-border"  style="float:left;width:33%;" onclick="window.location.href='{php echo $this->createMobileUrl('signinhistory')}'"><span class="fa fa-rocket"></span>&nbsp;积分记录</li>
+        {/if}
+        <li class="ui-border"  style="float:left;width:33%;" onclick="window.location.href='{php echo $this->createMobileUrl('userwallet')}'"><span class="fa fa-google-wallet"></span>&nbsp;现金提现</li>
+    </ul>
+	<!-- content -->
+	<div style="padding:10px;overflow:hidden;">
+		<ul>
+			<li style="width:24%;text-align:center;float:left" onclick="window.location.href='{php echo $this->createMobileUrl('moments')}'">
+				<img src="{$_W['siteroot']}/addons/sunshine_huayue/common/img/android_camera_gallerypicker_111px_1135283_easyicon.net.png" style="width:60px;height:60px;">
+				<p>动态</p>
+                <p style="color: rgb(180,180,180);font-size: 12px;">分享好时光</p>
+			</li>
+			<li style="width:24%;text-align:center;float:left" onclick="window.location.href='{php echo $this->createMobileUrl('list')}'">
+				<img src="{$_W['siteroot']}/addons/sunshine_huayue/common/img/android_contacts_dialtactscontactsentryactivity_111px_1135286_easyicon.net.png" style="width:60px;height:60px;">
+				<p>附近</p>
+                <p style="color: rgb(180,180,180);font-size: 12px;">身边的TA</p>
+			</li>
+			<li style="width:24%;text-align:center;float:left" onclick="window.location.href='{php echo $this->createMobileUrl('hall')}'">
+				<img src="{$_W['siteroot']}/addons/sunshine_huayue/common/img/htc_friendstream_111px_1135375_easyicon.net.png" style="width:60px;height:60px;">
+				<p>交友大厅</p>
+                <p style="color: rgb(180,180,180);font-size: 12px;">巧妙的缘分</p>
+			</li>
+            <li style="width:24%;text-align:center;float:left" onclick="window.location.href='{php echo $this->createMobileUrl('chatroomlist')}'">
+                <img src="{$_W['siteroot']}/addons/sunshine_huayue/common/img/liveprofile_android_ui_mainactivity_111px_1135399_easyicon.net.png" style="width:60px;height:60px;">
+                <p>聊天室</p>
+                <p style="color: rgb(180,180,180);font-size: 12px;">思维的火花</p>
+            </li>
+		</ul>
+	</div>
+    <div style="height:30px;">
+    </div>
+    <!-- 最新动态列表 -->
+    <h3 style="margin-left:10px;font-weight: bold;">最新动态·NEW</h3>
+    <ul style="overflow:hidden">
+        {loop $newmomentslist $key  $item}
+        <li class="weui_cell" onclick="window.location.href='{php echo $this->createMobileUrl('momentdetail',array('mid'=>$item['id']))}'">
+            <div class="weui_cell_hd"><img src="{$item['uinfo']['headimgurl']}" alt="" style="width:20px;margin-right:5px;display:block;border-radius:2px;"></div>
+            <div class="weui_cell_bd weui_cell_primary">
+            <p style="text-overflow:ellipsis;white-space:nowrap;width:220px;overflow:hidden;">
+            {if $item['albums']}
+            <span class="fa fa-photo" style="color:rgb(200,200,200)"></span>
+            {/if}
+            {php echo mb_substr($item['remark'],0,20,'utf-8')}</p>
+            </div>
+            {if $key < 3 }
+            <div class="weui_cell_ft">
+                <span class="ui-label-me ui-label-s-3">NEW</span>
+            </div>
+            {/if}
+        </li>
+        {/loop}
+    </ul>
+    <div style="height:30px;">
+    </div>
+    <!-- 热门动态列表 -->
+    <h3 style="margin-left:10px;font-weight: bold;">热门动态·HOT</h3>
+    <ul  style="overflow:hidden">
+        {loop $hotmomentslist $key  $item}
+        <li class="weui_cell" onclick="window.location.href='{php echo $this->createMobileUrl('momentdetail',array('mid'=>$item['minfo']['id']))}'">
+            <div class="weui_cell_hd"><img src="{$item['uinfo']['headimgurl']}" alt="" style="width:20px;margin-right:5px;display:block;border-radius:2px;"></div>
+            <div class="weui_cell_bd weui_cell_primary">
+            <p style="text-overflow:ellipsis;white-space:nowrap;width:220px;overflow:hidden;">
+            {if $item['albums']}
+            <span class="fa fa-photo" style="color:rgb(200,200,200)"></span>
+            {/if}
+            {php echo mb_substr($item['minfo']['remark'],0,20,'utf-8')}</p>
+            </div>
+            {if $key < 3 }
+            <div class="weui_cell_ft">
+                <span class="ui-label-me ui-label-s-1">HOT</span>
+            </div>
+            {/if}
+        </li>
+        {/loop}
+    </ul>
+    <div style="height:30px;">
+    </div>
+    {if $this->settings['vip_credit_month_1']}
+    <h3 style="margin-left:10px;font-weight: bold;">会员功能·VIP</h3>
+    <ul style="overflow:hidden">
+        <li class="weui_cell">
+            <div class="weui_cell_hd">
+            </div>
+            <div class="weui_cell_bd weui_cell_primary">
+                <span class="fa fa-group" style="color:#ffc723"></span>&nbsp;&nbsp;拥有创建聊天室权限
+            </div>
+            <div class="weui_cell_ft">
+                <span class="ui-label-me ui-label-s-2">{if $this->vip}已获得{else}未获得{/if}</span>
+            </div>
+        </li>
+        <li class="weui_cell">
+            <div class="weui_cell_hd">
+            </div>
+            <div class="weui_cell_bd weui_cell_primary">
+               <span class="fa fa-group" style="color:#ffc723"></span>&nbsp;&nbsp;尊贵VIP标签
+            </div>
+            <div class="weui_cell_ft">
+                <span class="ui-label-me ui-label-s-2">{if $this->vip}已获得{else}未获得{/if}</span>
+            </div>
+        </li>
+        <li class="weui_cell">
+            <div class="ui-list-info">
+                <h4 class="ui-nowrap">更多特权请期待~</h4>
+            </div>
+        </li>
+    </ul>
+    {if !$this->vip}
+    <div class="bd spacing">
+        <a href='javascript:;' class="weui_btn weui_btn_primary" style="background-color:#ffc723" onclick="$('#open_vip_dialog').dialog('show')">积分兑换会员</a>
+    </div>
+    {/if}
+    {/if}
+     {if $this->settings['signin_key'] == 'open'}
+    <div class="signin-wrapper show">
+        <!-- 默认隐藏，显示添加添加.show，已打卡添加.done -->
+        <div class="signin-box">
+            <div class="signin-waiting">
+                <button class="voice-btn">
+                    打卡
+                </button>
+                <div class="qq1-body">
+                </div>
+                <div class="qq1-hand-left">
+                </div>
+                <div class="signin-done-tip show-tip">
+                </div>
+            </div>
+            <div class="signin-done">
+                <button class="voice-btn">
+                    已打卡
+                </button>
+                <div class="signin-done-tip">
+                </div>
+            </div>
+        </div>
+    </div>
+    {/if}
+    <div class="ui-dialog signin-dialog">
+        <div class="signin-dialog-close-wrap">
+            <div class="signin-dialog-close">
+                <button class="voice-btn">
+                    关闭
+                </button>
+            </div>
+        </div>
+        <div class="signin-dialog-content">
+            <div class="signin-dialog-task">
+                <ul>
+                    {if $signin_list}
+                    {loop $signin_list $key $item}
+                    <!-- 已打卡状态day-activated -->
+                    <li class="day-activated day-activating">
+                        <span class="num">
+                            {$item['sid']}
+                        </span>
+                         <p class="day-tip">
+                            <em>
+                                +{$item['credit']}
+                            </em>
+                            积分
+                        </p>
+                    </li>
+                    <!--
+                        未打卡状态添加day-unactivated
+                        当次打卡状态添加day-activating
+                    -->
+                    {/loop}
+                    {/if}
+                    <?php
+                        for($i = 0; $i<7-count($signin_list);$i++) 
+                        {
+                            ?>
+                            <li class="day-unactivated">
+                                <span class="num">
+                                    <?php echo $i+count($signin_list) +1?>
+                                </span>
+                                <p class="day-tip">
+                                    <em>
+                                        +{php echo $this->settings['signin_credit']+count($signin_list)*$this->settings['signin_credit_grow']}
+                                    </em>
+                                    积分
+                                </p>
+                            </li>
+                            <?php
+                        }
+                    ?>
+                </ul>
+            </div>
+            <div class="signin-gift">
+                <p class="signin-gift-tip">
+                    已经连续签到{php echo count($signin_list)}天 
+                </p>
+                <p class="signin-gift-tip">
+                签到可获取积分
+                </p>
+               <!--  <img src="http://imgcache.gtimg.cn/ACT/svip_act/act_img/jaydenlin/201507/1436776687_quanmingtuji_daka.png" alt="" /> -->
+                <!-- 不可点击态增加disabled -->
+                <button type="button" class="ui-vip-btn" onclick="window.location.href='{php echo $this->createMobileUrl('signinhistory')}'">
+                    我的签到记录
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{$_W['siteroot']}addons/sunshine_huayue/common/index/js/fastclick.js">
+</script>
+<script src="{$_W['siteroot']}addons/sunshine_huayue/common/index/js/index_topscreen.js">
+</script>
+<script src="{$_W['siteroot']}addons/sunshine_huayue/common/index/js/progressbar.js">
+</script>
+<script src="{$_W['siteroot']}addons/sunshine_huayue/common/index/js/index.js">
+</script>
+<script>
+    (function($, FastClick) {
+    FastClick.attach(document.body);
+    //- 通过 JS 添加按压态
+    $('.ui-grid-trisect,.ui-grid-halve, .life, .makeup, .privilege, .act').on("click", "li",
+    function(e) {
+        var item = $(this);
+        item.addClass('active');
+        setTimeout(function() {
+            item.removeClass('active');
+        },
+        300)
+    });
+    $('.ui-list').on("click", ".ui-list-info,.ui-list-thumb",
+    function(e) {
+        var item = $(this).parents('li');
+        item.addClass('active');
+        setTimeout(function() {
+            item.removeClass('active');
+        },
+        300)
+    });
+    $('.ui-btn,.ui-btn-upgrade').on("click",
+    function(e) {
+        var item = $(this);
+        item.addClass('active');
+        setTimeout(function() {
+            item.removeClass('active');
+        },
+        300)
+    });
+    //- 打卡签到
+    $('.signin-waiting').on('click',
+    function() {
+        $('.signin-dialog').addClass('show');
+        signIn();
+        //- 打卡机方案，去掉引导提示
+        // $('.signin-waiting .signin-done-tip').removeClass('show-tip');
+    })
+    // 签到功能
+    function signIn() {
+        $.ajax({
+            type:'post',
+            url:"{php echo $this->createMobileUrl('signin')}",
+            data:{},
+            success:function(d,s) {
+                if(d.res == 100) {
+                    setTimeout(function() {
+                            $($('.day-unactivated')[0]).addClass('day-activating');
+                        },200);
+                }else {
+                    alert(d.msg);
+                }
+            }
+        })
+    }
+    //- 切换打卡气泡
+    var sid = 0,
+    index = 0,
+    popupList = ['popup1', 'popup2', 'popup3'],
+    $signinTip = $('.signin-done-tip');
+    function signinTipShow() {
+        index = index === 3 ? 0 : index;
+        if ($signinTip.hasClass('show')) {
+            $signinTip.addClass('hide');
+            setTimeout(function() {
+                $signinTip.removeClass('popup1 popup2 popup3').addClass(popupList[index]);
+                $signinTip.addClass('show');
+                $signinTip.removeClass('hide');
+                index++;
+            })
+        } else {
+            $signinTip.removeClass('popup1 popup2 popup3').addClass(popupList[index]);
+            $signinTip.addClass('show');
+            index++;
+        }
+        clearTimeout(sid);
+        sid = setTimeout(function() {
+            $signinTip.addClass('hide');
+            setTimeout(function() {
+                $signinTip.removeClass('show hide');
+            },
+            500);
+        },
+        3000);
+    }
+    $('.signin-done').on('click', signinTipShow);
+    //- 关闭弹窗
+    $('.signin-dialog-close, .ui-vip-btn, .ui-dialog-close').on('click',
+    function() {
+        $('.signin-wrapper').addClass('done');
+        //- 打卡机方案，延迟显示已打卡，跳出引导提示
+        //- setTimeout(function() {
+        //-   $('.signin-wrapper').addClass('done');
+        //- }, 500);
+        //- setTimeout(signinTipShow,1600);
+        $('.ui-dialog').removeClass('show');
+    })
+} ($, FastClick)); 
+</script>
+<script>
+    (function($, index_topscreen, index) {
+    // 浮层出现禁止滚动
+    $('.signin-dialog, .welcome-dialog').on('touchmove',
+function(event) {
+    event.preventDefault();
+    return false;
+});
+//- 蒙层
+$('.ui-global-hover').on('touchmove',
+function(event) {
+    event.preventDefault();
+    return false;
+});
+// 点击到期数字出现浮层
+$('.header .date').on('click',
+function() {
+    var $popup = $(this).find('.popup');
+    $popup.addClass('show');
+    setTimeout(function() {
+        $popup.removeClass('show');
+    },
+    3000);
+});
+// 点击其他地方取消浮层
+$(window).on('click',
+function() {
+    if (event.target.className !== 'date') {
+        $('.header .popup').removeClass('show');
+    }
+});
+// 成长值排名气泡
+var marque = new index.numMarquee('.header .rank', 12345);
+marque.show();
+setTimeout(function() {
+    marque.hide();
+},
+4000)
+//-隐藏growth-dialog浮层
+$(".growth-dialog").tap(function() {
+    $(".growth-dialog").removeClass("show");
+});
+$('.growth-dialog').on('touchmove',
+function(event) {
+    event.preventDefault();
+    return false;
+});
+} ($, index_topscreen, index)); 
+</script>
+{template 'menu'}
+{template 'footer'}

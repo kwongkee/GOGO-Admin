@@ -1,0 +1,47 @@
+{template 'common/header'}
+<div id="js-wesite-article-display">
+    <div class="pull-right menu-content-tips">
+       
+		<a href="{$_W['siteurl']}&act=zhandianadd" class="btn btn-primary we7-padding-horizontal">添加代理商</a>
+		<a href="{$_W['siteurl']}&act=csradd" class="btn btn-primary we7-padding-horizontal">绑定创始人域名</a>
+
+		<a href="{$_W['siteurl']}&act=otheradd" class="btn btn-primary we7-padding-horizontal">其他模块首页</a>
+    </div>
+    <br />
+
+    <table class="table we7-table table-hover article-list vertical-middle">
+        <col/>
+        <col/>
+        <col/>
+		1.如果有代理的请添加代理域名和代理登录名<br/>
+		2.创始人站点支持多域名绑定，一个代理商只能绑定一个域名<br/>
+        <tr>
+            <th>ID</th>
+            <th class="text-left">域名</th>
+            <th class="text-left">用户名</th>
+            <th class="text-left">类型</th>
+            <th class="text-right">操作</th>
+        </tr>
+        {loop $lists $list}
+        <tr>
+            <td>{$list['id']}</td>
+            <td class="text-left">{$list['domain']}</td>
+            <td class="text-left">{if $list['username']  >= 0}{$list['username']}{/if}</td>
+            <td class="text-left">{if $list['isfounder']=="1"}创始人{elseif $list['isfounder']=="-2"}其他首页{elseif $list['isfounder']=="-1"}创始人多域名{else}代理商{/if}</td>
+            <td>
+                <div class="link-group">
+					{if $list['isfounder']=="-1" || $list['isfounder']=="-2"}
+                    <a href="{$_W['siteurl']}&act=delete&mid={$list['id']}" class="del">删除</a>
+					{else}
+                    <a href="{$_W['siteurl']}&act=edit&mid={$list['id']}" class="del">修改</a>
+					{/if}
+                </div>
+            </td>
+        </tr>
+        {/loop}
+    </table>
+    <div class="text-right we7-margin-top">
+        {$pager}
+    </div>
+</div>
+{template 'common/footer'}

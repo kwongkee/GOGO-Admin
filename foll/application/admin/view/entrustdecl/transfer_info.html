@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>转账审核</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <style>
+        form{
+            margin-top: 47px;
+            margin-right: 32px;
+        }
+        .layui-upload-img{width: 92px; height: 92px; margin: 0 10px 10px 0;}
+    </style>
+</head>
+<body>
+<form class="layui-form" action="">
+    <input type="hidden" name="id" value="{$data['id']}">
+    <div class="layui-form-item">
+        <label class="layui-form-label">账户信息</label>
+        <div class="layui-input-block">
+            <table class="layui-table">
+                <colgroup>
+                  <col width="150">
+                  <col width="150">
+                  <col width="200">
+                  <col>
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>人民币(CNY)</th>
+                    <th>美元(USD)</th>
+                    <th>港币(HKD)</th>
+                    <th>瑞士法郎(CHF)</th>
+                  </tr> 
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{$user_money['cny']}</td>
+                    <td>{$user_money['usd']}</td>
+                    <td>{$user_money['hkd']}</td>
+                    <td>{$user_money['chf']}</td>
+                  </tr>
+                </tbody>
+                <thead>
+                    <tr>
+                      <th>丹麦克朗(DKK)</th>
+                      <th>欧元(EUR)</th>
+                      <th>英镑(GBP)</th>
+                      <th>日元(JPY)</th>
+                    </tr> 
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{$user_money['dkk']}</td>
+                      <td>{$user_money['eur']}</td>
+                      <td>{$user_money['gbp']}</td>
+                      <td>{$user_money['jpy']}</td>
+                    </tr>
+                  </tbody>
+                  <thead>
+                    <tr>
+                      <th>澳元(AUD)</th>
+                      <th>加拿大元(CAD)</th>
+                      <th>挪威克朗(NOK)</th>
+                      <th>瑞典克朗(SEK)</th>
+                    </tr> 
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{$user_money['aud']}</td>
+                      <td>{$user_money['cad']}</td>
+                      <td>{$user_money['nok']}</td>
+                      <td>{$user_money['sek']}</td>
+                    </tr>
+                  </tbody>
+                  <thead>
+                    <tr>
+                      <th>新加坡元(SGD)</th>
+                      <th>新西兰元(NZD)</th>
+                    </tr> 
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{$user_money['sgd']}</td>
+                      <td>{$user_money['nzd']}</td>
+                    </tr>
+                  </tbody>
+              </table>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">申请金额（账户）</label>
+        <div class="layui-input-inline">
+        </div>
+        <div class="layui-form-mid layui-word-aux" style="color: red!important">{$data['transfer_money']} ({$data['money_type']})</div>
+        <input type="hidden" name="money_type" value="{$data['money_type']}">
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">转入账户信息</label>
+        <div class="layui-input-block">
+            <div class="layui-form-mid layui-word-aux" style="color: red!important">账户名称：{$transfer_account['account_name']} 银行：{$transfer_account['bank_name']} 账号：{$transfer_account['account']} 币种：{$transfer_account['money_type']}</div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">转账附言</label>
+        <div class="layui-input-block">
+            <div class="layui-form-mid layui-word-aux" style="color: red!important">{$data['transfer_remark']}</div>
+        </div>
+    </div>
+
+	<div class="layui-form-item">
+        <label class="layui-form-label">转账费用</label>
+        <div class="layui-input-inline">
+          <input type="number" class="layui-input" name="transfer_expenses" id="transfer_expenses_currency" placeholder="费用" value="{$data['transfer_expenses']}">
+		</div>
+		  <div class="layui-input-inline">
+			<select name="transfer_expenses_currency" lay-verify="required" lay-search="">
+				<option value="">请选择</option>
+				<option value="CNY" data-money_type="CNY">CNY</option>
+				<option value="USD" data-money_type="USD">USD</option>
+				<option value="HKD" data-money_type="HKD">HKD</option>
+				<option value="CHF" data-money_type="CHF">CHF</option>
+				<option value="DKK" data-money_type="DKK">DKK</option>
+				<option value="EUR" data-money_type="EUR">EUR</option>
+				<option value="GBP" data-money_type="GBP">GBP</option>
+				<option value="JPY" data-money_type="JPY">JPY</option>
+				<option value="ADU" data-money_type="ADU">AUD</option>
+				<option value="CAD" data-money_type="CAD">CAD</option>
+				<option value="NOK" data-money_type="NOK">NOK</option>
+				<option value="SEK" data-money_type="SEK">SEK</option>
+				<option value="SGD" data-money_type="SGD">SGD</option>
+				<option value="NZD" data-money_type="NZD">NZD</option>
+			</select>
+		  </div>
+	</div>
+	
+    <div class="layui-form-item">
+        <label class="layui-form-label">实际到账金额</label>
+        <div class="layui-input-inline">
+            <input type="number" name="true_money" required  lay-verify="required" placeholder="实际到账金额" autocomplete="off" class="layui-input">
+		</div>
+		<div class="layui-input-inline">
+			<select name="true_currency" lay-verify="required" lay-search="">
+				<option value="">请选择</option>
+				<option value="CNY" data-money_type="CNY">CNY</option>
+				<option value="USD" data-money_type="USD">USD</option>
+				<option value="HKD" data-money_type="HKD">HKD</option>
+				<option value="CHF" data-money_type="CHF">CHF</option>
+				<option value="DKK" data-money_type="DKK">DKK</option>
+				<option value="EUR" data-money_type="EUR">EUR</option>
+				<option value="GBP" data-money_type="GBP">GBP</option>
+				<option value="JPY" data-money_type="JPY">JPY</option>
+				<option value="ADU" data-money_type="ADU">AUD</option>
+				<option value="CAD" data-money_type="CAD">CAD</option>
+				<option value="NOK" data-money_type="NOK">NOK</option>
+				<option value="SEK" data-money_type="SEK">SEK</option>
+				<option value="SGD" data-money_type="SGD">SGD</option>
+				<option value="NZD" data-money_type="NZD">NZD</option>
+			</select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">结算机构</label>
+        <div class="layui-input-inline">
+            <select name="settlement_institution" lay-verify="required" lay-search="">
+                <option value="">请选择结算机构</option>
+                {foreach $exchange as $k=>$v}
+                <option value="{$v['name']}">{$v['name']}</option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">是否通过</label>
+        <div class="layui-input-block">
+          <input type="radio" name="status" value="1" title="通过" checked>
+          <input type="radio" name="status" value="2" title="不通过">
+        </div>
+      </div>
+      <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">不通过原因</label>
+        <div class="layui-input-block">
+          <textarea name="remark" placeholder="请输入不通过原因" class="layui-textarea"></textarea>
+        </div>
+      </div> 
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+        </div>
+    </div>
+</form>
+
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+
+<script>
+
+    layui.use(['form','laydate','upload'], function(){
+        var form = layui.form
+        ,laydate = layui.laydate
+        ,upload = layui.upload;
+
+        upload.render({
+            elem: '#transfer-upload'
+            ,url: '{:Url("admin/entrustDecl/withdraw_upload")}'
+            ,accept: 'image'
+            ,multiple: false
+            ,before: function(obj){
+                layer.load();
+            }
+            ,done: function(res){
+                layer.closeAll('loading');
+                if(res.code == 1)
+                {
+                    $('#transfer-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="'+ res.path +'" class="layui-upload-img"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="transfer_pic[]" value="'+res.path+'"></div>')
+                }
+            }
+        });
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            
+            $.ajax({
+                url:'{:Url("admin/entrustDecl/transfer_info")}',
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (res) {
+                    layer.msg(res.message, {
+                                    icon: 1,
+                                    time: 2000
+                                }, function(){
+									if(res.code == 1)
+									{
+										parent.window.location.reload();
+                                    var index = parent.layer.getFrameIndex(window.name);
+                                    parent.layer.close(index);
+									}
+                                    
+                                });
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            return false;
+        });
+    });
+
+    function seePic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.open({
+            type: 1,
+            title: false,
+            closeBtn: 1,
+            area: ['auto'],
+            skin: 'layui-layer-nobg',
+            shadeClose: true,
+            content: '<img src="' + $(obj)[0].src + '" />'
+        });
+    }
+
+  function delPic(obj)
+  {
+    var layer = layui.layer,$ = layui.$;
+    layer.confirm('确认要删除该附件？', {
+      btn: ['删除','取消']
+    }, function(){
+      $(obj).parent().remove();
+      layer.closeAll();
+    }, function(){
+
+    });
+  }
+</script>
+</html>

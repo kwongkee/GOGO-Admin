@@ -1,0 +1,87 @@
+{template 'common/header'}
+
+<div class="main">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{php echo $this->createWebUrl('theme');}">活动管理</a></li>
+        <li><a href="{php echo $this->createWebUrl('addtheme');}">添加活动</a></li>
+        <li><a href="{php echo $this->createWebUrl('addsystem');}">系统设置</a></li>
+    </ul> 
+    
+    <div class="panel panel-info">
+		<div class="panel-heading">活动总数： {$total}</div>
+		<div class="panel-body">
+            <div class="form-group">
+                <div class=" col-xs-12 col-sm-2 col-lg-2">
+                    <button class="btn btn-info" onclick="location.href='{php echo $this->createWebUrl('Exportheme',array('selecttime'=>$selecttime))}'"><i class="fa fa-file-excel-o"></i> 导出活动信息</button>
+                </div>
+            </div>            
+    	</div>
+	</div>
+	<div class="panel panel-info">
+		<div class="panel-heading">筛选</div>
+		<div class="panel-body">
+			<form action="{php echo $this->createWebUrl('theme')}" method="post" class="form-horizontal ng-pristine ng-valid" role="form">
+				
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">开始/截止时间</label>
+					<div class="col-sm-9 col-md-8 col-lg-8 col-xs-12">
+						{php echo tpl_form_field_daterange('selecttime', array('start'=>$begintime,'end'=>$endtime), true)}
+
+					</div>
+					<div class="pull-right col-xs-12 col-sm-3 col-md-2 col-lg-2">
+						<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+  <div class="panel panel-default">
+        <div class="panel-body table-responsive">
+            <table class="table table-hover">
+                <thead class="navbar-inner">
+                    <tr>
+                        <th style="width:50px;">序号</th>
+                        <th style="width:150px;">活动名称</th>
+                        <th style="width:70px;">发起人数</th>
+                        <th style="width:70px;">众筹人数</th>
+                        <th style="width:70px;">浏览人数</th>
+                        <th style="width:110px;">众筹总额</th>
+                        <th style="width:110px;">已筹总额</th>
+                        <th style="width:150px;">管理</th>
+                        <th style="width:120px; text-align:right;">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {loop $list $item}
+                  <tr> 
+                    <td>{$item['id']}</td>
+                    <td>{$item['tname']}</td>
+                    <td>{php echo $this->getMemberCount($item['id'],$selecttime);}</td>
+                    <td>{php echo $this->getHelperCount($item['id'],$selecttime);}</td>
+                    <td>{php echo $this->getFansCount($item['id'],$selecttime);}</td>
+                    <td>{php echo $this->getThemeSumZC($item['id'],$selecttime);}</td>
+                    <td>{php echo $this->getThemeSumHasZC($item['id'],$selecttime);}</td>
+                    <td>
+                    <a href="{php echo $this->createWebUrl('member', array('themeid' => $item['id']))}" class="btn btn-success">众筹明细</a>
+                    </td>
+                  <td style="text-align:right;">
+                  <a class="btn btn-success btn-sm" href="{php echo $this->createWebUrl('addtheme', array('themeid' =>$item['id']))}" title="编辑"><i class="icon-edit"></i>编辑</a>
+                  <a class="btn btn-default btn-sm" href="#" onclick="drop_confirm('您确定要删除吗?', '{php echo $this->createWebUrl('addtheme',array('op'=>'delete', 'themeid' =>$item['id']))}');" title="删除"><i class="icon-remove"></i>删除</a>
+                    </td>
+                </tr>
+                {/loop}
+            </tbody>
+            </table>
+        </div>
+        {$pager}
+    </div>
+    </div>
+
+<script type="text/javascript">
+    function drop_confirm(msg, url){
+        if(confirm(msg)){
+            window.location = url;
+        }
+    }
+</script>
+{template 'common/footer'}

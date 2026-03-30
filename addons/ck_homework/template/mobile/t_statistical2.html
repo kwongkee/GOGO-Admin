@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="Cache-Control" content="no-cache"/>
+<title>知识点统计 - {$config['webtitle']}</title>
+<meta http-equiv="description" content="" />
+<meta name="renderer" content="webkit"/>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+<meta name="description" content="" id="description"/>
+<meta name="keywords" content=""/>
+<link rel="stylesheet" href="{$templateurl}css/css.css" type="text/css"/>
+<link rel="stylesheet" href="{$templateurl}css/common.css" />
+<script src="{$templateurl}js/jquery-1.8.0.min.js" language="javascript"></script>
+<style type="text/css">.TabbedPanelsTabSelected a { color:#FFFFFF;}</style>
+</head>
+
+<body>
+<div class="kaoshizuoyetab tjaa">
+  <div id="TabbedPanels1" class="TabbedPanels">
+    <ul class="TabbedPanelsTabGroup">
+      <li class="TabbedPanelsTab" tabindex="0"><a href="{$urlt}&op=1" style="display:block;">错题统计</a></li>
+      <li class="TabbedPanelsTab TabbedPanelsTabSelected" tabindex="0" style="display:block;"><a href="{$urlt}&op=2">知识点统计</a></li>
+    </ul>
+    <div class="cuottongji">
+    	{loop $month_list $value}
+		<a href="{$urltk}&getmonth={$value[0]}" {if $getmonth == $value[0]}class="active"{/if}>{$value[1]}月</a>
+		{/loop}
+    </div>
+    <div style="clear:both; height:86px;"></div>
+    <div class="TabbedPanelsContentGroup">
+      <div class="TabbedPanelsContent">
+        <div class="cuotitongjidd">
+        	<div class="a1">
+            	<span>统计时间：<strong>{$tongjidate}</strong></span>
+                <font>
+                	<div class="p">当月新掌握知识点<h1>{$total_zsd_zw}</h1></div>
+                	<div class="p">当月未掌握知识点<h1>{$total_zsd_wzw}</h1></div>
+                	<div class="p">累计为掌握知识点<h1>{$total_zsd_zs}</h1></div>
+                </font>
+            </div>
+            <div class="clear"></div>
+            
+        <div class="a2 a3"> 
+			<span>知识点数据分析</span>       
+			<div class="b1">本月新掌握知识点：<p>{$total_zsd_zw}<font class="zeng">（同比上月{$rate_month_zsd}）</font></p></div>
+			<div class="b1">本月新增未掌握知识点：<p>{$total_zsd_wzw}<font class="jiang">（同比上月{$rate_month_zsd_wzw}）</font></p></div>
+			<div class="b1">历史未掌握知识点减少：<p>{$lswzw_zsd_js}<font class="zeng">（同比上月{$rate_month_zsd_wzwjs}）</font></p></div>
+			<div class="b1">本月未掌握率：<p>{$errorrate_month_zsd}<font class="zeng">（同比上月{$errorrate_month_zsd_on}）</font></p></div>
+			<div class="b1">历史未掌握率：<p>{$errorrate_month_zsd_ls}<font class="zeng">（同比上月{$errorrate_month_zsd_ls_on}）</font></p></div>
+			<div class="b1">本月掌握率班级排名：<p>{$paiming}<font class="jiang">（同比上月{$rate_month_tbpm}）</font></p></div>
+        </div>
+        <div class="a2">
+        	<h3 style="text-align:center;">我当前打败了全国{$praiming_qb}的学生！</h3>
+        </div>
+        <div class="a2">
+            	<span>近六月学习状况走势图</span>
+				<main class="container">
+					<div class="row">
+						<div id="echarts-3" class="col-xs-6"></div>				
+					</div>
+				</main>
+
+            </div>
+        </div>
+      </div>
+      
+      
+    </div>
+  </div>
+</div>
+
+<!--示意图 start-->
+<script src="{$templateurl}plugin/echarts.js"></script>
+<script>
+$(function() {
+	
+	setOption("echarts-3",{	  
+    tooltip: {
+        trigger: 'axis'
+    },
+    legend: {
+        data:['新增知识点','新增未掌握','班级平均未掌握','历史未掌握']
+    },
+    grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+    },
+    toolbox: {
+        feature: {
+            saveAsImage: {}
+        }
+    },
+    xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: [
+		{loop $month_list $value}
+		'{$value[1]}月',
+		{/loop}
+		]
+    },
+    yAxis: {
+        type: 'value'
+    },
+    series: [
+        {
+            name:'新增知识点',
+            type:'line',
+            stack: '总数',
+            data:[{$xz_q}]
+        },
+        {
+            name:'新增未掌握',
+            type:'line',
+            stack: '总数',
+            data:[{$wzw_q}]
+        },
+        {
+            name:'班级平均未掌握',
+            type:'line',
+            stack: '总数',
+            data:[{$bjwzw_q}]
+        },
+        {
+            name:'历史未掌握',
+            type:'line',
+            stack: '总数',
+            data:[{$lswzw_q}]
+        }
+    ]
+	});
+});
+/*
+ **功能:柱状、折线图
+ **参数1：元素ID
+ **参数2：配置项设置
+ */
+function setOption(ident, opt) {
+	//基于准备好的dom,初始化echarts实例
+	let myChart = echarts.init($('#' + ident)[0]);
+	// 使用刚指定的配置项和数据显示图表。
+	myChart.setOption(opt);
+}
+/*
+ **功能:南丁格尔图
+ **参数1：元素ID
+ **参数2：配置项设置
+ */
+function setOption(ident, opt) {
+	//基于准备好的dom,初始化echarts实例
+	let myChart = echarts.init($('#' + ident)[0]);
+	// 使用刚指定的配置项和数据显示图表。
+	myChart.setOption(opt);
+}
+</script>
+<!--示意图 end-->
+
+<div class="clear"></div>
+<div class="clear"></div>
+<div class="clear"></div>
+
+<!--footer strat-->
+{template 't_footer'}
+</body>
+</html>

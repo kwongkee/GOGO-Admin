@@ -1,0 +1,224 @@
+{include file="common/header_inner_new"}
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    #service_ids{width:200px;}
+    .addService,.delService{font-size:20px;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+
+            <h1>商品列表</h1>
+            <div class="disf">
+                <input type="text" id="search-input" class="layui-input" placeholder="搜索商品名称" style="max-width:300px;">
+                <button id="search-button" class="layui-btn layui-btn-primary">搜索</button>
+            </div>
+
+            <table id="product-table" class="layui-table">
+                <thead>
+                <tr>
+                    <th><input type="checkbox" id="select-all"></th>
+                    <th>商品 ID</th>
+                    <th>商品名称</th>
+                    <th>商品币种</th>
+                    <th>商品价格</th>
+                    <th>创建时间</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- 商品数据将在此处动态添加 -->
+                </tbody>
+            </table>
+            <div class="disf">
+                <div id="pagination">
+                    <button id="prev-page" class="layui-btn layui-btn-primary">上一页</button>
+                    <span id="page-info">第 1 页，共 5 页</span>
+                    <button id="next-page" class="layui-btn layui-btn-primary">下一页</button>
+                </div>
+                <button id="add-button" class="layui-btn layui-btn-success" style="margin-left:20px;">新增到已添加商品列表</button>
+            </div>
+
+            <div style="height:20px;width: 1px;">
+
+            </div>
+
+            <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+                <input type="text" style="display:none;" name="pa" id="pa" value="2">
+                <h2>已添加商品列表</h2>
+                <div style="height:300px;overflow-y: scroll;">
+                    <table id="added-product-table" class="layui-table">
+                        <thead>
+                            <tr>
+                                <th>商品 ID</th>
+                                <th>商品名称</th>
+                                <th>商品币种</th>
+                                <th>商品价格</th>
+                                <th>创建时间</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <!-- 已添加商品数据将在此处动态添加 -->
+                        {if !empty($goods_selected)}
+                            {volist name="goods_selected" id="vo"}
+                                <tr>
+                                    <td><input type="hidden" name="add_goods[]" value="{$vo['goods_id']}">{$vo['goods_id']}</td>
+                                    <td>{$vo['goods_name']}</td>
+                                    <td>{$vo['currency']}</td>
+                                    <td>{$vo['goods_price']}</td>
+                                    <td>{$vo['created_at']}</td>
+                                </tr>
+                            {/volist}
+                        {/if}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                    <div>
+                        <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">立即提交</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+<script>
+    layui.use(['layer','form','laydate','upload','colorpicker'],function() {
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+        var colorpicker = layui.colorpicker;
+
+        form.render(null, 'component-form-element');
+
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+
+            $.ajax({
+                url:"{:Url('admin/model/marketing_goods')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            window.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+    $(document).ready(function () {
+        let currentPage = 1;
+        const itemsPerPage = 20;
+        var totalPages = 0;
+        let allProducts = [];
+
+        // 模拟从后端获取商品数据
+        function fetchProducts(page, searchQuery = '') {
+            $.post("{:Url('admin/model/marketing_goods')}", { page: page, search: searchQuery, pa:1}, function (response) {
+                allProducts = response.list;
+                renderTable(response.list);
+                updatePageInfo(page,response);
+            });
+        }
+
+        // 渲染商品表格
+        function renderTable(products) {
+            const tableBody = $('#product-table tbody');
+            tableBody.empty();
+            products.forEach(product => {
+                tableBody.append(`
+                        <tr>
+                            <td><input type="checkbox" class="product-checkbox" data-id="${product.goods_id}"></td>
+                            <td>${product.goods_id}</td>
+                            <td>${product.goods_name}</td>
+                            <td>${product.currency}</td>
+                            <td>${product.goods_price}</td>
+                            <td>${product.created_at}</td>
+                        </tr>
+                    `);
+            });
+        }
+
+        // 更新页码信息
+        function updatePageInfo(page,response) {
+            totalPages = response.total;
+            $('#page-info').text(`第 ${page} 页，共 ${response.total} 页`);
+        }
+
+        // 上一页按钮点击事件
+        $('#prev-page').click(function () {
+            if (currentPage > 1) {
+                currentPage--;
+                fetchProducts(currentPage, $('#search-input').val());
+            }
+        });
+
+        // 下一页按钮点击事件
+        $('#next-page').click(function () {
+            if (currentPage < totalPages) {
+                currentPage++;
+                fetchProducts(currentPage, $('#search-input').val());
+            }
+        });
+
+        // 全选按钮点击事件
+        $('#select-all').change(function () {
+            $('.product-checkbox').prop('checked', this.checked);
+        });
+
+        // 搜索按钮点击事件
+        $('#search-button').click(function () {
+            const searchQuery = $('#search-input').val();
+            currentPage = 1;
+            fetchProducts(currentPage, searchQuery);
+        });
+
+        // 新增按钮点击事件
+        $('#add-button').click(function () {
+            const selectedProducts = [];
+            $('.product-checkbox:checked').each(function () {
+                const productId = $(this).data('id');
+                const product = allProducts.find(p => p.goods_id === productId);
+                if (product) {
+                    selectedProducts.push(product);
+                }
+            });
+            addToAddedList(selectedProducts);
+        });
+
+        // 添加商品到已添加列表
+        function addToAddedList(products) {
+            const addedTableBody = $('#added-product-table tbody');
+            products.forEach(product => {
+                addedTableBody.append(`
+                        <tr>
+                            <td><input type="hidden" name="add_goods[]" value="${product.goods_id}">${product.goods_id}</td>
+                            <td>${product.goods_name}</td>
+                            <td>${product.currency}</td>
+                            <td>${product.goods_price}</td>
+                            <td>${product.created_at}</td>
+                        </tr>
+                    `);
+            });
+            // 清空已选商品的复选框
+            $('.product-checkbox:checked').prop('checked', false);
+        }
+
+        // 初始化加载第一页数据
+        fetchProducts(currentPage);
+    });
+</script>
+</html>

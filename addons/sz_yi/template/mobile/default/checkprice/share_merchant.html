@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
+        <link rel="stylesheet" href="../addons/sz_yi/static/warehouse/static_file/style.css" media="all">
+        <link rel="stylesheet" href="../addons/sz_yi/static/warehouse/static_file/layui.css" media="all">
+        <link rel="stylesheet" type="text/css" href="../addons/sz_yi/static/warehouse/static_file/hui.css" />
+        <script type="text/javascript" src="../addons/sz_yi/static/warehouse/static_file/hui.js" charset="UTF-8"></script>
+        <script src="../addons/sz_yi/static/warehouse/static_file/jquery-3.2.1.min.js"></script>
+        <script src="../addons/sz_yi/static/warehouse/static_file/layui.js"></script>
+        <title>买家管理</title>
+        <style>
+            *{font-size:15px;}
+            .disf{display:flex;align-items: center;}
+            .layui-btn-normal{background:#1790FF;}
+            div{overflow: visible;}
+            .layui-table td, .layui-table th{ text-align: center;}
+            .layui-table th{ background-color: #ecf6fc; }
+            .required{color: red;font-size: 1.3rem;right: 3px;position: relative;top: 7px;}
+            .icon-right{font-size: 20px;line-height: 20px;padding-right: 10px;vertical-align: middle;}
+            .layui-layer-adminRight{top : 0px !important;}
+            .layui-layer-btn .layui-layer-btn0{border-color: #F7931E!important;background-color: #F7931E!important;}
+            .layui-table-cell{padding:0 2px;}
+            .laytable-cell-1-0-2{height:auto;min-height:auto;}
+            .page_head{width:100%;background:#fff;margin-bottom:5px;box-shadow:0 0 4px #ddd;padding:10px 0 10px;}
+            .page_head .left{width:20%;display:flex;align-items:center;font-size:15px;}
+            .page_head .left .back{width:13px;height:13px;border-top:2px solid #000;border-left:2px solid #000;transform:rotate(-50deg);margin-left:15px;margin-right:5px;}
+            .layui-layer-hui .layui-layer-content{color:#fff;}
+            .disf{display:flex;align-items: center;}
+            .user_tel,.user_email{display:none;}
+            .show{display:block;}
+            .layui-input-block{line-height:38px;}
+        </style>
+    </head>
+    <body>
+        <div class="layui-fluid">
+            <div class="layui-card">
+                <!--<div class="layui-card-header">-->
+                <!--    询价详情-->
+                <!--</div>-->
+                <div class="layui-card-body" style="padding: 0px;">
+                    <form class="layui-form" action="" lay-filter="component-form-demo1">
+                        <input type="number" name="id" value="{$id}" style="display: none;">
+                        
+                        
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">选择商户</label>
+                             <!--layui-select-fscon-->
+                            <div class="layui-input-block">
+                                 <div id="merchants" class="xm-select-demo"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="layui-form-item layui-layout-admin">
+                            <div class="layui-input-block">
+                                <div class="layui-footer" style="left: 0;text-align:center;">
+                                    <button class="layui-btn" lay-submit="" lay-filter="component-form-demo">立即提交</button>
+                                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <script src="../addons/sz_yi/static/js/layui/xm-select.js"></script>
+        <!--<script src="https://shop.gogo198.cn/collect_website/public/static/hadmin/assets/layui/xm-select.js"></script>-->
+        <script>
+            layui.use(['layer', 'form', 'table', 'upload', 'laydate'], function () {
+                var $ = layui.$
+                    , layer = layui.layer
+                    , form = layui.form
+                    // , element = layui.element
+                    , laydate = layui.laydate
+                    , upload = layui.upload
+                    , table = layui.table;
+        
+                xmSelect.render({
+                    el: '#merchants',
+                    paging: true,
+                    pageSize: 5,
+                    filterable: true,
+                    prop: {
+                        name: 'realname',
+                        value: 'id',
+                    },
+                    autoRow: true,
+                    data: {$merchant},
+                    name: 'merchants',
+                    layVerify: 'required',
+                    layVerType: 'msg',
+                });
+                
+                form.render(null, 'component-form-demo1');
+        
+                /* 监听提交 */
+                form.on('submit(component-form-demo)', function(data){
+                    $.ajax({
+                        url:"./index.php?i=3&c=entry&do=checkprice&p=index&m=sz_yi&op=share_merchant",
+                        method:'post',
+                        data:data.field,
+                        dataType:'JSON',
+                        success:function(res){
+                            layer.msg(res.result.msg,{time:3000}, function () {
+                                if(res.status == 0)
+                                {
+                                    parent.location.reload();
+                                }
+                            });
+                        },
+                        error:function (data) {
+                            layer.msg('系统错误',{time:3000});
+                        }
+                    });
+                    return false;
+                });
+            });
+        
+            function delPic(obj)
+            {
+                var layer = layui.layer,$ = layui.$;
+        
+                layer.confirm("确认删除？", {
+                    btn: ["删除","取消"]
+                }, function(){
+                    $(obj).parent().remove();
+                    layer.close(layer.index);
+                }, function(){
+        
+                });
+            }
+        </script>
+    </body>
+</html>

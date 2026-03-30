@@ -1,0 +1,273 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>{if !empty($title['home'])}{$title['home']}{else}首页-{$setting['company']}{/if}</title>
+<meta name="keywords" content="{$setting['keywords']}" />
+<meta name="description" content="{$setting['description']}" />
+{if !empty($setting['icon'])}
+<link rel="shortcut icon" href="{$_W['attachurl']}{$setting['icon']}" />
+{/if}
+<meta name="format-detection" content="telephone=no"/>
+<meta content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<meta content="yes" name="apple-mobile-web-app-capable" />
+<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+<meta content="telephone=no" name="format-detection" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+<link href="../addons/mogucms_guanwang/template/style/css/common.css" type="text/css" rel="stylesheet">
+<link href="../addons/mogucms_guanwang/template/style/css/style.css" type="text/css" rel="stylesheet">
+<script src="../addons/mogucms_guanwang/template/style/js/jquery.js"></script>
+<script src="../addons/mogucms_guanwang/template/style/js/TouchSlide.1.1.js"></script>
+<script src="../addons/mogucms_guanwang/template/style/js/wow.min.js"></script>
+<script src="../addons/mogucms_guanwang/template/style/js/jquery.lazyload.js"></script>
+<script src="../addons/mogucms_guanwang/template/style/js/comloding.js"></script>
+<script src="../addons/mogucms_guanwang/template/style/js/common.js"></script>
+<!--[if lt IE 9]>
+<script src="../addons/mogucms_guanwang/template/style/js/html5.js"></script>
+<![endif]-->
+{if $this->isWeixin()}
+<script>
+if(window.location.pathname=="/"){
+	window.location.href="{$dizhi}";
+}
+</script>
+{/if}
+<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<script type="text/javascript">
+  wx.config({
+	  debug: false,
+      appId: "{$jssdk['appId']}",
+      timestamp: "{$jssdk['timestamp']}",
+      nonceStr: "{$jssdk['nonceStr']}",
+      signature: "{$jssdk['signature']}",
+      jsApiList: [
+		'checkJsApi',
+        'onMenuShareTimeline',
+        'onMenuShareAppMessage'
+      ]
+  });
+  wx.ready(function () {
+  
+    var shareData = {
+    title: "{if !empty($title['home'])}{$title['home']}{else}首页-{$setting['company']}{/if}",
+    desc: "{$setting['keywords']}",
+    link: "{$jssdk['url']}",
+    imgUrl: "{if $setting['logo2']}{$_W['attachurl']}{$setting['logo2']}{elseif $fdset['logo2']}{$_W['attachurl']}{$fdset['logo2']}{else}../addons/mogucms_guanwang/template/style/images/logo2.png{/if}",
+  };
+ 
+  wx.onMenuShareAppMessage({
+      title: shareData.title,
+      desc: shareData.desc,
+      link: shareData.link,
+      imgUrl:shareData.imgUrl,
+      success: function (res) {
+      }
+    });
+  wx.onMenuShareTimeline({
+      title: shareData.title+"---"+shareData.desc,
+      link: shareData.link,
+      imgUrl:shareData.imgUrl,
+      success: function (res) {
+      }
+    }); 
+  });
+</script>
+{if !empty($setting['shangqiao'])}{php echo html_entity_decode($setting['shangqiao'])}{/if}
+</head>
+
+<body>
+<div class="header">
+	<div class="wrapper">
+    	<a class="logo" href="{php echo $this->mogucms_url()}"><span><img src="{if $setting['logo1']}{$_W['attachurl']}{$setting['logo1']}{elseif $fdset['logo1']}{$_W['attachurl']}{$fdset['logo1']}{else}../addons/mogucms_guanwang/template/style/images/logo.png{/if}"></span><em><img src="{if $setting['logo2']}{$_W['attachurl']}{$setting['logo2']}{elseif $fdset['logo2']}{$_W['attachurl']}{$fdset['logo2']}{else}../addons/mogucms_guanwang/template/style/images/logo2.png{/if}"></em></a>
+        <div class="nav">
+			<a class="navico" href="javascript:;"><span><img src="../addons/mogucms_guanwang/template/style/images/nav_ico2.png"></span><em><img src="../addons/mogucms_guanwang/template/style/images/nav_ico.png"></em></a>
+        	<ul>
+            	<li class="on"><a href="{php echo $this->mogucms_url()}">{if !empty($menu['home'])}{$menu['home']}{else}首页{/if}</a></li>
+            	{if $menu['solve'] != "1"}<li><a href="{php echo $this->mogucms_url('solve')}">{if !empty($menu['solve2'])}{$menu['solve2']}{else}解决方案{/if}</a></li>{/if}
+            	{if $menu['xiaochengxu'] != "1"}<li><a href="{php echo $this->mogucms_url('xiaochengxu')}">{if !empty($menu['xiaochengxu2'])}{$menu['xiaochengxu2']}{else}小程序{/if}</a></li>{/if}
+            	{if $menu['dingzhi'] != "1"}<li><a href="{php echo $this->mogucms_url('customize')}">{if !empty($menu['dingzhi2'])}{$menu['dingzhi2']}{else}定制开发{/if}</a></li>{/if}
+            	{if $menu['daili'] != "1"}<li><a href="{php echo $this->mogucms_url('daili')}">{if !empty($menu['daili2'])}{$menu['daili2']}{else}代理加盟{/if}</a></li>{/if}
+            	{if $menu['news'] != "1"}<li><a href="{php echo $this->mogucms_url('news')}">{if !empty($menu['news2'])}{$menu['news2']}{else}新闻资讯{/if}</a></li>{/if}
+            	{if $menu['about'] != "1"}<li><a href="{php echo $this->mogucms_url('about')}">{if !empty($menu['about2'])}{$menu['about2']}{else}关于我们{/if}</a></li>{/if}
+            	{if $menu['contact'] != "1"}<li><a href="{php echo $this->mogucms_url('contact')}">{if !empty($menu['contact2'])}{$menu['contact2']}{else}联系我们{/if}</a></li>{/if}
+				{if $menu['help'] != "1"}<li><a href="{php echo $this->mogucms_url('help')}">{if !empty($menu['help2'])}{$menu['help2']}{else}帮助中心{/if}</a></li>{/if}
+				{if !empty($menu['defname1'])}<li><a href="{$menu['defurl1']}" target="_blank">{$menu['defname1']}</a></li>{/if}
+				{if !empty($menu['defname2'])}<li><a href="{$menu['defurl2']}" target="_blank">{$menu['defname2']}</a></li>{/if}
+            </ul>
+        </div>
+        <div class="loginreg"><a href="{if !empty($setting['loginurl'])}{$setting['loginurl']}{else}{php echo $this->mogucms_url('login')}{/if}">登录</a>{if $loginset['iszhuche']!="1"}|<a href="{if !empty($setting['regurl'])}{$setting['regurl']}{else}{php echo $this->mogucms_url('register')}{/if}">注册</a>{/if}</div>
+    </div>
+</div>
+<div id="banner" class="banner">
+    <div class="hd">
+        <ul>{if $banner['home']}
+		{loop $banner['home'] $k $b}
+		<li>{php echo $k+1}</li>
+		{/loop}
+		{else}
+		<li>1</li><li>2</li><li>3</li>
+		{/if}</ul>
+    </div>
+    <div class="bd">
+        <ul>
+			{if !empty($banner['home1'])}
+			<li><a href="{$banner['homeurl1']}" target="_blank"><span><img src="{$_W['attachurl']}{$banner['home1']}" /></span><em><img src="{if !empty($banner['homemob1'])}{$_W['attachurl']}{$banner['homemob1']}{else}../addons/mogucms_guanwang/template/style/images/mod_banner.jpg{/if}" /></em></a></li>
+			<li><a href="{$banner['homeurl2']}" target="_blank"><span><img src="{if !empty($banner['home2'])}{$_W['attachurl']}{$banner['home2']}{else}../addons/mogucms_guanwang/template/style/images/banner.jpg{/if}" /></span><em><img src="{if !empty($banner['homemob2'])}{$_W['attachurl']}{$banner['homemob2']}{else}../addons/mogucms_guanwang/template/style/images/mod_banner.jpg{/if}" /></em></a></li>
+			<li><a href="{$banner['homeurl3']}" target="_blank"><span><img src="{if !empty($banner['home3'])}{$_W['attachurl']}{$banner['home3']}{else}../addons/mogucms_guanwang/template/style/images/banner.jpg{/if}" /></span><em><img src="{if !empty($banner['homemob3'])}{$_W['attachurl']}{$banner['homemob3']}{else}../addons/mogucms_guanwang/template/style/images/mod_banner.jpg{/if}" /></em></a></li>
+			{elseif $banner['home']}
+			{loop $banner['home'] $k $b}
+			<li><a href="javascript:;"><span><img src="{$_W['attachurl']}{$b}" /></span><em><img src="{if $banner['homemob'][$k]}{$_W['attachurl']}{$banner['homemob'][$k]}{else}../addons/mogucms_guanwang/template/style/images/mod_banner.jpg{/if}" /></em></a></li>
+			{/loop}
+			{else}
+			<li><a href="javascript:;"><span><img src="../addons/mogucms_guanwang/template/style/images/banner.jpg" /></span><em><img src="../addons/mogucms_guanwang/template/style/images/mod_banner.jpg" /></em></a></li>
+            <li><a href="javascript:;"><span><img src="../addons/mogucms_guanwang/template/style/images/banner.jpg" /></span><em><img src="../addons/mogucms_guanwang/template/style/images/mod_banner.jpg" /></em></a></li>
+            <li><a href="javascript:;"><span><img src="../addons/mogucms_guanwang/template/style/images/banner.jpg" /></span><em><img src="../addons/mogucms_guanwang/template/style/images/mod_banner.jpg" /></em></a></li>
+			{/if}
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+TouchSlide({ 
+		slideCell:"#banner",
+		titCell:".hd ul", //开启自动分页 autoPage:true ，此时设置 titCell 为导航元素包裹层
+		mainCell:".bd ul", 
+		effect:"left", 
+		autoPlay:true,//自动播放
+		autoPage:true, //自动分页
+		switchLoad:"_src" //切换加载，真实图片路径为"_src" 
+	});
+</script>
+<div class="content">
+	<div class="wrapper">
+    	<div class="title"><h2><span></span>{if !empty($setting["titleourservice"])}{$setting["titleourservice"]}{else}我们的服务{/if}</h2></div>
+        <div class="iservice_ui{if !empty($service['image4'])} uibox4{/if}">
+        	<ul>
+            	<li class="wow fadeInUp animated delay-1s">
+                	<h3><img src="{if !empty($service['image1'])}{$_W['attachurl']}{$service['image1']}{else}../addons/mogucms_guanwang/template/style/images/sevice_icon1.png{/if}" /></h3>
+                    <h2>{if !empty($service['title1'])}{$service['title1']}{else}微信公众号{/if}</h2>
+                    <p>{if !empty($service['miaoshu1'])}{$service['miaoshu1']}{else}资深研发团队，提供高品质微信开发服务{/if}</p>
+                </li>
+            	<li class="wow fadeInUp animated delay-2s">
+                	<h3><img src="{if !empty($service['image2'])}{$_W['attachurl']}{$service['image2']}{else}../addons/mogucms_guanwang/template/style/images/sevice_icon2.png{/if}" /></h3>
+                    <h2>{if !empty($service['title2'])}{$service['title2']}{else}小程序开发{/if}</h2>
+                    <p>{if !empty($service['miaoshu2'])}{$service['miaoshu2']}{else}专业技术团队,专业设计流程,全行业定制开发{/if}</p>
+                </li>
+            	<li class="wow fadeInUp animated delay-3s">
+                	<h3><img src="{if !empty($service['image3'])}{$_W['attachurl']}{$service['image3']}{else}../addons/mogucms_guanwang/template/style/images/sevice_icon3.png{/if}" /></h3>
+                    <h2>{if !empty($service['title3'])}{$service['title3']}{else}APP开发{/if}</h2>
+                    <p>{if !empty($service['miaoshu3'])}{$service['miaoshu3']}{else}专业定制IOS/安卓APP软件，专业APP设计服务{/if}</p>
+                </li>
+				{if !empty($service['image4'])}
+				<li class="wow fadeInUp animated delay-4s">
+                	<h3><img src="{if !empty($service['image4'])}{$_W['attachurl']}{$service['image4']}{else}../addons/mogucms_guanwang/template/style/images/sevice_icon4.png{/if}" /></h3>
+                    <h2>{if !empty($service['title4'])}{$service['title4']}{else}PC建站{/if}</h2>
+                    <p>{if !empty($service['miaoshu4'])}{$service['miaoshu4']}{else}公司官网,外贸网站,电子商务网站{/if}</p>
+                </li>
+				{/if}
+
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="ilc_bg">
+	<div class="wrapper">
+    	<div class="title"><h2><span></span>{if !empty($setting["titlekflc"])}{$setting["titlekflc"]}{else}开发流程{/if}</h2></div>
+        <div class="ilc_ui">
+        	<ul>
+            	<li class="wow fadeInUp animated delay-1s">
+                	<h3><img src="{if !empty($development['image1'])}{$_W['attachurl']}{$development['image1']}{else}../addons/mogucms_guanwang/template/style/images/lc_ico1.png{/if}" /></h3>
+                    <h2>{if !empty($development['title1'])}{$development['title1']}{else}需求沟通{/if}</h2>
+                    <p>{if !empty($development['miaoshu1'])}{$development['miaoshu1']}{else}客户提出需求，进行功能分析，确定功能需求{/if}</p>
+                    <em></em>
+                </li>
+            	<li class="wow fadeInUp animated delay-2s">
+                	<h3><img src="{if !empty($development['image2'])}{$_W['attachurl']}{$development['image2']}{else}../addons/mogucms_guanwang/template/style/images/lc_ico2.png{/if}" /></h3>
+                    <h2>{if !empty($development['title2'])}{$development['title2']}{else}交互设计{/if}</h2>
+                    <p>{if !empty($development['miaoshu2'])}{$development['miaoshu2']}{else}根据已确定的需求功能确认原型，UI设计稿{/if}</p>
+                    <em></em>
+                </li>
+            	<li class="wow fadeInUp animated delay-3s">
+                	<h3><img src="{if !empty($development['image3'])}{$_W['attachurl']}{$development['image3']}{else}../addons/mogucms_guanwang/template/style/images/lc_ico3.png{/if}" /></h3>
+                    <h2>{if !empty($development['title3'])}{$development['title3']}{else}技术开发{/if}</h2>
+                    <p>{if !empty($development['miaoshu3'])}{$development['miaoshu3']}{else}根据功能需求，完成前后端的开发{/if}</p>
+                    <em></em>
+                </li>
+            	<li class="wow fadeInUp animated delay-4s">
+                	<h3><img src="{if !empty($development['image4'])}{$_W['attachurl']}{$development['image4']}{else}../addons/mogucms_guanwang/template/style/images/lc_ico4.png{/if}" /></h3>
+                    <h2>{if !empty($development['title4'])}{$development['title4']}{else}发布上架{/if}</h2>
+                    <p>{if !empty($development['miaoshu4'])}{$development['miaoshu4']}{else}与客户确定验收无误后发布上架{/if}</p>
+                    <em></em>
+                </li>
+            	<li class="wow fadeInUp animated delay-5s">
+                	<h3><img src="{if !empty($development['image5'])}{$_W['attachurl']}{$development['image5']}{else}../addons/mogucms_guanwang/template/style/images/lc_ico5.png{/if}" /></h3>
+                    <h2>{if !empty($development['title5'])}{$development['title5']}{else}后续服务{/if}</h2>
+                    <p>{if !empty($development['miaoshu5'])}{$development['miaoshu5']}{else}后续持续跟进服务{/if}</p>
+                    <em></em>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="content">
+	<div class="wrapper">
+    	<div class="title"><h2><span></span>{if !empty($setting["titleanli"])}{$setting["titleanli"]}{else}案例{/if}</h2></div>
+        <div class="icase_menu"><a class="active" href="javascript:;">全部</a>{loop $categorys $c}<a href="{php echo $this->mogucms_url('xiaochengxu',array('cid'=>$c['id'].'#cate'))}" {if $cid==$c['id']}class="active"{/if}>{$c['categoryname']}</a>{/loop}</div>
+        <div class="icase_ui">
+        	<ul>
+				{loop $cases $c}
+            	<li class="wow fadeInUp">
+					{if !empty($c['myurl'])}
+                	<a href="{$c['myurl']}" target="_blank"><h3><img src="{$_W['attachurl']}{$c['image']}" class="anlianli"/>{if !empty($c['erweima'])}<span><img src="{$_W['attachurl']}{$c['erweima']}" /></span>{/if}</h3></a>
+                    <p><a href="{$c['myurl']}" target="_blank">{$c['title']}</a></p>
+					{else}
+					<h3><img src="{$_W['attachurl']}{$c['image']}" class="anlianli"/>{if !empty($c['erweima'])}<span><img src="{$_W['attachurl']}{$c['erweima']}" /></span>{/if}</h3>
+                    <p>{$c['title']}</p>
+					{/if}
+                </li>
+				{/loop}
+            </ul>
+        </div>
+    </div>
+</div>
+{if $setting['showsolve'] == 1}
+<div class="content">
+	<div class="wrapper">
+    	<div class="title"><h2><span></span>{if !empty($setting["titlesolve"])}{$setting["titlesolve"]}{else}解决方案{/if}</h2></div>
+        <div class="icase_menu"><a class="active" href="javascript:;">全部</a>{loop $categorys $c}<a href="{php echo $this->mogucms_url('solve',array('cid'=>$c['id']))}" {if $cid==$c['id']}class="active"{/if}>{$c['categoryname']}</a>{/loop}</div>
+       <div class="jjfa_list">
+			<ul>
+				{loop $slists $ls}
+				<li class="wow fadeInUp">
+					<a href="{php echo $this->mogucms_url('solvedetail',array('id'=>$ls['id']))}"><h1><img src="{$_W['attachurl']}{$ls['image']}" />{if !empty($ls['erweima'])}<span><img src="{$_W['attachurl']}{$ls['erweima']}"></span>{/if}</h1></a>
+					<h2><a href="{php echo $this->mogucms_url('solvedetail',array('id'=>$ls['id']))}">{$ls['title']}</a></h2>
+					<p>{$ls['categoryname']}服务类型</p>
+				</li>
+				{/loop}
+			</ul>
+		</div>
+    </div>
+</div>
+{/if}
+<div class="content inew_bg">
+	<div class="wrapper">
+    	<div class="title"><h2><span></span>{if !empty($setting["titlexwzx"])}{$setting["titlexwzx"]}{else}新闻资讯{/if}</h2></div>
+        <div class="inew_ui">
+        	<ul>
+				{loop $news $n}
+            	<li class="wow fadeInUp animated delay-1s">
+                	<div class="dt"><span>{php echo date("m-d",$n['addtime'])}</span><em>{php echo date("Y",$n['addtime'])}</em></div>
+                    <div class="dd">
+                    	<a href="{php echo $this->mogucms_url('newsdetail',array('id'=>$n['id']))}">
+                    	<span>{$n['title']}</span>
+                        <em>{$n['abstract']}</em>
+                        </a>
+                    </div>
+                </li>
+				{/loop}
+            </ul>
+        </div>
+    </div>
+</div>
+
+{template 'default/footer'}

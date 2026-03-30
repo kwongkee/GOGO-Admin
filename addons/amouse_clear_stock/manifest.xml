@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.baidu.com" versionCode="0.6,0.7">
+    <application setting="false">
+        <name><![CDATA[清货商场]]></name>
+        <identifie><![CDATA[amouse_clear_stock]]></identifie>
+        <version><![CDATA[1.2]]></version>
+        <type><![CDATA[business]]></type>
+        <ability><![CDATA[全民互粉辅助功能，给微商提供上传商品，清理商品的平台]]></ability>
+        <description><![CDATA[全民互粉辅助功能，给微商提供上传商品，清理商品的平台]]></description>
+		<author><![CDATA[微赞]]></author>
+		<url><![CDATA[http://www.baidu.com]]></url>
+    </application>
+
+    <platform>
+        <subscribes>
+        </subscribes>
+        <handles>
+            <message type="text" />
+        </handles>
+        <rule embed="false" />
+    </platform>
+
+    <bindings>
+        <cover>
+            <entry title="货源中心" do="product" />
+        </cover>
+        <menu>
+            <entry title="货源分类管理" do="category" state="" direct="false" />
+            <entry title="个人货源管理" do="product" state="" direct="false" />
+        </menu>
+    </bindings>
+    <install><![CDATA[
+CREATE TABLE IF NOT EXISTS  `ims_amouse_board_product_category` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '所属帐号',
+  `name` varchar(50) NOT NULL COMMENT '分类名称',
+  `displayorder` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `createtime` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `ims_amouse_board_clear_stock_goods` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) DEFAULT '0',
+  `displayorder` int(11) DEFAULT '0',
+  `title` varchar(255) DEFAULT '',
+  `openid` varchar(255) DEFAULT '',
+  `logo` varchar(255) DEFAULT '',
+  `thumb1` varchar(255) DEFAULT '',
+  `thumb2` varchar(255) DEFAULT '',
+  `thumb3` varchar(255) DEFAULT '',
+  `price` decimal(10,2) DEFAULT '0.00' comment '市场价',
+  `clear_price` decimal(10,2) DEFAULT '0.00' comment '清货价',
+  `viewcount` int(11) DEFAULT '0',
+  `pcateid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '分类ID',
+  `detail` text,
+  `mobile` varchar(18) comment '卖家联系电话',
+  `status` tinyint(3) DEFAULT '0',
+  `shuaxin` tinyint(2) DEFAULT '0' COMMENT '排序',
+  `listorder` int(10) NOT NULL DEFAULT 0,
+  `createtime` int(11) DEFAULT 0,
+  `endtime` int(11) DEFAULT 0,
+  `uptime` int(11) DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `idx_uniacid` (`uniacid`),
+  KEY `idx_endtime` (`endtime`),
+  KEY `idx_uptime` (`uptime`),
+  KEY `idx_createtime` (`createtime`),
+  KEY `idx_status` (`status`),
+  KEY `idx_displayorder` (`displayorder`),
+  KEY `idx_openid` (`openid`)
+) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `ims_amouse_board_clear_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) DEFAULT '0',
+  `openid` varchar(255) DEFAULT '',
+  `goodsid` int(11) DEFAULT '0',
+  `read` int(11) NOT NULL DEFAULT '0',
+  `createtime` int(11) DEFAULT '0',
+  `status` tinyint(3) DEFAULT '0' COMMENT '0-未发货 1-已发货 3 取消',
+  `usetime` int(11) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_amouse_board_sysset` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `weid` int(11) DEFAULT '0',
+  `acid` int(11) DEFAULT '0',
+  `thumb` varchar(1000) DEFAULT '' COMMENT '底部图片',
+  `banner` varchar(1000) DEFAULT '' COMMENT '底部图片',
+  `bannerLink` varchar(1000) DEFAULT '' COMMENT '底部图片',
+  `needfriend` int(11) DEFAULT '0' COMMENT '需要加几个好友',
+  `followurl` varchar(255) DEFAULT '',
+  `protocol` varchar(255) DEFAULT '',
+  `copyright` varchar(255) DEFAULT '',
+  `useurl` varchar(255) DEFAULT '' COMMENT '如何使用',
+  `appid` varchar(255) DEFAULT '',
+  `appsecret` varchar(255) DEFAULT '',
+  `style` tinyint(1) DEFAULT '1' COMMENT '切换风格 1-为默认 2-超级人脉加',
+  `cnzz` text,
+  `isLocation` int(1) DEFAULT '1' COMMENT '开启定位0是 1：否',
+  `ischeck` int(1) DEFAULT '1' COMMENT '开启审核0是 1：否',
+  `ischeck2` tinyint(1) DEFAULT '1' COMMENT '开启审核0是 1：否',
+  `isopen` int(1) DEFAULT '0' COMMENT '是否开启积分商场0是 1：否',
+  `crelink` varchar(255) DEFAULT '',
+  `bg` varchar(1000) DEFAULT '' COMMENT '推广二维码背景图',
+  `qrleft` varchar(1000) DEFAULT NULL COMMENT '左边距',
+  `qrtop` varchar(1000) DEFAULT NULL COMMENT '上边距',
+  `qrwidth` varchar(1000) DEFAULT NULL COMMENT '宽度',
+  `qrheight` varchar(1000) DEFAULT NULL COMMENT '高度',
+  `new_credit` int(11) DEFAULT '0',
+  `success_credit` int(11) DEFAULT '0',
+  `top_credit` int(11) DEFAULT '0',
+  `sms_resgister` tinyint(1) NOT NULL DEFAULT '1',
+  `sms_user` varchar(50) NOT NULL DEFAULT '',
+  `sms_secret` varchar(80) NOT NULL,
+  `sms_type` tinyint(1) NOT NULL DEFAULT '1',
+  `sms_template_code` varchar(50) NOT NULL DEFAULT '',
+  `sms_free_sign_name` varchar(80) NOT NULL,
+  `mchid` varchar(1000) DEFAULT NULL COMMENT '商户号',
+  `shkey` varchar(1000) DEFAULT NULL COMMENT '商户秘钥',
+  `tpl` varchar(1000) DEFAULT NULL COMMENT '支付提交通知模板id',
+  `att_credit` text,
+  `paytpl` varchar(1000) DEFAULT NULL COMMENT '支付成功通知模板id',
+  `admin_tpl` varchar(1000) DEFAULT NULL COMMENT '接收通知模板id',
+  `openid` varchar(1000) DEFAULT NULL COMMENT '客服接收通知微信oPenid',
+  `nickname` varchar(1000) DEFAULT NULL COMMENT '客服接收通知微信昵称',
+  `rec_credit` int(11) DEFAULT '0' COMMENT '推荐积分',
+  `templateid` varchar(255) DEFAULT '',
+  `share_title` varchar(300) DEFAULT NULL,
+  `share_desc` varchar(500) DEFAULT NULL,
+  `share_icon` varchar(600) DEFAULT NULL,
+  `creditlink` varchar(255) DEFAULT NULL,
+  `zero` tinyint(1) DEFAULT '0',
+  `mtpl` varchar(300) DEFAULT NULL COMMENT '成为会员通知模板id',
+  `mduetpl` varchar(300) DEFAULT NULL COMMENT '会员到期通知模板id',
+  `send` varchar(300) DEFAULT NULL,
+  `add_credit` int(10) DEFAULT '0',
+  `timer` int(2) DEFAULT '5',
+  `new_text` text COMMENT '发布名片送积分通知',
+  `add_friend_text` text COMMENT '添加好友名片送积分通知',
+  `subtext` text COMMENT '推广者通知',
+  `entrytext` text COMMENT '关注者通知',
+  `subtext2` text COMMENT '推广者通知',
+  `entrytext2` text COMMENT '关注者通知',
+  `top_text` text COMMENT '置顶积分通知',
+  `topnumber` int(10) DEFAULT '2' COMMENT '超级VIP首页置顶个数',
+  `isrand` int(1) DEFAULT '1' COMMENT '超级VIP是否随机',
+  `is_open_task` int(1) DEFAULT '1',
+  `task_thumb` text,
+  `deftext` text COMMENT '关注者通知',
+  `sign_credit` text,
+  PRIMARY KEY (`id`),
+  KEY `indx_weid` (`weid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
+
+    ]]></install>
+    <uninstall><![CDATA[
+    drop table if exists ims_amouse_board_product_category;
+	DROP TABLE IF EXISTS ims_amouse_board_clear_stock_goods;
+	drop table if exists ims_amouse_board_clear_log;
+	drop table if exists ims_amouse_board_sysset;
+	]]></uninstall>
+    <upgrade><![CDATA[update.php]]></upgrade>
+</manifest>

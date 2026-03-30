@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>禁言用户管理</title>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<meta name="format-detection" content="address=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="{TEMPLATE_PATH}/wtCommon.css?v={php echo time();}">
+<link rel="stylesheet" href="{TEMPLATE_PATH}/live.css?v={php echo time();}">
+<script src="http://cdn.bootcss.com/zepto/1.1.6/zepto.min.js"></script>
+<script type="text/javascript">
+$(function(){
+	$(".adm_delete").click(function(){
+		var conf=confirm("确认解除禁言吗?");
+		if(!conf){return;}
+		var guest_id=$(this).attr('attr-id');
+		var guest_handler=$(this);
+		$.post(location.href,{black_id:guest_id},function(result){
+			if(result.success==1){
+				guest_handler.parent().remove();
+			}
+		});
+	});
+});
+</script>
+</head>
+<body class="liveroom_bg">
+<div class="main_box_4" id="forumPageBox"> 
+     
+	<p class="people_t">禁言用户</p>
+		<dl class="people_info_box">
+		        {loop $blacks $black}
+				<dd><span class="people_name">{$black['black_nickname']}</span><span class="people_title">{php echo date('Y-m-d H:i:s', $black[create_time]);}</span>
+				   {if $is_manager }<a href="javascript:;" class="adm_delete" attr-id="{$black['id']}">删除</a>{/if}</dd>
+		        {/loop}
+	</dl>	
+		
+	<div class="geneBox admDeleteBox">
+		<div class="main">
+		<div class="gene_content">
+			确定要删除  <span class="nowname" style="display:inline;"></span> ?
+		</div>
+		<div class="gene_bottom both">
+			<span><a href="javascript:;" class="gene_btn gene_cancel">取消</a></span>
+			<span><a href="javascript:;" class="gene_btn gene_confirm" attr-id="">确定</a></span>
+		</div>
+		</div>
+	</div>
+</div>
+<div class="loadingBox"><span></span></div>
+</body></html>

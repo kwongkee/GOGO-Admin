@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="common/meta"}
+</head>
+<body class="gray-bg">
+<div class="col-sm-8" style="margin-top: 10px;">
+    <div class="input-group">
+        <input type="text" id="billNum" name="billNum" value="" placeholder="" class="input-sm form-control" style="height: 40px;margin: 5px 0;">
+        <span class="input-group-btn">
+        <button type="button" class="btn btn-sm layui-btn" onclick="search();" style="height: 40px;">查找</button> </span>
+    </div>
+</div>
+<div class="col-sm-12">
+    <div class="ibox float-e-margins">
+        <div class="ibox-content" style="display:block;" id="list1">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>企业名称</th>
+                    <th>操作员名称</th>
+                    <th>提单编号</th>
+                    <th>是否查询失败</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name='list' id='vo'}
+                <tr>
+                    <td>{$vo['user_name']}</td>
+                    <td>{$vo['company_name']}</td>
+                    <td>{$vo['bill_num']}</td>
+                    <td>{$vo['isFail']}</td>
+                    <td> <a  href="#" class="btn btn-info" onclick="detail('{$vo[\'bill_num\']}');return false;">详情</a></td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    <div class="layui-box layui-laypage layui-laypage-default" style="margin: -20px 0;">{$page}</div>
+</div>
+
+</body>
+<link href="./static/hadmin/layui/css/layui.css" rel="stylesheet">
+<script src="./static/hadmin/layui/layui.all.js"></script>
+<script>
+    // layui.use('laydate', function(){
+    // });
+    function search(){
+        var billNum = $("#billNum").val();
+        window.location.href='{:Url("admin/OrderDeliveryManage/manifestList")}&billNum='+billNum;
+    }
+    function detail(billNum) {
+        // parent.open();
+        parent.layer.open({
+            type: 2,
+            area: ['800px', '500px'],
+            content: '{:url("admin/OrderDeliveryManage/expressOrderQueryFailList")}&billNum='+billNum
+        });
+        return false;
+    }
+</script>
+</html>

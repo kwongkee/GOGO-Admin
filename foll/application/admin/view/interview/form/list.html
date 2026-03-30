@@ -1,0 +1,85 @@
+{include file="public/header"}
+<body style="padding: 10px;background-color: #f2f2f2;">
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+          <div class="layui-col-md12">
+            <div class="layui-card">
+              <div class="layui-card-header">评测列表</div>
+              <div class="layui-card-body">
+              	<button type="button" class="layui-btn layui-btn-normal" href="javascript:;" onClick="data_add('添加评测','{:url('admin/interview/formadd')}')">添加评测</button>
+                <table class="layui-table" lay-size="sm">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>评测</th>
+                        <th>岗位</th>
+                        <th>添加时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {volist name="lists" id="vo"}
+                        <tr>
+                            <td>{$vo.id}</td>
+                            <td>{$vo.form_title}</td>
+                            {volist name="$joblist" id="vv"}
+                            {if condition="$vo.job_id==$vv.id"}
+                            <td>{$vv.job_name}</td>
+                            {/if}
+                            {/volist}
+                            <td>{$vo.create_time|date='Y-m-d H:i:s',###}</td>
+                            <td>
+<button class="layui-btn layui-btn-xs layui-btn-normal" onclick="edit('查看评测','{:url('admin/interview/formview')}','{$vo.id}')">查看</button>
+<button class="layui-btn layui-btn-xs" onclick="edit('编辑评测','{:url('admin/interview/formedit')}','{$vo.id}')">编辑</button>
+<button class="layui-btn layui-btn-danger layui-btn-xs" onclick="del({$vo.id})">删除</button>
+                            </td>
+                        </tr>
+                        {/volist}
+                    </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+</body>
+<script type="text/javascript">
+    layui.use(['layer'],function(){
+        layer = layui.layer;
+        $     = layui.jquery;
+    });
+    function data_add(title,url)
+    {
+        var index = layer.open({
+            type: 2,
+            title: title,
+            content: url
+        });
+        layer.full(index);
+    }
+
+    function del(id){
+        layer.confirm('确定要删除吗？',{icon:3,btn:['确定','取消']},function(){
+            $.post("{:Url('admin/interview/formdel')}",{id:id},function(res){
+                if(res.code == 1) {
+                    layer.msg(res.msg,{icon:1});
+                    setTimeout(function(){
+                        window.location.reload();
+                    },1000);
+                } else {
+                    layer.alert(res.msg,{icon:2});
+                }
+            },'json');
+        })
+    }
+    function edit(title,url,id){
+        var index = layer.open({
+            type: 2,
+            title: title,
+            content: url + '&id=' + id
+        });
+        layer.full(index);
+    }
+</script>
+</html>

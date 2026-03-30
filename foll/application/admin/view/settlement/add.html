@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>新增结算</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <style>
+        .hide{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<form class="layui-form" action="">
+
+    <div class="layui-form-item">
+        <!--<input type="hidden" name="method" value="add">-->
+    </div>
+
+    <div class="layui-form-item">
+        <lable class="layui-form-label">选择商户</lable>
+        <div class="layui-input-block">
+            <select name="uid" lay-filter="selUser" lay-verify="required">
+                <option value="">请选择商户</option>
+                {volist name="merchList" id="vo"}
+                <option value="{$vo.id}">{$vo.user_name}</option>
+                {/volist}
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <lable class="layui-form-label">提单编号</lable>
+        <div class="layui-input-block" id="Bill">
+            <select name="" id="">
+                <option value="" disabled>请先选择商户</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <lable class="layui-form-label">批次编号</lable>
+        <div class="layui-input-block" id="Batch">
+            <select name="batch" lay-filter="selBatch" lay-verify="required">
+                <option value="" disabled>请选择批次编号</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- 需要动态添加 -->
+    <div class="content">
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">执行周期</label>
+                <div class="layui-input-inline" style="width: 118px;">
+                    <input type="text" class="layui-input" name="start[0]" id="start" placeholder="请选择开始日期" lay-verify="required">
+                </div>
+                <div class="layui-form-mid">-</div>
+                <div class="layui-input-inline" style="width: 118px;">
+                    <input type="text" class="layui-input" name="end[0]" id="end" placeholder="请选择结束日期" lay-verify="required">
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">项目名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="project[0]" placeholder="请填写项目名称" lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">计费方式</label>
+            <div class="layui-input-block">
+                <select name="goType[0]" lay-filter="mytoType">
+                    <option did="0">请选择计费方式</option>
+                    <option value="1" did="11" num="1">票</option>
+                    <option value="2" did="12" num="1">金额</option>
+                    <option value="3" did="13" num="1">时间</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 按订单票数 -->
+        <div class="layui-form-item hide" id="sel11">
+            <label class="layui-form-label">按票</label>
+            <div class="layui-input-inline" style="width: 100px;">
+                <input type="text" name="money[0]" placeholder="X元" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid">元 / 票</div>
+        </div>
+
+        <!-- 按订单总额 -->
+        <div class="layui-form-item hide" id="sel12">
+            <label class="layui-form-label">按订单总额</label>
+            <div class="layui-input-inline" style="width: 100px;">
+                <input type="text" name="percen[0]" placeholder="x%" minlength="1"  max="100" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid">%</div>
+        </div>
+
+        <!-- 按天收费 -->
+        <div class="layui-form-item hide" id="sel13">
+            <div class="layui-inline">
+                <label class="layui-form-label">按天算</label>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <input type="text" class="layui-input" name="day[0]" placeholder="请输入天数量" min="1" max="365">
+                </div>
+                <div class="layui-form-mid">天 / 收</div>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <input type="text" class="layui-input" name="dayMoney[0]" placeholder="请输入金额">
+                </div>
+                <div class="layui-form-mid">元</div>
+            </div>
+        </div>
+
+        <div class="layui-form-item"><div class="layui-input-block"><hr></div></div>
+
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <a href="javascript:void(0)" id="addPro" class="layui-btn layui-btn-warm">新增项目</a>
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">确认提交</button>
+            <button type="reset" class="layui-btn layui-btn-danger">重置数据</button>
+        </div>
+    </div>
+</form>
+
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+
+<script>
+    //Demo
+    layui.use(['form','laydate'], function(){
+        var form = layui.form,laydate = layui.laydate;
+        var num = 2;
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#start' //指定元素
+            ,min: 0
+            ,max: '2030-12-31'
+        });
+
+        laydate.render({
+            elem: '#end' //指定元素
+            ,min: 0
+            ,max: '2030-12-31'
+        });
+
+        // 选中商户，获取商户提单编号
+        form.on('select(selUser)',function (d) {
+            var uid = d.value;
+
+            if(uid == '') {
+                layer.msg('请选择商户')
+                return false;
+            }
+
+            $.ajax({
+                url:"{:Url('Settlement/getBill')}",
+                type:"GET",
+                dataType:"json",
+                data:{'uid':uid},
+                success:function(res) {
+                    if(res.msg == '') {
+                        layer.msg('暂无数据，请稍后再查！')
+                        return false;
+                    }
+                    // 加载内容
+                    //$('#Bill').append(res.msg);
+                    $('#Bill').html(res.msg);
+                    // 重新渲染表单
+                    form.render();
+                }
+            })
+            // 选中加载数据
+        })
+
+        // 选择提单编号，显示批次编号
+        form.on('select(selBill)',function(d) {
+            var bill = d.value;
+            if(bill == '') {
+                layer.msg('请选择提单')
+                return false;
+            }
+            // 请求获取批次
+            $.ajax({
+                url:"{:Url('Settlement/getBatch')}",
+                dataType:'json',
+                type:'GET',
+                data:{'bill':bill},
+                success:function(res) {
+                    if(res.msg == '') {
+                        layer.msg('暂无数据，请稍后再查！')
+                        return false;
+                    }
+                    // 加载内容
+                    $('#Batch').html(res.msg);
+                    // 重新渲染表单
+                    form.render();
+                }
+
+            })
+
+        });
+
+        form.on('select(mytoType)', function(data) {
+            // 当前选中的值
+            var inx = data.value;
+            // 属性列表序号
+            var did = data.elem[inx].attributes.did.nodeValue;
+            // 排序序号
+            var num = data.elem[inx].attributes.num.nodeValue;
+
+            // 需要拼接
+            var sel1 = num +'1';
+            var sel2 = num +'2';
+            var sel3 = num +'3';
+            $('#sel'+sel1).css('display','none');
+            $('#sel'+sel2).css('display','none');
+            $('#sel'+sel3).css('display','none');
+            // 获取属性值；
+           $('#sel'+did).css('display','block');
+        });
+
+        // 获取新增参数
+        $(document).on('click','#addPro',function() {
+            $.ajax({
+                url:"{:Url('Settlement/getadd')}",
+                data:{'did':num,},
+                type:"GET",
+                dataType:"json",
+                success:function(res) {
+
+                    if(res.code <= 0) {
+                        layer.msg('添加失败，请稍后重试！');
+                        return false;
+                    }
+
+                    // 加载内容
+                    $('.content').append(res.msg);
+
+                    //执行一个laydate实例
+                    laydate.render({
+                        elem: '#start'+num //指定元素
+                        ,min: 0
+                        ,max: '2030-12-31'
+                    });
+
+                    laydate.render({
+                        elem: '#end'+num  //指定元素
+                        ,min: 0
+                        ,max: '2030-12-31'
+                    });
+                    // 重新渲染表单
+                    form.render();
+                    // 表单序号自增
+                    num++;
+                }
+            })
+
+        })
+
+        //监听提交
+        form.on('submit(formDemo)', function(data) {
+            // 获取通道名称
+            // var pay = $('#pay option:selected').html();
+            // data.field.payName = pay;
+            $.ajax({
+                url:"{:Url('Settlement/doadd')}",
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (red) {
+                    if(red.code <= 0) {
+                        layer.msg(red.msg);
+                        return false;
+                    }
+                    layer.msg(red.msg);
+                    setTimeout(function(){
+                        layer.closeAll();
+                        parent.window.location.reload();
+                    },1200)
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            return false;
+        });
+    });
+
+    
+</script>
+</html>

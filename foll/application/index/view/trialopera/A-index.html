@@ -1,0 +1,125 @@
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>{include file="common/header"}</title>
+</head>
+<link rel="stylesheet" href="./static/hadmin/css/cardvoucher.css">
+<link rel="stylesheet" href="./static/hadmin/css/jquery.datetimepicker.css">
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/js/jquery.datetimepicker.full.js"></script>
+<body>
+	<div class="warp">
+		<form action="{:Url('trialopera/save')}" method="post">
+			<div class="warp-input">
+				阶段名称：<input type="text" id="coupon_name" name="coupon_name" style="margin-left:8px!important" placeholder="请输入阶段名称" />
+			</div>
+			
+			<div class="warp-input">
+				阶段时限：
+				<input type="hidden" name="s_time" id="s_time"/>
+				<input type="hidden" name="e_time" id="e_time"/>
+				
+				<input type="text" id="starttime" value="" style="width:200px!important;margin-right:4px;" placeholder="请选择开始时间" />
+				-
+				<input type="text" id="endtime" value="" style="width:200px!important;margin-left:4px;" placeholder="请选择结束时间"/>
+			</div>
+			
+			<div class="warp-input">
+				阶段折扣：
+				<input type="text" name="discount" id="discount" style="width:200px!important;" min="1" maxlength="1" max="9" placeholder="请输入折扣" />
+				<span style="color: darkgray;"> 请输入1-9的数字</span>
+			</div>
+			
+			<div class="warp-input">
+				使用限制：<span>只能用于当天</span>
+			</div>
+
+			
+		</form>
+		<div>
+			<input type="button" onclick="return submits()" value="确认开通" class="sub" />
+		</div>
+	</div>
+</body>
+<script>
+	
+	function submits()
+	{
+		var coupon_name = $('coupon_name').val();
+		var starttime 	= $('starttime').val();
+		var endtime 	= $('endtime').val();
+		var discount 	= $('discount').val();
+		
+		console.dir(coupon_name);
+		
+		if(coupon_name == ''){
+			alert('阶段名称不能为空');
+			return false;
+		}
+		
+		if(starttime == ''){
+			alert('开始时间不能为空');
+			return false;
+		}
+		
+		if(endtime == ''){
+			alert('结束时间不能为空');
+			return false;
+		}
+		
+		if(discount == ''){
+			alert('折扣不能为空');
+			return false;
+		}
+		
+		
+	}
+	
+	$('#starttime').datetimepicker({
+		format:"Y-m-d H:i",
+	})
+	$('#endtime').datetimepicker({
+		format:"Y-m-d H:i",
+	})
+	
+	if($("#starttime").val()){
+		var time = $("#starttime").val();
+		var datetimestamp = Date.parse(time).toString();  
+        var dts = datetimestamp.substr(0,datetimestamp.length-3);  
+		$("#s_time").val(dts);
+	}
+	
+	if($("#endtime").val()){
+		var time = $("#endtime").val();
+		var datetimestamp = Date.parse(time).toString();
+        var dts = datetimestamp.substr(0,datetimestamp.length-3);
+		$("#e_time").val(dts);
+	}
+	
+	if($("select[name='app']").val()){
+		var type = $("select[name='app']").val();
+		if(type == 'parking'){
+			$('#park').show();
+		}else if(type != 'parking' ){
+			$('#park').hide();
+			$("#park_1").val("");
+			$("#park_2").val("");
+		}
+	}
+	
+	$("#starttime").change(function(){
+		var time = $(this).val();
+		var datetimestamp = Date.parse(time).toString();  
+        var dts = datetimestamp.substr(0,datetimestamp.length-3);  
+		$("#s_time").val(dts);
+	})
+	$("#endtime").change(function(){
+		var time = $(this).val();
+		var datetimestamp = Date.parse(time).toString();  
+        var dts = datetimestamp.substr(0,datetimestamp.length-3);  
+		$("#e_time").val(dts);
+	})
+	
+	
+</script>
+</html>

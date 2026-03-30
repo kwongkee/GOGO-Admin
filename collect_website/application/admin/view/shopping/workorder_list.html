@@ -1,0 +1,233 @@
+{include file="common/header_new"}
+<link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+<link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+
+<body class="gray-bg">
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <h3 style="text-align: center;">工单管理</h3>
+                <ul id="myTab" class="nav nav-tabs" role="tablist">
+                    <li class="active"><a href="#tab1" role="tab" data-toggle="tab">未通知</a></li>
+                    <li><a href="#tab2" role="tab" data-toggle="tab">已通知</a></li>
+                </ul>
+                <div id="myTabContent" class="tab-content">
+                    <div class="tab-pane active" id="tab1">
+                        <table id="table"
+
+                        /*默认排序项*/
+                        data-sort-name="id"
+                        data-sort-order="desc"
+                        /*工具栏相关*/
+                        data-toolbar="#toolbar"
+                        data-search="false"          /*搜索框*/
+                        data-search-on-enter-key="false"
+                        data-show-refresh="true"    /*刷新按钮*/
+                        /*分页相关*/
+                        data-side-pagination="server"
+                        data-pagination="true"      /*显示分页*/
+                        data-page-size="10"         /*每页显示条数*/
+                        /*移动端相关*/
+                        data-mobile-responsive="true"
+                        data-card-view="true"
+                        data-show-columns="true"
+                        /*radio or checkbox字段名称*/
+                        data-select-item-name="id" >
+
+                        <thead>
+                        <tr>
+                            <!--                            <th data-field="checkbox"-->
+                            <!--                                data-align="center"-->
+                            <!--                                data-checkbox="true"></th>-->
+                            <th data-field="id"
+                                data-align="center"
+                                data-sortable="true"
+                                data-visible="true">ID</th>
+                            <th data-field="gogo_id"
+                                data-align="center"
+                                data-sortable="true">客户id</th>
+                            <th data-field="content"
+                                data-align="center"
+                                data-sortable="true">聊天内容</th>
+                            <th data-field="status_name"
+                                data-align="center"
+                                data-sortable="true">未通知</th>
+                            <th data-field="createtime"
+                                data-align="center"
+                                data-sortable="true">聊天时间</th>
+                            <th data-field="manage"
+                                data-align="center"
+                                data-sortable="true"
+                                data-formatter="actionFormatter">操作</th>
+                        </tr>
+                        </thead>
+                        </table>
+                    </div>
+                    <div class="tab-pane" id="tab2">
+                        <table id="table2"
+
+                        /*默认排序项*/
+                        data-sort-name="id"
+                        data-sort-order="desc"
+                        /*工具栏相关*/
+                        data-toolbar="#toolbar"
+                        data-search="false"          /*搜索框*/
+                        data-search-on-enter-key="false"
+                        data-show-refresh="true"    /*刷新按钮*/
+                        /*分页相关*/
+                        data-side-pagination="server"
+                        data-pagination="true"      /*显示分页*/
+                        data-page-size="10"         /*每页显示条数*/
+                        /*移动端相关*/
+                        data-mobile-responsive="true"
+                        data-card-view="true"
+                        data-show-columns="true"
+                        /*radio or checkbox字段名称*/
+                        data-select-item-name="id" >
+
+                        <thead>
+                        <tr>
+                            <th data-field="id"
+                                data-align="center"
+                                data-sortable="true"
+                                data-visible="true">ID</th>
+                            <th data-field="gogo_id"
+                                data-align="center"
+                                data-sortable="true">客户id</th>
+                            <th data-field="content"
+                                data-align="center"
+                                data-sortable="true">聊天内容</th>
+                            <th data-field="status_name"
+                                data-align="center"
+                                data-sortable="true">未通知</th>
+                            <th data-field="createtime"
+                                data-align="center"
+                                data-sortable="true">聊天时间</th>
+                            <th data-field="manage"
+                                data-align="center"
+                                data-sortable="true"
+                                data-formatter="actionFormatter2">操作</th>
+                        </tr>
+                        </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 自定义js -->
+<script src="./static/hadmin/js/content.js?v=1.0.0"></script>
+<script src="./static/hadmin/layui/layui.all.js"></script>
+</body>
+<script>
+    var table;
+
+    $(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:url('admin/shopping/workorder_list')}&pa=1&status=0",
+            queryParams: queryParams,
+        });
+        table = $('#table2').bootstrapTable({
+            url: "{:url('admin/shopping/workorder_list')}&pa=1&status=1",
+            queryParams: queryParams,
+        });
+        $('.form-control').attr('placeholder','搜索角色名称');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+            id: {$id}
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.id;
+        var name = row.gogo_id;
+
+        var result = "";
+        // result += '<button style="margin-right: 5px;" type="button" onclick="confirm('+id+',\''+name+'\')" class="btn btn-info btn-xs">确认任务</button>';
+        if(row.is_roam!=1){
+            result += '<button style="margin-right: 5px;" type="button" onclick="roam('+id+',\''+name+'\')" class="btn btn-primary btn-xs">流转工单</button>';
+        }
+        return result;
+    }
+
+    function actionFormatter2(value, row, index) {
+        var id = row.id;
+        var name = row.gogo_id;
+        var result = "";
+        // result += '<button style="margin-right: 5px;" type="button" onclick="workorder_list('+id+',\''+name+'\')" class="btn btn-info btn-xs">工单列表</button>';
+        // if(row.type_name!="总后台" && row.type_name!='消费者' && row.is_delivery==1 && row.have_detail==1){
+        //     result += '<button style="margin-right: 5px;" type="button" onclick="edit('+id+',\''+name+'\')" class="btn btn-info btn-xs">编辑工单</button>';
+        // }
+        // if(row.is_roam!=1) {
+        //     if ((row.roam_uid == 0 || row.roam_uid == null) && row.type_name != "服务商") {
+        //         result += '<button style="margin-right: 5px;" type="button" onclick="roam(' + id + ',\'' + name + '\')" class="btn btn-primary btn-xs">流转工单</button>';
+        //     } else if (row.type_name == "服务商" && row.is_delivery == 1) {
+        //         result += '<button style="margin-right: 5px;" type="button" onclick="roam(' + id + ',\'' + name + '\')" class="btn btn-primary btn-xs">流转工单</button>';
+        //     }
+        // }
+
+
+        return result;
+    }
+
+    function edit(id,name){
+        var index = layer.open({
+            type: 2,
+            title: '编辑工单-'+name,
+            area:['80%','80%'],
+            content: "{:url('admin/task/edit_workorder')}&id="+id
+        });
+    }
+
+    function roam(id,name){
+        var index = layer.open({
+            type: 2,
+            title: '流转工单-'+name,
+            area:['80%','80%'],
+            content: "{:url('admin/shopping/roam')}&id="+id
+        });
+        // layer.full(index);
+    }
+
+    function confirm(id,title){
+        layer.confirm('确认同意该任务吗？',function(index){
+            $.ajax({
+                url: "<?php echo Url('admin/task/confirm'); ?>",
+                data:{'id':id},
+                type:'post',
+                cache:false,
+                dataType:'json',
+                success:function(data){
+                    if(data.code==0)
+                    {
+                        layer.msg(data.msg, {
+                            icon: 1,
+                            time: 2000
+                        }, function(){
+                            window.location.reload();
+                        });
+                        return true;
+                    }else {
+                        layer.msg(data.msg, {icon:2, time:2000});
+                        return false;
+                    }
+                },
+                error:function() {
+                    layer.msg('系统出错,请重试',{icon:2,time:1000});
+                }
+            });
+        });
+    }
+</script>
+</html>

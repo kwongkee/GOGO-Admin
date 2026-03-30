@@ -1,0 +1,95 @@
+
+<div class="layui-footer">
+    <!-- 底部固定区域 -->
+    版权所有 © Gogo|購購網
+</div>
+</div>
+
+
+<script src="../addons/mer_chats/static/web/layui.js"></script>
+
+<script>
+    layui.use('layer', function(){ //独立版的layer无需执行这一句
+        var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
+
+        //触发事件
+        var active = {
+
+            offset: function(othis){
+                var type = othis.data('type')
+                    ,text = othis.text();
+                layer.open({
+                    type: 2
+                    ,offset: type //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
+                    ,id: 'layerDemo'+type //防止重复弹出
+                    ,area: ['500px', '400px']
+                    ,content: './公众号选择.html'
+                    ,btn: '提交'
+                    ,btnAlign: 'c' //按钮居中
+                    ,shade: 0.3 //不显示遮罩
+                    ,yes: function(){
+                        layer.closeAll();
+                    }
+                });
+            }
+        };
+
+        $('#layerDemo .layui-btn').on('click', function(){
+            var othis = $(this), method = othis.data('method');
+            active[method] ? active[method].call(this, othis) : '';
+        });
+
+    });
+</script>
+
+<script>
+    layui.use(['form', 'layedit', 'laydate'], function(){
+        var form = layui.form
+            ,layer = layui.layer
+            ,layedit = layui.layedit
+            ,laydate = layui.laydate;
+
+        //表单赋值
+        layui.$('#LAY-component-form-setval').on('click', function(){
+            form.val('example', {
+                "like[checkbox]": false //复选框选中状态
+            });
+        });
+
+    });
+
+    layui.use(['laypage', 'layer'], function(){
+        var laypage = layui.laypage
+            ,layer = layui.layer;
+
+        //完整功能
+        laypage.render({
+            elem: 'demo7'
+            ,count: 100
+            ,layout: ['count', 'prev', 'page', 'next', 'limit', 'skip']
+            ,jump: function(obj){
+                console.log(obj)
+            }
+        });
+
+        //调用分页
+        laypage.render({
+            elem: 'demo20'
+            ,count: data.length
+            ,jump: function(obj){
+                //模拟渲染
+                document.getElementById('biuuu_city_list').innerHTML = function(){
+                    var arr = []
+                        ,thisData = data.concat().splice(obj.curr*obj.limit - obj.limit, obj.limit);
+                    layui.each(thisData, function(index, item){
+                        arr.push('<li>'+ item +'</li>');
+                    });
+                    return arr.join('');
+                }();
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

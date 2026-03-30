@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>{$info['title']}</title>
+<meta name="keywords" content="{$info['keywords']}" />
+<meta name="description" content="{$info['description']}" />
+{if !empty($setting['icon'])}
+<link rel="shortcut icon" href="{$_W['attachurl']}{$setting['icon']}" />
+{/if}
+<meta name="format-detection" content="telephone=no"/>
+<meta content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<meta content="yes" name="apple-mobile-web-app-capable" />
+<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+<meta content="telephone=no" name="format-detection" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+<link href="../addons/mogucms_guanwang/template/style/css/common.css" type="text/css" rel="stylesheet">
+<link href="../addons/mogucms_guanwang/template/style/css/style.css" type="text/css" rel="stylesheet">
+
+<script src="../addons/mogucms_guanwang/template/style/js/jquery.js"></script>
+<script src="../addons/mogucms_guanwang/template/style/js/wow.min.js"></script>
+<script src="../addons/mogucms_guanwang/template/style/js/jquery.lazyload.js"></script>
+<script src="../addons/mogucms_guanwang/template/style/js/comloding.js"></script>
+<script src="../addons/mogucms_guanwang/template/style/js/common.js"></script>
+<!--[if lt IE 9]>
+<script src="../addons/mogucms_guanwang/template/style/js/html5.js"></script>
+<![endif]-->
+
+</head>
+{if !empty($setting['shangqiao']) && $setting['isshangqiao']=="1"}{php echo html_entity_decode($setting['shangqiao'])}{/if}
+<body>
+{template 'default/header'}
+<div class="container">
+    <div class="banner hlepbaner" style="background:url({if !empty($banner['help'])}{$_W['attachurl']}{$banner['help']}{else}../addons/mogucms_guanwang/template/style/images/help_banner.jpg{/if}) no-repeat center center; background-size:cover;">
+        <div class="wrapper">
+            <div class="help_bantxt">
+                <div class="help_bh2">{if !empty($banner['helptitle'])}{$banner['helptitle']}{else}帮助中心{/if}</div>
+                <div class="help_bsearch"><form method="get" name="form1" action="{php echo $this->mogucms_url('help')}"><input class="help_ssinp" name="keyword" type="text" placeholder="请输入你要查询的内容"><input class="help_ssbtn" type="submit" value="搜索"></form></div>
+            </div>
+        </div>
+    </div>
+    <div class="news_content bgf4">
+        <div class="wrapper">
+            <div class="help_menu">
+            	<ul>
+                	<li {if $cid==0}class="on"{/if}><a href="{php echo $this->mogucms_url('help')}">全部</a></li>
+					{loop $categorys $c}
+                	<li {if $cid==$c['id']}class="on"{/if}><a href="{php echo $this->mogucms_url('help',array('cid'=>$c['id']))}">{$c['categoryname']}</a></li>
+                	{/loop}
+                </ul>
+            </div>
+            <div class="help_nwp">
+                <div class="help_nct">
+                    <div class="help_nltop">
+                        <h2>{$info['title']}</h2>
+                        <p>{php echo date("Y-m-d",$info['addtime'])}</p>
+                    </div>
+                    <div class="help_nltxt">{php echo html_entity_decode($info['content'])}
+                    </div>
+                    <div class="help_nlbot wow fadeInUp">{if !empty($prev)}<a class="fl" href="{php echo $this->mogucms_url('helpdetail',array('id'=>$prev['id']))}">上一篇：{$prev['title']}</a>{else}<a class="fl" href="javascript:;">上一篇：没有了</a>{/if}{if !empty($next)}<a class="fr" href="{php echo $this->mogucms_url('helpdetail',array('id'=>$next['id']))}">下一篇：{$next['title']}</a>{else}<a class="fr" href="javascript:;">下一篇：没有了</a>{/if}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{template 'default/footer'}

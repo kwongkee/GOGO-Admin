@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<div class="header">
+    <span>阿里云身份验证余额不足</span>
+    <div></div>
+</div>
+
+<table class="layui-table">
+    <thead>
+    <tr class="ths">
+        <th></th>
+        <th>所属用户</th>
+        <th>批次编号</th>
+        <th>余额不足验证失败</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {volist name="data" id="vo" key="k" }
+    <tr class="boys">
+        <td></td>
+        <td>{$vo.user_name}</td>
+        <td>{$vo.title}</td>
+        <td>{$vo.num} 票</td>
+        <td>
+            <button class="layui-btn layui-btn-sm" onclick="Declare('{$vo.title}')">前往验证</button>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+
+<script type="text/javascript">
+    layui.use(['layer','jquery'],function(){
+        layer = layui.layer;
+        $ = layui.jquery;
+    });
+
+    // 请求加入队列
+    function Declare(batch) {
+        layer.confirm('您确定要验证吗？', {
+            icon:3,
+            btn: ['确定','取消'] //按钮
+        }, function() {
+
+            $.ajax({
+                //url:"http://39.108.11.214/api/elec/declaresd",
+                url:"{:Url('admin/Aliver/store')}",
+                type:'post',
+                dataType:'json',
+                //async:false,
+                data:{
+                    'batch_num':batch,
+                    'type':'ali'
+                },
+                success:function(data) {
+                    var da = JSON.parse(data);
+                    if(da.code == 1) {
+                        layer.msg(da.msg);
+                    } else {
+                        layer.msg(da.msg);
+                    }
+
+                    setInterval(function(){
+                        window.location.reload();
+                    },800)
+                },
+
+                error:function(er) {
+                    //console.log(er)
+                }
+            })
+        });
+    }
+
+</script>
+</body>
+</html>

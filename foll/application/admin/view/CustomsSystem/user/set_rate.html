@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>设置国内结算提现费率</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+</head>
+<body>
+<form class="layui-form" action="" style="padding-top:15px;padding-right:15px;box-sizing:border-box;">
+    <div class="layui-form-item">
+        <label class="layui-form-label">行业</label>
+        <div class="layui-input-block">
+            <select name="industry" id="industry" lay-verify="required" lay-search>
+                <option value="">请选择行业</option>
+                <option value="1" {$user['rate_info']['industry']==1?'selected':''}>电商</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">储蓄卡费率</label>
+        <div class="layui-input-block">
+            <input class="layui-input" name="bankcard_rate" id="bankcard_rate" placeholder="请输入费率：0.006" value="{$user['rate_info']['bankcard_rate']}" onkeyup="if(isNaN(value))execCommand('undo')" onafterpaste="if(isNaN(value))execCommand('undo')" lay-verify="required">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">信用卡费率</label>
+        <div class="layui-input-block">
+            <input class="layui-input" name="creditcard_rate" id="creditcard_rate" placeholder="请输入费率：0.006" value="{$user['rate_info']['creditcard_rate']}" onkeyup="if(isNaN(value))execCommand('undo')" onafterpaste="if(isNaN(value))execCommand('undo')" lay-verify="required">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">费率封顶金额</label>
+        <div class="layui-input-block">
+            <input class="layui-input" name="rate_limit" id="rate_limit" placeholder="请输入费率封顶金额，不输入默认0" value="{$user['rate_info']['rate_limit']}" onkeyup="if(isNaN(value))execCommand('undo')" onafterpaste="if(isNaN(value))execCommand('undo')">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+
+</body>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<!--<script src="./static/hadmin/assets/layui/xm-select.js"></script>-->
+<script>
+    layui.use(['form','jquery'], function(){
+        var form = layui.form;
+        var $ = layui.jquery;
+
+        form.on('submit(formDemo)', function(data) {
+            $.ajax({
+                url: '{:Url("admin/customssystem/settlementRate")}',
+                type: "POST",
+                dataType: "JSON",
+                data: {"uid":{$user['id']},"data":data.field},
+                success:function (res) {
+                    layer.msg(res.message);
+                    // if (res.code==0){
+                    //     setTimeout(function () {
+                    //         location.reload();
+                    //     },2000);
+                    // }
+                },error:function (xhr) {
+                    layer.msg("连接服务错误..");
+                }
+            });
+            return false;
+        });
+    });
+
+
+</script>
+</html>

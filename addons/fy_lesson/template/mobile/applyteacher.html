@@ -1,0 +1,173 @@
+<!-- 
+ * 申请讲师
+ * ============================================================================
+-->
+{php include $this->template('_header');}
+{if $op=='display'}
+<script type="text/javascript" src="{$_W['siteroot']}app/resource/js/app/util.js"></script>
+<script src="{$_W['siteroot']}app/resource/js/require.js"></script>
+<script src="{$_W['siteroot']}app/resource/js/app/config.js"></script>
+<script type="text/javascript" src="{$_W['siteroot']}app/resource/js/app/common.js"></script>
+<style type="text/css">
+body {margin:0;font-size:14px !important; font-family:'微软雅黑'; background:#f4f4f4;}
+.top {overflow:hidden}
+.top img { width:100%;}
+a{ text-decoration: none;}
+.main {height:auto; padding:10px 12px;}
+.main .text {height:20px; font-size:14px; line-height:20px; color:#666;}
+.main .text span {color:#f6914b;}
+.main .text1 {padding:5px; font-size:14px; line-height:20px; color:#666;}
+.main .text1 span {color:#f6914b;}
+.main .textarea {width:98%; font-size:14px; margin:5px 0;background:#fff;}
+.main .textarea textarea{padding:0 7px;height:85px;width:97%;}
+.main .inputs {height:36px; margin:5px 10px 0 0;background:#fff;border-radius:5px; line-height: 36px; padding-left: 7px;}
+.main .inputs input{width:98%}
+.main .sub {width: 100%;height:40px; background:#e53c39; margin-top:14px; border-radius:5px; text-align:center; line-height:40px; color:#fff; font-size:16px;}
+.main .title {height:30px; margin-top:20px; font-size:12px; line-height:30px; color:#666;}
+.vip_main {height:220px; background:#fff; border-radius:4px;}
+.vip_main .vip {height:40px; padding:12px; border-bottom:1px solid #f1f1f1; overflow:hidden; font-size:12px; color:#999;}
+.vip_main .vip .ico1 {height:36px; width:36px; background:#32cd32; border-radius:18px; color:#fff; font-size:20px; line-height:36px; text-align:center; float:left;}
+.vip_main .vip .ico2 {height:36px; width:36px; background:#fece00; border-radius:18px; color:#fff; font-size:22px; line-height:40px; text-align:center; float:left;}
+.vip_main .vip .text {height:36px; margin-left:12px; float:left;}
+.vip_main .vip .text .t1 {height:18px; font-size:15px; color:#666; line-height:18px;}
+.vip_main .vip .text .t2 {height:18px; font-size:13px; color:#999; line-height:18px;}
+
+
+.input-group{margin-bottom:3px; padding-top: 5px;}
+.form-control{width:67% !important; background-color:#eee; border-radius: 5px; padding: 0 5px;}
+.modal-open .modal {overflow-x: hidden;overflow-y: auto; }
+.modal{position: fixed;top: 0;right: 0;bottom: 0;left: 0;z-index: 9999;display: none;overflow: hidden;-webkit-overflow-scrolling: touch;outline: 0; }
+.modal.in .modal-dialog {-webkit-transform: translate3d(0,0,0);-o-transform: translate3d(0,0,0);transform: translate3d(0,0,0); }
+.modal-dialog {position: relative;width: auto;margin: 10px; }
+.modal-content{position: relative;background-color: #fff;-webkit-background-clip: padding-box;background-clip: padding-box;border: 1px solid #999;border: 1px solid rgba(0,0,0,.2);border-radius: 6px;outline: 0;-webkit-box-shadow: 0 3px 9px rgba(0,0,0,.5);box-shadow: 0 3px 9px rgba(0,0,0,.5); }
+.modal-header {min-height: 16.43px;padding: 15px;border-bottom: 1px solid #e5e5e5; }
+.modal-header .close {margin-top: -2px; }
+button.close {-webkit-appearance: none;padding: 0;cursor: pointer;background: 0 0;border: 0; }
+.close {float: right;font-size: 21px;font-weight: 700;line-height: 1;color: #000;text-shadow: 0 1px 0 #fff;filter: alpha(opacity=20);opacity: .2; }
+button{outline: none;font-style: inherit;vertical-align: baseline;word-wrap: break-word; }
+.modal-body {position: relative;padding: 15px; }
+.uploader .queueList {margin: 10px; }
+.app .placeholder {min-height: 0;padding-top: 0; }
+.uploader .placeholder {border: 3px dashed #e6e6e6;text-align: center;background-position:center 150px;color: #cccccc;font-size: 18px;position: relative; }
+.webuploader-container {position: relative; }
+.app .placeholder .webuploader-pick {margin: 15px auto; }
+.uploader .placeholder .webuploader-pick {font-size: 18px;background: #00b7ee;border-radius: 3px;line-height: 44px;padding: 0 30px;color: #fff;display: inline-block;margin: 35px auto;cursor: pointer;box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1); }
+.webuploader-pick {position: relative;display: inline-block;cursor: pointer;padding: 1px 5px;color: white;text-align: center;border-radius: 3px;overflow: hidden; }
+.webuploader-element-invisible {position: absolute !important;clip: rect(1px 1px 1px 1px);clip: rect(1px,1px,1px,1px); }
+.modal-footer {padding: 15px;text-align: right;border-top: 1px solid #e5e5e5; }
+.btn-default {color: #333;background-color: #fff;border-color: #ccc; }
+.btn {width: 27%; display: inline-block;padding: 6px 12px;margin-bottom: 0;font-size: 14px;font-weight: 400;line-height: 1.42857143;text-align: center;white-space: nowrap;vertical-align: middle;cursor: pointer;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;background-image: none;border: 1px solid rgba(14, 14, 14, 0.2);border-radius: 4px; }
+.modal-backdrop.in {filter: alpha(opacity=50);opacity: .5; }
+.modal-backdrop {position: fixed;top: 0;right: 0;bottom: 0;left: 0;z-index: 1040;background-color: #000;}
+
+.help-block img{height:95px;}
+.teacher-info{display: inline-block;margin-top:10px;}
+</style>
+
+<div id="container">
+	<form method="post" action="{php echo $this->createMobileUrl('applyteacher', array('op'=>'postteacher'));}" onsubmit="return checksubmit();return false;">
+		<div class="main">
+			<div class="text">亲爱的<span>{$lessonmember['mnickname']}</span>：</div>
+			<div class="text" style="height:40px;text-indent:2em;">{if $teacherlog['status']==1}如需修改已通过的各项资料，请联系工作人员~{else}欢迎申请成为讲师，认真属实填写以下各项信息有利于审核通过哦~{/if}</div>
+			<label class="teacher-info">讲师名称：</label>
+			<div class="inputs">
+				<input type="text" name="teacher" id="teacher" placeholder="讲师名称" value="{$teacherlog['teacher']} {if !empty($teacherlog['teacher']) && $teacherlog['status']==1}[不可修改]{/if}" {if !empty($teacherlog['teacher']) && $teacherlog['status']==1}readonly{/if}>
+			</div>
+			<label class="teacher-info">讲师介绍：</label>
+			<div class="textarea">
+				<textarea name="teacherdes" id="teacherdes" placeholder="详细介绍自己，让更多的学生了解您，可填写您的主攻方向、工作经历、讲课方式等">{$teacherlog['teacherdes']}</textarea>
+			</div>
+			<label class="teacher-info">讲师QQ：</label>
+			<div class="inputs">
+				<input type="text" name="qq" id="qq" placeholder="联系QQ" value="{$teacherlog['qq']} {if !empty($teacherlog['qq']) && $teacherlog['status']==1}[不可修改]{/if}" {if !empty($teacherlog['qq']) && $teacherlog['status']==1}readonly{/if}>
+			</div>
+			<label class="teacher-info">QQ交流群：</label>
+			<div class="inputs">
+				<input type="text" name="qqgroup" id="qqgroup" placeholder="QQ交流群" value="{$teacherlog['qqgroup']} {if !empty($teacherlog['qqgroup']) && $teacherlog['status']==1}[不可修改]{/if}" {if !empty($teacherlog['qqgroup']) && $teacherlog['status']==1}readonly{/if}>
+			</div>
+			<label class="teacher-info">讲师头像：</label>
+			<div class="inputs" style="height:145px;">
+				{php echo tpl_form_field_image('teacherphoto', $teacherlog['teacherphoto']);}
+			</div>
+			<input type="hidden" name="token" value="{$_W['token']}" />
+			<button class="sub" name="submit">提交</button>
+			<div class="title">讲师特权</div>
+			<div class="vip_main">
+				<div class="vip">
+					<div class="ico1"><i class="fa fa-qrcode"></i></div>
+					<div class="text">
+						<div class="t1">课程收入</div>
+						<div class="t2">课程每出售一次，立即有收入</div>
+					</div>
+				</div>
+				<div class="vip">
+					<div class="ico2"><i class="fa fa-cny"></i></div>
+					<div class="text">
+						<div class="t1">自由提现</div>
+						<div class="t2">收入存入账户，可提现到微信钱包</div>
+					</div>
+				</div>
+				<div class="vip" style="border-bottom:0px;">申请讲师通过后，您可把自己的课程与网站进行协议，你的课程每出售一次，你都可获得课程价格{$setting['teacher_income']}%的收入，具体以您的课程与网站的协议为准。</div>
+			</div>
+		</div>
+	</form>
+</div>
+
+{php echo register_jssdk(false);}
+<script type="text/javascript">
+function checksubmit(){
+	var teacher	     = $("#teacher").val();
+	var qq	         = $("#qq").val();
+	var qqgroup	     = $("#qqgroup").val();
+	var teacherdes   = $("#teacherdes").val();
+	var teacherphoto = $("input[name='teacherphoto']").val();
+
+	if(teacher==''){
+		alert("请填写讲师名称");
+		return false;
+	}
+	if(qq==''){
+		alert("请填写联系QQ");
+		return false;
+	}
+	if(qqgroup==''){
+		alert("请填写QQ售后群");
+		return false;
+	}
+	if(teacherdes==''){
+		alert("请填写讲师介绍");
+		return false;
+	}
+	if(teacherphoto==''){
+		alert("请上传讲师相片");
+		return false;
+	}
+
+	return true;
+
+}
+
+
+wx.ready(function(){
+	var shareData = {
+		title: "{$sharelink['title']} - {$setting['sitename']} - {$_W['account']['name']}",
+		desc: "{$sharelink['desc']}",
+		link: "{php echo $shareurl;}",
+		imgUrl: "{php echo $_W['attachurl'];}{$sharelink['images']}",
+		trigger: function (res) {},
+		complete: function (res) {},
+		success: function (res) {},
+		cancel: function (res) {},
+		fail: function (res) {}
+	};
+	wx.onMenuShareTimeline(shareData);
+	wx.onMenuShareAppMessage(shareData);
+	wx.onMenuShareQQ(shareData);
+	wx.onMenuShareWeibo(shareData);
+	wx.onMenuShareQZone(shareData);
+	
+});
+</script>
+{/if}
+
+{php include $this->template('_footer');}

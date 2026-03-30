@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.012wz.com" versionCode="0.8,1.0">
+	<application setting="true">
+		<name><![CDATA[购物中心会员停车方案]]></name>
+		<identifie><![CDATA[wxz_shoppingmall]]></identifie>
+		<version><![CDATA[1.3.0]]></version>
+		<type><![CDATA[activity]]></type>
+		<ability><![CDATA[购物中心会员停车方案]]></ability>
+		<description><![CDATA[购物中心会员停车方案(会员卡,积分,充值,兑换,店面,拍小票,优惠券,分享传播)]]></description>
+		<author><![CDATA[微赞]]></author>
+		<url><![CDATA[https://www.012wz.com]]></url>
+	</application>
+	<platform>
+		<subscribes>
+		</subscribes>
+		<handles>
+			<message type="image" />
+			<message type="voice" />
+			<message type="video" />
+			<message type="location" />
+			<message type="link" />
+			<message type="subscribe" />
+			<message type="qr" />
+			<message type="trace" />
+			<message type="click" />
+			<message type="enter" />
+			<message type="text" />
+		</handles>
+		<rule embed="true" />
+		<card embed="false" />
+	</platform>
+	<bindings>
+		<menu>
+			<entry title="首页配置" do="index_content" state="" direct="false" />
+			<entry title="粉丝列表" do="fans_list" state="" direct="false" />
+			<entry title="积分奖品" do="award_manage" state="" direct="false" />
+			<entry title="积分日志" do="credit_get_list" state="" direct="false" />
+			<entry title="商铺管理" do="shop" state="" direct="false" />
+			<entry title="活动管理" do="shop_activity" state="" direct="false" />
+			<entry title="优惠券管理" do="coupon" state="" direct="false" />
+			<entry title="兑换记录" do="award_exchange" state="" direct="false" />
+			<entry title="拍小票" do="user_ticket_list" state="" direct="false" />
+			<entry title="统一积分" do="upload_credit" state="" direct="false" />
+			<entry title="订单列表" do="order_list" state="" direct="false" />
+			<entry title="系统消息" do="user_msg_list" state="" direct="false" />
+			<entry title="数据配置" do="page_list" state="" direct="false" />
+			<entry title="微信配置" do="wx_pay_setting" state="" direct="false" />
+			<entry title="自定义分享" do="share_setting_list" state="" direct="false" />
+			<entry title="停车记录" do="park_pay_record" state="" direct="false" />
+			<entry title="停车场收费规则" do="park_pay_rule" state="" direct="false" />
+			<entry title="停车场ETC" do="park_pay_etc" state="" direct="false" />
+		</menu>
+	</bindings>
+	<permissions>
+	</permissions>
+	<install><![CDATA[CREATE TABLE IF NOT EXISTS `ims_wxz_shoppingmall_activity` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) NOT NULL,
+  `shop_id` int(11) NOT NULL DEFAULT '0' COMMENT '商铺id',
+  `title` varchar(500) NOT NULL COMMENT '活动标题',
+  `desc` text NOT NULL COMMENT '活动描述',
+  `img` varchar(255) NOT NULL COMMENT '缩略图',
+  `link` varchar(255) NOT NULL COMMENT '链接地址',
+  `isdel` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除1.已删除',
+  `create_at` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_wxz_shoppingmall_activity_sign` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) NOT NULL DEFAULT '0',
+  `activity_id` int(11) NOT NULL DEFAULT '0' COMMENT '活动id',
+  `fans_id` int(11) NOT NULL DEFAULT '0' COMMENT '用户id',
+  `username` varchar(255) NOT NULL DEFAULT '' COMMENT '用户名',
+  `mobile` varchar(20) NOT NULL DEFAULT '' COMMENT '手机号',
+  `remark` text NOT NULL COMMENT '报名备注',
+  `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_wxz_shoppingmall_award` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) NOT NULL COMMENT '公众号id',
+  `shop_id` int(11) NOT NULL DEFAULT '0' COMMENT '商铺id',
+  `name` varchar(255) NOT NULL COMMENT '奖品名称',
+  `img` varchar(255) NOT NULL COMMENT '奖品图片',
+  `desc` varchar(2000) NOT NULL COMMENT '兑换说明',
+  `password` varchar(10) NOT NULL DEFAULT '' COMMENT '核销码',
+  `expiry_date_start` date NOT NULL COMMENT '有效期开始',
+  `expiry_date_end` date NOT NULL COMMENT '有效期结束',
+  `num` int(11) NOT NULL COMMENT '奖品剩余数量',
+  `total_num` int(11) NOT NULL DEFAULT '0' COMMENT '奖品总数量',
+  `cashed` int(11) DEFAULT '0' COMMENT '已兑换数量',
+  `credit` int(11) NOT NULL DEFAULT '0' COMMENT '奖品兑换积分',
+  `max_exchange_num` tinyint(3) NOT NULL DEFAULT '0' COMMENT '每人最大可领取数量',
+  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '状态1.启用，2.未启用',
+  `isdel` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除1.已删除',
+  `create_at` int(11) NOT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_wxz_shoppingmall_coupon` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) NOT NULL DEFAULT '0' COMMENT '公众号id',
+  `shop_id` int(11) NOT NULL DEFAULT '0' COMMENT '商铺id',
+  `name` varchar(255) NOT NULL DEFAULT '' COMMENT '优惠券名称',
+  `store` varchar(255) NOT NULL DEFAULT '' COMMENT '可以使用的店面',
+  `img` varchar(255) NOT NULL DEFAULT '' COMMENT '优惠券图片',
+  `desc` varchar(2000) NOT NULL DEFAULT '' COMMENT '优惠券说明',
+  `password` varchar(10) NOT NULL DEFAULT '' COMMENT '核销码',
+  `expiry_date_start` date NOT NULL COMMENT '有效期开始',
+  `expiry_date_end` date NOT NULL COMMENT '有效期结束',
+  `level` tinyint(1) NOT NULL DEFAULT '1' COMMENT '可以使用的会员等级',
+  `isdel` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
+  `total_num` int(11) NOT NULL DEFAULT '0' COMMENT '优惠券总数量',
+  `num` int(11) NOT NULL DEFAULT '0' COMMENT '优惠券剩余数量',
+  `credit` int(11) NOT NULL DEFAULT '0' COMMENT '兑换积分',
+  `cashed` int(11) NOT NULL DEFAULT '0' COMMENT '已兑换优惠券数量',
+  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '状态1.启用，2.未启用',
+  `create_at` int(11) NOT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_wxz_shoppingmall_credit_log` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) unsigned NOT NULL DEFAULT '0',
+  `fans_id` int(11) NOT NULL DEFAULT '0' COMMENT '粉丝id',
+  `pass_fans_id` int(11) NOT NULL DEFAULT '0' COMMENT '转赠用户id',
+  `award_coupon_id` int(11) NOT NULL DEFAULT '0' COMMENT '积分优惠券id',
+  `award_credit_id` int(11) NOT NULL DEFAULT '0' COMMENT '积分奖品id',
+  `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1.获取，2使用',
+  `operate` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1.加积分 2减积分',
+  `event_desc` varchar(255) NOT NULL DEFAULT '' COMMENT '积分事件说明',
+  `ticket_img` varchar(255) NOT NULL DEFAULT '' COMMENT '拍摄小票图片',
+  `event_type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1. 兑换奖品 2.兑换优惠券 3转赠积分 4.后台导入 5.拍摄小票 6完善资料送积分 7后台增加积分 8停车抵用',
+  `ischeck` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0.待审核 1.审核通过，2.审核不通过',
+  `num` int(11) NOT NULL DEFAULT '0' COMMENT '积分数量',
+  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1未发放 2已发放',
+  `remark` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
+  `send_time` int(11) NOT NULL DEFAULT '0' COMMENT '发放时间',
+  `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
+  PRIMARY KEY (`id`),
+  KEY `fans_id` (`fans_id`),
+  KEY `uniacid` (`uniacid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_wxz_shoppingmall_exchange` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) NOT NULL COMMENT '活动id',
+  `award_id` int(11) NOT NULL COMMENT '积分id',
+  `fans_id` int(11) NOT NULL COMMENT '粉丝id',
+  `password` varchar(255) NOT NULL COMMENT '密码',
+  `status` tinyint(11) NOT NULL DEFAULT '0' COMMENT '0.未兑换,1已兑换',
+  `create_at` int(11) NOT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_wxz_shoppingmall_fans` (
+  `uid` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) unsigned NOT NULL,
+  `openid` varchar(40) NOT NULL DEFAULT '',
+  `proxy` varchar(40) NOT NULL DEFAULT '',
+  `unionid` varchar(40) NOT NULL DEFAULT '',
+  `nickname` varchar(20) NOT NULL DEFAULT '',
+  `gender` varchar(2) NOT NULL DEFAULT '',
+  `state` varchar(20) NOT NULL DEFAULT '',
+  `city` varchar(20) NOT NULL DEFAULT '',
+  `country` varchar(20) NOT NULL DEFAULT '',
+  `avatar` varchar(500) NOT NULL DEFAULT '',
+  `username` varchar(255) NOT NULL COMMENT '用户姓名',
+  `birthday` date NOT NULL DEFAULT '0000-00-00' COMMENT '生日',
+  `idcard` varchar(255) NOT NULL COMMENT '身份证',
+  `sex` varchar(10) NOT NULL DEFAULT '' COMMENT '性别',
+  `plate_number` varchar(20) NOT NULL DEFAULT '' COMMENT '车牌号',
+  `mobile` varchar(20) NOT NULL COMMENT '手机号',
+  `mobile_verify` varchar(50) NOT NULL COMMENT '手机号验证',
+  `share_num` int(11) NOT NULL DEFAULT '0' COMMENT '分享次数',
+  `account` int(11) NOT NULL DEFAULT '0' COMMENT '用户账户',
+  `credit` int(11) NOT NULL DEFAULT '0' COMMENT '总积分',
+  `left_credit` int(11) NOT NULL DEFAULT '0' COMMENT '剩余积分',
+  `use_credit` int(11) NOT NULL DEFAULT '0' COMMENT '使用积分',
+  `client_ip` varchar(20) NOT NULL COMMENT '客户端ip',
+  `level` tinyint(2) NOT NULL DEFAULT '0' COMMENT '会员等级',
+  `reg_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '注册时间',
+  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0.待审核，1.审核通过，2.审核不通过',
+  `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
+  PRIMARY KEY (`uid`),
+  UNIQUE KEY `openid` (`openid`) USING BTREE,
+  KEY `uniacid` (`uniacid`),
+  KEY `mobile` (`mobile`),
+  KEY `reg_time` (`reg_time`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_wxz_shoppingmall_fans_msg` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) NOT NULL,
+  `fans_id` int(11) NOT NULL DEFAULT '0' COMMENT '1.粉丝id',
+  `msg_id` int(11) NOT NULL DEFAULT '0' COMMENT '2.信息id',
+  `is_read` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1未读,2已读',
+  `create_at` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fans_id` (`fans_id`),
+  KEY `msg_id` (`msg_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_wxz_shoppingmall_index` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) NOT NULL DEFAULT '0',
+  `type` int(11) NOT NULL DEFAULT '1' COMMENT '1首页，2积分列表页',
+  `banner1` varchar(1000) NOT NULL DEFAULT '' COMMENT '首页banner1',
+  `banner2` varchar(1000) NOT NULL DEFAULT '' COMMENT '首页banner2',
+  `banner3` varchar(1000) NOT NULL DEFAULT '' COMMENT '首页banner3',
+  `banner4` varchar(1000) NOT NULL DEFAULT '' COMMENT '首页banner4',
+  `banner5` varchar(1000) NOT NULL DEFAULT '' COMMENT '首页banner5',
+  `banner6` varchar(1000) NOT NULL DEFAULT '' COMMENT '首页banner6',
+  `adv1` varchar(255) NOT NULL DEFAULT '' COMMENT '广告1',
+  `adv2` varchar(255) NOT NULL DEFAULT '' COMMENT '广告2',
+  `shop_ids` varchar(255) NOT NULL DEFAULT '' COMMENT '推荐商铺id',
+  `shop_activity_ids` varchar(255) NOT NULL DEFAULT '' COMMENT '推荐活动',
+  `update_at` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+  `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_wxz_shoppingmall_msg` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) NOT NULL,
+  `type` varchar(50) NOT NULL DEFAULT '1' COMMENT '信息类型 1.系统消息 2.转赠消息',
+  `title` varchar(500) NOT NULL COMMENT '信息标题',
+  `desc` text NOT NULL COMMENT '信息内容',
+  `isdel` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
+  `create_at` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_wxz_shoppingmall_order` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) NOT NULL,
+  `order_no` varchar(50) NOT NULL DEFAULT '0' COMMENT '订单编号',
+  `fans_id` int(11) NOT NULL DEFAULT '0' COMMENT '1.粉丝id',
+  `type` int(11) NOT NULL DEFAULT '1' COMMENT '订单类型 1.停车场微信支付',
+  `status` int(11) NOT NULL DEFAULT '1' COMMENT '订单状态1待处理,2成功，3失败',
+  `park_pay_type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '计费方式',
+  `credit` int(11) NOT NULL DEFAULT '0' COMMENT '消耗积分',
+  `money` int(11) NOT NULL DEFAULT '0' COMMENT '订单金额分计算',
+  `pay_money` int(11) NOT NULL DEFAULT '0' COMMENT '实际支付金额',
+  `fail_reason` varchar(255) NOT NULL DEFAULT '' COMMENT '失败原因',
+  `trade_no` varchar(50) NOT NULL COMMENT '微信流水号',
+  `success_at` int(11) NOT NULL,
+  `update_at` int(11) NOT NULL,
+  `create_at` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fans_id` (`fans_id`),
+  KEY `order_no` (`order_no`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_wxz_shoppingmall_page` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) NOT NULL,
+  `type` varchar(50) NOT NULL COMMENT '页面类型',
+  `title` varchar(500) NOT NULL COMMENT '标题',
+  `desc` text NOT NULL COMMENT '描述',
+  `img` varchar(255) NOT NULL COMMENT '图片',
+  `link` varchar(255) NOT NULL COMMENT '链接地址',
+  `isdel` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
+  `update_at` int(11) NOT NULL,
+  `create_at` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_wxz_shoppingmall_reply_setting` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) NOT NULL,
+  `rid` int(11) NOT NULL,
+  `title` varchar(500) NOT NULL COMMENT '标题',
+  `desc` text NOT NULL COMMENT '描述',
+  `img` varchar(255) NOT NULL COMMENT '图片',
+  `link` varchar(255) NOT NULL COMMENT '链接地址',
+  `isdel` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
+  `update_at` int(11) NOT NULL,
+  `create_at` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_wxz_shoppingmall_share` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) NOT NULL,
+  `type` varchar(50) NOT NULL COMMENT '自定义分享类型',
+  `title` varchar(500) NOT NULL COMMENT '分享标题',
+  `desc` text NOT NULL COMMENT '分享描述',
+  `img` varchar(255) NOT NULL COMMENT '分享图片',
+  `link` varchar(255) NOT NULL COMMENT '分享链接地址',
+  `create_at` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_wxz_shoppingmall_shop` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) NOT NULL DEFAULT '0',
+  `order` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
+  `good_num` int(6) NOT NULL DEFAULT '0' COMMENT '点赞数',
+  `img_list` varchar(255) NOT NULL DEFAULT '' COMMENT '列表图',
+  `name` varchar(100) NOT NULL DEFAULT '' COMMENT '商铺名称',
+  `floor` varchar(50) NOT NULL DEFAULT '' COMMENT '楼层',
+  `category` varchar(50) NOT NULL DEFAULT '' COMMENT '主营业务',
+  `img` varchar(255) NOT NULL DEFAULT '' COMMENT '详情页大图',
+  `logo` varchar(255) NOT NULL DEFAULT '' COMMENT 'logo图片',
+  `tel` varchar(20) NOT NULL DEFAULT '' COMMENT '电话号码',
+  `isdel` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除1.已删除',
+  `desc` text NOT NULL COMMENT '商户介绍',
+  `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_wxz_shoppingmall_shop_activity` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) NOT NULL DEFAULT '0',
+  `shop_id` int(11) NOT NULL DEFAULT '0' COMMENT '商铺id',
+  `title` varchar(255) NOT NULL DEFAULT '' COMMENT '活动标题',
+  `sub_title` varchar(500) NOT NULL DEFAULT '' COMMENT '活动副标题',
+  `img` varchar(255) NOT NULL DEFAULT '' COMMENT '详情页大图',
+  `expiry_date_start` date NOT NULL COMMENT '有效期开始',
+  `expiry_date_end` date NOT NULL COMMENT '有效期结束',
+  `issign` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否需要报名',
+  `sign_num` int(11) NOT NULL DEFAULT '0' COMMENT '已报名人数',
+  `can_sign_num` int(11) NOT NULL DEFAULT '0' COMMENT '可报名人数',
+  `type` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1商户活动 2商场活动',
+  `isdel` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除1.已删除',
+  `desc` text NOT NULL COMMENT '活动详情',
+  `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_wxz_shoppingmall_shop_good_record` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) NOT NULL,
+  `fans_id` int(11) NOT NULL DEFAULT '0' COMMENT '1.粉丝id',
+  `shop_id` int(11) NOT NULL DEFAULT '0' COMMENT '2.商铺id',
+  `create_at` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fans_id` (`fans_id`),
+  KEY `msg_id` (`shop_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+]]></install>
+	<uninstall><![CDATA[DROP TABLE IF EXISTS `ims_wxz_shoppingmall_activity`;
+DROP TABLE IF EXISTS `ims_wxz_shoppingmall_activity_sign`;
+DROP TABLE IF EXISTS `ims_wxz_shoppingmall_award`;
+DROP TABLE IF EXISTS `ims_wxz_shoppingmall_coupon`;
+DROP TABLE IF EXISTS `ims_wxz_shoppingmall_credit_log`;
+DROP TABLE IF EXISTS `ims_wxz_shoppingmall_exchange`;
+DROP TABLE IF EXISTS `ims_wxz_shoppingmall_fans`;
+DROP TABLE IF EXISTS `ims_wxz_shoppingmall_fans_msg`;
+DROP TABLE IF EXISTS `ims_wxz_shoppingmall_index`;
+DROP TABLE IF EXISTS `ims_wxz_shoppingmall_msg`;
+DROP TABLE IF EXISTS `ims_wxz_shoppingmall_order`;
+DROP TABLE IF EXISTS `ims_wxz_shoppingmall_page`;
+DROP TABLE IF EXISTS `ims_wxz_shoppingmall_reply_setting`;
+DROP TABLE IF EXISTS `ims_wxz_shoppingmall_share`;
+DROP TABLE IF EXISTS `ims_wxz_shoppingmall_shop`;
+DROP TABLE IF EXISTS `ims_wxz_shoppingmall_shop_activity`;
+DROP TABLE IF EXISTS `ims_wxz_shoppingmall_shop_good_record`;
+]]></uninstall>
+	<upgrade><![CDATA[]]></upgrade>
+</manifest>

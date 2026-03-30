@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="common/meta"}
+</head>
+
+<body class="gray-bg">
+<div class="col-sm-12">
+    <div class="ibox float-e-margins">
+        <div class="ibox-title" style="height:60px;">
+            <!--<button type="button" class="btn btn-info btn-lg" style="width: 100px;" id="add" onclick="window.location.href='{:url('admin/AdvertingManagementAdd')}'">展位添加</button>-->
+        </div>
+        <div class="ibox-content">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>id</th>
+                    <th>订单号</th>
+                    <th>商户名称</th>
+                    <th>收货人</th>
+                    <th>手机号</th>
+                    <th>费用</th>
+                    <th>状态</th>
+                    <th>时间</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name="data" id="v"}
+                <tr>
+					<td>{$v.id}</td>
+					<td>{$v.ordersn}</td>
+					<td>{$v.user_name}</td>
+					<td>{$v.consignee}</td>
+					<td>{$v.telephone}</td>
+					<td>{$v.price}</td>
+					<td>{$Status['status'][$v.status]}</td>
+					<td>{$v.create_time|date="Y-m-d",###}</td>
+                    <td>
+                    	<a class="btn btn-white btn-rounded" href="javascript:invoice({$v.id})">开发票</a>
+                    	<a class="btn btn-danger btn-rounded" href="{:Url('admin/AdminAdvertingDel')}&id={$v.id}">删除</a>
+                </tr>
+				{/volist}
+                </tbody>
+            </table>
+            <div class="page">
+		        <div>
+		          
+		        </div>
+		    </div>
+        </div>
+    </div>
+</div>
+
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- 自定义js -->
+<script src="./static/hadmin/js/content.js?v=1.0.0"></script>
+
+
+<!-- Bootstrap table -->
+<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="./static/hadmin/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="./static/hadmin/layui/layui.all.js"></script>
+<!-- Peity -->
+</body>
+<div id="qrcode" style="display: none;">
+	<img src="" alt="" id="code_img"/>
+</div>
+<script>
+    function requestAdd(){
+        var name=$("#name").val();
+        var Authority=$('input[name="auth"]:checked').val();
+        var status =$('input[name="optionsRadios"]:checked').val();
+        var beizhu=$("#beizhu").val();
+        $.post("{:Url('admin/AdminCharacterSave/')}",{"name":name,"authType":Authority,"roleStatus":status,"beizhu":beizhu},function (data) {
+            if(!data.status){
+                layer.msg(data.msg);
+                return false;
+            }
+            layer.msg(data.msg);
+        })
+    }
+</script>
+<script>
+	function send_msg(uniacid){
+		var src='../../attachment/qrcode_'+uniacid+'.jpg';
+			$('#code_img').attr('src',src)
+		layer.open({
+		  type: 1,
+		  skin: 'layui-layer-demo', //样式类名
+		  closeBtn: 1, //不显示关闭按钮
+		  anim: 2,
+		  shadeClose: true, //开启遮罩关闭
+		  content: '<img src="'+src+'" width="90px" height="90px">'
+		});
+			
+		
+	}
+	
+	function invoice(id){
+		if(confirm('确定开票?')==false){
+			layer.msg('您取消了该操作');
+//			status = 5;
+		}else{
+			status= 2;
+		}
+		
+		$.post('{:Url('admin/AdvertingInvoiceStatus')}',{'id':id,'status':status},function(data){
+			layer.msg(data.msg)
+		})
+	}
+	
+	function invoices(id){
+		$.post('{:Url('admin/make_invoice')}',{'id':id},function(data){
+//			layer.msg(data.msg)
+		})
+	}
+</script>
+</html>

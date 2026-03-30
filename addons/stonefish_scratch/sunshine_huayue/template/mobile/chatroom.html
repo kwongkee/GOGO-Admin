@@ -1,0 +1,1232 @@
+{template 'header'}
+<script src="{$_W['siteroot']}addons/sunshine_huayue/plugin/qqface/jquery.qqFace.js"></script>
+<style type="text/css">
+	.ui-list-thumb-s {
+		width: 40px;
+		height:40px;
+		margin: 0px;
+	}
+	.ui-row-flex {
+		padding-top: 5px;
+	}
+	body {
+		background-color:rgb(230,230,230);
+	}
+
+	.ui-whitespace {
+		padding-bottom: 10px;
+	}
+</style>
+{template 'remind_notice'}
+<div class="ui-container">
+	<div class="ui-loading-wrap" id="listload_more"  style="display:none" onclick="Chat.get_history();">
+		<p>点击加载历史消息</p>
+	</div>
+	<div class="ui-loading-wrap" id="loading_more_layer" style="display:none;">
+	    <p>加载中...</p>
+	    <i class="ui-loading"></i>
+	</div>
+	<div id="chat_window" style="font-size:15px;">
+	</div>
+	<div style="height:60px;" id='bottom_sign'>
+	</div>
+</div>
+<!-- 聊天框 -->
+<div class="ui-input-wrap ui-border-t" id="chat_message_wrap" style="position:fixed;bottom:0px;width:100%">
+	<div style="width:45px;height:50px;line-height:50px;text-align:center" id="chat_tools_btn">
+		<div class="fa fa-plus" style="font-size:18px;" ></div>
+	</div>
+    <div class="ui-input ui-border-radius" style="padding:0px;">
+        <input type="text" id='chat_message' value="" placeholder="&nbsp;按这里输入文字">
+        <input type="button" id="chat_voice" value="按下&nbsp;说话" style="display:none;background-color:#f3f3f5" class="ui-border-radius">
+    </div>
+    <div style="width:30px;height:50px;line-height:50px;text-align:center" id="chat_voice_btn">
+		<div class="fa fa-wifi" style="transform:rotate(90deg);font-size:18px;" ></div>
+	</div>
+	<div style="width:45px;height:50px;line-height:50px;text-align:center">
+		<div class="fa fa-smile-o" style="font-size:18px;" id="chat_face_btn"></div>
+	</div>
+    <button class="ui-btn ui-btn-chat" onclick="Chat.sendText()">发送</button>
+</div>
+<div id="chat_tools_layer" style="height:200px;background-color:rgb(249, 249, 247);position:fixed;bottom:0px;width:100%;display:none;">
+<ul style="width:100%;list-style:none;">
+	<li style="float:left;height:75px;width:75px;border:1px solid #c1c1c3;margin:10px;border-radius:5px;text-align:center;line-height:80px;" onclick="Chat.sendAlbum()">
+		<span class="fa fa-camera" style="color:#c1c1c3;font-size:30px;"></span>
+	</li>
+</ul>
+</div>
+<!-- 表情 -->
+<div id="chat_face_layer" style="height:200px;background-color:rgb(249, 249, 247);position:fixed;bottom:0px;width:100%;display:none;overflow-x:scroll;">
+</div>
+<!-- @ -->
+<input type="hidden" id="at_someone_openid">
+<input type="hidden" id="at_someone_username">
+<!-- voice -->
+<div class="ui-loading-block" id="record_voice_layer">
+    <div class="ui-loading-cnt" style="height:150px;">
+        <i class="ui-loading-bright"></i>
+        <p>录音中...<span></span></p>
+        <div class="ui-btn-wrap">
+	        <a href="javascript:;" onclick="Voice.end_event()" class="ui-btn">结束录音</a>
+	    </div>
+    </div>
+</div>
+<div class="weui_dialog_confirm" id="record_voice_end_layer" style="display:none">
+    <div class="weui_mask"></div>
+    <div class="weui_dialog">
+        <div class="weui_dialog_hd"><strong class="weui_dialog_title">提示</strong></div>
+        <div class="weui_dialog_bd">发送该条语音消息</div>
+        <div class="weui_dialog_ft">
+            <a href="javascript:;" class="weui_btn_dialog default" onclick="$('#record_voice_end_layer').hide();">取消</a>
+            <a href="javascript:;" class="weui_btn_dialog primary" onclick="Voice.record_play()">播放</a>
+            <a href="javascript:;" class="weui_btn_dialog primary" onclick="Voice.record_upload()">发送</a>
+        </div>
+    </div>
+</div>
+<!-- 上拉菜单选择 -->
+<div class="ui-actionsheet" id="chatroom_manage_layer">
+</div>
+<script type="text/javascript">
+	var Face = (function() {
+
+		var select = function(obj,i) {
+			$(obj).css({"background-color":"rgb(200, 200, 200)"});
+			setTimeout(function() {
+				$(obj).css({"background-color":"rgb(249, 249, 249)"});
+			},50);
+
+			confirm(i);
+		}
+		var confirm = function (i) {
+			$("#chat_voice").hide();
+			$("#chat_message").show();
+
+			$("#chat_message").val($("#chat_message").val()+"[em_"+i+"]");
+		}
+
+		var filter = function(emoji_code) {
+			emoji_code = emoji_code.replace(/\</g,'&lt;');
+			emoji_code = emoji_code.replace(/\>/g,'&gt;');
+			emoji_code = emoji_code.replace(/\n/g,'<br/>');
+			emoji_code = emoji_code.replace(/\[em_([0-9]*)\]/g,'<img src="{$_W['siteroot']}/addons/sunshine_huayue/plugin/qqface/pics/$1.gif" border="0" style="height:20px;height:20px;vertical-align:bottom;"/>');
+
+			return emoji_code;
+		}
+
+		var create = (function() {
+			var html = '<table><tr>';
+			for(var i=1;i<=75;i++) {
+				html += '<td style="padding:5px;margin:0px;" onclick="Face.select(this,'+i+')"><img src="{$_W['siteroot']}/addons/sunshine_huayue/plugin/qqface/pics/'+i+'.gif" style="height:20px;height:20px;"></td>';
+				if(i%15 == 0) {
+					html += "</tr><tr>";	
+				}
+			}
+			html.substr(-4,4);
+			html +='</table>';
+			$("#chat_face_layer").html(html);
+		}());
+
+		return {
+			select:select,
+			filter:filter
+		}
+
+	}())
+
+</script>
+<script type="text/javascript">
+	// 点击语音按钮切换
+	$("#chat_voice_btn").click(function () {
+		if($("#chat_voice").css('display') == 'none') {
+			$("#chat_voice").show();
+			$("#chat_message").hide();
+		}else {
+			$("#chat_voice").hide();
+			$("#chat_message").show();
+		}
+	})
+
+	// 设置定时器
+	var global_begin_time = 0;
+	
+	var Voice = (function () {
+
+		var obj = document.getElementById('chat_voice');
+		var voice_id = 0;
+		var start_time = 0;
+		var end_time = 0;
+		var voice_length = 0;
+		var server_local = {};
+
+		var i_touchstart = function() {
+			obj.addEventListener('touchstart',start_event,true);
+		}
+
+		var i_touchend  = function() {
+			// 解决安卓 touchend的问题
+			obj.addEventListener('touchend', end_event, true);
+			obj.addEventListener('touchcancel', cancel_event, true);
+		}
+
+		var i_touchmove = function() {
+			obj.addEventListener('touchmove',move_event,true);
+		}
+
+		var start_event = function(e) {
+			e.preventDefault();
+			record_start();
+			// 修改背景色
+			$(obj).css({'background-color':'grey'});
+			$("#record_voice_layer").addClass('show');
+			// 控制语音秒数
+			global_begin_time = 0;
+			$("#record_voice_layer").find('span').eq(0).html('0s');
+			global_interval = setInterval(function() {
+				global_begin_time ++;
+				$("#record_voice_layer").find('span').eq(0).html(global_begin_time+'s');
+				if(global_begin_time >= 60) {
+					end_event();
+				}
+			},1000)
+		}
+
+		var end_event = function(e) {
+			clearInterval(global_interval);
+			$("#record_voice_layer").find('span').eq(0).html('0s');
+			record_stop();
+			$(obj).css({'background-color':'#f3f3f5'});	
+			$("#record_voice_layer").removeClass('show');
+			// 计算语音时常
+			voice_length = parseInt((end_time - start_time)/1000);
+			if(voice_length  ==  0) {
+				record_voice_id = '';
+				alert("您的说话时间太短");
+				return;
+			}
+			$("#record_voice_end_layer .weui_dialog_bd").html('发送该条语音：'+voice_length+'s');
+			$("#record_voice_end_layer").show();
+		}
+
+		var move_event = function(e) {
+			e.preventDefault();
+		}
+
+		var cancel_event = function(e) {
+			e.preventDefault();
+		}
+
+		// 语音操作
+		var record_start = function () {
+			wx.startRecord();
+			wx.onVoiceRecordEnd({
+			    // 录音时间超过一分钟没有停止的时候会执行 complete 回调
+			    complete: function (res) {
+			        record_voice_id = res.localId; 
+			        end_event();
+			    }
+			});
+			var now = new Date();
+			start_time = now.getTime();
+		}
+
+		var record_stop = function () {
+			wx.stopRecord({
+			    success: function (res) {
+			        record_voice_id = res.localId;
+			    }
+			});
+			var now = new Date();
+			end_time = now.getTime();
+		}
+
+		var record_play = function () {
+			wx.playVoice({
+			    localId: record_voice_id // 需要播放的音频的本地ID，由stopRecord接口获得
+			});
+		}
+
+		var record_upload = function() {
+			$("#record_voice_end_layer").hide();
+			wx.uploadVoice({
+			    localId: record_voice_id, // 需要上传的音频的本地ID，由stopRecord接口获得
+			    isShowProgressTips: 1, // 默认为1，显示进度提示
+			        success: function (res) {
+			        var serverId = res.serverId; // 返回音频的服务器端ID
+			        Chat.sendVoice(serverId,record_voice_id,voice_length);
+			    }
+			});
+		}
+
+		// 当前正在播放语音的ID
+		var voice_playing_id = '';
+		// 本地点击播放语音消息
+		var play  = function(voice_id) {
+			// 如果被点击的是自己，那么停止播放
+			if(voice_playing_id == voice_id) {
+				stop(voice_id);
+			}else { 
+				// 如果有正在播放的音频，那么直接停止
+				if(voice_playing_id) {
+					stop(voice_playing_id);
+				}
+				// 重置ID
+				voice_playing_id = voice_id;
+				// 播放
+				wx.playVoice({
+				    localId: voice_id
+				});
+				// 监听播放结束
+				wx.onVoicePlayEnd({
+				    success: function (res) {
+				        var localId = res.localId; // 返回音频的本地ID
+				        // 结束后，调用stop
+				        stop(localId);
+				    }
+				});
+			}
+		}
+
+		// 播放服务器文件
+		var server_list = {};
+		var play_server = function(server_id) {
+			if(server_list[server_id]) {
+				play(server_list[server_id]);
+			}else {
+				
+				wx.downloadVoice({
+				    serverId: server_id, // 需要下载的音频的服务器端ID，由uploadVoice接口获得
+				    isShowProgressTips: 1, // 默认为1，显示进度提示
+				    success: function (res) {
+				        var voice_id = res.localId; // 返回音频的本地ID
+				        server_list[server_id] = voice_id;
+				        play(voice_id);
+				    }
+				});
+			}
+			
+		}
+
+		var stop = function(voice_id) {
+			voice_playing_id = '';
+			wx.stopVoice({
+			    localId: voice_id
+			});
+		}
+
+		var voiceLength = function() {
+			return  voice_length;
+		}
+
+
+		var init = (function() {
+			i_touchstart();
+			i_touchmove();
+			i_touchend();
+			
+		}())
+
+		return {
+			record_start:record_start,
+			record_stop:record_stop,
+			record_play:record_play,
+			voiceLength:voiceLength,
+			record_upload:record_upload,
+			play:play,
+			play_server:play_server,
+			end_event:end_event
+		}
+
+		
+	}())
+
+</script>
+<!-- 红包 -->
+<div class="weui_dialog_confirm" id="redpack" style="display: none">
+    <div class="weui_mask"></div>
+    <div class="weui_dialog">
+        <div class="weui_dialog_hd"><strong class="weui_dialog_title">打赏xxx</strong></div>
+        
+        <div class="weui_dialog_bd">
+         <!-- 订单提交 -->
+        <form action="{php echo $this->createMobileUrl('RedPackReward')}" method='post' id="redpack_form">
+			<input type="number" id="redpack_money" name="redpack_money" min='0.01' max='1000' style="text-align:center;line-height: 35px;height: 35px;font-weight: bold;font-size: 24px;color:black;" class="weui_input" value="0.01">
+			<input type="hidden" id="redpack_to_openid" name="redpack_to_openid">
+			<input type="hidden" id="room_id" name="room_id" value="{php echo $info['id']}">
+			<input type="hidden" name="token" value="{php echo $_W['token']}">
+		 </form>
+		</div>
+        <div class="weui_dialog_ft">
+            <a href="javascript:;" class="weui_btn_dialog default" onclick="$('#redpack').hide();">取消</a>
+            <a href="javascript:;" class="weui_btn_dialog primary" onclick="RedPack.confirm()">确定</a>
+        </div>
+    </div>
+</div>
+<script>
+	// 红包打赏
+	var RedPack = (function() {
+		// 弹出窗口
+		var showlayer = function(openid,username) {
+			Sheet.hide();
+			$("#redpack .weui_dialog_title").html("打赏:"+username);
+			$("#redpack_to_openid").val(openid);
+			$("#redpack_money").val('0.01');
+			$("#redpack").show();
+			$("#redpack .weui_input").focus();
+		}
+		// 确认打赏
+		var confirm = function() {
+			var money = $("#redpack_money").val();
+			if(!money) {
+				alert("请输入金额");
+				return;
+			}
+			var re = new RegExp("^[0-9]+(\.[0-9]+)?$");
+			if(!re.test(money)) {
+				alert("请输入正确格式数字");
+				return;
+			}
+			if(!$('#redpack_to_openid').val()) {
+				alert('请选择指定的打赏人');
+				return;
+			}
+
+			$("#redpack_form").submit();
+		}
+
+		return {
+			showlayer:showlayer,
+			confirm:confirm
+		}
+
+	}())
+	// 底部弹窗
+	var Sheet = (function() {
+		var show = function(openid,username,is_defriend) {
+			create(openid,username,is_defriend);
+			$("#chatroom_manage_layer").addClass('show');
+		}
+		// 创建弹窗模板(此处is_defrend基本没用了)
+		var create = function(openid,username,is_defriend) {
+			var html = '';
+			html += '<div class="ui-actionsheet-cnt">';
+			// html += '<h4>'+username+'</h4>';
+			html += '<h3 onclick="Sheet.atSomeOne(\''+username+'\',\''+openid+'\')">@'+username+'</h3>';
+			html += '<button onclick="RedPack.showlayer(\''+openid+'\',\''+username+'\')">赏TA红包~</button>';
+			html += '<button onclick="Sheet.talkTo(\''+openid+'\')">好友私聊</button>';
+			html += '<button onclick="jumpToDetail(\''+openid+'\')">查看详情</button>';
+			{if $userinfo['isAdmin']}
+				// 如果已被禁言，那么修改is_defriend的值
+				if(!$("span.defriend_"+openid).eq(-1).html()) {
+					is_defriend = 'false';
+				}else {
+					is_defriend = 'true';
+				}
+				if(is_defriend == 'true') {
+					html += '<button class="ui-actionsheet-del" onclick="Sheet.relieve(\''+openid+'\',{php echo $info['id']})">解除禁言</button>';	
+				}else {
+					html += '<button class="ui-actionsheet-del" onclick="Sheet.defriend(\''+openid+'\',{php echo $info['id']})">房间禁言</button>';
+				}
+				// html += '<button>房间成员管理</button>';
+			{/if}
+			html += '<button onclick="$(\'.ui-actionsheet\').removeClass(\'show\')">取消</button>';
+			html += '</div>';
+
+			$("#chatroom_manage_layer").html(html);
+		}
+
+		// 踢出聊天室
+		var defriend = function(openid,room_id) {
+			if(!openid || !room_id) {
+				return false;
+			}
+			if(!confirm('确认禁止该用户发言')) {
+				return;
+			}
+			$.ajax({
+				type:'post',
+				data:{defriend_openid:openid,room_id:room_id},
+				url:"{php echo $this->createMobileUrl('chatroomdefriend')}",
+				success:function(d,s) {
+					if(d.res == '100') {
+						$("span.defriend_"+openid).html('(已被管理员禁言)');
+					}else {
+						alert(d.msg);
+					}
+					hide();
+				} 
+			})
+		}
+
+		// 解除限制
+		var relieve = function(openid,room_id) {
+			if(!openid || !room_id) {
+				return false;
+			}
+			if(!confirm('确认解除限制？用户将允许发言')) {
+				return;
+			}
+			$.ajax({
+				type:'post',
+				data:{relieve_openid:openid,room_id:room_id},
+				url:"{php echo $this->createMobileUrl('chatroomrelieve')}",
+				success:function(d,s) {
+					if(d.res == '100') {
+						alert("已解除禁言");
+						$("span.defriend_"+openid).html('');
+					}else {
+						alert(d.msg);
+					}
+					hide();
+				} 
+			})
+		}
+
+		var hide = function() {
+			// 隐藏
+			$("#chatroom_manage_layer").removeClass('show');
+		}
+
+		// 私聊
+		var talkTo = function(openid)  {
+			if(!openid) {
+				alert('发起聊天失败');
+				return;
+			}
+			if(openid == '{php echo self::$openid}') {
+				alert("您不能和自己聊天");
+			}else{
+				window.location.href="{php echo $this->createMobileUrl('chat')}&chat_openid="+openid;	
+			}
+
+		}
+
+		// @
+		var atSomeOne = function(username,openid) {
+			$("#chat_message").val('@'+username+':'+$("#chat_message").val());
+			$("input#at_someone_openid").val(openid);
+			$("input#at_someone_username").val(username);
+			$("#chat_voice").hide();
+			$("#chat_message").show();
+			hide();
+		}
+
+		return {
+			talkTo:talkTo,
+			show:show,
+			defriend:defriend,
+			relieve:relieve,
+			atSomeOne:atSomeOne,
+			hide:hide
+		}
+	}())
+</script>
+<script type="text/javascript">
+
+	var allow_scroll_bottom = true;
+
+	// 聊天实现
+	var Chat = (function() {
+		var history_lock = false;
+		var prev_logid = '';
+		var isCanSend = true;
+		var logid = 0;
+		var images = {
+			localId: [],
+			serverId: [],
+			count:3
+		};
+		var albumslist = [];
+
+		// 文本
+		var sendText = function() {
+
+			if(!isCanSend) {
+				return false;
+			}
+			$("#chat_message_wrap").css('bottom','0px');
+			$("#chat_tools_layer").hide();
+			$("#chat_face_layer").hide();
+
+			allow_scroll_bottom = true;
+			handleText();
+		}
+
+		// 图片
+		var sendAlbum =  function() {
+
+			allow_scroll_bottom = true;
+
+			$("#chat_message").blur();
+			if($("#chat_tools_layer").css("display") == 'none') {
+				$("#chat_tools_layer").show();
+				$("#chat_message_wrap").css('bottom','200px');
+			}else {
+				$("#chat_message_wrap").css('bottom','0px');
+				$("#chat_tools_layer").hide();
+			}
+
+			wx.chooseImage({
+				count: images.count, // 默认1
+				sizeType: ['compressed'], // 可以指定是原图还是压缩图，默认二者都有
+				sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+				success: function (res) {
+					images.localId = res.localIds;
+					
+					for(var i in res.localIds) {
+						albumslist.push(res.localIds[i]);
+						handleAlbum(res.localIds[i]);
+					}
+					if(images.localId.length == 0) {
+						alert("请上传图片");
+						return;
+					}
+					var i = 0, length = images.localId.length;
+					images.serverId = [];
+					function upload() {
+						wx.uploadImage({
+							localId: images.localId[i],
+							success: function (res) {
+								i++;
+								images.serverId.push(res.serverId);
+								if (i < length) {
+									upload();
+								}
+								else
+								{
+									var media_ids = images.serverId.join(',')
+									sendAjax('album',media_ids);
+								}
+							},
+							fail: function (res) {
+								alert(JSON.stringify(res));
+							}
+						});
+					}
+					upload();
+				}
+			});
+			
+		};
+
+		// 语音
+		var sendVoice = function(voice_serverid,voice_id,voice_length) {
+			if(!voice_serverid) {
+				alert("语音发送失败");
+			}
+			handleVoice(voice_id);
+			sendAjax('voice',voice_length+'::'+voice_serverid);
+		}
+
+		var sendAjax = function(type,message) {
+			if(!message.replace(/\s*/,'')) {
+				alert('请输入内容');
+				return;
+			}
+
+			// 判断是否@
+			var at_username = $("input#at_someone_username").val();
+			var at_openid = $("input#at_someone_openid").val();
+			// 说明没有匹配到@用户名字
+			if(message.indexOf(at_username) ==  -1 || !at_openid) {
+				at_openid = '';
+			}
+
+			$.ajax({
+				type:'post',
+				url:'{php echo $this->createMobileUrl('chatroomsend')}',
+				data:{chat_message:message,room_id:'{php echo $info['id']}',type:type,at_openid:at_openid},
+				success:function(d) {
+					
+					if(d.res == '100') {
+						
+					}else if(d.res == '101') {
+						var html = '<div class="ui-tips ui-tips-warn">';
+						html += '<i></i><span>'+d.msg+'</span>';
+						html += '</div>';
+						$(".ui-container").prepend(html);
+					}else{
+						// $('#chat_message').val(message);
+						// alert(d.msg);
+					}
+				}
+			})
+			// 滚动到底部
+			scrollbottom();
+		}
+
+		var handleText = function() {
+			var message = $('#chat_message').val();
+			$("#chat_message").val('');
+			if(!message.replace(/\s*/,'')) {
+				alert('消息不能为空');
+				return;
+			}
+			//  将内容直接进行写入到html
+			var html = '';
+			html += '<div class="ui-row-flex ui-whitespace">';
+			html += '<div class="ui-col  ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-end" style="width:70%;">';
+			html += '<div style="color:grey"> </div>';
+			html += '<div style="border-radius:3px;background-color:#a0e75a;line-height:20px;padding:10px;word-break:break-all;">';
+			html += Face.filter(message.replace(/<\/?[^>]*>/g,'')); //去除HTML tag
+			html += '</div>';
+			html += '</div>';
+			html += '<div class="ui-col ui-col ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-end">';
+			html += '<div class="ui-list-thumb-s" onclick="jumpToSelf()">';
+			html += '<span style="background-image:url({php echo $userinfo['headimgurl']});border-radius:3px;"></span>';
+			html += '</div>';
+			html += '</div>';
+			html += '</div>';
+			$('#chat_window').append(html);
+			scrollbottom();
+
+			sendAjax('text',message);
+		}
+
+		var handleAlbum = function(url) {
+			//  将内容直接进行写入到html
+			var html = '';
+			html += '<div class="ui-row-flex ui-whitespace">';
+			html += '<div class="ui-col  ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-end" style="width:70%;">';
+			html += '<div style="color:grey"> </div>';
+			html += '<div style="border-radius:3px;word-break:break-all;">';
+			html += '<img src="'+url+'" style="max-height:180px;max-width:180px;border-radius:3px;"  onclick="Chat.previewAlbum(\''+url+'\')">'; //图片
+			html += '</div>';
+			html += '</div>';
+			html += '<div class="ui-col ui-col ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-end">';
+			html += '<div class="ui-list-thumb-s" onclick="jumpToSelf()">';
+			html += '<span style="background-image:url({php echo $userinfo['headimgurl']});border-radius:3px;"></span>';
+			html += '</div>';
+			html += '</div>';
+			html += '</div>';
+			$('#chat_window').append(html);
+			scrollbottom();
+		}
+
+		var handleVoice = function(voice_id) {
+			//  计算语音条长度百分比
+			var precent = parseInt((Voice.voiceLength() / 20)*100);
+			if(precent < 20) {
+				precent = 20;
+			}
+			if(precent > 60) {
+				precent = 60;
+			}
+			//  将内容直接进行写入到html
+			var html = '';
+			html += '<div class="ui-row-flex ui-whitespace">';
+			html += '<div class="ui-col  ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-end" style="width:70%;">';
+			html += '<div style="color:grey"> </div>';
+			html += '<div style="border-radius:3px;background-color:#a0e75a;line-height:20px;padding:10px;word-break:break-all;width:'+precent+'%" onclick="Voice.play(\''+voice_id+'\')">';
+			html += "<span style='color:grey;font-size:12px;'>语音"+Voice.voiceLength()+'s</span>';
+			html += '</div>';
+			html += '</div>';
+			html += '<div class="ui-col ui-col ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-end">';
+			html += '<div class="ui-list-thumb-s" onclick="jumpToSelf()">';
+			html += '<span style="background-image:url({php echo $userinfo['headimgurl']});border-radius:3px;"></span>';
+			html += '</div>';
+			html += '</div>';
+			html += '</div>';
+			$('#chat_window').append(html);
+			scrollbottom();
+
+		}
+
+
+		// 获取消息
+		var get = function () {
+
+			$.ajax({
+				type:'post',
+				url:'{php echo $this->createMobileUrl('chatroomget')}',
+				data:{room_id:"{php echo $info['id']}",logid:logid},
+				success:function(d) {
+
+					if(d.res == '100') {
+						var html = '';
+						for(var i in d.list) {
+							//  如果是红包，就要进行特殊处理
+							if(d.list[i].type == 'redpack') {
+								handleRedPack(d.list[i]);
+							}else if(d.list[i].type == 'room_money') {
+								handleRoomMoney(d.list[i]);
+							}else {
+								if(d.list[i].send_type=='self') {
+									// 跳过输出
+									continue;
+									html += '<div class="ui-row-flex ui-whitespace">';
+									html += '<div class="ui-col  ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-end" style="width:70%;">';
+									html += '<div style="color:grey"> </div>';
+									html += '<div style="border-radius:3px;background-color:#a0e75a;line-height:20px;padding:10px;word-break:break-all;">';
+									if(d.list[i].type == 'text') {
+										html += d.list[i].content;	
+									}else if(d.list[i].type == 'album') {
+										html += '<img src="'+d.list[i].content+'" style="max-height:180px;max-width:180px;border-radius:3px;"  onclick="Chat.previewAlbum(\''+d.list[i].content+'\')">'; //图片
+										albumslist.push(d.list[i].content);
+									}
+									
+									html += '</div>';
+									html += '</div>';
+									html += '<div class="ui-col ui-col ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-end">';
+									html += '<div class="ui-list-thumb-s" onclick="jumpToSelf()">';
+									html += '<span style="background-image:url('+d.list[i].userinfo.headimgurl+');border-radius:3px;"></span>';
+									html += '</div>';
+									html += '</div>';
+									html += '</div>';
+								} else {
+									html += '<div style="color:grey;font-size:10px;padding-left:12px;">'+d.list[i].userinfo.nickname+'&nbsp;&nbsp;'+d.list[i].add_time;
+									html += '<span style="color:red" class="defriend_'+d.list[i].userinfo.openid+'">';
+									if(d.list[i].isDefriend) {
+										html += '(已被管理员禁言)';
+									}
+									html += '</span>';
+									html += '</div>';
+									html += '<div class="ui-row-flex ui-whitespace">';
+									html += '<div class="ui-col ui-col ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-start">';
+									html += '<div class="ui-list-thumb-s" onclick="Sheet.show(\''+d.list[i].openid+'\',\''+d.list[i].userinfo.nickname+'\',\''+d.list[i].isDefriend+'\')">';
+									html += '<span style="background-image:url('+d.list[i].userinfo.headimgurl+');border-radius:3px;"></span>';
+									html += '</div>';
+									html += '</div>';
+									html += '<div class="ui-col  ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-start" style="width:70%;">';
+									if(d.list[i].type == 'voice') {
+										// 解析语音的内容
+										var msg = d.list[i].content.split('::');
+										var length = msg[0];
+										var content = msg[1];
+										var precent = parseInt((length / 20)*100) ;
+										if(precent < 20) {
+											precent = 20;
+										}
+										if(precent > 60) {
+											precent = 60;
+										}
+										html += '<div id="chatroom_message_'+d.list[i].id+'" style="border-radius:3px;background-color:white;line-height:20px;padding:10px;word-break:break-all;width:'+precent+'%" onclick="Voice.play_server(\''+content+'\')">';
+									}else {
+										if(d.list[i].type == 'album') {
+											html += '<div id="chatroom_message_'+d.list[i].id+'" style="border-radius:3px;word-break:break-all;">';
+										}else {
+											html += '<div id="chatroom_message_'+d.list[i].id+'" style="border-radius:3px;background-color:white;line-height:20px;padding:10px;word-break:break-all;">';
+										}
+									}
+								
+									if(d.list[i].is_del == 'y') {
+										html += '<span style="color:grey">已被管理员屏蔽</span>';
+									}else {
+										if(d.list[i].type == 'text') {
+											html += Face.filter(d.list[i].content);
+										}else if(d.list[i].type == 'album') {
+											html += '<img src="'+d.list[i].content+'" style="max-height:180px;max-width:180px;border-radius:3px;" onclick="Chat.previewAlbum(\''+d.list[i].content+'\')">'; //图片
+											albumslist.push(d.list[i].content);
+											
+										}else if(d.list[i].type == 'voice') {
+											html += "<span style='color:grey;font-size:12px;'>语音"+length+'s</span>';
+										}
+									}
+									html += '</div>';
+									{if $userinfo['isAdmin']}
+										if(d.list[i].is_del == 'n') {
+											html += '<span style="font-size:12px;color:grey" onclick="Chat.delMessage(\''+d.list[i].id+'\')">删除</span>';
+										}
+										
+									{/if}
+									html += '</div>';
+									html += '</div>';
+								}
+							}
+						}
+						$('#chat_window').append(html);
+						scrollbottom();
+						logid = d.logid;
+					}
+					else
+					{
+						// alert(d.msg);
+					}
+
+					setTimeout('Chat.get()', 2000);
+				}
+			})
+		}
+
+		// 获取消息
+		var get_history = function () {
+			if(prev_logid) {
+				$("#loading_more_layer").show();
+				$("#listload_more").hide();
+			}
+			$.ajax({
+				type:'post',
+				url:'{php echo $this->createMobileUrl('chatroomhistory')}',
+				data:{room_id:"{php echo $info['id']}",prev_logid:prev_logid},
+				success:function(d) {
+					if(d.res == '100') {
+						
+						var html = '';
+						for(var i in d.list) {
+							//  如果是红包，就要进行特殊处理
+							if(d.list[i].type == 'redpack') {
+								html += handleRedPack(d.list[i]);
+							}else if(d.list[i].type == 'room_money') {
+								html += handleRoomMoney(d.list[i]);
+							}else {
+								if(d.list[i].send_type=='self') {
+									html += '<div class="ui-row-flex ui-whitespace">';
+									html += '<div class="ui-col  ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-end" style="width:70%;">';
+									html += '<div style="color:grey"> </div>';
+									// 通过类型来判断外部元素的宽度VOICE
+									if(d.list[i].type == 'voice') {
+										// 解析语音的内容
+										var msg = d.list[i].content.split('::');
+										var length = msg[0];
+										var content = msg[1];
+										var precent = parseInt((length / 20)*100);
+										if(precent < 20) {
+											precent = 20;
+										}
+										if(precent > 60) {
+											precent = 60;
+										}
+										html += '<div id="chatroom_message_'+d.list[i].id+'" style="border-radius:3px;background-color:#a0e75a;border-color:#83d45a;line-height:20px;padding:10px;word-break:break-all;width:'+precent+'%" onclick="Voice.play_server(\''+content+'\')">';
+									}else {
+										if(d.list[i].type == 'album') {
+											// 消除边距
+											html += '<div id="chatroom_message_'+d.list[i].id+'" style="border-radius:3px;border-color:#83d45a;word-break:break-all;">';
+										}else {
+											html += '<div id="chatroom_message_'+d.list[i].id+'" style="border-radius:3px;background-color:#a0e75a;border-color:#83d45a;line-height:20px;padding:10px;word-break:break-all;">';
+										}
+										
+									}
+									// 判断是否屏蔽
+									if(d.list[i].is_del == 'y') {
+										html += '<span style="color:grey">已被管理员屏蔽</span>';
+									}else {
+										if(d.list[i].type == 'text') {
+											html += Face.filter(d.list[i].content);	
+										}else if(d.list[i].type == 'album') {
+											html += '<img src="'+d.list[i].content+'" style="max-height:180px;max-width:180px;border-radius:3px;"  onclick="Chat.previewAlbum(\''+d.list[i].content+'\')">'; //图片
+											albumslist.push(d.list[i].content);
+											
+										}else if(d.list[i].type == 'voice') {
+											html += "<span style='color:grey;font-size:12px;'>语音"+length+'s</span>';
+										}
+									}
+									html += '</div>';
+									{if $userinfo['isAdmin']}
+										if(d.list[i].is_del == 'n') {
+											html += '<span style="font-size:12px;color:grey" onclick="Chat.delMessage(\''+d.list[i].id+'\')">删除</span>';
+										}
+										
+									{/if}
+									
+									html += '</div>';
+									html += '<div class="ui-col ui-col ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-end">';
+									html += '<div class="ui-list-thumb-s" onclick="jumpToSelf()">';
+									html += '<span style="background-image:url('+d.list[i].userinfo.headimgurl+');border-radius:3px;"></span>';
+									html += '</div>';
+									html += '</div>';
+									html += '</div>';
+								} else {
+									html += '<div style="color:grey;font-size:10px;padding-left:12px;">'+d.list[i].userinfo.nickname+'&nbsp;&nbsp;'+d.list[i].add_time;
+									html += '<span style="color:red" class="defriend_'+d.list[i].userinfo.openid+'">';
+									if(d.list[i].isDefriend) {
+										html += '(已被管理员禁言)';
+									}
+									html += '</span>';
+									html += '</div>';
+									html += '<div class="ui-row-flex ui-whitespace">';
+									html += '<div class="ui-col ui-col ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-start">';
+									html += '<div class="ui-list-thumb-s" onclick="Sheet.show(\''+d.list[i].openid+'\',\''+d.list[i].userinfo.nickname+'\',\''+d.list[i].isDefriend+'\')">';
+									html += '<span style="background-image:url('+d.list[i].userinfo.headimgurl+');border-radius:3px;"></span>';
+									html += '</div>';
+									html += '</div>';
+									html += '<div class="ui-col  ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-start" style="width:70%;">';
+									if(d.list[i].type == 'voice') {
+										// 解析语音的内容
+										var msg = d.list[i].content.split('::');
+										var length = msg[0];
+										var content = msg[1];
+										var precent = parseInt((length / 60)*100);
+										if(precent < 20) {
+											precent = 20;
+										}
+										if(precent > 60) {
+											precent = 60;
+										}
+										html += '<div id="chatroom_message_'+d.list[i].id+'" style="border-radius:3px;background-color:white;line-height:20px;padding:10px;word-break:break-all;width:'+precent+'%" onclick="Voice.play_server(\''+content+'\')">';
+									}else {
+										if(d.list[i].type == 'album') {
+											html += '<div id="chatroom_message_'+d.list[i].id+'" style="border-radius:3px;word-break:break-all;">';
+										}else {
+											html += '<div id="chatroom_message_'+d.list[i].id+'" style="border-radius:3px;background-color:white;line-height:20px;padding:10px;word-break:break-all;">';
+										}
+										
+									}
+								
+									if (d.list[i].is_del == 'y') {
+										html += '<span style="color:grey">已被管理员屏蔽</span>';
+									}else {
+										if(d.list[i].type == 'text') {
+											html += Face.filter(d.list[i].content);	
+										}else if(d.list[i].type == 'album') {
+											html += '<img src="'+d.list[i].content+'" style="max-height:180px;max-width:180px;border-radius:3px;"  onclick="Chat.previewAlbum(\''+d.list[i].content+'\')">'; //图片
+											albumslist.push(d.list[i].content);
+										}else if(d.list[i].type == 'voice') {
+											html += "<span style='color:grey;font-size:12px;'>语音"+length+'s</span>';
+										}
+									}
+									html += '</div>';
+									if(d.list[i].is_del == 'n') {
+										{if $userinfo['isAdmin']}
+											html += '<span style="font-size:12px;color:grey" onclick="Chat.delMessage(\''+d.list[i].id+'\')">删除</span>';
+										{/if}
+									}
+									
+									html += '</div>';
+									html += '</div>';
+								}
+							}
+							
+						}
+						$('#chat_window').prepend(html);
+						// 如果第一次执行history，那么没有prev_logid，这时候需要滚动到底部！并且触发get
+						// 历史按钮
+						$("#loading_more_layer").hide();
+						$("#listload_more").show();
+						if(!prev_logid) {
+							$("#listload_more").show();
+							// 赋值logid
+							logid = d.logid;
+							scrollbottom();	
+							get();
+						}
+						prev_logid = d.prev_logid;
+					}
+					else
+					{
+						// 隐藏点击加载更多历史消息的按钮
+						$("#listload_more").hide();
+						$("#loading_more_layer").hide();
+					}
+					
+					history_lock = true;
+				}
+			})
+		}
+		// 处理红包类型的消息
+		var handleRedPack = function(info) {
+			// alert(1);
+			var html = '';
+			if(info.send_type=='self') {
+				html += '<div class="ui-row-flex ui-whitespace">';
+				html += '<div class="ui-col  ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-end" style="width:70%;">';
+				// 通过类型来判断外部元素的宽度VOICE
+				html += '<div id="chatroom_message_'+info.id+'" style="height:80px;width:180px;background-color:white;border-radius:3px;border-color:#83d45a;word-break:break-all;overflow:hidden">';
+				html += '<div style="width:100%;height:60px;background-color:orange;line-height:60px;font-size:20px;padding:0px 10px;color:white">'+info.redpack.money+'元红包</div>';
+				html += '<div style="width:100%;height:20px;padding:0px 10px;color:rgb(150,150,150);font-size:12px;">打赏@'+info.redpack.uinfo.nickname+'</div>';
+				html += '</div>';
+				html += '</div>';
+				html += '<div class="ui-col ui-col ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-end">';
+				html += '<div class="ui-list-thumb-s" onclick="jumpToSelf()">';
+				html += '<span style="background-image:url('+info.userinfo.headimgurl+');border-radius:3px;"></span>';
+				html += '</div>';
+				html += '</div>';
+				html += '</div>';
+			}else {
+				html += '<div style="color:grey;font-size:10px;padding-left:12px;">'+info.userinfo.nickname+'&nbsp;&nbsp;'+info.add_time;
+				html += '</div>';
+				html += '<div class="ui-row-flex ui-whitespace">';
+				html += '<div class="ui-col ui-col ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-start">';
+				html += '<div class="ui-list-thumb-s" onclick="Sheet.show(\''+info.openid+'\',\''+info.userinfo.nickname+'\',\''+info.isDefriend+'\')">';
+				html += '<span style="background-image:url('+info.userinfo.headimgurl+');border-radius:3px;"></span>';
+				html += '</div>';
+				html += '</div>';
+				html += '<div class="ui-col  ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-start" style="width:70%;">';
+				// 通过类型来判断外部元素的宽度VOICE
+				html += '<div id="chatroom_message_'+info.id+'" style="height:80px;width:180px;background-color:white;border-radius:3px;border-color:#83d45a;word-break:break-all;overflow:hidden">';
+				html += '<div style="width:100%;height:60px;background-color:orange;line-height:60px;font-size:20px;padding:0px 10px;color:white">'+info.redpack.money+'元红包</div>';
+				html += '<div style="width:100%;height:20px;padding:0px 10px;color:rgb(150,150,150);font-size:12px;">打赏@'+info.redpack.uinfo.nickname+'</div>';
+				html += '</div>';
+				html += '</div>';				
+				html += '</div>';
+				html += '</div>';
+			}
+
+			return html;
+		}
+
+		// 处理房间付费
+		var handleRoomMoney = function(info) {
+			// alert(1);
+			var html = '';
+			if(info.send_type=='self') {
+				html += '<div class="ui-row-flex ui-whitespace">';
+				html += '<div class="ui-col  ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-end" style="width:70%;">';
+				// 通过类型来判断外部元素的宽度VOICE
+				html += '<div id="chatroom_message_'+info.id+'" style="height:80px;width:180px;background-color:white;border-radius:3px;border-color:#83d45a;word-break:break-all;overflow:hidden">';
+				html += '<div style="width:100%;height:60px;background-color:#04BE02;line-height:60px;font-size:20px;padding:0px 10px;color:white">'+info.redpack.money+'元房费</div>';
+				html += '<div style="width:100%;height:20px;padding:0px 10px;color:rgb(150,150,150);font-size:12px;"> 支付给@'+info.redpack.uinfo.nickname+'</div>';
+				html += '</div>';
+				html += '</div>';
+				html += '<div class="ui-col ui-col ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-end">';
+				html += '<div class="ui-list-thumb-s" onclick="jumpToSelf()">';
+				html += '<span style="background-image:url('+info.userinfo.headimgurl+');border-radius:3px;"></span>';
+				html += '</div>';
+				html += '</div>';
+				html += '</div>';
+			}else {
+				html += '<div style="color:grey;font-size:10px;padding-left:12px;">'+info.userinfo.nickname+'&nbsp;&nbsp;'+info.add_time;
+				html += '</div>';
+				html += '<div class="ui-row-flex ui-whitespace">';
+				html += '<div class="ui-col ui-col ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-start">';
+				html += '<div class="ui-list-thumb-s" onclick="Sheet.show(\''+info.openid+'\',\''+info.userinfo.nickname+'\',\''+info.isDefriend+'\')">';
+				html += '<span style="background-image:url('+info.userinfo.headimgurl+');border-radius:3px;"></span>';
+				html += '</div>';
+				html += '</div>';
+				html += '<div class="ui-col  ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-start" style="width:70%;">';
+				// 通过类型来判断外部元素的宽度VOICE
+				html += '<div id="chatroom_message_'+info.id+'" style="height:80px;width:180px;background-color:white;border-radius:3px;border-color:#83d45a;word-break:break-all;overflow:hidden">';
+				html += '<div style="width:100%;height:60px;background-color:#04BE02;line-height:60px;font-size:20px;padding:0px 10px;color:white">'+info.redpack.money+'元房费</div>';
+				html += '<div style="width:100%;height:20px;padding:0px 10px;color:rgb(150,150,150);font-size:12px;">支付给@'+info.redpack.uinfo.nickname+'</div>';
+				html += '</div>';
+				html += '</div>';				
+				html += '</div>';
+				html += '</div>';
+			}
+
+			return html;
+		}
+
+		// 删除消息
+		var delMessage = function(id) {
+
+			if(!confirm('确认删除该条记录')) {
+				return;
+			}
+
+			$.ajax({
+				type:'post',
+				url:"{php echo $this->createMobileUrl('chatroommessagedel')}",
+				data:{id:id,room_id:"{php echo $info['id']}"},
+				success:function(d,s) {
+
+					if(d.res == 100) {
+						alert('删除成功');
+						$("#chatroom_message_"+id).html("<span style='color:grey'>已被管理员屏蔽</span>");
+						$("#chatroom_message_"+id).siblings('span').remove();
+					}else {
+						alert('删除失败'+d.msg);
+					}
+				}
+			})
+		}
+		// 页面重定位
+		var scrollbottom = function() {
+			if(!allow_scroll_bottom) {
+				return false;
+			}
+			var bot = document.getElementById('bottom_sign');
+			bot.scrollIntoView();
+			window.scrollTo(0,document.body.scrollHeight);
+		}
+
+		var  previewAlbum = function(url) {
+			wx.previewImage({
+				current:url,
+				 urls:albumslist
+			})
+		}
+
+		return {
+			sendText:sendText,
+			sendAlbum:sendAlbum,
+			sendVoice:sendVoice,
+			get:get,
+			get_history:get_history,
+			previewAlbum:previewAlbum,
+			delMessage:delMessage,
+			scrollbottom:scrollbottom
+		}
+	}())
+	// history
+
+	Chat.get_history();
+
+	// 文本框焦点事件
+	$("#chat_message").focus(function(e) {
+		$(this)[0].scrollIntoView();
+		if($("#chat_tools_layer").css('display') == 'block') {
+			$("#chat_tools_layer").hide();
+			$("#chat_message_wrap").css('bottom','0px');
+		}
+		if($("#chat_face_layer").css('display') == 'block') {
+			$("#chat_face_layer").hide();
+			$("#chat_message_wrap").css('bottom','0px');
+		}
+	})
+	// 右侧功能按钮
+	$("#chat_tools_btn").click(function() {
+		$("#chat_message").blur();
+		$("#chat_face_layer").hide();
+		if($("#chat_tools_layer").css("display") == 'none') {
+			$("#chat_tools_layer").show();
+			$("#chat_message_wrap").css('bottom','200px');
+		}else {
+			$("#chat_message_wrap").css('bottom','0px');
+			$("#chat_tools_layer").hide();
+		}
+	})
+	// 表情功能按钮
+	$("#chat_face_btn").click(function() {
+		$("#chat_tools_layer").hide();
+		if($("#chat_face_layer").css("display") == 'none') {
+			$("#chat_face_layer").show();
+			$("#chat_message_wrap").css('bottom','200px');
+		}else {
+			$("#chat_message_wrap").css('bottom','0px');
+			$("#chat_face_layer").hide();
+		}
+	})
+
+	// 页面回车换行符键盘事件监听
+	window.onkeydown = function(e) {
+		if(e.keyCode== 13) {
+			Chat.sendText();
+			 // <button class="ui-btn" onclick="Chat.sendText();">发送</button>
+		}
+	}
+	function jumpToDetail(openid)
+	{
+		window.location.href="{php echo $this->createMobileUrl('detail')}&detail_openid="+openid;
+	}
+	function jumpToSelf()
+	{
+		window.location.href="{php echo $this->createMobileUrl('usercenter')}";	
+	}
+	// 如果滚动到顶部，阻止scrollBottom触发！防止加载多次历史记录的时候，get方法触发滚动到底部！
+	// 只有脱离顶部的时候，才允许继续加载
+	// 中间使用prev_logid来判断是否已经加载完成了历史记录，如果没有加载完成，作为首次进入页面，允许滚动
+	window.onscroll = function() {
+		var div_top = $("#bottom_sign").offset().top;
+		var scroll_top = $("body").scrollTop();
+		var window_height = $(window).height();
+
+		if(scroll_top < 10 && prev_logid) {
+			allow_scroll_bottom = false;
+		}else {
+			allow_scroll_bottom = true;
+			first_load_page = false;
+		}
+	}
+
+	// 绑定一个click事件
+	$("#chat_window").click(function() {
+		$("#chat_message").blur();
+	})
+
+	// setInterval(function() {
+	// 	Chat.scrollbottom();
+	// }, 50);
+</script>
+</body>
+</html>
+
+     

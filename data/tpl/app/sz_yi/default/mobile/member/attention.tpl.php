@@ -1,0 +1,21 @@
+<?php defined('IN_IA') or exit('Access Denied');?><html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>公众号关注</title>
+</head>
+<body>
+<img style="
+    width: 200px;
+    height: 200px;
+    text-align: center;
+    margin-top: 43%;
+    margin-left: 25%;
+" src="<?php  echo $_W['account']['qrcode'];?>">
+<div style="text-align: center;"><span>扫码关注</span></div>
+</body>
+<!--<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>-->
+<!--<script src="https://cdn.bootcss.com/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>-->
+</html>

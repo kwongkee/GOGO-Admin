@@ -1,0 +1,745 @@
+{template 'common/header'}
+<!--<link href="../addons/sz_yi/static/css/layui.css" rel="stylesheet">-->
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.core-2.5.2.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.core-2.5.2-zh.js" type="text/javascript"></script>
+<link href="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.core-2.5.2.css" rel="stylesheet" type="text/css" />
+<link href="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.animation-2.5.2.css" rel="stylesheet" type="text/css" />
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.datetime-2.5.1.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.datetime-2.5.1-zh.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.android-ics-2.5.2.js" type="text/javascript"></script>
+<link href="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.android-ics-2.5.2.css" rel="stylesheet" type="text/css" />
+
+<link href="../addons/sz_yi/template/mobile/default/static/js/star-rating.css" media="all" rel="stylesheet" type="text/css"/>
+<link type="text/css" rel="stylesheet" href="../addons/sz_yi/static/css/bootstrap.min.css" />
+<script type="text/javascript" src="../addons/sz_yi/template/pc/default/static/js/bootstrap.min.js"></script>
+
+<style type="text/css">
+    body {margin:0px; background:#efefef; font-family:'微软雅黑'; -moz-appearance:none;}
+    .info_main {height:auto;  background:#fff; margin-top:14px; border-bottom:1px solid #e8e8e8; border-top:1px solid #e8e8e8;}
+    .info_main .line {margin:0 10px; height:40px; border-bottom:1px solid #e8e8e8; line-height:40px; color:#999;font-size:15px;}
+    .info_main .line .title {height:40px; width:80px; line-height:40px; color:#444; float:left; font-size:15px;}
+    .info_main .line .info { width:100%;float:right;margin-left:-80px; overflow: auto;white-space: nowrap;}
+    .info_main .line .inner { margin-left:80px; }
+    .info_main .line .inner input {height:39px; width:100%;display:block; padding:0px; margin:0px; border:0px; float:left; font-size:14px;}
+    .info_main .line .inner .user_sex {line-height:40px;}
+    .info_sub {height:44px; margin:14px 5px; background:#1E9FFF !important; border-radius:4px; text-align:center; font-size:16px; line-height:44px; color:#fff;width:95% !important;}
+    .select { border:1px solid #ccc;height:25px;}
+    .disf{display:flex;}
+    .table{width:100%;font-size:15px;margin-bottom:10px;}
+    .table thead td{background-color: #ecf6fc !important;}
+    .see{box-sizing: border-box;width:fit-content;padding: 2px 4px;font-size: 15px;color: #fff;background: #1E9FFF;text-align:center;}
+    /**合同文件**/
+    .info_main .images {float: left; width:auto;max-width:90%;height:30px;margin-top:5px;overflow-x:scroll;white-space: nowrap;}
+    .info_main .images .img { display:inline-block; position:relative;width:30px;height:30px;border:1px solid #e9e9e9;margin-right:5px;}
+    .info_main .images .img img { position:absolute;top:0; width:100%;height:100%;}
+    .info_main .images .img .minus { position:absolute;color:red;width:8px;height:12px;top:-17px;right:-1px;}
+    .info_main .plus { float:left; width:30px;height:30px;border:1px solid #e9e9e9; color:#dedede;; font-size:18px;line-height:30px;text-align:center;margin-top:4px;}
+    .info_main .plus i { left:7px;top:7px;}
+    .disfex{display:flex;align-items:center;justify-content: space-evenly;}
+    .bigautocomplete-layout{background:#fff;position:absolute;height: 200px;overflow: scroll;border:1px solid #000;}
+    .bigautocomplete-layout table tr td div{height: 30px;line-height: 30px;}
+    button, input, optgroup, select, textarea{font:unset !important;color:black !important;line-height:1.5 !important;}
+    .sel{box-sizing: border-box;padding: 4px 10px;font-size: 14px;color: #fff;background: #1E9FFF;text-align:center;width: fit-content;margin: 0 auto;}
+    select{padding:0 10px;box-sizing:border-box;}
+    .collect_voucher_show,.payment_voucher_show,.express_voucher_show{display:block;}
+    .collect_voucher_hide,.payment_voucher_hide,.express_voucher_hide{display:none;}
+
+    /**原始凭证**/
+    .send_express{display:none;width: 80%;position: absolute;background: #ffffff;border-radius: 5px;z-index:1000;transform:translate(-50%,-50%);top: 50%;left:50%;}
+    .send_express .confirm{height: 50px;border-top: 1px solid #eee;display: flex;}
+    .send_express .confirm>span{flex: 1;height: 50px;line-height: 50px;font-size: 16px;text-align: center;}
+    .send_express .confirm>span:nth-child(1){color: red;}
+    .send_express .confirm>span:nth-child(2){border-left: 1px solid #eee;}
+    .send_express .title{text-align: center;border-bottom: 1px solid #eee;margin-bottom: 10px;}
+    .send_express .title>p{height: 40px;line-height: 40px;text-align: center;font-size: 18px;font-weight: bold;}
+    .send_express .important{color: red;}
+
+    /**+、-**/
+    .buss_add{background:#1E9FFF;color:#fff;width:30px;font-size:30px;line-height: 0.85;text-align:center;margin-right:5px;}
+    .buss_del{background:#ff5555;color:#fff;width:30px;font-size:30px;line-height: 0.85;text-align:center;}
+    .buss_del_hide,.origin_voucher_hide,.voucher_num_hide{display:none;}
+
+    .voucher_show{display:block;}
+    .voucher_hide{display:none;}
+</style>
+
+
+<div id="container">
+    <div class="page_topbar">
+        <div class="title">人工汇总</div>
+    </div>
+    <div class="info_main">
+        <!--凭证形式-->
+        <div class="line">
+            <div class="title">凭证形式</div>
+            <div class="info"><div class="inner">
+                <select name="voucher_form" id="voucher_form">
+                    <option value="1" {php echo $data['voucher_form']==1?'selected':''}>纸质文件</option>
+                    <option value="2" {php echo $data['voucher_form']==2?'selected':''}>电子文件</option>
+                </select>
+            </div></div>
+        </div>
+        <!--凭证类别-->
+        <div class="line">
+            <div class="title">凭证类别</div>
+            <div class="info"><div class="inner">
+                <select name="voucher_type" id="voucher_type">
+                    <option value="">请选择凭证类别</option>
+                    <option value="1" {php echo $data['type']==1?'selected':''}>收款凭证</option>
+                    <option value="2" {php echo $data['type']==2?'selected':''}>付款凭证</option>
+                    <option value="3" {php echo $data['type']==3?'selected':''}>账户账单</option>
+                </select>
+            </div></div>
+        </div>
+        <table class="table table-striped tab1 {if ($data['type']!=3 && !empty($data['type']))}voucher_show{else}voucher_hide{/if}" style="table-layout:fixed;word-break: break-all;">
+            <thead>
+                <tr>
+                    <td>凭证类别</td>
+                    <td>凭证数量</td>
+                    <td style="width:104px;" class="{if $data['voucher_form']==2}voucher_show{else}origin_voucher_hide{/if}">原始凭证</td>
+                    <td>操作</td>
+                </tr>
+            </thead>
+            <tbody>
+                {if empty($data['voucher_type'])}
+                    <tr>
+                        <td>
+                        <select name="collect_voucher" id="collect_voucher" style="display:none;">
+                            <option value="1">销售发票</option>
+                            <option value="2">销售收据</option>
+                            <option value="3">收入证明</option>
+                        </select>
+
+                        <select name="payment_voucher" id="payment_voucher" style="display:none;">
+                            <option value="1">付款发票</option>
+                            <option value="2">付款收据</option>
+                            <option value="3">付款证明</option>
+                        </select>
+                    </td>
+                        <td>
+                            <input type="number" name="voucher_number" id='voucher_number' placeholder="0" style="width:35%;border:1px solid rgb(169,169,169);" value="" onkeyup="value=value.replace(/^\D*(\d*(?:\.\d{0,2})?).*$/g, '$1')"/>
+                            <select name="voucher_unit" id="voucher_unit" style="margin-left:5px;">
+                                <option value="1">张</option>
+                                <option value="2">份</option>
+                            </select>
+                        </td>
+                        <td class="origin_voucher_hide">
+                            <div class="see origin_voucher_ogid" data-i="1" onclick="voucher_see(1)">查看</div>
+                        </td>
+                        <td>
+                            <div class="disf">
+                                <div class="buss_add" onclick="buss_add(this);">+</div>
+                                <div class="buss_del buss_del_hide" onclick="buss_del(this,1);">-</div>
+                            </div>
+                        </td>
+                    </tr>
+                {else}
+                    {loop $data['voucher_type'] $k $v}
+                        {if !empty($v)}
+                            <tr>
+                            <td>
+                                <select name="collect_voucher" id="collect_voucher" class="{if $data['type']==1}voucher_show{else}voucher_hide{/if}">
+                                    <option value="1" {if $v==1}selected{/if}>销售发票</option>
+                                    <option value="2" {if $v==2}selected{/if}>销售收据</option>
+                                    <option value="3" {if $v==3}selected{/if}>收入证明</option>
+                                </select>
+
+                                <select name="payment_voucher" id="payment_voucher" class="{if $data['type']==2}voucher_show{else}voucher_hide{/if}">
+                                    <option value="1" {if $v==1}selected{/if}>付款发票</option>
+                                    <option value="2" {if $v==2}selected{/if}>付款收据</option>
+                                    <option value="3" {if $v==3}selected{/if}>付款证明</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="number" name="voucher_number" id='voucher_number' placeholder="0" value="{$data['attach_cert'][$k]}" style="width:35%;border:1px solid rgb(169,169,169);" onkeyup="value=value.replace(/^\D*(\d*(?:\.\d{0,2})?).*$/g, '$1')"/>
+                                <select name="voucher_unit" id="voucher_unit" style="margin-left:5px;">
+                                    <option value="1" {if $data['voucher_unit'][$k]==1}selected{/if}>张</option>
+                                    <option value="2" {if $data['voucher_unit'][$k]==2}selected{/if}>份</option>
+                                </select>
+                            </td>
+                            <td class="{if $data['voucher_form']==2}voucher_show{else}origin_voucher_hide{/if}">
+                                <div class="see origin_voucher_ogid" data-i="{php echo $k+1;}" onclick="voucher_see({php echo $k+1;})">查看</div>
+                            </td>
+                            <td>
+                                <div class="disf">
+                                    <div class="buss_add" onclick="buss_add(this);">+</div>
+                                    <div class="buss_del {if $k>0}voucher_show{else}buss_del_hide{/if}" onclick="buss_del(this,{php echo $k+1;});">-</div>
+                                </div>
+                            </td>
+                        </tr>
+                        {/if}
+                    {/loop}
+                {/if}
+            </tbody>
+        </table>
+        <!--凭证日期-->
+        <div class="line voucher_date_div {if $data['type']==3}voucher_show{else}voucher_hide{/if}">
+            <div class="title">凭证日期</div>
+            <div class="info"><div class="inner">
+                <input type="text" id="voucher_date" placeholder="点击选择日期" readonly value="{$data['voucher_date']}"/>
+            </div></div>
+        </div>
+        <!--上传凭证-->
+        <div class="express_voucher {php echo ($data['voucher_form']==2 && $data['type']==3)?'express_voucher_show':'express_voucher_hide'}">
+            <div class="line"><div class="title">原始凭证</div><div class='info'><div class='inner'>
+                <div class="pic img_info" data-ogid='0' data-max='99'>
+                    <div class="images">
+                        {if !empty($data['express_voucher'])}
+                            {loop $data['express_voucher'] $v2}
+                            <div data-img="{$v2}" class="img">
+                                <a href="https://shop.gogo198.cn/attachment/{$v2}"><img src="https://shop.gogo198.cn/attachment/{$v2}" onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png" ></a>
+                                <div class="minus minus_del">
+                                    <i class="fa fa-minus-circle"></i>
+                                </div>
+                            </div>
+                            {/loop}
+                        {/if}
+                    </div>
+
+                    <div class="plus" style="position:relative;" ><i class="fa fa-plus" style="position:absolute;"></i>
+                        <input type="file" name='imgFile0' id='imgFile0'  style="position:absolute;width:30px;height:30px;-webkit-tap-highlight-color: transparent;filter:alpha(Opacity=0); opacity: 0;" />
+                    </div>
+                </div>
+            </div></div></div>
+        </div>
+        <!--凭证数量-->
+        <div class="line voucher_num_hide {if $data['type']==3}voucher_show{else}voucher_hide{/if}"><div class="title">凭证数量</div><div class='info'><div class='inner'>
+            <div class="disf" style="align-items: center;">
+                <input type="number" id='voucher_zd_number' placeholder="请输入凭证数量" value="{$data['attach_cert']}" style="width:35%;" value="" onkeyup="value=value.replace(/^\D*(\d*(?:\.\d{0,2})?).*$/g, '$1')"/>
+                <select name="voucher_zd_unit" id="voucher_zd_unit" style="margin-left:5px;">
+                    <option value="1" {php echo $data['voucher_unit']==1?'selected':''}>张</option>
+                    <option value="2" {php echo $data['voucher_unit']==2?'selected':''}>份</option>
+                </select>
+            </div>
+        </div></div></div>
+        <!--提交方式-->
+        <div class="line">
+            <div class="title">提交方式</div>
+            <div class="info"><div class="inner">
+                <select name="submit_method" id="submit_method">
+                    <option value="1" {php echo $data['submit_method']==1?'selected':''}>快递提交</option>
+                    <option value="2" {php echo $data['submit_method']==2?'selected':''}>网络提交</option>
+                </select>
+            </div></div>
+        </div>
+        <!--备注信息-->
+        <div class="line" style="height:97px;line-height: 0;">
+            <div class="title">备注信息</div>
+            <div class="info"><div class="inner">
+                <textarea name="diy_remark" id="diy_remark" cols="35" rows="4" style="width:290px;"  placeholder="请输入此凭证备注信息">{$data['diy_remark']}</textarea>
+            </div></div>
+        </div>
+    </div>
+
+    <!--<div class="disfex">-->
+    {if $data['id']>0}
+    <div class="info_sub" style="margin-bottom:10px;">提交更改</div>
+    {else}
+    <div class="info_sub" style="margin-bottom:10px;">提交</div>
+    {/if}
+    <div class="button back" onclick="javascript:history.back(-1);" style="height: 44px;margin: 14px 2%;width:95%;background: #aaa;border-radius: 4px;text-align: center;font-size: 16px;line-height: 44px;color: #fff;">返回</div>
+
+
+    <!--</div>-->
+
+</div>
+
+<!--原始凭证弹窗-->
+<div class="mask" style="position: fixed; margin: 0px; padding: 0px;background: rgba(0, 0, 0,0.6); z-index: 999; width: 100%; height: 100%; transition: all 0.2s ease 0s;display:none;left: 0;top: 0;"></div>
+
+<!--修改时查看原始凭证-->
+{loop $data['voucher_type'] $k $v}
+    {if !empty($v)}
+        <div class="send_express" id="send_express{php echo $k+1;}" style="display: none;">
+            <div class="title">
+                <p class="important">原始凭证信息</p>
+            </div>
+            <div class="info_main">
+                <div class="line">
+                    <div class="title" style="border-bottom:0;">原始凭证</div>
+                    <div class="info">
+                        <div class="inner" style="height:70px;">
+                            <div class="pic img_info" data-ogid="{php echo $k+1;}" data-max="99">
+                                <div class="images">
+                                    {if !empty($data['express_voucher'])}
+                                        {loop $data['express_voucher'][$k] $v2}
+                                        <div data-img="{$v2}" class="img">
+                                            <a href="https://shop.gogo198.cn/attachment/{$v2}"><img src="https://shop.gogo198.cn/attachment/{$v2}" onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png" ></a>
+                                            <div class="minus minus_del">
+                                                <i class="fa fa-minus-circle"></i>
+                                            </div>
+                                        </div>
+                                        {/loop}
+                                    {/if}
+                                </div>
+                                <div class="plus" style="position:relative;margin-top:7px;height:27px;"><i class="fa fa-plus" style="position:absolute;top:4px;"></i>
+                                    <input type="file" name="imgFile{php echo $k+1;}" id="imgFile{php echo $k+1;}" style="position:absolute;width:30px;height:30px;-webkit-tap-highlight-color: transparent;filter:alpha(Opacity=0); opacity: 0;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="confirm" style="width:100%;">
+                <span class="close-but" onclick="fnClose({php echo $k+1;})">确定</span>
+            </div>
+        </div>
+    {/if}
+{/loop}
+<script id="tpl_img" type="text/html">
+    <div class='img' data-img='<%filename%>'>
+        <img src='<%url%>' onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png" />
+        <div class='minus'><i class='fa fa-minus-circle'></i></div>
+    </div>
+</script>
+<!--<script type="text/javascript" src="../addons/sz_yi/static/js/layer.js"></script>-->
+<!--<script type="text/javascript" src="../addons/sz_yi/static/js/layui/layui.js"></script>-->
+<script src="../addons/sz_yi/template/mobile/default/static/js/star-rating.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/ajaxfileupload.js" type="text/javascript"></script>
+<script>
+    require(['tpl', 'core'], function(tpl, core) {
+        //时间
+        var currYear = (new Date()).getFullYear();
+        var opt = {};
+        opt.date = {preset: 'date'};
+        opt.datetime = {preset: 'date'};
+        opt.time = {preset: 'time'};
+        opt.default = {
+            theme: 'android-ics light', //皮肤样式
+            display: 'modal', //显示方式
+            mode: 'scroller', //日期选择模式
+            dateFormat: 'yyyy-mm-dd',
+            lang: 'zh',
+            showNow: true,
+            nowText: "今天",
+            startYear: currYear, //开始年份
+            endYear: currYear //结束年份
+        };
+        $("#voucher_date").scroller('destroy').scroller($.extend(opt['datetime'], opt['default']));
+        //选择凭证日期时判断当月有无提交税费申报
+        $('#voucher_date').change(function(){
+            let val = $(this).val();
+
+            var myDate = new Date();
+            let year = myDate.getFullYear();
+            let month = myDate.getMonth()+1;
+
+            let now = year+'-'+(month+"").padStart('2','0');
+
+            let select_date = val.split('-');
+            let select_date2 = select_date[0]+'-'+select_date[1];
+
+            if(now<select_date2){
+                $(this).val("");
+                alert('不能大于当前月份！');return;
+            }
+
+            //提交“对账单”后，无法登记与汇总“对账月”产生的“凭证”。
+            // $.ajax({
+            //     url: "<?php echo $this->createMobileUrl('account/register');?>",
+            //     type: 'POST',
+            //     dataType: 'json',
+            //     data: {'op': 'collect_reg', 'add_reg': 4, 'date': val},
+            //     success: function (json) {
+            //         if(json.status==1){
+            //             $('#voucher_date').val("");
+            //             alert(json.result.msg);return;
+            //         }
+            //         // var data = json.result.data;
+            //     }
+            // });
+        });
+
+        //电子文件
+        $('.minus_del').click(function() {
+            $(this).parent().remove();
+            core.json('util/uploader', {op: 'remove', file: $(this).parent().data('img')}, function(rjson) {
+                if (rjson.status == 1) {
+
+                }
+                $('.plus').show();
+            }, false, true);
+        });
+
+        $('.plus input').change(function() {
+            core.loading('正在上传');
+
+            var comment =$(this).closest('.img_info');
+            var ogid = comment.data('ogid');
+            var max = comment.data('max');
+
+            $.ajaxFileUpload({
+                url: core.getUrl('util/uploader'),
+                data: {file: "imgFile" + ogid,'op':'uploadFile'},
+                secureuri: false,
+                fileElementId: 'imgFile' + ogid,
+                dataType: 'json',
+                success: function(res, status) {
+                    core.removeLoading();
+                    if(res.status==0){
+                        alert(res.message);return;
+                    }
+                    var obj = $(tpl('tpl_img', res));
+                    $('.images',comment).append(obj);
+
+                    $('.minus',comment).click(function() {
+                        let t = $(this);
+                        let del_img = $(this).parent()[0].dataset.img;
+                        core.json('util/uploader', {op: 'remove', file: del_img}, function(rjson) {
+                            if (rjson.status == 1) {
+                                // $(obj).remove();
+                                t.parent().remove();
+                            }
+                            $('.plus',comment).show();
+                        }, false, true);
+                    });
+
+                    if ($('.img',comment).length >= max) {
+                        $('.plus',comment).hide();
+
+                    }
+                }, error: function(data, status, e) {
+                    core.removeLoading();
+                    core.tip.show('上传失败!');
+                }
+            });
+        });
+    });
+
+    window.inputs='';
+    window.selects='';
+    window.img_str='';
+    $(function(){
+        //凭证类别
+        $('#voucher_type').change(function () {
+            let val = $(this).val();
+            if (val == 1) {
+                $('#collect_voucher,.tab1').show();
+                $('.voucher_date_div,#payment_voucher,.express_voucher,.voucher_num_hide').hide();
+                $('.add_data,.send_express').remove();
+            } else if (val == 2) {
+                $('#collect_voucher,.voucher_date_div,.express_voucher,.voucher_num_hide').hide();
+                $('#payment_voucher,.tab1').show();
+                $('.add_data,.send_express').remove();
+            } else if (val == 3) {
+                $('#collect_voucher,#payment_voucher,.tab1').hide();
+                $('.voucher_date_div,.express_voucher,.voucher_num_hide').show();
+                $('.add_data,.send_express').remove();
+            }
+        });
+
+        //凭证形式
+        $('#voucher_form').change(function () {
+            let val = $(this).val();
+            if (val == 1) {
+                $('#submit_method').find('option:first').prop('selected','selected');
+                $('.add_data').remove();
+                $('.origin_voucher_hide').hide();
+            } else if (val == 2) {
+                $('#submit_method').find('option:last').prop('selected','selected');
+                $('.add_data').remove();
+                $('.origin_voucher_hide').show();
+            }
+        });
+
+        //提交方式
+        $('#submit_method').change(function () {
+            let val = $(this).val();
+            if ($("#voucher_form").val() == 1 && val == 2) {
+                alert('网络提交方式只能提交电子文件');
+                $(this).find('option:first').prop('selected','selected');
+                return;
+            }else if ($("#voucher_form").val() == 2 && val == 1) {
+                alert('快递提交方式只能提交纸质文件');
+                $(this).find('option:last').prop('selected','selected');
+                return;
+            }
+        });
+
+        $('.info_sub').click(function(){
+            let now_info = getNowInfo();
+            if(now_info[0]==window.inputs && now_info[1]==window.selects && now_info[2]==window.img_str){
+                alert('数据没有修改，请修改后再提交修改。');return;
+            }
+            let voucher_type = $('#voucher_type').val();
+            if($('#voucher_type').isEmpty()){
+                alert('请选择凭证类别');return;
+            }
+            
+            let voucher_form = $('#voucher_form').val();
+            let submit_method = $('#submit_method').val();
+            let diy_remark = $('#diy_remark').val();
+            let dataList = '';
+            
+            if(voucher_type==1 || voucher_type==2){
+                let collect_list = $('select[name="collect_voucher"]').length;
+                let collect_voucher = '';
+                for(var i=0;i<collect_list;i++){
+                    collect_voucher += $('select[name="collect_voucher"]').eq(i).find('option:selected').val()+',';
+                }
+                
+                let payment_list = $('select[name="payment_voucher"]').length;
+                let payment_voucher = '';
+                for(var i=0;i<payment_list;i++){
+                    payment_voucher += $('select[name="payment_voucher"]').eq(i).find('option:selected').val()+',';
+                }
+                let number_list = $('input[name="voucher_number"]').length;
+                let voucher_number = '';
+                for(var i=0;i<number_list;i++){
+                    voucher_number += $('input[name="voucher_number"]').eq(i).val()+',';
+                }
+                let unit_list = $('select[name="voucher_unit"]').length;
+                let voucher_unit = '';
+                for(var i=0;i<unit_list;i++){
+                    voucher_unit += $('select[name="voucher_unit"]').eq(i).find('option:selected').val()+',';
+                }
+                let plus_file = $('.send_express').length;
+                if(plus_file==0 && voucher_form==2){
+                    alert('请上传原始文件！');return false;
+                }
+
+                var express_voucher = [];
+                if(voucher_form==2){
+                    for(var i=0;i<plus_file;i++){
+                        if($('.send_express').eq(i).find('.img').length==0){
+                            alert('请上传原始文件！');return false;
+                        }
+                        express_voucher[i] = [];
+                        $('.send_express').eq(i).find('.img').each(function(){
+                            express_voucher[i].push($(this).data('img'));
+                        });
+                    }
+                }
+
+                dataList = {'op':'manualSummary','add_reg':1,'id':"{$data['id']}",'voucher_type':voucher_type,'collect_voucher':collect_voucher,'payment_voucher':payment_voucher,'voucher_number':voucher_number,'voucher_unit':voucher_unit,'voucher_form':voucher_form,'submit_method':submit_method,'express_voucher':express_voucher,'diy_remark':diy_remark};
+            }else if(voucher_type==3){
+                let voucher_date = $('#voucher_date').val();
+                let voucher_zd_number = $('#voucher_zd_number').val();
+                if($('#voucher_zd_number').isEmpty()){
+                    alert('请输入凭证数量');return;
+                }
+                let voucher_zd_unit = $('#voucher_zd_unit').val();
+                var express_voucher = [];//上传凭证
+                $('.img_info[data-ogid=0]').find('.img').each(function(){
+                    express_voucher.push($(this).data('img'));
+                });
+                if(voucher_form==2 && (express_voucher=='' || typeof(express_voucher)=='undefined')){
+                    alert('请输入上传电子文件');return;
+                }
+                
+                dataList = {'op':'manualSummary','add_reg':1,'id':"{$data['id']}",'voucher_type':voucher_type,'voucher_date':voucher_date,'voucher_number':voucher_zd_number,'voucher_unit':voucher_zd_unit,'voucher_form':voucher_form,'submit_method':submit_method,'express_voucher':express_voucher,'diy_remark':diy_remark};
+            }
+            
+            $.ajax({
+                url:"<?php echo $this->createMobileUrl('account/register');?>",
+                type:'POST',
+                dataType:'json',
+                data:dataList,
+                success:function(json) {
+                    if(json.status==-1){
+                        alert(json.result.msg);
+                    }else{
+                        alert(json.result.msg);
+                        setTimeout(function(){
+                            window.history.back();
+                        },2001)
+                    }
+                },error:function(json){
+                    alert('数据出错！');
+                }
+            });
+        });
+
+        initFileds();
+    });
+
+    function buss_add(t){
+        let voucher_type = $('#voucher_type').val();
+        let voucher_form = $('#voucher_form').val();
+        var origin_voucher_ogid = $('.origin_voucher_ogid');
+
+        var i = 0;
+        for(var k=0;k<origin_voucher_ogid.length;k++){
+            if(i<origin_voucher_ogid[k].dataset.i){
+                i = origin_voucher_ogid[k].dataset.i;
+            }
+        }
+        i = parseInt(i)+1;
+        let html = '<tr class="add_data">\n' +
+            '                    <td>\n';
+            if(voucher_type==1){
+                //收款凭证
+                html += '                    <select name="collect_voucher" id="collect_voucher">\n' +
+                    '                            <option value="1">销售发票</option>\n' +
+                    '                            <option value="2">销售收据</option>\n' +
+                    '                            <option value="3">收入证明</option>\n' +
+                    '                        </select>\n';
+            }else if(voucher_type==2){
+                html += '                     <select name="payment_voucher" id="payment_voucher">\n' +
+                    '                            <option value="1">付款发票</option>\n' +
+                    '                            <option value="2">付款收据</option>\n' +
+                    '                            <option value="3">付款证明</option>\n' +
+                    '                        </select>\n';
+            }
+
+            html += '                    </td>\n' +
+            '                    <td>\n' +
+            '                        <input type="number" name="voucher_number" id="voucher_number" placeholder="0" value="" style="width:35%;border:1px solid rgb(169,169,169);" onkeyup="value=value.replace(/^\\D*(\\d*(?:\\.\\d{0,2})?).*$/g, \'$1\')">\n' +
+            '                        <select name="voucher_unit" id="voucher_unit" style="margin-left:5px;">\n' +
+            '                            <option value="1">张</option>\n' +
+            '                            <option value="2">份</option>\n' +
+            '                        </select>\n' +
+            '                    </td>\n';
+            if(voucher_form==2){
+                html += '            <td>\n' +
+                    '                    <div class="see origin_voucher_ogid" data-i="'+i+'" onclick="voucher_see('+i+')">查看</div>\n'+
+                    '                </td>\n';
+            }
+
+            html += '                    <td>\n' +
+            '                        <div class="disf">\n' +
+            '                            <div class="buss_add" onclick="buss_add(this);">+</div>\n' +
+            '                            <div class="buss_del buss_del_hide" onclick="buss_del(this,'+i+');">-</div>\n' +
+            '                        </div>\n' +
+            '                    </td>\n' +
+            '                </tr>';
+        $(t).parent().parent().parent().last().after(html);
+        $(t).parent().parent().parent().next().find('.buss_del').removeClass('buss_del_hide');
+    }
+
+    function voucher_see(ogid){
+        $('.mask').show();
+        //判断元素是否存在
+        if($('#send_express'+ogid).length==0){
+            let html = '<div class="send_express" id="send_express'+ogid+'">\n' +
+                '    <div class="title">\n' +
+                '        <p class="important">原始凭证信息</p>\n' +
+                '    </div>\n' +
+                '    <div class="info_main">\n' +
+                '        <div class="line">\n' +
+                '            <div class="title" style="border-bottom:0;">原始凭证</div>\n' +
+                '            <div class=\'info\'>\n' +
+                '                <div class=\'inner\' style="height:70px;">\n' +
+                '                    <div class="pic img_info" data-ogid="'+ogid+'" data-max=\'99\'>\n' +
+                '                        <div class="images">\n' +
+                '\n' +
+                '                        </div>\n' +
+                '                        <div class="plus" style="position:relative;margin-top:7px;height:27px;"><i class="fa fa-plus" style="position:absolute;top:4px;"></i>\n' +
+                '                            <input type="file" name="imgFile'+ogid+'" id="imgFile'+ogid+'" onchange="plus(this)" style="position:absolute;width:30px;height:30px;-webkit-tap-highlight-color: transparent;filter:alpha(Opacity=0); opacity: 0;" />\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                </div>\n' +
+                '            </div>\n' +
+                '        </div>\n' +
+                '    </div>\n' +
+                '    <div class="confirm" style="width:100%;">\n' +
+                '        <span class="close-but" onClick="fnClose('+ogid+')">确定</span>\n' +
+                '    </div>\n' +
+                '</div>';
+            $('body').append(html);
+        }
+        $('#send_express'+ogid).show();
+    }
+
+    function fnClose(ogid){
+        $('.mask').hide();
+        $('#send_express'+ogid).hide();
+    }
+
+    function plus(t){
+        var comment =$(t).closest('.img_info');
+        var ogid = comment.data('ogid');
+        var max = comment.data('max');
+        require(['tpl', 'core'], function(tpl, core) {
+            core.loading('正在上传');
+            $.ajaxFileUpload({
+                url: core.getUrl('util/uploader'),
+                data: {file: "imgFile" + ogid, 'op': 'uploadFile'},
+                secureuri: false,
+                fileElementId: 'imgFile' + ogid,
+                dataType: 'json',
+                success: function (res, status) {
+                    core.removeLoading();
+                    if (res.status == 0) {
+                        alert(res.message);
+                        return;
+                    }
+                    var obj = $(tpl('tpl_img', res));
+                    $('.images', comment).append(obj);
+
+                    $('.minus', comment).click(function () {
+                        let t = $(this);
+                        let del_img = $(this).parent()[0].dataset.img;
+                        core.json('util/uploader', {op: 'remove', file: del_img}, function (rjson) {
+                            if (rjson.status == 1) {
+                                // $(obj).remove();
+                                t.parent().remove();
+                            }
+                            $('.plus', comment).show();
+                        }, false, true);
+                    });
+
+                    if ($('.img', comment).length >= max) {
+                        $('.plus', comment).hide();
+
+                    }
+                }, error: function (data, status, e) {
+                    core.removeLoading();
+                    core.tip.show('上传失败!');
+                }
+            });
+        });
+    }
+
+    function buss_del(t,i){
+        $(t).parent().parent().parent().remove();
+        $('#send_express'+i).remove();
+    }
+
+    //记录原始内容
+    function initFileds(){
+        var inputs = document.getElementsByTagName("input");
+        for (var i=0;i<inputs.length;i++) {
+            if(inputs[i].value!=''){
+                window.inputs += inputs[i].value+',';
+            }
+        }
+
+        var selects = document.getElementsByTagName("select");
+        for (var i=0;i<selects.length;i++) {
+            if(selects[i].value!=''){
+                window.selects += selects[i].value+',';
+            }
+        }
+        var img = $('.img_info').find('.images').find('.img');
+        for(var i=0;i<img.length;i++){
+            window.img_str += $('.img_info').find('.images').find('.img').eq(i).attr('data-img')+',';
+        }
+    }
+
+    function getNowInfo(){
+        var re_input = '';
+        var re_select = '';
+        var re_img = '';
+        var inputs = document.getElementsByTagName("input");
+        for (var i=0;i<inputs.length;i++) {
+            if(inputs[i].value!=''){
+                re_input += inputs[i].value+',';
+            }
+        }
+
+        var selects = document.getElementsByTagName("select");
+        for (var i=0;i<selects.length;i++) {
+            if(selects[i].value!=''){
+                re_select += selects[i].value+',';
+            }
+        }
+        var img = $('.img_info').find('.images').find('.img');
+        for(var i=0;i<img.length;i++){
+            re_img += $('.img_info').find('.images').find('.img').eq(i).attr('data-img')+',';
+        }
+        return new Array(re_input,re_select,re_img);
+    }
+
+</script>
+{template 'common/footer'}

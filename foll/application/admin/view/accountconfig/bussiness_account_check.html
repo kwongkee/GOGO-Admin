@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>账户审核</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <style>
+        form{
+            margin-top: 47px;
+            margin-right: 32px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-body" style="padding: 15px;">
+                <form class="layui-form" action="">
+                    <input type="hidden" name="id" value="{$data['id']}">
+                
+                    <table class="layui-table" lay-even="" lay-skin="row">
+                        <thead>
+                            <tr>
+                              <th>所属商户</th>
+                              <th>{$data['user_name']}</th>
+                            </tr> 
+                          </thead>
+                        <tbody>
+                          <tr>
+                            <td>账户种类</td>
+                            <td>{$data['account_type'] == 1 ? '结汇提现账户' : '外币转账账户'}</td>
+                          </tr>
+                          <tr>
+                            <td>账户类型</td>
+                            <td>{$data['account_type2'] == 1 ? '法人账户' : '企业账户'}</td>
+                          </tr>
+                          <tr>
+                            <td>账户币种</td>
+                            <td>{$data['money_type']}</td>
+                          </tr>
+                          <tr>
+                            <td>账号名称</td>
+                            <td>{$data['account_name']}</td>
+                          </tr>
+                          <tr>
+                            <td>银行名称</td>
+                            <td>{$data['bank_name']}</td>
+                          </tr>
+                          <tr>
+                            <td>银行账号</td>
+                            <td>{$data['account']}</td>
+                          </tr>
+                          <tr>
+                            <td>绑定时间</td>
+                            <td>{$data['bind_time']}</td>
+                          </tr>
+                          <tr>
+                            <td>账户状态</td>
+                            <td>{$data['status']}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    
+                      <div class="layui-form-item">
+                        <label class="layui-form-label">审核状态</label>
+                        <div class="layui-input-block">
+                          <input type="radio" name="status" value="1" title="通过" checked="">
+                          <input type="radio" name="status" value="2" title="不通过">
+                        </div>
+                      </div>
+                      <div class="layui-form-item layui-form-text">
+                        <label class="layui-form-label">审核原因</label>
+                        <div class="layui-input-block">
+                          <textarea name="check_remark" placeholder="不通过填写原因" class="layui-textarea"></textarea>
+                        </div>
+                      </div> 
+
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn" lay-submit lay-filter="formDemo">立即保存</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+
+<script>
+    layui.use('form', function(){
+        var form = layui.form;
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            $.ajax({
+                url:'{:Url("admin/abroadConfig/bussiness_account_check")}',
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (res) {
+                    layer.msg(res.message, {
+                                    icon: 1,
+                                    time: 2000
+                                }, function(){
+                                    parent.window.location.reload();
+                                    var index = parent.layer.getFrameIndex(window.name);
+                                    parent.layer.close(index);
+                                });
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</html>

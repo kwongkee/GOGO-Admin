@@ -1,0 +1,322 @@
+{include file="common/header_inner_new"}
+
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .layui-form-item .layui-input-inline{line-height: 38px}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="hidden" name="id" value="{$data['task_id']}">
+            <input type="hidden" name="oid" value="{$data['id']}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">客户ID</label>
+                            <div class="layui-input-inline layui-select-fscon">
+                                {$data['gogo_id']}
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">订单编号</label>
+                            <div class="layui-input-inline layui-select-fscon">
+                                {$data['ordersn']}
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">预报方式</label>
+                            <div class="layui-input-inline layui-select-fscon">
+                                {if $data['prediction_id']==1}包裹无需处理即可集运{elseif($data['prediction_id']==2)}包裹需要处理才可集运{/if}
+                            </div>
+                        </div>
+                        {if $data['prediction_id']==1}
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">集运渠道</label>
+                                <div class="layui-input-block layui-select-fscon">
+                                    {if $data['channel']==1}跨境专线，双清到门{elseif($data['channel']==2)}国际快递，双清到门{elseif($data['channel']==3)}国际邮政，双清到门{/if}
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">线路信息</label>
+                                <div class="layui-input-block layui-select-fscon">
+                                    <div class="layui-btn layui-btn-normal" onclick="view_line()">查看线路</div>
+                                    <div class="line_info" style="display: none;padding:20px;box-sizing: border-box;">
+                                        <table class="layui-table" border="0">
+                                            <thead>
+                                            <th>线路名称</th>
+                                            <th>运输方式</th>
+                                            <th>签收时效(日)</th>
+                                            <th>接受货物属性</th>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td>{$data['line_info']['name']}</td>
+                                                <td>{$data['line_info']['transport_method']}</td>
+                                                <td>{$data['line_info']['sign_time']}</td>
+                                                <td>{$data['line_info']['accept_product']}</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        {/if}
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">选择仓库</label>
+                            <div class="layui-input-block layui-select-fscon">
+                                <select name="warehouse_id" id="warehouse_id" lay-filter="warehouse_id" lay-search>
+                                    <option value="">请选择仓库</option>
+                                    {volist name="warehouse" key="k" id="v"}
+                                    <option value="{$v['id']}" {if $v['id']==$data['warehouse_id']}selected{/if}>{$v['warehouse_name']}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">预报信息</label>
+                            <div class="layui-input-block layui-select-fscon">
+                                <div class="layui-btn layui-btn-normal" onclick="view_order()">查看预报</div>
+                                <div class="order_detail" style="display:none;padding:20px;box-sizing: border-box;">
+                                    <div class="layui-collapse parcel_info_already" lay-accordion>
+                                        {volist name="data.order_goods" key="k" id="v"}
+                                        <div class="layui-colla-item">
+                                            <h2 class="layui-colla-title">包裹信息<?php echo $k;?>：</h2>
+                                            <div class="layui-colla-content {if $k==1}layui-show{/if}">
+                                                <fieldset class="layui-elem-field" style="margin-top:10px;">
+                                                    <legend>入仓方式：</legend>
+                                                    <div class="layui-field-box" style="padding:2px 3px;">
+                                                        {if($v['delivery_method']==1 || $v['delivery_method']==2)}
+                                                        <div class="layui-form-item">
+                                                            <label class="layui-form-label">运输企业</label>
+                                                            <div class="layui-input-inline layui-select-fscon">
+                                                                {$v['express_name']}
+                                                            </div>
+                                                        </div>
+                                                        <div class="layui-form-item">
+                                                            <label class="layui-form-label">运单编号</label>
+                                                            <div class="layui-input-inline layui-select-fscon">
+                                                                {$v['express_no']}
+                                                            </div>
+                                                        </div>
+                                                        {/if}
+                                                        {if $v['delivery_method']==3}
+                                                        <div class="layui-form-item">
+                                                            <label class="layui-form-label">入仓日期</label>
+                                                            <div class="layui-input-inline layui-select-fscon">
+                                                                {$v['inwarehouse_date']}
+                                                            </div>
+                                                        </div>
+                                                        <div class="layui-form-item">
+                                                            <label class="layui-form-label">联系人</label>
+                                                            <div class="layui-input-inline layui-select-fscon">
+                                                                {$v['contact_name']}
+                                                            </div>
+                                                        </div>
+                                                        <div class="layui-form-item">
+                                                            <label class="layui-form-label">联系电话</label>
+                                                            <div class="layui-input-inline layui-select-fscon">
+                                                                {$v['contact_mobile']}
+                                                            </div>
+                                                        </div>
+                                                        {/if}
+                                                    </div>
+                                                </fieldset>
+                                                <fieldset class="layui-elem-field" style="margin-top:10px;">
+                                                    <legend>包裹信息：</legend>
+                                                    <div class="layui-field-box" style="padding:2px 3px;">
+
+                                                        <blockquote class="layui-elem-quote">商品类别</blockquote>
+                                                        <div class="layui-form-item">
+                                                            <label class="layui-form-label">商品类别</label>
+                                                            <div class="layui-input-inline layui-select-fscon">
+                                                                {$v['itemid']}
+                                                            </div>
+                                                        </div>
+                                                        <div class="layui-form-item">
+                                                            <label class="layui-form-label">商品属性</label>
+                                                            <div class="layui-input-inline layui-select-fscon">
+                                                                {volist name="v.valueid" id="v2"}{$v2['name']}，{/volist}
+                                                            </div>
+                                                        </div>
+                                                        <blockquote class="layui-elem-quote">商品信息</blockquote>
+                                                        <div class="layui-form-item">
+                                                            <label class="layui-form-label">商品信息</label>
+                                                            <div class="layui-input-inline layui-select-fscon">
+                                                                {if $v['ginfo']==1}在线获取{elseif($v['ginfo']==2)}自主申报{/if}
+                                                            </div>
+                                                        </div>
+                                                        <div class="layui-form-item">
+                                                            <label class="layui-form-label">商品描述</label>
+                                                            <div class="layui-input-inline layui-select-fscon">
+                                                                {$v['brand_desc']}
+                                                            </div>
+                                                        </div>
+                                                        {if $data['prediction_id']==2}
+                                                        <blockquote class="layui-elem-quote">签收确认</blockquote>
+                                                        <div class="layui-form-item">
+                                                            <label class="layui-form-label">验货方式</label>
+                                                            <div class="layui-input-inline layui-select-fscon">
+                                                                {if $v['inspection_method']==1}拍照验货{/if}
+                                                                {if $v['inspection_method']==2}视频录制{/if}
+                                                                {if $v['inspection_method']==3}在线视频{/if}
+                                                            </div>
+                                                        </div>
+                                                        <div class="layui-form-item">
+                                                            <label class="layui-form-label">验货事项</label>
+                                                            <div class="layui-input-inline layui-select-fscon">
+                                                                {if isset($v['inspection_matter'][0])}商品信息&nbsp;{/if}
+                                                                {if isset($v['inspection_matter'][1])}商品数量&nbsp;{/if}
+                                                                {if isset($v['inspection_matter'][2])}到仓状态{/if}
+                                                            </div>
+                                                        </div>
+                                                        {/if}
+                                                        <blockquote class="layui-elem-quote">商品品牌</blockquote>
+                                                        <div class="layui-form-item">
+                                                            <label class="layui-form-label">商品品牌</label>
+                                                            <div class="layui-input-inline layui-select-fscon">
+                                                                {if $v['brand_type']==1}无牌（无商标信息）{/if}
+                                                                {if $v['brand_type']==2}仿牌（商品无注册）{/if}
+                                                                {if $v['brand_type']==3}普通品牌（有注册非知名）{/if}
+                                                                {if $v['brand_type']==4}奢侈品牌（有注册且知名）{/if}
+                                                            </div>
+                                                        </div>
+                                                        {if $v['brand_type']!=1}
+                                                        <div class="layui-form-item">
+                                                            <label class="layui-form-label">品牌名称</label>
+                                                            <div class="layui-input-inline layui-select-fscon">
+                                                                {$v['brand_name']}
+                                                            </div>
+                                                        </div>
+                                                        {/if}
+                                                        <blockquote class="layui-elem-quote">其他信息</blockquote>
+                                                        <div class="layui-form-item">
+                                                            <label class="layui-form-label">包装材质</label>
+                                                            <div class="layui-input-inline layui-select-fscon">
+                                                                {$v['package']}
+                                                            </div>
+                                                        </div>
+                                                        <div class="layui-form-item">
+                                                            <label class="layui-form-label">包裹数量</label>
+                                                            <div class="layui-input-inline layui-select-fscon">
+                                                                {$v['num']}&nbsp;{$v['unit']}
+                                                            </div>
+                                                        </div>
+                                                        <div class="layui-form-item">
+                                                            <label class="layui-form-label">包裹价值￥</label>
+                                                            <div class="layui-input-inline layui-select-fscon">
+                                                                {$v['money']}
+                                                            </div>
+                                                        </div>
+                                                        <div class="layui-form-item">
+                                                            <label class="layui-form-label">包裹毛重KG</label>
+                                                            <div class="layui-input-inline layui-select-fscon">
+                                                                {$v['grosswt']}
+                                                            </div>
+                                                        </div>
+                                                        <div class="layui-form-item">
+                                                            <label class="layui-form-label">包裹体积CM</label>
+                                                            <div class="layui-input-inline layui-select-fscon">
+                                                                {$v['true_volumn']}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+                                        {/volist}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">任务事项</label>
+                            <div class="layui-input-inline layui-select-fscon">
+                                {$data['status_name']}
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">创建时间</label>
+                            <div class="layui-input-inline layui-select-fscon">
+                                {$data['createtime']}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {if empty($data['warehouse_id'])}
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">提交确认</button>
+<!--                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+                </div>
+            </div>
+            {/if}
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload','element'],function(){
+        var laydate = layui.laydate
+            , layer = layui.layer
+            , form  = layui.form
+            , $ = layui.jquery
+            , element = layui.element
+            , upload = layui.upload;
+
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            $.ajax({
+                url:"{:Url('admin/task/order_info')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+
+    function view_line(){
+        var $ = layui.$
+            , layer = layui.layer;
+        var index = layer.open({
+            type: 1,
+            title: "线路信息",
+            content: $('.line_info'),
+            area:['80%','80%']
+        });
+    }
+
+    //查看预报详情
+    function view_order() {
+        var $ = layui.$
+            , layer = layui.layer;
+
+        layer.open({
+            type: 1,
+            title: "预报信息",
+            content: $('.order_detail'),
+            area:['80%','80%']
+        });
+    }
+</script>
+</body>
+</html>

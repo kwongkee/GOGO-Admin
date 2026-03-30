@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html">
+    <title>卡卷详情</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    {if $res['use_type']==1}
+    <meta http-equiv="refresh" content="5">
+    {/if}
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="../addons/ewei_shopv2/static/css/coupon/mui.min.css">
+    <!--App自定义的css-->
+    <link rel="stylesheet" type="text/css" href="../addons/ewei_shopv2/static/css/coupon/app.css">
+    <style>
+        .mui-card .mui-control-content {
+            padding: 10px;
+        }
+        .mui-control-content {
+            height: 150px;
+        }
+        .mui-toast-container {bottom: 50% !important;}
+    </style>
+</head>
+<body>
+<div class="mui-content new-min-quan">
+    <ul style="margin-top:-10px;">
+        <li>
+            <div class="left">
+                <div class="rtdian"></div><div class="rbdian"></div>
+                <div class="padding">
+
+                    <img src="
+                    {if empty($item['img_smill_url'])}
+                    ../addons/ewei_shopv2/static/css/coupon/images/logo.jpg
+                    {else}
+                    {php echo $_W['siteroot'].'attachment/'.$res['img_smill_url']}
+                    {/if}"><div class="tit">{$res['coupon_title']}<p>{php echo date('Y.m.d',$res['coupon_stime'])}-{php echo date('Y.m.d',$res['coupon_etime'])}</p></div>
+                </div>
+            </div>
+            <div class="right {if $item['status']!=0}bg1{else}bg2{/if}">
+                <div class="ltdian"></div><div class="lbdian"></div>
+                <div class="padding">
+                    <div class="price">￥<i>{$res['coupon_money']}</i></div>
+                    <div class="btn"><button class="used">{$status[$res['status']]}</button></div>
+                </div>
+            </div>
+        </li>
+    </ul>
+    {if $res['use_type']==1}
+    <div style="text-align: center;">
+        <div id="qrcode"></div>
+        <div>序号：<span>{$res['rece_num']}</span></div>
+    </div>
+    {/if}
+    <div style="background-color: white;">
+        <div style="border-bottom: 1px solid #F2F3F4;font-size: 14px;height: 31px;line-height: 31px;">使用须知</div>
+        <div style="margin-top: 12px;font-size: 14px;">
+            {$res['coupon_desc']}
+        </div>
+    </div>
+</div>
+</body>
+<script src="../addons/ewei_shopv2/static/js/jquery-3.1.1.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://cdn.bootcss.com/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+
+<script>
+    jQuery('#qrcode').qrcode({width: 250,height: 250,text:'{$_W["siteroot"]}'+'app/'+'{php echo mobileUrl("coupon/verification_sheet/consumerMoney")}&rece_num='+"{$res['rece_num']}"});
+</script>
+
+</html>

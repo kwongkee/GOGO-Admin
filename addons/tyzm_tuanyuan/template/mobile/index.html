@@ -1,0 +1,444 @@
+{template 'header'}
+<script type="text/javascript" src="{MODULE_URL}/template/static/js/main.js?v=7"></script>
+<script src="//cdn.bootcss.com/swipe/2.0.0/swipe.min.js"></script>
+
+<script type="text/javascript">
+	var statsindex = '{php echo $i-1;}';
+</script>
+
+</head>
+    
+<style type="text/css">
+    body:after{
+        content:'';
+        position:fixed;top:0;left:0;z-index:-1;
+        width:100%;height:100%;
+        background:url('{media $reply['bgimg']}') no-repeat;background-size: 100% 100%;
+    }
+	
+	{if $dnumber==8}
+	.warp-list-c-con.list6 span:nth-child(2){top: 36px;left: 216px;}
+	.warp-list-c-con.list6 span:nth-child(3){top: 123px;left: 250px;}
+	.warp-list-c-con.list6 span:nth-child(4){top: 210px;left: 216px;}
+	.warp-list-c-con.list6 span:nth-child(5){top: 250px;left: 123px;}
+	.warp-list-c-con.list6 span:nth-child(6){top: 210px;left: 30px;}
+	.warp-list-c-con.list6 span:nth-child(7){top: 123px;left: -4px;}
+	.warp-list-c-con.list6 span:nth-child(8){top: 36px;left: 30px;}
+	{/if}
+	
+	{if $dnumber==10}
+	.warp-list-c-con.list6 span:nth-child(2){    top: 23px;
+    left: 199px;}
+	.warp-list-c-con.list6 span:nth-child(3){   top: 82px;
+    left: 243px;}
+	
+	.warp-list-c-con.list6 span:nth-child(4){top: 163px;
+    left: 243px;}
+	.warp-list-c-con.list6 span:nth-child(5){top: 224px;
+    left: 199px;}
+	.warp-list-c-con.list6 span:nth-child(6){top: 250px;
+    left: 123px;}
+	.warp-list-c-con.list6 span:nth-child(7){    top: 224px;
+    left: 46px;}
+	.warp-list-c-con.list6 span:nth-child(8){top: 23px;
+    left: 46px;}
+	.warp-list-c-con.list6 span:nth-child(9){    top: 82px;
+    left: 3px;}
+	.warp-list-c-con.list6 span:nth-child(10){    top: 163px;
+    left: 2px;}
+	{/if}
+	
+	
+	
+	{if $configdata['rankingnum']!=0}
+	.warp-but a{width:30%;}
+	.warp-but a:first-child {
+	float:left;
+	background-color:#fa0;
+	color:#fff
+}
+.warp-but a:nth-child(2) {
+	float:right;
+	background-color:#fff;
+	color:#666
+}
+.warp-but a:nth-child(3) {
+float: right;
+    background-color: #51CAEF;
+    color: #fff;
+    margin-right: 5%;
+}
+
+	{/if}
+	
+	@-webkit-keyframes buzz-out {
+	      10% {
+            -webkit-transform: translateX(3px) rotate(2deg);
+          }
+		  20% {
+            -webkit-transform: translateX(-3px) rotate(-2deg);
+          }
+		            30% {
+            -webkit-transform: translateX(3px) rotate(2deg);
+          }
+          30% {
+            -webkit-transform: translateX(3px) rotate(2deg);
+          }
+		  40% {
+            -webkit-transform: translateX(-3px) rotate(-2deg);
+          }
+		  50% {
+            -webkit-transform: translateX(2px) rotate(1deg);
+          }
+		  60% {
+            -webkit-transform: translateX(-2px) rotate(-1deg);
+          }
+		  70% {
+            -webkit-transform: translateX(2px) rotate(1deg);
+          }
+		  80% {
+            -webkit-transform: translateX(-2px) rotate(-1deg);
+          }
+		  90% {
+            -webkit-transform: translateX(1px) rotate(0deg);
+          }
+          100% {
+            -webkit-transform: translateX(-1px) rotate(0deg);
+          }
+}
+
+.rolls{
+	-webkit-animation-name: buzz-out;
+	-webkit-animation-duration: 0.75s;
+	-webkit-animation-timing-function: linear;
+	-webkit-animation-iteration-count: 1000000;
+}
+</style>
+<body class="warp">
+<header>
+	{template 'sider'}
+</header>   
+          
+        {if $lotterylist!=""}
+        <div class="warp-top">
+            <ul>
+			{loop $lotterylist $rom}
+                <li>{$rom}</li>
+			{/loop}
+    		</ul>
+        </div>
+		{/if}
+		<div class="warp-list-u" style="height: 41px;">
+				<div class="master" style="    float: left;width:50%;">
+					<div class="weui_media_hd" style="float: left;"><img src="{$userdata['avatar']}" width="40" alt="{$userdata['nickname']}" height="40" /></div>
+					 <h4 class="weui_media_title"style="line-height: 40px;margin-left: 50px;color: #fff;overflow: hidden; height:40px">{$userdata['nickname']}的宴席</h4>			
+				</div>	
+				<span style="float:right;line-height: 20px;text-align: right;color: #DADADA;">当前{php echo $jointotal+1;}人入桌<br/>左右滑动查看最新10桌</span>
+		</div>			
+		<div class="warp-con" id='slider'>
+            <ul id="desk">
+			   {loop $deskarr $index $item}
+			   <li class="warp-list">
+				    <div class="warp-list-t"><span>第{php echo $index-1;}桌</span></div>
+				    <div class="warp-list-c">
+    				    <div class="warp-list-c-bg">
+									<img src="{media $reply['deskimg']}">
+                        </div>
+                        <div class="warp-list-c-con list6 listuser">
+						    {loop $item $rom}
+		                        <span>
+		                       	 <img src="{$rom['avatar']}" width="40" alt="{if $rom['nickname']!=""}{$rom['nickname']}：{/if}{$rom['msg']}" height="40" />
+		                        </span>
+
+							{/loop}
+                        </div>
+				    </div>
+				    <div class="warp-list-u">
+
+                        <p>本桌嘉宾：</p>
+						
+                        <p> 
+	                        
+		                        <span id="0">
+		                        	
+									{loop $item $rom}
+									    {if $rom['nickname']!=""}
+							               <em>{$rom['nickname']}</em>
+										{/if}
+							        {/loop} 
+		                        </span>
+	                        
+                        </p>
+				   </div>
+                </li>
+				{/loop}
+              
+			</ul>
+		</div>
+		<script>
+	        if(true){
+				for(var i=1-1;i>0;i--){
+					$('#desk li').eq(i-1).appendTo($('#desk'));
+				}
+			}else{
+				for(var i=1-1;i>0;i--){
+					$('#desk li').eq(i-1).appendTo($('#desk'));
+				}
+				$('#desk li').eq(0).appendTo($('#desk'));
+			}
+        </script>
+	    <div class="slider-but">
+              <span class=""></span>
+              <span class=""></span>
+          </div>
+	    <div class="warp-but clearfix">
+        		    {if $userdata['oauth_openid']==$oauth_openid}
+	        		<a href="{php echo $this->createMobileUrl('prize', array('rid' => $_GPC['rid']))}" class="warp-butShare">
+	        			领奖台
+        			</a>
+        		    {else}
+	        		<a href="{php echo $this->createMobileUrl('index', array('rid' => $_GPC['rid']))}" class="warp-butShare">
+	        			我开一桌
+        			</a>					
+					{/if}
+        	
+
+		    <a onclick='$("#share").show();' class="show-eventInfo">邀请入桌</a>
+			{if $configdata['rankingnum']!=0}			
+     <a href="{php echo $this->createMobileUrl('rank', array('rid' => $_GPC['rid']))}" class="show-eventInfo">排行榜</a>
+{/if}
+        </div>
+            <div class="giftlist">
+        <dl>
+            <dt>奖品列表：</dt>
+			{if $awardmsg==""}<p>未设置奖品，请管理员至后台设置奖品！</p>{/if}
+            {loop $awardmsg $row}
+            	<dd>
+                <span>{$row['prizetitle']}<br/>(需{$row['prizepeople']}个好友)</span>
+                		<img src="{media $row['prizeicon']}"/>
+                <em>({$row['prizeshownum']}个)</em>
+            </dd>
+            {/loop}           
+        </dl>
+        <div class="clear"></div>
+    </div>
+    <div class="rules">
+        <h3>活动规则：</h3>
+        <div>{$reply['details']}</div>
+    </div>
+
+	
+	
+    <div style="padding:30px 0 0 0;">&nbsp;</div>
+    <div class="prompt early" id="join" {if $userdata['oauth_openid']==$oauth_openid || $status==2 || $status==3 || $_GPC['id']=="" || $joinuser['id']!='' } style="display:none"{/if}>
+    <!-- 加入弹出框开始 -->
+    <div class="ShowBox userJoin" >
+	  <span class="close"  onclick="hidemod('join')" >关闭</span>
+      <div class="userJoin-t clearfix">
+        <div class="userJoin-t-l fl"><img src="{$userdata['avatar']}"></div>
+        <div class="userJoin-t-r fl">
+          <h2>{$userdata['nickname']}</h2>
+          <div class="userJoin-t-r-info">邀您上座，请！ <span></span></div>
+        </div>
+      </div>
+      <div class="userJoin-i">
+        <p>
+			<img src="{media $reply['deskimg']}">
+        </p>
+      </div>
+      <div class="userJoin-msg">
+                <textarea name="msg" id="msg" placeholder="请输入入桌留言！" rows="2">{if $message!=''}{$message}{/if}</textarea>
+	  </div>
+      <div class="userJoin-b"><a id="join_eventBut" href="javascript:;">加 入</a></div>
+	  
+    </div>
+	<div class="weui_mask"></div>
+	</div> 
+    <!-- 加入弹出框结束 -->
+    	
+	<div class="prompt early" id="follow" {if $_GPC['id']=="" && $isfollow==0 && $status!=2 && $status!=3}{else} style="display:none;" {/if}>
+    <!-- 加入弹出框开始 -->
+    <div class="ShowBox userJoin" >
+      <div class="userJoin-t clearfix">
+	  <span class="close"  onclick="hidemod('follow')" >关闭</span>
+	  <div class="tishi"><h3>提示</h3></div>
+      <div class="followqr">
+        <p>
+			<img src="{php echo $_W['account']['qrcode'];}">
+        </p>
+      </div>
+      <div class="followguide">
+               {$configdata['followguide']}
+	  </div>
+      
+	  
+    </div>
+	
+	</div> 
+	<div class="weui_mask"></div>
+	</div> 
+{if $configdata['isredpack']==1}
+	<!-- 加入弹出框开始 -->
+    <div class="prompt early" id="redpack" style="display:none">
+    <div class="redpackbox" >
+	  <span class="close"  onclick="hidemod('redpack')" >关闭</span>
+      <div class=" clearfix">
+          <h2 class="redtishi">恭喜获得抽奖机会！</h2>
+      </div>
+      <div class="redpackimg">
+        <p>
+			<img src="{MODULE_URL}/template/static/img/redpack1.png">
+        </p>
+      </div>
+	  <div class="redtirp">每次参加获得一次抽奖机会，点击下面按钮打开红包吧！</div>
+      <div class="userJoin-b" style="
+    position: absolute;
+    bottom: -52px;
+    width: 100%;
+    left: 0px;
+"><a  style="
+    background: #BD2C2F;
+    border: 2px solid #BD2C2F;
+    box-shadow: 0 2px 5px #000;
+" href="javascript:;" id="lottery">抽奖</a></div>
+	  
+    </div>
+	<div class="weui_mask"></div>
+	</div> 
+    <!-- 加入弹出框结束 -->
+{/if}	
+<div class="share" id="share" style="display:none">
+<img src="{MODULE_URL}/template/static/img/share.png" style="position: absolute;top: 0;right:0;z-index: 2;width:100%" onclick="hidemod('share');" width="100%"  />
+<div class="weui_mask" onclick="hidemod('share');"></div>
+</div>
+
+<script type="text/javascript">
+
+
+function lottery(img,t1,t2){
+	$(".redpackimg img").attr('src',img); 
+	$(".redtishi").html(t1);
+	$(".redtirp").html(t2);
+}
+$(document).ready(function(){
+    var latitude="";
+	var longitude="";
+	wx.ready(function (){
+		wx.getLocation({
+		type: 'gcj02', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+			success: function (res) {
+				latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
+				longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
+				var speed = res.speed; // 速度，以米/每秒计
+				var accuracy = res.accuracy; // 位置精度
+			},
+			cancel: function (res) {
+			        hidemod("join");
+					dialog2('拒绝授权获取地理位置，无法参加活动！请刷新后，同意再继续！');
+			},
+		});
+	
+	}); 
+	
+	
+	
+	
+    $("#join_eventBut").click(function(){
+	hidemod("join");
+	loadingToast("入桌中...");
+	var msg=$("#msg").val();
+	if(msg==''){dialog2("说点什么再入座吧(●'◡'●)！)");hidemod("loadingToast");$("#join").show();return false;}
+		$.ajax({
+			type: "POST",
+			url: "{php echo $this->createMobileUrl('join', array('rid' => $reply['rid'],'id' => $_GPC['id']))}",
+			data: {latitude:latitude,longitude:longitude,msg:msg},
+			dataType: "json",
+			success: function(str) {
+				hidemod("loadingToast");
+				if(str!=null && str!=''){
+					if(str.status == 1){
+					    {if $configdata['isredpack']!=1}
+						dialog2(str.msg);
+						window.setTimeout("window.location.reload()",1000);
+						{else}
+						loadingToast("入桌成功");
+						window.setTimeout("hidemod('loadingToast');$('#redpack').show();",500);
+						{/if}
+					}else if(str.status == 0){
+						dialog2(str.msg);
+					}else if(str.status == 500){
+						$("#follow").show();
+					}else{
+						dialog2(str.msg);
+					}
+				}
+			},
+			error: function(err) {
+				hidemod("loadingToast");
+				dialog2("发生错误，请刷新后重试！");
+				window.setTimeout("window.location.reload()",3000);
+			}
+		});
+	});
+	{if $configdata['isredpack']==1}
+		$("#lottery").click(function(){
+		$(this).hide();
+		lottery("{MODULE_URL}/template/static/img/redpack3.png","红包在路上！","红包来的路上，请耐心等待...");
+		$(".redpackimg img").addClass('rolls');
+		
+		$.ajax({
+			type: "POST",
+			url: "{php echo $this->createMobileUrl('lottery', array('rid' => $reply['rid'],'id' => $_GPC['id']))}",
+			dataType: "json",
+			data: {latitude:latitude,longitude:longitude},
+			success: function(str) {
+				if(str!=null && str!=''){
+				    $(".redpackimg img").removeClass('rolls');
+					if(str.status == 1){
+						lottery("{MODULE_URL}/template/static/img/redpack5.png",str.msg,"请关注公众号或服务信息，领取现金红包！");
+					}else if(str.status == 0){
+						lottery("{MODULE_URL}/template/static/img/redpack2.png","哎哟，就差一点点","继续积累运气，等待下一次大奖的到来！");
+					}
+				}
+			},
+			error: function(err) {
+				hidemod("loadingToast");
+				dialog2("发生错误，请刷新后重试！");
+			}
+		});
+	});
+
+{/if}
+	$(".listuser img").click(function(){
+	   var alt= $(this).attr("alt");
+	   dialog2(alt);
+	});
+	{if $status==0}
+	   dialog2("<h3>活动已禁用</h3>"+"<p>请关注“{$_W['account']['name']}”公众号其他活动！</p>");
+	{/if}
+	{if $status==2}
+	   	var msg2='<div class="cont"><div class="space_20"></div><h3>活动未开始</h3><div class="space_10"></div><p>活动时间</p><p>{php echo date('Y-m-d H:i:s',$reply['starttime'])}到 {php echo date('Y-m-d H:i:s',$reply['endtime'])}</p><div class="space_20"></div></div>';
+	   dialog2(msg2);
+	{/if}
+	{if $status==3}
+	   	var msg3='<div class="cont"><div class="space_20"></div><h3>活动已结束</h3><div class="space_10"></div><p>活动时间</p><p>{php echo date('Y-m-d H:i:s',$reply['starttime'])}到 {php echo date('Y-m-d H:i:s',$reply['endtime'])}</p><div class="space_20"></div></div>';
+	   dialog2(msg3);
+	{/if}
+
+
+
+
+});
+	wx.ready(function () {
+       {if $status==1}
+	   wx.showAllNonBaseMenuItem();
+	   {else}
+	   wx.hideAllNonBaseMenuItem();
+	   {/if}
+}); 	
+</script>    
+</body>
+{template 'footer'}
+
+
+	

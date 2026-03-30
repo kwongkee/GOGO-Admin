@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>夺冠分答系统</title>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<meta name="format-detection" content="address=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<script src="//cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+<link rel="stylesheet" href="{TEMPLATE_PATH}/wtCommon.css?v={php echo time();}">
+<link rel="stylesheet" href="{TEMPLATE_PATH}/live.css?v={php echo time();}">
+<link rel="stylesheet" href="{TEMPLATE_PATH}/whisper.css?v={php echo time();}">
+<style type="text/css">
+.live_speaker_list{display:block;padding:0;margin:0 0 1rem;background:#fff}.live_speaker_list dd{position:relative;display:block;padding:1.5rem 0;border-bottom:solid 1px #e5e5e5}
+.live_speaker_list dd:last-child{border:none}
+.live_speaker_list .uesr_head{float:left;width:6rem;height:6rem;margin:0 0 0 1.5rem;overflow:hidden;border-radius:100%;border-radius:6rem;border:solid 1px #e5e5e5;overflow:hidden}.live_speaker_list .uesr_head img{width:100%;height:100%}
+.live_speaker_list .user_info{display:block;padding:0 0 0 9rem}
+.live_speaker_list .user_info .li_1,.live_speaker_list .user_info .li_2{height:2rem;line-height:2rem;font-size:1.5rem;color:#333;overflow:hidden;white-space:nowrap}.live_speaker_list .user_info .li_2{margin-top:2rem}
+.live_speaker_list .user_info .li_3{padding-right:1rem;line-height:2rem;margin:0 0 .3rem;font-size:1.2rem;color:#949fa4;word-break:break-all}.live_speaker_list .user_info .li_4{line-height:2rem;margin:0 0 .3rem;font-size:1.2rem;color:#949fa4}.user_info .li_4 .s_1{display:inline-block;padding:0 2rem 0 0}
+.live_speaker_list .wt_btn_no_open,.live_speaker_list .wt_btn_open_ws{position:absolute;right:3rem;top:2.5rem;min-width:9rem;height:3.5rem;padding:0 1.5rem;line-height:3.5rem;font-size:1.4rem;border-radius:4rem}
+.live_speaker_list .wt_btn_open_ws:after{content:"";position:absolute;right:-2.5rem;top:50%;margin-top:-1rem;width:2rem;height:2rem;display:inline-block;background-position:-2rem -2rem;vertical-align:top}.live_speaker_list .wt_btn_open_ws{background:#ddf4ff;color:#00acff}
+.live_speaker_list .wt_btn_no_open{background:#cedae0}.live_speaker_list .wt_btn_to_ans,.live_speaker_list .wt_btn_to_ask{width:12rem;height:4rem;line-height:4rem;font-size:1.4rem;border-radius:4rem;margin:1rem 0 0 9rem}.live_speaker_list .wt_btn_to_ans var{color:#ffd800}
+.live_speaker_list .lsl_tips{display:block;color:#949fa4;font-size:1.2rem;line-height:1.8rem;padding:0 1rem}
+.main_box_2 {bottom:6rem;}
+</style>
+{php echo register_jssdk();}
+<script type="text/javascript">
+var globalObj=new Object();
+var pindex=1;
+var upindex=1;
+var answer_url="{php echo $this->createMobileUrl('ask_answer')}";
+var ask_detailurl="{php echo $this->createMobileUrl('ask_detail')}";
+var get_user_url="{php echo $this->createMobileUrl('ask_index_ajax')}";
+var my_ask_index="{php echo $this->createMobileUrl('my_ask_index')}";
+function pageLoadCommon(a, b) {
+	a.scroll(function() {
+		distanceScrollCount = a[0].scrollHeight;
+		distanceScroll = a[0].scrollTop;
+		topicPageHight = a.height();
+		1 >= distanceScrollCount - distanceScroll - topicPageHight && b()
+	})
+}
+
+function QuestionBind(){
+	$(".whisper_question").unbind();
+	$(".whisper_question").click(function(){
+		var url=$(this).attr('attr-href');
+		location.href=url;
+	});
+}
+
+function getHtml(result){
+	var last_html="";
+	for(var qindex in result.list){
+		var html='<dd class="wl_msg_item">';
+		html+='<div class="wl_top_wkBox">';
+			html+='<span class="wl_top_boxFl">';
+			html+='<i class="uesr_head">';
+			html+='<img src="'+result.list[qindex].pay_avatar+'">';
+			html+='</i>';
+			html+='<b>'+result.list[qindex].pay_nickname+'</b>';
+			html+='</span>';
+			html+='<span class="wl_price">¥<var>'+result.list[qindex].pay_money+'</var></span>';
+			html+='</div>';
+			html+='<div class="whisper_question" attr-href="'+ask_detailurl+'&ask_id='+result.list[qindex].id+'">';
+			html+=result.list[qindex].ask_content;
+			html+='</div>';
+
+			if(result.list[qindex].answer){
+				html+='<div class="whisper_answer" attr-id="'+result.list[qindex].id+'">';
+				var temp_index=1;
+				for(var aindex in result.list[qindex].answer){
+					html+='<ul class="whisper_answer_wkBox">';
+					html+='<li class="uesr_head">';
+					html+='<img src="'+result.list[qindex].payto_avatar+'">';
+					html+='</li>';
+					html+='<li class="wl_answer_boxFl">';
+					html+='<div class="audio_box">';
+					if(result.list[qindex].show==true)
+					  html+='<i attr-src="'+result.list[qindex].answer[aindex].answer_content+'" class="ico_audio"></i><p>点击播放</p>';
+					else
+					  html+='<i attr-src="pay" class="ico_audio"></i><p>1元旁听</p>';
+						
+					html+='<b class="second">'+result.list[qindex].answer[aindex].time_last+'"</b><a class="audio_box_play" href="javascript:;"></a>';
+					html+='</div>';
+					html+='</li>';
+					if(temp_index==result.list[qindex].answer.length)
+					   html+='<li class="listened_total">0人旁听</li>';
+					html+='</ul>';
+					temp_index++;
+				}
+				html+='</div>';	
+			}
+				else{
+					html+='<div class="answer_box">';
+					if(is_myindex){
+					html+='<a class="wt_btn_answer" href="'+answer_url+'&ask_id='+result.list[qindex].id+'">回答</a>';
+					html+='<b class="whisper_tips_1">48小时没有回答，付款将自动退回</b>';
+					}else{
+					   html+='<b class="whisper_tips_1">暂无回答~</b>';
+					}
+					html+='</div>';
+				}
+			html+='</dd>';
+			last_html=html+last_html;
+	}
+	return last_html;
+}
+
+/*获取用户列表数据*/
+function getUserHtml(result){
+	var last_html='';
+	for(var qindex in result.list){
+		last_html+='<dd class="clearfix">';
+		last_html+='<span class="uesr_head">';
+			last_html+='<a href="'+my_ask_index+'"&uid='+result.list[qindex].id+'">';
+			last_html+='<img src="'+result.list[qindex].avatar+'">';
+			last_html+='</a></span><ul class="user_info">';
+			last_html+='<li class="li_1">';
+			last_html+='<a href="'+my_ask_index+'"&uid='+result.list[qindex].id+'">';
+			last_html+=result.list[qindex].real_name+'</a>';
+			last_html+='</li>';
+			last_html+='<li class="li_3">';
+			last_html+='<a href="'+my_ask_index+'"&uid='+result.list[qindex].id+'">';
+			last_html+=result.list[qindex].user_title+','+result.list[qindex].user_desc;
+			last_html+='</a></li></ul></dd>';
+	}
+	return last_html;
+}
+
+$(function(){
+	QuestionBind();
+	pageLoadCommon($("#ask_list"), function() {
+		$(".pageLoadBox1").show();
+		$(".loadNone").hide();
+		pindex++;
+		$.post(location.href, {pindex: pindex}, function(result){
+			$(".pageLoadBox1").hide();
+			if(result.pages<pindex){
+				$(".loadNone").show();
+				return false;
+			}
+			pindex=result.pindex;
+			
+			var html=getHtml(result);
+			$(".whisper_list_ask").append(html);
+			$(".none_record").hide();
+			//voicePlay();
+			QuestionBind();
+		});		
+    });
+	
+	pageLoadCommon($("#user_list"), function() {
+		$(".pageLoadBox2").show();
+		$(".loadNone").hide();
+		upindex++;
+		$.post(get_user_url, {pindex: upindex}, function(result){
+			$(".pageLoadBox2").hide();
+			if(result.pages<upindex){
+				$(".loadNone").show();
+				return false;
+			}
+			upindex=result.pindex;			
+			var html=getUserHtml(result);
+			$(".live_speaker_list").append(html);
+			$(".none_record").hide();
+		});		
+    });
+    
+	$(document).on("click", ".whisper_tab_btn", function() {
+			$(this).addClass("on").siblings(".whisper_tab_btn").removeClass("on");
+			$(".whisper_tab_list[name=" + $(this).attr("name") + "]").addClass("on").siblings(".whisper_tab_list").removeClass("on")
+	});
+});
+</script>
+</head>
+
+<body class="gra_1">
+
+<div class="whisper_tab whisper_tabp"><span class="whisper_tab_btn on" name="ask_list">问题榜</span><span class="whisper_tab_btn" name="all">人才榜</span></div>
+
+<div class="main_box_2 AnswerscrollBox whisper_tab_list on" id="ask_list" name="ask_list">
+	<div>
+	<dl class="whisper_list whisper_list_ask">
+	{loop $records $record}
+		<dd class="wl_msg_item">
+			<div class="wl_top_wkBox">
+				<span class="wl_top_boxFl">
+					<i class="uesr_head">
+						<img src="{$record['pay_avatar']}">
+					</i>
+					<b>{$record['pay_nickname']}</b>
+				</span>
+				<span class="wl_price">¥<var>{$record['pay_money']}</var></span>
+			</div>
+			<div class="whisper_question" attr-href="{php echo $this->createMobileUrl('ask_detail',array('ask_id'=>$record['id']))}">
+				{$record['ask_content']}
+			</div>
+			{if !$record['answer']}
+			   {if $is_myindex==true}
+				<div class="answer_box">
+							<a class="wt_btn_answer" href="{php echo $this->createMobileUrl('ask_answer',array('ask_id'=>$record['id']))}">回答</a>
+							<b class="whisper_tips_1">48小时没有回答，付款将自动退回</b>
+				</div>
+				{else}
+				<div class="answer_box">
+						<b class="whisper_tips_1">暂无回答~</b>
+				</div>
+			 {/if}
+			{else}
+			 
+			 <div class="whisper_answer">
+				{loop $record['answer'] $index $answer}
+				<ul class="whisper_answer_wkBox">
+					<li class="uesr_head">
+						<img src="{$record['payto_avatar']}">
+					</li>
+					<li class="wl_answer_boxFl">
+						<div class="audio_box" attr-id="{$record['id']}">
+						{if $record['show']==true}
+							<i attr-src="{$answer['answer_content']}" class="ico_audio"></i>
+							<p>点击播放</p>
+						{else}
+						     <i attr-src="pay" class="ico_audio"></i>
+							 <p>1元旁听</p>
+						{/if}	
+							<b class="second">{$answer['time_last']}"</b><a class="audio_box_play" href="javascript:;"></a>
+						</div>
+					</li>
+					{if count($record['answer'])==$index+1}
+					 <li class="listened_total">{$record['paycount']}人旁听</li>
+					{/if}
+				</ul>
+				{/loop}	
+				</div>
+			{/if}	
+		</dd>
+	{/loop}	
+ </dl>
+		<ul class="loadStBox">
+			<li class="box_nothing loadNone">
+				<span class="tips_1">没有更多内容</span>
+			</li>
+			<li class="pageLoadBox" id="pageLoadBox1"></li>
+			<li class="none_record none_pic6"><span class="none_tip">暂无纪录哟～</span></li>
+			<li class="page_loading_box">正在加载中...</li>
+		</ul>
+	</div>
+</div>
+
+<div class="main_box_2 AnswerscrollBox whisper_tab_list" id="user_list" name="all">
+	<div>
+	<dl class="live_speaker_list">
+		    {loop $user_records $guest}
+			<dd class="clearfix">
+				<span class="uesr_head">
+						<a href="{php echo $this->createMobileUrl('my_ask_index',array('uid'=>$guest['id']));}">
+					     <img src="{$guest['avatar']}">
+					</a>
+				</span>
+				<ul class="user_info">
+						<li class="li_1"><a href="{php echo $this->createMobileUrl('my_ask_index',array('uid'=>$guest['id']));}">{$guest['real_name']}</a>
+						</li>
+						<li class="li_3">
+						<a href="{php echo $this->createMobileUrl('my_ask_index',array('uid'=>$guest['id']));}">
+						  {$guest['user_title']},{$guest['user_desc']}
+						</a>
+						</li>
+				</ul>
+				
+			</dd>
+		{/loop}
+     </dl>
+		<ul class="loadStBox">
+			<li class="box_nothing loadNone">
+				<span class="tips_1">没有更多内容</span>
+			</li>
+			<li class="pageLoadBox" id="pageLoadBox2"></li>
+			<li class="none_record none_pic6" style="display:none;"><span class="none_tip">暂无纪录哟～</span></li>
+			<li class="page_loading_box" style="display: none;">正在加载中...</li>
+		</ul>
+	</div>
+</div>
+
+<div class="loadingBox"><span></span></div>
+<div class="menu_wkBox back_box">
+	<a href="{$ask_url}" onclick="" class="menu_boxFl menu_live on">首页</a><a href="javascript:;" class="menu_boxFl menu_mine">我的</a>
+</div>
+</body></html>

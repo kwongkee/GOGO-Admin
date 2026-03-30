@@ -1,0 +1,153 @@
+{include file="common/header_inner_new"}
+<link rel="stylesheet" href="static/hadmin/css/zTreeStyle/zTreeStyle.css"/>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="static/hadmin/js/jquery.ztree.core.js"></script>
+<script src="static/hadmin/js/jquery.ztree.excheck.min.js"></script>
+
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">权限类别</div>
+                            <div class="layui-input-block">
+                                <select name="auth_type" id="auth_type" lay-filter="auth_type">
+                                    <option value="">请选择权限类别</option>
+                                    <option value="1" {if $data['auth_type']==1}selected{/if}>总后台</option>
+                                    <option value="3" {if $data['auth_type']==3}selected{/if}>商户端</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">权限配置</div>
+                            <div class="layui-input-block">
+                                <ul id="treeDemo" class="ztree"></ul>
+                                <!--<select name="auth_type" id="auth_type">-->
+                                <!--    <option value="">请选择权限</option>-->
+                                <!--    <option value="1" if $data['auth_type']==1selected/if>可读禁写</option>-->
+                                <!--    <option value="2" if $data['auth_type']==2selected/if>可读可写</option>-->
+                                <!--</select>-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    var setting = {
+        view: {
+            selectedMulti: true, //设置是否能够同时选中多个节点
+            showIcon: true, //设置是否显示节点图标
+            showLine: true, //设置是否显示节点与节点之间的连线
+            showTitle: true, //设置是否显示节点的title提示信息
+        },
+        data: {
+            simpleData: {
+                enable: true, //设置是否启用简单数据格式（zTree支持标准数据格式跟简单数据格式，上面例子中是标准数据格式）
+                idKey: "id", //设置启用简单数据格式时id对应的属性名称
+                pidKey: "pid", //设置启用简单数据格式时parentId对应的属性名称,ztree根据id及pid层级关系构建树结构
+                rootPId:0
+            },
+            key:{
+                name:"title"
+            }
+        },
+        check:{
+            enable: true, //设置是否显示checkbox复选框
+            chkStyle:"checkbox"
+        },
+    };
+
+    layui.use(['layer','form','laydate','upload'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+
+        form.on('select(auth_type)',function(data){
+            let val = data.value;
+            $.ajax({
+                url: "{:Url('admin/rolePermission/get_auth')}", //ajax请求地址
+                type: "POST",
+                dataType: "JSON",
+                data: {'level_id':"{$id}",'auth_type':val},
+                success: function (data) {
+                    $.fn.zTree.init($("#treeDemo"), setting, data.data.menuList);
+                    $.fn.zTree.getZTreeObj("treeDemo").expandAll(true);
+                },
+            });
+        });
+
+        form.on('submit(component-form-element)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            var treeObj = $.fn.zTree.getZTreeObj("treeDemo"),
+                nodes = treeObj.getCheckedNodes(true);
+
+            var menus = "";
+            for (i = 0; i < nodes.length; i++) {
+                menus += nodes[i].id + ","; //获取选中节点的TID
+            }
+            if(nodes.length=='' || nodes.length==0 || typeof(nodes.length) == 'undefined'){
+                layer.msg('请选择功能权限');return false;
+            }
+            data.field['authList'] = menus;
+            
+            $.ajax({
+                url:"{:Url('admin/rolePermission/permission_setting')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+    });
+    
+    $(function () {
+        //ZTREE
+
+        $.ajax({
+            url: "{:Url('admin/rolePermission/get_auth')}", //ajax请求地址
+            type: "POST",
+            dataType: "JSON",
+            data: {'level_id':"{$id}",'auth_type':"{$data['auth_type']}"},
+            success: function (data) {
+                $.fn.zTree.init($("#treeDemo"), setting, data.data.menuList);
+                $.fn.zTree.getZTreeObj("treeDemo").expandAll(true);
+            },
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<div class="ui-newstips-wrap" style="margin:5px auto;display:none;" id="remind_message_container">
+</div>
+<script>
+	var Remind = (function(){
+		// 请求开关
+		var intv_new_message_key = true;
+		// 请求id
+		var chat_id = 0;
+		var loadRemindMessage = function() {
+			if($("#remind_message_container").css("display") == 'none') {
+
+			}else {
+				return false;
+			}
+			if(!intv_new_message_key) {
+				return false;
+			}
+			intv_new_message_key = false;
+
+			$.ajax({
+				type:'post',
+				data:{'chat_id':chat_id},
+				url:"{php echo $this->createMobileUrl('loadRemindMessage')}",
+				success:function(d) {
+					if(d.res == '100') {
+						chat_id = d.data.chat_id;
+						$("#remind_message_container").hide();
+						html = "<div class='ui-newstips' onclick=\"window.location.href='{php echo $this->createMobileUrl('chat')}&chat_openid="+d.data.chat_openid+"'\">";
+						html +="<span class='ui-newstips-thumb'>";
+			            html +="<span style='background-image:url("+d.data['headimgurl']+")'></span>";
+				        html += "</span>";
+				        html += "<div>"+d.data['nickname']+":"+d.data['chat_message']+"</div>";
+				        html +="<span class='ui-badge-num'>1</span></div>";
+				        $("#remind_message_container").html(html);
+				        $("#remind_message_container").show();
+					}
+					intv_new_message_key = true;
+				}
+			});
+		}
+
+		// 定时器
+		setInterval('Remind.loadRemindMessage()',5000);	
+
+		return {
+			loadRemindMessage:loadRemindMessage
+		};
+	}())
+</script>

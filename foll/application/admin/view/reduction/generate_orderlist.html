@@ -1,0 +1,145 @@
+{include file="public/header_new"}
+<body class="gray-bg">
+<form class="form-horizontal" style="margin-left: 18%;margin-top: 12%;">
+    <div class="form-group" style="margin-bottom:20px;">
+        <label for="batch_name" class="col-sm-2 control-label">提单批次编号</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="batch_name" id="batch_name" placeholder="申报订单提单的批次编号">
+        </div>
+        <div class="col-sm-3">
+            <button type="button" class="btn btn-primary btn-lg btn-block" onclick="connect();return false;" style="width: 50%;margin-left: 16%;">关联</button>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="ebc_body_id" class="col-sm-2 control-label">电商企业</label>
+        <div class="col-sm-6">
+            <select name="ebc_body_id" id="ebc_body_id">
+                <option value="">请选择电商企业</option>
+                {foreach $ebc as $k=>$v}
+                    <option value="{$v['id']}">{$v['id']}-{$v['ebc_name']}</option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+    <div class="form-group" style="margin-bottom:20px;">
+        <label for="ordersn" class="col-sm-2 control-label">订单编号</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="ordersn" id="ordersn" placeholder="订单编号">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="ebp_name" class="col-sm-2 control-label">电商平台名称</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="ebp_name" id="ebp_name" placeholder="电商平台名称">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="ebc_name" class="col-sm-2 control-label">电商企业名称</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="ebc_name" id="ebc_name" placeholder="电商企业名称">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="submissionType" class="col-sm-2 control-label">报送类型</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="submissionType" id="submissionType" placeholder="报送类型,默认新增" value="新增" readonly>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="orderTypeId" class="col-sm-2 control-label">订单类型</label>
+        <div class="col-sm-6">
+            <select name="orderTypeId" id="orderTypeId">
+                <option value="">请选择订单类型</option>
+                <option value="0">0-全部</option>
+                <option value="B">B-B2B出口订单</option>
+                <option value="E">E-B2C出口订单</option>
+                <option value="W">W-海外仓订仓单</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="appStatusId" class="col-sm-2 control-label">业务状态</label>
+        <div class="col-sm-6">
+            <select name="appStatusId" id="appStatusId">
+                <option value="">请选择业务状态</option>
+                <option value="0">0-全部</option>
+                <option value="1">1-暂存</option>
+                <option value="100">100-海关退单</option>
+                <option value="120">120-海关入库</option>
+                <option value="2">2-申报</option>
+                <option value="3">3-发送海关成功</option>
+                <option value="4">4-发送海关失败</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="beginDate" class="col-sm-2 control-label">入库时间</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="beginDate" id="beginDate" placeholder="入库时间 {$date}" value="{$date}">
+        </div>
+    </div>
+    <button type="button" class="btn btn-primary btn-lg btn-block" onclick="req();return false;" style="width: 50%;margin-left: 16%;">新增</button>
+</form>
+</body>
+
+<script type="text/javascript">
+    function req() {
+        let data={};
+        let value = $('form').serializeArray();
+        $.each(value,function (index,item) {
+            if(item.name!='batch_name'){
+                data[item.name]=item.value;
+            }
+        });
+        var i=layer.load(1); //风格1的加载
+        $.ajax({
+            url:"{:url('admin/reduction/generate_orderlist')}",
+            type:"POST",
+            dataType:"json",
+            data:data,
+            success:function (res) {
+                layer.close(i);
+                if(res.code<0){
+                    layer.msg(res.msg, {icon:5, time:2000});
+                }else{
+                    layer.msg(res.msg, {icon:6, time:2000});
+                    window.close();
+                    parent.location.reload();
+                }
+            }
+        });
+        return false;
+    }
+
+    function connect(){
+        let batch_num = $('#batch_name').val();
+        if(batch_num==''){
+            layer.msg('请填写批次编号进行关联', {icon:5, time:2000});
+            return false;
+        }
+
+        $.ajax({
+            url:"{:url('admin/reduction/connect_order')}",
+            type:"POST",
+            dataType:"json",
+            data:{'batch_num':batch_num},
+            success:function (res) {
+                if(res.code<0){
+                    layer.msg(res.msg, {icon:5, time:2000});
+                }else{
+                    //关联信息
+                    $('#ebp_name').val(res.list.ebp_name);
+                    $('#ebc_name').val(res.list.ebc_name);
+                    $('#ordersn').val(res.list.ordersn);
+
+                    layer.msg(res.msg, {icon:6, time:2000});
+                }
+            },error:function(res){
+                console.log(res);
+            }
+        });
+        return false;
+    }
+</script>
+</html>

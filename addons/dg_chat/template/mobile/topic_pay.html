@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>付费直播间</title>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<meta name="format-detection" content="address=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="{TEMPLATE_PATH}/wtCommon.css?v={php echo time();}">
+<script src="//cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/json2/20150503/json2.min.js"></script>
+<script src="{TEMPLATE_PATH}/js/jq_addons.js"></script>
+<link rel="stylesheet" href="{TEMPLATE_PATH}/live.css?v={php echo time();}">
+{php echo register_jssdk();}
+</head>
+<body class="liveroom_bg">
+<div class="main_box_4 ">
+	<span class="img_p1"><img src="{$chat_room['room_icon']}"></span>
+	<span class="authentication_p2">{$chat_room['room_name']}正在直播</span>
+	<span class="authentication_p3">{$topic['topic_name']}</span>
+	
+	<span class="authentication_p3" style="color:green;margin-top:20px;margin-bottom:20px;">
+		需要支付 {$topic['room_paymoney']} 元
+	</span>
+	<span class="passwordsetbox">
+		<a href="javascript:;" class="topicpassword_a">确定</a>
+	</span>
+</div>
+<div class="loadingBox"><span></span></div>
+
+<script type="text/javascript">
+/*微信支付开始*/
+function jsApiCall(){
+		WeixinJSBridge.invoke(
+			'getBrandWCPayRequest',
+			 {$jsApiParameters},
+			function(res){
+				WeixinJSBridge.log(res.err_msg);
+				if(res.err_msg == "get_brand_wcpay_request:ok") {
+					$(document).minTipsBox({	
+						tipsContent:"正在跳转，不要关闭！", 
+						tipsTime:1
+					});
+					var t=setTimeout("location.href='{$topic_url}'",1500)	
+                } else if(res.err_msg == "get_brand_wcpay_request:cancel"){
+                	$(document).minTipsBox({	
+						tipsContent:"取消支付！", 
+						tipsTime:1
+					});
+                }
+               else{
+               	alert(res.err_msg);
+               }
+			}
+		);
+}
+
+function callpay(){
+		if (typeof WeixinJSBridge == "undefined"){
+		    if( document.addEventListener ){
+		        document.addEventListener('WeixinJSBridgeReady', jsApiCall, false);
+		    }else if (document.attachEvent){
+		        document.attachEvent('WeixinJSBridgeReady', jsApiCall); 
+		        document.attachEvent('onWeixinJSBridgeReady', jsApiCall);
+		    }
+		}else{
+		    jsApiCall();
+		}
+}	
+/*微信支付结束*/
+$(function(){
+	$(".topicpassword_a").click(function(){
+		callpay();
+	});
+});
+
+</script>
+</body></html>

@@ -1,0 +1,156 @@
+{template "parking/base/header"}
+
+<body>
+	<div class="wx_box">
+        <div class="cashier">
+        	<dl>
+            	<dt>待支付：<i>￥{$order['pay_account']}元</i></dt>
+                <dd>
+               		<h4>余额支付</h4>
+                    <p class="cashier_font01">
+                    	<em><img src="../addons/ewei_shopv2/static/images/img/license_icon05.png"/></em>
+                        <span>账户余额<b>可用额度 ¥0.00元</b></span>
+                        <i class="cashier_check"></i>
+                    </p>
+                </dd>
+                <dd>
+               		<h4>第三方支付</h4>
+                    <p><em><img src="../addons/ewei_shopv2/static/images/img/license_icon01.png"/></em><span>微信支付</span><i class="cashier_check" type="wechat"></i></p>
+                    <p><em><img src="../addons/ewei_shopv2/static/images/img/license_icon02.png"/></em><span>支付宝支付</span><i class="cashier_check" type="alipay"></i></p>
+                </dd>
+
+                <!--dd>
+                    <p style="color: green;">微信支付已开通，可使用！</p>
+                </dd>
+                <dd>
+               		<h4>授权扣费支付</h4>
+                    <p class="cashier_font02"><em><img src="../addons/ewei_shopv2/static/images/img/license_icon03.png"/></em><span>银联标识信用卡</span><i class="cashier_check"></i></p>
+                    <p><em><img src="../addons/ewei_shopv2/static/images/img/license_icon04.png"/></em><span>顺德农商行借记卡</span><i class="cashier_check"></i></p>
+                </dd>-->
+            </dl>
+            <input type="hidden" name="payType" id="payType" value="" />
+            <input type="hidden" name="orderid" id="or" value="{$_GPC['orderid']}" />
+            {if $order['pay_account'] != ''}
+            	<p class="cashier_pay" id="pay">支付 ¥{$order['pay_account']}元</p>
+            {else}
+            	<p class="cashier_pay cashier_pay_none">支付 ¥0.00元</p>
+            {/if}
+        </div>
+    </div>
+
+    <input type="hidden" id="opid" value="{$_W['openid']}">
+    <form action="" method="post" id="wp"></form>
+
+    <form action="" method="get" id="aliwp"></form>
+</body>
+
+<script type="text/javascript">
+	$(".cashier_check").click(function(){
+		$(this).toggleClass("cashier_checked");
+		$(this).parents("p").siblings("p").find(".cashier_check").removeClass("cashier_checked");
+		$(this).parents("dd").siblings("dd").find(".cashier_check").removeClass("cashier_checked");
+	});
+	
+	$('.cashier_check').bind('click',function() {
+		if($(this).hasClass('cashier_checked')) {
+			$('#payType').val($(this).attr('type'))
+		}
+	})
+
+    var isRun = false
+	$('#pay').bind('click',function() {
+
+        if (isRun){
+	        return false;
+        }
+        isRun=true;
+		var paytype = $('#payType').val();
+		var or = $("#or").val();
+		if(paytype == '') {
+			alert('请选择支付方式');
+			return false;
+		} else {
+
+		    // 微信支付
+            if(paytype == 'wechat') {
+
+                /*var opid = $('#opid').val();
+                if(opid != 'oR-IB0t4Yc9zmV-K-_5NRB-u5k4U') {
+
+                    alert('微信支付，维护中，请使用支付宝支付！');
+                    return false;
+                }*/
+
+                $.ajax({
+                    url:"<?php echo mobileUrl('parking/pay/payCheck');?>",
+                    type:'POST',
+                    dataType:'json',
+                    data:{'payType':paytype,'orderid':or},
+                    success:function(res) {
+                        //console.log(res);
+                        if(res.status >= 1 && res.result.msg == 'success') {
+                            var datas = JSON.parse(res.result.pay_info);
+                            var inp = '';
+                            $.each(datas,function(inx,val){
+                                inp += '<input type="hidden" name="'+inx+'" value="'+val+'">';
+                            })
+
+                            $('#wp').append(inp);
+                            $('#wp').attr('action','http://shop.gogo198.cn/addons/ewei_shopv2/payment/wechat/pay.php');
+                            $('#wp').submit();
+
+                        } else {
+                            //alert(res.result.message[0].msg);
+                            setTimeout(function () {
+                                location.reload();
+                            },2000)
+                        }
+                    }
+                })
+
+            } else { // 支付宝
+
+                $.ajax({
+                    url:"<?php echo mobileUrl('parking/pay/payCheck');?>",
+                    type:'POST',
+                    dataType:'json',
+                    data:{'payType':paytype,'orderid':or},
+                    success:function(res) {
+                        //console.dir(res);
+                        if(res.status >= 1 && res.result.msg == 'success') {
+
+                            urls = 'http://shop.gogo198.cn/addons/ewei_shopv2/payment/wechat/alipay.php';
+                            var inp = '<input type="hidden" name="pay_url" value="'+res.result.payUrl+'">';
+                            $('#aliwp').append(inp);
+                            $('#aliwp').attr('action',urls);
+                            $('#aliwp').submit();
+
+                            /*var op = $('#opid').val();
+                            if(op == 'oR-IB0t4Yc9zmV-K-_5NRB-u5k4U') {
+
+                                urls = 'http://shop.gogo198.cn/addons/ewei_shopv2/payment/wechat/alipay.php';
+                                var inp = '<input type="hidden" name="pay_url" value="'+res.result.payUrl+'">';
+                                $('#aliwp').append(inp);
+                                $('#aliwp').attr('action',urls);
+                                $('#aliwp').submit();
+
+                            } else {
+                                // 支付宝支付
+                                window.location.href = res.result.payUrl;
+                            }*/
+
+                        } else {
+                            alert(res.result.msg);
+                            setTimeout(function () {
+                                window.location.href  = 'http://shop.gogo198.cn/app/index.php?i=14&c=entry&m=ewei_shopv2&do=mobile&r=parking.invoicelist.park_Norder';
+                            },2000)
+                        }
+                    }
+                })
+            }
+		}
+	})
+
+</script>
+
+{template "parking/base/footer"}

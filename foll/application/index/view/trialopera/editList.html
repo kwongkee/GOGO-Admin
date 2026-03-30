@@ -1,0 +1,195 @@
+{include file="common/header"}
+
+<div id="" style="margin-top: 15px;"></div>
+
+<form class="layui-form">
+  	
+  	<div class="layui-form-item">
+	    <div class="layui-inline">
+	      <label class="layui-form-label">阶段名称</label>
+	      <div class="layui-input-inline">
+	        <input type="text" name="title" readonly="readonly" id="title" value="{$data.title}" lay-verify="title" autocomplete="off" placeholder="请输入阶段名称" class="layui-input">
+	      </div>
+	    </div>
+  	</div>
+  
+  	<div class="layui-form-item">
+	    <div class="layui-inline">
+	      <label class="layui-form-label">阶段折扣</label>
+	      <div class="layui-input-inline">
+	        <input type="text" name="discount" id="discount" value="{$data.discount}" lay-verify="required" placeholder="请输入折扣0-9的数字" min="1" maxlength="1" max="9" autocomplete="off" class="layui-input">
+	      </div>
+	      <div class="layui-form-mid layui-word-aux">折(0折为免费)</div>
+	    </div>
+  	</div>
+  
+  	<div class="layui-form-item">
+  	
+	    <div class="layui-inline">
+	      	<label class="layui-form-label">阶段时限</label>
+	      	<div class="layui-input-inline" style="width: 200px;">
+	        	<input type="text" name="startDate" id="startDate" value="{$data.startDate|date='Y-m-d H:i:s',###}" lay-verify="datetime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+	      	</div>
+	
+	      	<div class="layui-form-mid">-</div>
+	
+	  		<div class="layui-input-inline" style="width: 200px;">
+	        	<input type="text" name="endDate" id="endDate" value="{$data.endDate|date='Y-m-d H:i:s',###}" lay-verify="datetime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+	      </div>
+	      
+	      <div style="margin-left: 39px;" class="layui-form-mid layui-word-aux">默认日期开始00:00:01开始至结束日期的23:59:59结束</div>
+	  	</div>
+	  	
+		</div>
+		
+		<div class="layui-form-item" id="show" style="display: none;">
+	    <div class="layui-inline">
+	      <label class="layui-form-label">警告消息</label>
+	      <div class="layui-form-mid" style="color: red;" id="msg">暂无警告！</div>
+	    </div>
+  	</div>
+  	
+  	<input type="hidden" id="ids" value="{$data.id}" />
+  	<div class="layui-form-item">
+	    <div class="layui-input-block">
+	      <button class="layui-btn" lay-submit="" lay-filter="demo1">立即设置</button>
+	      <button type="reset" class="layui-btn layui-btn-primary">重置信息</button>
+	    </div>
+  	</div>
+</form>
+
+		
+
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script>
+layui.use(['form', 'layedit', 'laydate'], function(){
+  	var form = layui.form
+  	,layer = layui.layer
+  	,layedit = layui.layedit
+  	,laydate = layui.laydate;
+  
+  //日期
+  	var start = laydate.render({
+	    elem: '#startDate'
+	    ,theme: 'molv'
+	    ,type: 'datetime'
+	    ,format:'yyyy-MM-dd HH:mm:ss'
+	    ,min: '-0'
+	    ,max:'2099-6-16 23:59:59'
+	    ,done:function(value,data){
+	    	console.dir(value);
+	    }
+  	});
+  
+  	var end = laydate.render({
+    	elem: '#endDate'
+    	,theme: 'molv'
+    	,type: 'datetime'
+    	,format:'yyyy-MM-dd HH:mm:ss'
+    	,min: '-0'
+    	,max:'2099-6-16 23:59:59'
+    	,done:function(value,data,endDate){
+    		console.dir(value);
+    	}
+  	});
+  
+ 
+  //自定义验证规则
+  form.verify({
+    title: function(value) {
+      if(value.length < 3){
+        return '标题至少得3个字符啊';
+      }
+    }
+  });
+  
+  $('#title').blur(function() {
+  			
+  			if($(this).val() == ' ') {
+  					$('#show').css('display','block');
+  					layer.msg('标题不能为空', {icon: 5});
+  					$(this).val(' ').focus().val($(this).val());
+  					$('#msg').html('标题不能为空');
+  					return false;
+  			} else {
+	  				$.post("{:Url('trialopera/edit')}",{
+				        "title":$(this).val()
+			    		},function (res) {
+			    			var res = JSON.parse(res);
+			    			if( res.code == 0 ) {
+			    				
+			    				$('#show').css('display','block');
+			    				$('#msg').html(res.msg);
+			    				
+			    				$('#title').val(' ').focus().val($(this).val());
+			    				
+			    				layer.alert(res.msg, {
+							    	title: '错误提示！'
+							  	})
+			    				
+			    			} else {
+			    				$('#show').css('display','none');
+			    			}
+			    		}
+		    		);
+  			}
+  			
+  })
+  
+  
+  //监听提交
+  form.on('submit(demo1)', function(data) {
+		
+		if($('#discount').val() == '') {
+				$('#show').css('display','block');
+				$('#msg').html('折扣率不能为空!');
+				return false;
+		}
+		
+		if($('#startDate').val() == '') {
+				$('#show').css('display','block');
+				$('#msg').html('开始时间不能为空!');
+				return false;
+		}
+		
+		if($('#endDate').val() == '') {
+				$('#show').css('display','block');
+				$('#msg').html('结束时间不能为空!');
+				return false;
+		}
+		
+    $.post("{:Url('trialopera/edit')}",{
+	      "discount":$('#discount').val(),
+	      "startDate":$('#startDate').val(),
+	      "endDate":$('#endDate').val(),
+    		"id":$('#ids').val(),}
+    	,function (res) {
+					var res = JSON.parse(res);
+    			console.dir(res.code);
+	        if(res.code == 1 ) {
+	        		$('#show').css('display','none');
+	        		
+	            layer.msg('编辑成功', {icon: 6});
+	            setTimeout(function () {
+	                location.History.back();
+	            },1500);
+	        }
+	        
+	        if(res.code==0) {
+	        	
+	        		$('#show').css('display','block');
+	        		$('#msg').html(res.msg);
+	        		
+	            layer.msg(res.msg, {icon: 5});
+	        }
+    	}
+    )
+    
+    return false;
+    
+  });
+  
+});
+</script>
+
+{include file="common/footer"}

@@ -1,0 +1,271 @@
+{include file="public/header"}
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    #edui1{z-index: 10 !important;}
+    .nav_page{display: none;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">选择菜单</div>
+                            <div class="layui-input-block">
+                                <select name="page_id" id="page_id" lay-verify="required">
+                                    <option value="">请选择菜单</option>
+                                    {foreach $page as $val}
+                                    <option value="{$val['id']}" {if $data['page_id']==$val['id']}selected{/if}>{$val['name']}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-collapse content_div" lay-accordion="now" style="margin:10px 0;">
+                            {if $id==0}
+                                <div class="layui-colla-item">
+                                    <h2 class="layui-colla-title disf" style="justify-content: space-between;"><span>内容1</span><div class="layui-btn layui-btn-success" onclick="add_nav(this)">新增</div></h2>
+                                    <div class="layui-colla-content">
+                                        <div class="layui-form-item">
+                                            <div class="layui-form-label">导航内容</div>
+                                            <div class="layui-input-block">
+                                                <script id="content" name="content[]" class="content" type="text/plain" style="width:100%;height:200px;">
+
+                                                </script>
+                                                <div class="clearfix"></div>
+                                            </div>
+                                        </div>
+                                        <div class="layui-form-item">
+                                            <div class="layui-form-label">导航链接</div>
+                                            <div class="layui-input-block disf">
+                                                <div class="nav_type">
+                                                    <select name="nav_type[]" lay-filter="nav_type">
+                                                        <option value="1">网页链接</option>
+                                                        <option value="2">小程序页</option>
+                                                    </select>
+                                                </div>
+                                                <div class="nav_link">
+                                                    <input type="text" class="layui-input" name="navlink[]" placeholder="导航链接" value="">
+                                                </div>
+                                                <div class="nav_page">
+                                                    <select name="nav_page[]" lay-search>
+                                                        {volist name="allpage" id="vo2"}
+                                                        <option value="{$vo2['id']}">【{$vo2['name']}】：{$vo2['url']}</option>
+                                                        {/volist}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {else}
+                                {volist name="data.content" key="key2" id="vo"}
+                                <div class="layui-colla-item">
+                                    <h2 class="layui-colla-title disf" style="justify-content: space-between;"><span>内容{$key2}</span><div>{if $key2>1}<div class="layui-btn layui-btn-danger" onclick="del_nav(this)">删除</div>{/if}<div class="layui-btn layui-btn-success" onclick="add_nav(this)">新增</div></div></h2>
+                                    <div class="layui-colla-content">
+                                        <div class="layui-form-item">
+                                            <div class="layui-form-label">导航内容</div>
+                                            <div class="layui-input-block">
+                                                <script id="content{$key2}" name="content[]" class="content" type="text/plain" style="width:100%;height:200px;">
+                                                    {if !empty($vo)}
+                                                        {$vo|htmlspecialchars_decode|stripslashes}
+                                                    {/if}
+                                                </script>
+                                                <div class="clearfix"></div>
+                                            </div>
+                                        </div>
+                                        <div class="layui-form-item">
+                                            <div class="layui-form-label">导航链接</div>
+                                            <div class="layui-input-block disf">
+                                                <div class="nav_type">
+                                                    <select name="nav_type[]" lay-filter="nav_type">
+                                                        <option value="1" {if $data['navtype'][$key2-1]==1}selected{/if}>网页链接</option>
+                                                        <option value="2" {if $data['navtype'][$key2-1]==2}selected{/if}>小程序页</option>
+                                                    </select>
+                                                </div>
+                                                <div class="nav_link" style="display:{if $data['navtype'][$key2-1]==1}block{else}none{/if};">
+                                                    <input type="text" class="layui-input" name="navlink[]" placeholder="导航链接" value="{$data['navlink'][$key2-1]}">
+                                                </div>
+                                                <div class="nav_page" style="display:{if $data['navtype'][$key2-1]==2}block{else}none{/if};">
+                                                    <select name="nav_page[]" lay-search>
+                                                        {volist name="allpage" id="vo2"}
+                                                        <option value="{$vo2['id']}" {if $data['navlink'][$key2-1]==$vo2['url']}selected{/if}>【{$vo2['name']}】：{$vo2['url']}</option>
+                                                        {/volist}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {/volist}
+                            {/if}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">发布首页</button>
+<!--                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload','element'],function(){
+        var laydate = layui.laydate
+            ,layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery
+            ,element = layui.element
+            ,upload = layui.upload;
+
+        {if $id==0}
+            var ue = UE.getEditor('content', {
+                initialFrameHeight: 400,
+                serverUrl: 'static/cklein/plugins/ueditor/php/controller.php'
+            });
+        {else}
+            {volist name="data.content" key="key2" id="vo"}
+                var ue = UE.getEditor('content{$key2}', {
+                    initialFrameHeight: 400,
+                    serverUrl: 'static/cklein/plugins/ueditor/php/controller.php'
+                });
+            {/volist}
+        {/if}
+
+        form.on('select(nav_type)',function(data){
+            let val = data.value;
+            let t = this;
+            if(val==1){
+                $(t).parent().parent().parent().parent().find('.nav_link').show();
+                $(t).parent().parent().parent().parent().find('.nav_page').hide();
+            }else if(val==2){
+                $(t).parent().parent().parent().parent().find('.nav_link').hide();
+                $(t).parent().parent().parent().parent().find('.nav_page').show();
+            }
+        });
+
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            // if( $('#img_file-upload-list').children().length == 0 )
+            // {
+            //     layer.msg('请上传新闻封面图！');
+            //     return false;
+            // }
+
+            $.ajax({
+                url:"{:Url('centralize/miniprogram/save_index')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+
+    function add_nav(t){
+        var layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery
+            ,element = layui.element;
+        let con_len = parseInt($('.content').length) + 1;
+        // console.log(con_len);
+        let html = '<div class="layui-colla-item">\n' +
+            '                                <h2 class="layui-colla-title disf" style="justify-content: space-between;"><span>内容'+con_len+'</span><div><div class="layui-btn layui-btn-danger" onclick="del_nav(this)">删除</div><div class="layui-btn layui-btn-success" onclick="add_nav(this)">新增</div></div></h2>\n' +
+            '                                <div class="layui-colla-content">\n' +
+            '                                    <div class="layui-form-item">\n' +
+            '                                        <div class="layui-form-label">导航内容</div>\n' +
+            '                                        <div class="layui-input-block">\n'+
+            '                                            <div id="con'+con_len+'" class=""></div>\n'+
+            '                                            <div class="clearfix"></div>\n'+
+            '                                        </div>\n'+
+            '                                    </div>\n'+
+            '                                    <div class="layui-form-item">\n'+
+            '                                        <div class="layui-form-label">导航链接</div>\n'+
+            '                                        <div class="layui-input-block disf">\n'+
+            '                                             <div class="nav_type">\n' +
+            '                                                    <select name="nav_type[]" lay-filter="nav_type">\n' +
+            '                                                        <option value="1">网页链接</option>\n' +
+            '                                                        <option value="2">小程序页</option>\n' +
+            '                                                    </select>\n' +
+            '                                                </div>\n' +
+            '                                                <div class="nav_link">\n' +
+            '                                                    <input type="text" class="layui-input" name="navlink[]" placeholder="导航链接" value="">\n' +
+            '                                                </div>\n' +
+            '                                                <div class="nav_page">\n' +
+            '                                                    <select name="nav_page[]" lay-search>\n';
+                                                                    {volist name="allpage" id="vo2"}
+            html += '                                                     <option value="{$vo2[\'id\']}">【{$vo2[\'name\']}】：{$vo2[\'url\']}</option>\n';
+                                                                    {/volist}
+            html += '                                            </select>\n' +
+            '                                                </div>\n'+
+            '                                        </div>\n'+
+            '                                    </div>\n'+
+            '                                </div>\n'+
+            '                            </div>';
+        $('.content_div').append(html);
+        var script = document.createElement('script');
+        script.id="content"+con_len;
+        script.className="content";
+        script.type='text/plain';
+        document.getElementById('con'+con_len).append(script);
+
+        UE.getEditor("content"+con_len, {
+            initialFrameHeight: 200,
+            serverUrl: 'static/cklein/plugins/ueditor/php/controller.php'
+        });
+
+        var cc = setInterval(function(){
+            let i = document.getElementById('ueditor_textarea_editorValue').setAttribute('name','content[]');
+            document.getElementById('ueditor_textarea_editorValue').setAttribute('id','ueditor_textarea_editorValue'+con_len);
+            if(typeof(i)=='undefined'){
+                clearInterval(cc);
+            }
+        },1000);
+
+        form.render(null,'component-form-element');
+        element.render('collapse');
+    }
+
+    function del_nav(t){
+        var layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery
+            ,element = layui.element;
+        layer.confirm('确认要删除？', {
+            btn: ['删除','取消']
+        }, function(){
+            $('textarea').eq($(t).parent().parent().parent().index()).remove();
+            $(t).parent().parent().parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="common/meta"}
+    <link rel="stylesheet" href="./static/hadmin/layui/css/layui.css"></link>
+    <style>
+         .layui-input-inline {
+             width: 195px;
+
+        }
+        .layui-input-inline input{
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+        body{
+            padding-top: 14px;
+            padding-left: 8px;
+        }
+        .layui-btn-radius{
+        	border-radius: 5px;
+        }
+    </style>
+</head>
+<body class="gray-bg">
+<div class="demoTable">
+    <form class="layui-form" action="" >
+        <div class="layui-row">
+            <span>身份信息：</span>
+            <div class="layui-input-inline">
+                <select name="idcardfix">
+                    <option value="">所有身份证号</option>
+                    <option value="41">41:河南</option>
+                    <option value="42">42:湖北</option>
+                    <option value="43">43:湖南</option>
+                    <option value="44">44:广东</option>
+                    <option value="45">45:广西</option>
+                    <option value="46">46:海南</option>
+                    <option value="50">50:重庆</option>
+                    <option value="51">51:四川</option>
+                    <option value="52">52:贵州</option>
+                    <option value="53">53:云南</option>
+                    <option value="54">54:西藏</option>
+                    <option value="61">61:陕西</option>
+                    <option value="62">62:甘肃</option>
+                    <option value="63">63:青海</option>
+                    <option value="64">64:宁夏</option>
+                    <option value="65">65:新疆</option>
+                    <option value="11">11:北京</option>
+                    <option value="12">12:天津</option>
+                    <option value="13">13:河北</option>
+                    <option value="14">14:山西</option>
+                    <option value="15">15:内蒙古</option>
+                    <option value="21">21:辽宁</option>
+                    <option value="22">22:吉林</option>
+                    <option value="23">23:黑龙江</option>
+                    <option value="31">31:上海</option>
+                    <option value="32">32:江苏</option>
+                    <option value="33">33:浙江</option>
+                    <option value="34">34:安徽</option>
+                    <option value="35">35:福建</option>
+                    <option value="36">36:江西</option>
+                    <option value="37">37:山东</option>
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <input type="text" name="birth" id="birth" placeholder="所有出生范围"  class="layui-input">
+            </div>
+            <div class="layui-input-inline">
+                <select name="sex">
+                    <option value="">所有性别</option>
+                    <option value="1">男</option>
+                    <option value="0">女</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-row">
+            商品信息：
+            <div class="layui-input-inline">
+                <input type="text" name="hscode" placeholder="税号范围"  class="layui-input">
+            </div>
+            <div class="layui-input-inline">
+                <input type="text" name="brand" placeholder="商品品牌"  class="layui-input">
+            </div>
+            <div class="layui-input-inline">
+                <input type="text" name="buyNum" placeholder="购买次数范围0-99"  class="layui-input">
+            </div>
+        </div>
+        <div class="layui-row">
+            快递信息：
+            <div class="layui-input-inline">
+                <select name="province" lay-filter="province">
+                    <option value="">省</option>
+                    {volist name='province' id='vo'}
+                    <option value="{$vo->id}">{$vo->name}</option>
+                    {/volist}
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <select name="city" lay-filter="city">
+                    <option value="">市</option>
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <select name="area" lay-filter="area">
+                    <option value="">区</option>
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <button class="layui-btn layui-btn-radius" lay-submit lay-filter="search" id="search">立即查找</button>
+                <button class="layui-btn layui-btn-radius" lay-submit lay-filter="export" id="export">导出</button>
+            </div>
+        </div>
+
+
+
+    </form>
+
+</div>
+<table id="user" lay-filter="user"></table>
+</body>
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/js/bootstrap.min.js?v=3.3.6"></script>
+<!-- Bootstrap table -->
+<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="./static/hadmin/layui/layui.all.js"></script>
+<script>
+    // admin/goods/add
+    loadIndex = null;
+    layui.use(['upload','form','table','laydate'], function () {
+        upload = layui.upload;
+        form = layui.form;
+        var table = layui.table;
+        laydate=layui.laydate;
+        table.render({
+            elem: '#user',
+            id: 'userReload',
+            url: '{:Url("admin/UserOrderHistoryExport/getDataList")}',
+            method:'post',
+            page: true,
+            even: true, //开启隔行背景
+            size: 'lg', //小尺寸的表格
+            // toolbar: '#toolbarDemo',
+            // defaultToolbar:['filter', 'print', 'exports'],
+            loading:true,
+            cols: [[
+                {field:'idcard', title:'身份证', width:200},
+                {field:'sex', title:'性别', width:110},
+                {field:'shipping_addr', title:'收件地址', width:500},
+                {field:'shipping_tel', title:'收件电话', width:400},
+            ]],
+        });
+        laydate.render({
+            elem: '#birth'
+            ,range:'/' //或 range: '~' 来自定义分割字符
+        });
+        form.on('select(province)',function (data) {
+            $.ajax({
+                url:"{:Url('admin/UserOrderHistoryExport/getCity')}",
+                type:"GET",
+                dataType:"json",
+                data:{pid:data.value},
+                success:function (res) {
+                    var n=res.data.length;
+                    var html='<option>城市</option>';
+                    for (var i=0;i<n;i++){
+                        html+="<option value='"+res.data[i].id+"'>"+res.data[i].name+"</option>"
+                    }
+                    $("select[name=city]").empty();
+                    $("select[name=city]").append(html);
+                    form.render('select');
+                }
+            });
+        });
+        form.on('select(city)',function (data) {
+            $.ajax({
+                url:"{:Url('admin/UserOrderHistoryExport/getArea')}",
+                type:"GET",
+                dataType:"json",
+                data:{pid:data.value},
+                success:function (res) {
+                    var n=res.data.length;
+                    var html='<option>区</option>';
+                    for (var i=0;i<n;i++){
+                        html+="<option value='"+res.data[i].id+"'>"+res.data[i].name+"</option>"
+                    }
+                    $("select[name=area]").empty();
+                    $("select[name=area]").append(html);
+                    form.render('select');
+                }
+            });
+        });
+        form.on("submit(search)",function (data) {
+            console.dir(data);
+            table.reload('userReload', {
+                where: {
+                    data:data.field
+                }
+            });
+            return false;
+        });
+        form.on("submit(export)",function (data) {
+            layer.confirm('是否确定导出？', {icon: 3, title:'提示'}, function(index){
+                //do something
+                layer.close(index);
+                loadIndex=layer.load(1);
+                $.ajax({
+                    url:"{:Url('admin/UserOrderHistoryExport/export')}",
+                    type:"POST",
+                    dataType:"json",
+                    data:{data:data.field},
+                    success:function (ret) {
+                        getDownAddr(ret.data);
+                    },error:function () {
+                        layer.msg('导出失败');
+                    }
+                });
+            });
+            return false;
+        });
+    });
+    function getDownAddr(key) {
+        $.ajax({
+            url:"{:Url('admin/UserOrderHistoryExport/export')}",
+            type:"POST",
+            dataType:"json",
+            data:{key:key},
+            success:function (ret) {
+                if (ret.code==0){
+                    layer.close(loadIndex);
+                    window.location.href=ret.data;
+                }else{
+                    setTimeout(function () {
+                        getDownAddr(key);
+                    },3000);
+                }
+            },error:function () {
+                layer.msg('导出失败');
+            }
+        });
+    }
+</script>
+</html>
+

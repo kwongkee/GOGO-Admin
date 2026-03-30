@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>商品备案</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        th{
+            padding:3px 12px;
+        }
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<!--<div class="header">-->
+<!--<span>商品备案列表</span>-->
+<!--<div></div>-->
+<!--</div>-->
+<div class="x-body">
+<table class="layui-table" style="margin-top:0px;">
+    <thead>
+    <tr>
+        <th>商品自编号</th>
+        <th>备案编号</th>
+        <th>海关备案编号</th>
+        <th>商品名称</th>
+        <th>计量单位</th>
+        <th>是否赠品</th>
+        <th>备案状态</th>
+        <th>类型</th>
+        <th>国检审核备注</th>
+    </tr>
+    </thead>
+    <tbody>
+    {volist name='data.data' id='vo'}
+    <tr>
+        <td>{$vo.EntGoodsNo}</td>
+        <td>{$vo.CIQGoodsNo}</td>
+        <td>{$vo.CusGoodsNo}</td>
+        <td>{$vo.ShelfGName}</td>
+        <td>{$vo.GUnit}</td>
+        <td>{$isFlag[$vo.GiftFlag]}</td>
+        {if $vo.CIQGRegStatus===null}
+        <td>等待回执</td>
+        {else}
+        <td>{$RegStatus[$vo.CIQGRegStatus]}</td>
+        {/if}
+        {if $vo.OpType===null}
+        <td>等待回执</td>
+        {else}
+        <td>{$type[$vo.OpType]}</td>
+        {/if}
+        <td>{$vo.CIQNotes}</td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+    <div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+</div>
+<script type="text/javascript">
+    layui.use(['layer','jquery'],function(){
+        layer = layui.layer;
+        $ = layui.jquery;
+    });
+</script>
+</body>
+</html>

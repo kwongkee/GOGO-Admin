@@ -1,0 +1,114 @@
+{template 'header'}
+<style type="text/css">
+	.ui-reddot {
+		padding:0px;
+	}
+</style>
+<div class="ui-container">
+	<div class="ui-slider" style="height:90px;">
+	    <ul class="ui-slider-content" style="width: 300%;">
+	    	{loop $list $key $item}
+	    	{if $key < 3 }
+	        <li onclick="window.location.href='{php echo $this->createMobileUrl('chatroom',array('room_id'=>$item['id']))}'"><span style="background-image:url({php echo  $item['room_logo']});" ></span></li>
+	        {/if}
+	        {/loop}
+	    </ul>
+	</div>
+	<script>
+	 var slider = new fz.Scroll('.ui-slider', {
+        role: 'slider',
+        indicator: true,
+        autoplay: true,
+        interval: 2000
+    });
+	</script>
+	<h2 style="margin:10px 0px 0px 5px"><span class="fa fa-video-camera"></span>&nbsp;&nbsp;视频直播间</h2>
+	<ul class="ui-grid-halve" style="padding:2px;">
+		{loop $list $key $item}
+		{if $item['room_type'] == 'lvb' || $item['room_type'] == 'letv'}
+		<li style="padding:10px 2px;" onclick="window.location.href='{php echo $this->createMobileUrl('chatroom',array('room_id'=>$item['id']))}'">
+			<div>
+				<div class="ui-grid-halve-img">
+					<!-- 删除此段代码可以隐藏未读标记 begin -->
+					<!-- {if $item['unread']}
+					<span class="ui-tag-hot" style='z-index:100'></span>
+					{/if} -->
+					<!-- 删除此段代码可以隐藏未读标记 end -->
+					<span style="background-image:url({php echo  $item['room_logo']});border-radius:2px;"></span>
+					{if $item['room_type'] == 'lvb'  || $item['room_type'] =='letv'}
+					<img style="height:34px;width:34px;position:absolute;top:50%;left:50%;margin:-17px 0px 0px -17px;z-index:100" src="{$_W['siteroot']}/addons/sunshine_huayue/common/img/play_button.jpg">
+					{/if} 
+				</div>
+			</div>
+			<div>
+				<div class="ui-label-list">
+					{if $item['room_type'] == 'lvb' || $item['room_type'] == 'letv' }
+					<label class="ui-label-me ui-label-s-lvb">直播间</label>
+					<label class="ui-label-me ui-label-s-lvb">{$item['lvb_status']}</label>
+					{/if}
+					{if $item['in_type'] == 'secret'}<label class="ui-label-me ui-label-s-1">加密</label>{/if}
+					{if $item['in_type'] == 'money'}<label class="ui-label-me ui-label-s-1">付费房</label>{/if}
+					{if $item['is_public'] == 'n'}<label class="ui-label-me ui-label-s-3">会员房</label>{/if}
+					<p class="ui-nowrap" style="color:#483D8B">{$item['room_name']}</p>
+				</div>
+				<!-- <p id="chatroom_desc_{php echo $key}" style="font-size:12px;width:100%;overflow:hidden;">{$item['room_desc']}</p> -->
+			</div>
+		</li>
+		<script type="text/javascript">
+            $(function() {
+                var m = new XX.Fx.Marquee(document.getElementById('chatroom_desc_{php echo $key}'), {direction:'left',speed:20, step:1});
+                m.start();
+            })
+        </script>
+        {/if}
+		{/loop}
+	</ul>
+	<h2 style="margin:10px 0px 0px 5px"><span class="fa fa-wifi"></span>&nbsp;&nbsp;热门聊天室</h2>
+	<ul class="ui-grid-halve" style="padding:2px;">
+		{loop $list $key $item}
+		{if $item['room_type'] == 'normal'}
+		<li style="padding:10px 2px;" onclick="window.location.href='{php echo $this->createMobileUrl('chatroom',array('room_id'=>$item['id']))}'">
+			<div>
+				<div class="ui-grid-halve-img">
+					<!-- 删除此段代码可以隐藏未读标记 begin -->
+					<!-- {if $item['unread']}
+					<span class="ui-tag-hot" style='z-index:100'></span>
+					{/if} -->
+					<!-- 删除此段代码可以隐藏未读标记 end -->
+					<span style="background-image:url({php echo $item['room_logo']});border-radius:2px;"></span>
+					{if $item['room_type'] == 'lvb'  || $item['room_type'] =='letv'}
+					<img style="height:34px;width:34px;position:absolute;top:50%;left:50%;margin:-17px 0px 0px -17px;z-index:100" src="{$_W['siteroot']}/addons/sunshine_huayue/common/img/play_button.jpg">
+					{/if} 
+				</div>
+			</div>
+			<div>
+				<div class="ui-label-list">
+					{if $item['room_type'] == 'lvb' || $item['room_type'] == 'letv' }
+					<label class="ui-label-me ui-label-s-lvb">直播间</label>
+					<label class="ui-label-me ui-label-s-lvb">{$item['lvb_status']}</label>
+					{/if}
+					{if $item['in_type'] == 'secret'}<label class="ui-label-me ui-label-s-1">加密</label>{/if}
+					{if $item['in_type'] == 'money'}<label class="ui-label-me ui-label-s-1">付费房</label>{/if}
+					{if $item['is_public'] == 'n'}<label class="ui-label-me ui-label-s-3">会员房</label>{/if}
+					<p class="ui-nowrap" style="color:#483D8B">{$item['room_name']}</p>
+				</div>
+				<!-- <p id="chatroom_desc_{php echo $key}" style="font-size:12px;width:100%;overflow:hidden;">{$item['room_desc']}</p> -->
+			</div>
+		</li>
+		<script type="text/javascript">
+            $(function() {
+                var m = new XX.Fx.Marquee(document.getElementById('chatroom_desc_{php echo $key}'), {direction:'left',speed:20, step:1});
+                m.start();
+            })
+        </script>
+        {/if}
+		{/loop}
+	</ul>
+	{template 'menu'}
+</div>
+<script>
+function myChatRoom() {
+	window.location.href="{php echo $this->createMobileUrl('chatroomapply')}";	
+}
+</script>
+{template 'footer'}

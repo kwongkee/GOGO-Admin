@@ -1,0 +1,373 @@
+{include file="public/header"}
+
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .input40{width:92%;}
+    .add,.del{font-size:30px;}
+    .layui-table th,.layui-colla-title{background:#0e2e68;color:#fff;}
+    .layui-elem-field{border:1px solid #000;}
+    .postal_temp{border:1px solid #000;width: 48px;height: 38px;text-align: center;line-height: 38px;margin-right:2px;}
+    xm-select > .xm-label.auto-row .xm-label-block > span{overflow: hidden;}
+    .hide{display:none;}
+
+    .layui-form-label{font-weight: 800;}
+    .fee_bigbox .input50{width:50%;}
+    .fee_bigbox .input25{width:25%;}
+    .fee_bigbox .input35{width:35%;}
+    .fee_bigbox .input36{width:36%;}
+    .fee_bigbox .white_color{white-space:nowrap;width:45px;text-align:center;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body input40">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">选择系统</div>
+                            <div class="layui-input-block">
+                                <select name="system_id" id="system_id">
+                                    <option value="1" {if $data['system_id']==1}selected{/if}>集运系统</option>
+                                    <option value="2" {if $data['system_id']==2}selected{/if}>淘中国系统</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">选择功能</div>
+                            <div class="layui-input-block">
+                                <div id="function" class="xm-select-demo"></div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">‘同意类’规则</div>
+                            <div class="layui-input-block">
+                                <div class="disf">
+                                    <select name="confirm[method]" lay-filter="confirm_method">
+                                        <option value="1" {if $data['confirm']['method']==1}selected{/if}>时间(秒)</option>
+                                        <option value="2" {if $data['confirm']['method']==2}selected{/if}>验证码</option>
+                                    </select>
+                                    <input type="number" class="layui-input confirm_second" placeholder="请输入秒数" name="confirm[second]" value="{$data['confirm']['second']}" style="display:  {if $data['confirm']['method']==1}block{else}none{/if};">
+                                </div>
+                                <table class="layui-table">
+                                    <thead>
+                                    <th>标题</th>
+                                    <th>链接</th>
+                                    <th>#</th>
+                                    </thead>
+                                    <tbody>
+                                    {if $id>0}
+                                    {volist name="data.confirm['title']" key="key2" id="vo"}
+                                    <tr>
+                                        <td><input type="text" class="layui-input" name="confirm[title][]" placeholder="请输入标题" value="{$vo}"></td>
+                                        <td><input type="text" class="layui-input" name="confirm[link][]" placeholder="请输入链接" value="{$data['confirm']['link'][$key2-1]}"></td>
+                                        <td>
+                                            <div class="layui-btn layui-btn-success" onclick="add_content(this,1)">+</div>
+                                            {if $key2>1}
+                                            <div class="layui-btn layui-btn-danger" onclick="del_content(this,1)">-</div>
+                                            {/if}
+                                        </td>
+                                    </tr>
+                                    {/volist}
+                                    {else}
+                                    <tr>
+                                        <td><input type="text" class="layui-input" name="confirm[title][]" placeholder="请输入标题"></td>
+                                        <td><input type="text" class="layui-input" name="confirm[link][]" placeholder="请输入链接"></td>
+                                        <td>
+                                            <div class="layui-btn layui-btn-success" onclick="add_content(this,1)">+</div>
+                                        </td>
+                                    </tr>
+                                    {/if}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">‘确认类’规则</div>
+                            <div class="layui-input-block">
+                                <div class="disf">
+                                    <select name="sure[method]" lay-filter="sure_method">
+                                        <option value="1" {if $data['sure']['method']==1}selected{/if}>时间(秒)</option>
+                                        <option value="2" {if $data['sure']['method']==2}selected{/if}>验证码</option>
+                                    </select>
+                                    <input type="number" class="layui-input sure_second" placeholder="请输入秒数" name="sure[second]" value="{$data['sure']['second']}" style="display:  {if $data['sure']['method']==1}block{else}none{/if};">
+                                </div>
+                                <table class="layui-table">
+                                    <thead>
+                                    <th>标题</th>
+                                    <th>链接</th>
+                                    <th>#</th>
+                                    </thead>
+                                    <tbody>
+                                    {if $id>0}
+                                    {volist name="data.sure['title']" key="key2" id="vo"}
+                                    <tr>
+                                        <td><input type="text" class="layui-input" name="sure[title][]" placeholder="请输入标题" value="{$vo}"></td>
+                                        <td><input type="text" class="layui-input" name="sure[link][]" placeholder="请输入链接" value="{$data['sure']['link'][$key2-1]}"></td>
+                                        <td>
+                                            <div class="layui-btn layui-btn-success" onclick="add_content(this,2)">+</div>
+                                            {if $key2>1}
+                                            <div class="layui-btn layui-btn-danger" onclick="del_content(this,2)">-</div>
+                                            {/if}
+                                        </td>
+                                    </tr>
+                                    {/volist}
+                                    {else}
+                                    <tr>
+                                        <td><input type="text" class="layui-input" name="sure[title][]" placeholder="请输入标题"></td>
+                                        <td><input type="text" class="layui-input" name="sure[link][]" placeholder="请输入链接"></td>
+                                        <td>
+                                            <div class="layui-btn layui-btn-success" onclick="add_content(this,2)">+</div>
+                                        </td>
+                                    </tr>
+                                    {/if}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">‘知悉类’规则</div>
+                            <div class="layui-input-block">
+                                <div class="disf">
+                                    <select name="knows[method]" lay-filter="sure_know">
+                                        <option value="1" {if $data['knows']['method']==1}selected{/if}>时间(秒)</option>
+                                        <option value="2" {if $data['knows']['method']==2}selected{/if}>验证码</option>
+                                    </select>
+                                    <input type="number" class="layui-input know_second" placeholder="请输入秒数" name="knows[second]" value="{$data['knows']['second']}" style="display:  {if $data['knows']['method']==1}block{else}none{/if};">
+                                </div>
+                                <table class="layui-table">
+                                    <thead>
+                                    <th>标题</th>
+                                    <th>链接</th>
+                                    <th>#</th>
+                                    </thead>
+                                    <tbody>
+                                    {if $id>0}
+                                    {volist name="data.knows['title']" key="key2" id="vo"}
+                                    <tr>
+                                        <td><input type="text" class="layui-input" name="knows[title][]" placeholder="请输入标题" value="{$vo}"></td>
+                                        <td><input type="text" class="layui-input" name="knows[link][]" placeholder="请输入链接" value="{$data['knows']['link'][$key2-1]}"></td>
+                                        <td>
+                                            <div class="layui-btn layui-btn-success" onclick="add_content(this,3)">+</div>
+                                            {if $key2>1}
+                                            <div class="layui-btn layui-btn-danger" onclick="del_content(this,3)">-</div>
+                                            {/if}
+                                        </td>
+                                    </tr>
+                                    {/volist}
+                                    {else}
+                                    <tr>
+                                        <td><input type="text" class="layui-input" name="knows[title][]" placeholder="请输入标题"></td>
+                                        <td><input type="text" class="layui-input" name="knows[link][]" placeholder="请输入链接"></td>
+                                        <td>
+                                            <div class="layui-btn layui-btn-success" onclick="add_content(this,3)">+</div>
+                                        </td>
+                                    </tr>
+                                    {/if}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+<script src="./static/hadmin/assets/layui/xm-select.js"></script>
+<script type="text/javascript">
+    var win_index = '';
+    layui.use(['layer','form','laydate','upload','element'],function(){
+        var laydate = layui.laydate
+            ,layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery
+            ,element = layui.element
+            ,upload = layui.upload;
+
+        form.render(null,'component-form-element');
+
+        xmSelect.render({
+            el: '#function',
+            autoRow: true, //自动换行
+            filterable: true, //可搜索
+            searchTips: '请搜索',
+            radio: true,
+            name: "function_id",
+            model: {
+                icon: 'hidden',//是否展示复选框或者单选框图标 show, hidden:变换背景色  ！！这句话是重点，不然会变成父节点也有单选框！！
+            },
+            prop:{
+                name: 'content',
+                value: 'id',
+            },
+            tree: {
+                show: true, //用树显示
+                showFolderIcon: true, //是否显示节点前的三角图标
+                expandedKeys: false, //默认全部展开
+                showLine: true, //显示渐近线
+                indent: 20, //间距
+                strict: false, //重点！！设置成非严格父子模式，这样父节点被禁用，子节点依然可以点击
+                clickCheck: true,
+                vaguaSearch:0,//关闭模糊搜索
+            },
+            toolbar: {
+                show: false, //显示工具条
+                list: ['ALL', 'REVERSE', 'CLEAR']
+            },
+            height: '300px', //最大下拉框高度
+            data: {$process},
+            initValue:[{$data['function_id']}]
+        });
+
+        form.on('select(confirm_method)',function(data){
+           let val = data.value;
+           if(val==2){
+               $('.confirm_second').hide();
+           }else if(val==1){
+               $('.confirm_second').show();
+           }
+        });
+
+        form.on('select(sure_method)',function(data){
+            let val = data.value;
+            if(val==2){
+                $('.sure_second').hide();
+            }else if(val==1){
+                $('.sure_second').show();
+            }
+        });
+
+        form.on('select(know_method)',function(data){
+            let val = data.value;
+            if(val==2){
+                $('.know_second').hide();
+            }else if(val==1){
+                $('.know_second').show();
+            }
+        });
+
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            // if( $('#img_file-upload-list').children().length == 0 )
+            // {
+            //     layer.msg('请上传一张图标！');
+            //     return false;
+            // }
+            $.ajax({
+                url:"{:Url('centralize/index/save_rule')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+
+        // 轮播图文件
+        upload.render({
+            elem: '#img_file-upload'
+            ,url: '{:Url("admin/basic/upload_file")}'
+            ,accept: 'image'
+            ,data: { folder: 'centralize', type: 'process_file'}
+            ,multiple: true
+            ,number:1
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+
+                    $('#img_file-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="ico[]" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+
+    function add_content(t,typ){
+        var layer = layui.layer,$ = layui.$;
+        let html = '';
+        if(typ==1){
+            html = '<tr>\n' +
+                '                                        <td><input type="text" class="layui-input" name="confirm[title][]" placeholder="请输入标题"></td>\n' +
+                '                                        <td><input type="text" class="layui-input" name="confirm[link][]" placeholder="请输入链接"></td>\n' +
+                '                                        <td>\n' +
+                '                                            <div class="layui-btn layui-btn-success" onclick="add_content(this,1)">+</div>\n' +
+                '                                            <div class="layui-btn layui-btn-danger" onclick="del_content(this,1)">-</div>\n' +
+                '                                        </td>\n' +
+                '                                    </tr>';
+        }else if(typ==2){
+            html = '<tr>\n' +
+                '                                        <td><input type="text" class="layui-input" name="sure[title][]" placeholder="请输入标题"></td>\n' +
+                '                                        <td><input type="text" class="layui-input" name="sure[link][]" placeholder="请输入链接"></td>\n' +
+                '                                        <td>\n' +
+                '                                            <div class="layui-btn layui-btn-success" onclick="add_content(this,2)">+</div>\n' +
+                '                                            <div class="layui-btn layui-btn-danger" onclick="del_content(this,1)">-</div>\n' +
+                '                                        </td>\n' +
+                '                                    </tr>';
+        }else if(typ==3){
+            html = '<tr>\n' +
+                '                                        <td><input type="text" class="layui-input" name="knows[title][]" placeholder="请输入标题"></td>\n' +
+                '                                        <td><input type="text" class="layui-input" name="knows[link][]" placeholder="请输入链接"></td>\n' +
+                '                                        <td>\n' +
+                '                                            <div class="layui-btn layui-btn-success" onclick="add_content(this,3)">+</div>\n' +
+                '                                            <div class="layui-btn layui-btn-danger" onclick="del_content(this,1)">-</div>\n' +
+                '                                        </td>\n' +
+                '                                    </tr>';
+        }
+        $(t).parent().parent().parent().append(html);
+    }
+
+    function del_content(t,typ){
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确定要删除吗?',{
+            icon:2,
+            btn:['确定','取消']
+        },function(){
+            $(t).parent().parent().remove();
+            layer.closeAll();
+        },function(){
+
+        });
+    }
+</script>
+</body>
+</html>

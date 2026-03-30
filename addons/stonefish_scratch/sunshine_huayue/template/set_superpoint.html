@@ -1,0 +1,198 @@
+{template 'header'}
+	<div class="container-fluid">
+		<h4><span class='glyphicon glyphicon-circle-arrow-right'></span>&nbsp;&nbsp;超级小黑点-菜单管理</h4>
+		<div class="row">
+			<div class="col-md-6">
+				<label>超级小黑点开关</label>
+				{if $this->settings['superpoint_key'] == 'open'}
+				<button class="form-control btn btn-sm btn-success" onclick="doSave('superpoint_key','close')">已开启小黑点</button>
+				{else}
+				<button class="form-control btn btn-sm btn-danger" onclick="doSave('superpoint_key','open')">已关闭小黑点</button>
+				{/if}
+				<p class="help-block">控制全局小黑点的显示</p>
+			</div>
+		</div>
+		<br>
+		<div class="row">
+			<div class="col-md-6">
+				<label>控制自定义菜单是否展示在上拉菜单开关</label>
+				{if $this->settings['custom_menu_key'] == 'open'}
+				<button class="form-control btn btn-sm btn-success" onclick="doSave('custom_menu_key','close')">已开启同步至菜单</button>
+				{else}
+				<button class="form-control btn btn-sm btn-danger" onclick="doSave('custom_menu_key','open')">已关闭同步至菜单</button>
+				{/if}
+				<p class="help-block">控制自定义菜单是否展示在上拉菜单开关，将展示在"我的房间"按钮下</p>
+			</div>
+		</div>
+		<br>
+		<h4><span class='glyphicon glyphicon-circle-arrow-right'></span>&nbsp;&nbsp;添加全局菜单条目</h4>
+		<div class="row">
+			<div class="col-md-6">
+				<label>排序序号（填写数字）</label>
+				<input type="number" class="form-control" id='superpoint_order_id' placeholder=''>
+				<label>菜单名称</label>
+				<input type="text" class="form-control" id='superpoint_name' placeholder='菜单名称'>
+				<label>菜单地址 http://开头</label>
+				<input type="text" class="form-control" id='superpoint_url' placeholder='菜单地址 http://开头'>
+				<br>
+				<button class="btn btn-sm btn-info" onclick="addSuperPoint('superpoint')">添加</button>
+			</div>
+		</div>
+		<br>
+		<h4><span class='glyphicon glyphicon-circle-arrow-right'></span>&nbsp;&nbsp;菜单列表</h4>
+		<div class="row">
+			<div class="col-sm-12">
+				<table class="table">
+					<thead>
+						<tr>
+							<td style="width:100px;">排序</td>
+							<td>名称</td>
+							<td>地址</td>
+							<td>操作</td>
+						</tr>
+					</thead>
+					<tbody>
+						{loop $list $item}
+						<tr>
+							<td>
+								<input type="number" class="form-control" id="order_id_{php echo $item['id']}" value="{php echo $item['order_id']}">
+							</td>
+							<td>
+								<input type="text" class="form-control" id="name_{php echo $item['id']}" value="{php echo $item['name']}">
+							</td>
+							<td>
+								<input type="text" class="form-control" id="url_{php echo $item['id']}" value="{php echo $item['url']}">
+							</td>
+							<td>
+								<button class="btn btn-success" onclick="saveItem('{php echo $item['id']}')">保存</button>
+								<button class="btn btn-danger" onclick="delItem('{php echo $item['id']}')">删除</button>
+							</td>
+						</tr>
+						{/loop}
+					</tbody>
+				</table>		
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+
+	function saveItem(id) {
+		var order_id = $("#order_id_"+id).val();
+		var name = $("#name_"+id).val();
+		var url = $("#url_"+id).val();
+
+		$.ajax({
+			type:'post',
+			data:{
+				superpoint_order_id:order_id,
+				superpoint_name:name,
+				superpoint_url:url,
+				superpoint_id:id
+			},
+
+			url:"{php echo $this->createWebUrl('superpointedit')}",
+			success:function(d) {
+				if(d.res == '100') {
+					alert('保存成功');
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+	}
+
+	function delItem(id) {
+		var order_id = $("#order_id_"+id).val();
+		var name = $("#name_"+id).val();
+		var url = $("#url_"+id).val();
+
+		$.ajax({
+			type:'post',
+			data:{
+				superpoint_order_id:order_id,
+				superpoint_name:name,
+				superpoint_url:url,
+				superpoint_id:id,
+				superpoint_is_del:'y'
+			},
+
+			url:"{php echo $this->createWebUrl('superpointedit')}",
+			success:function(d) {
+				if(d.res == '100') {
+					alert('保存成功');
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+	} 
+
+
+	function addSuperPoint() {
+		var superpoint_order_id = $("#superpoint_order_id").val();
+		var superpoint_name = $("#superpoint_name").val();
+		var superpoint_url = $("#superpoint_url").val();
+
+		if(!superpoint_order_id || !superpoint_name || !superpoint_url) {
+			alert('填写内容不完整');
+			return;
+		}
+
+		$.ajax({
+			type:'post',
+			data:{
+				superpoint_order_id:superpoint_order_id,
+				superpoint_name:superpoint_name,
+				superpoint_url,superpoint_url
+			},
+
+			url:"{php echo $this->createWebUrl('superpointadd')}",
+			success:function(d) {
+				if(d.res == '100') {
+					alert('保存成功');
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+	}
+
+	function doSave(type,val) {
+
+		if(!type) {
+			return false;
+		}
+		// 开关
+		if(type == 'superpoint_key') {
+			var settings_name = 'superpoint_key';
+			var settings_value = val;
+		}
+		if(type == 'custom_menu_key') {
+			var settings_name = 'custom_menu_key';
+			var settings_value = val;
+		}
+
+		$.ajax({
+			type:'post',
+			data:{
+				settings_name:settings_name,
+				settings_value:settings_value
+			},
+
+			url:"{php echo $this->createWebUrl('settingformnew')}",
+			success:function(d) {
+				if(d.res == '100') {
+					alert('保存成功');
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+
+	}
+	</script>
+{template 'footer'}

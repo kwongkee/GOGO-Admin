@@ -1,0 +1,307 @@
+{include file="common/header_inner_new"}
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .layui-input-block{line-height: 38px;}
+    .phone,.select_box,.introduce_box{display:none;}
+    /**数量增减框样式**/
+    .quantity {display: flex;align-items: center;}
+    .quantity input[type="number"] {width: 100%;text-align: center;}
+    .quantity button {background-color: transparent;cursor: pointer;font-size: 20px;padding: 0 5px;border: 1px solid #e6e6e6;height: 38px;width: 50px;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <input type="text" style="display:none;" name="pid" id="pid" value="{$pid}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">添加行</div>
+                            <div class="layui-input-block">
+                                <div class="disf">
+                                    <input type="text" name="label_name" class="layui-input" id="label_name" value="" placeholder="标签名称" style="width:100px;"/>
+                                    <select name="label_value" id="label_value" style="width:50%;" lay-filter="lable_value">
+                                        <option value="1">文本输入框</option>
+                                        <option value="2">数值输入框</option>
+                                        <option value="3">日期选择框</option>
+                                        <option value="6">日期选择框(多个)</option>
+                                        <option value="4">普通选择框</option>
+                                        <option value="5">数量增减框</option>
+                                    </select>
+                                </div>
+                                <div class="select_box">
+                                    <input type="text" name="select_name" class="layui-input" id="select_name" value="" placeholder="选择内容用顿号‘、’隔开" style="width:100%;"/>
+                                </div>
+                                <div class="introduce_box">
+                                    <input type="text" name="introduce_name" class="layui-input" id="introduce_name" value="" placeholder="输入描述（可为空）" style="width:100%;"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label"></div>
+                            <div class="layui-input-block">
+                                <div class="layui-btn layui-btn-success layui-btn-md add">添加</div>
+                            </div>
+                        </div>
+                        <fieldset class="layui-elem-field  template_box">
+                            <legend>模板预览</legend>
+                            <div class="layui-field-box">
+                                {if !empty($data['content'])}
+                                {volist name="data['content']" id="vo"}
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">{$vo.label_name}</div>
+                                    <div class="layui-input-block">
+                                        {if $vo.label_value==1}
+                                        <input type="text" class="layui-input" value="" placeholder=""/>
+                                        <input type="text" name="content[label_name][]" value="{$vo.label_name}" style="display:none;"><input type="text" name="content[label_value][]" value="{$vo.label_value}" style="display:none;"><input type="text" name="content[label_select][]" value="" style="display:none;"><input type="text" name="content[label_rand][]" value="" style="display:none;"><input type="text" name="content[label_introduce][]" value="" style="display:none;">
+                                        {elseif($vo.label_value==2)}
+                                        <input type="number" class="layui-input" value="" placeholder=""/>
+                                        <input type="text" name="content[label_name][]" value="{$vo.label_name}" style="display:none;"><input type="text" name="content[label_value][]" value="{$vo.label_value}" style="display:none;"><input type="text" name="content[label_select][]" value="" style="display:none;"><input type="text" name="content[label_rand][]" value="" style="display:none;"><input type="text" name="content[label_introduce][]" value="" style="display:none;">
+                                        {elseif($vo.label_value==3)}
+                                        <input type="text" class="layui-input" id="date{$vo.label_rand}" value="" placeholder="yymmddhhii">
+                                        <input type="text" name="content[label_name][]" value="{$vo.label_name}" style="display:none;"><input type="text" name="content[label_value][]" value="{$vo.label_value}" style="display:none;"><input type="text" name="content[label_select][]" value="" style="display:none;"><input type="text" name="content[label_rand][]" value="{$vo.label_rand}" style="display:none;"><input type="text" name="content[label_introduce][]" value="" style="display:none;">
+                                        {elseif($vo.label_value==4)}
+                                        <select lay-search>
+                                            {volist name="vo.label_select2" id="vo2"}
+                                            <option value="{$vo2}">{$vo2}</option>
+                                            {/volist}
+                                        </select>
+                                        <input type="text" name="content[label_name][]" value="{$vo.label_name}" style="display:none;"><input type="text" name="content[label_value][]" value="{$vo.label_value}" style="display:none;"><input type="text" name="content[label_select][]" value="{$vo.label_select}" style="display:none;"><input type="text" name="content[label_rand][]" value="" style="display:none;"><input type="text" name="content[label_introduce][]" value="" style="display:none;">
+                                        {elseif($vo.label_value==5)}
+                                            <input type="text" name="content[label_name][]" value="{$vo.label_name}" style="display: none;"><input type="text" name="content[label_value][]" value="{$vo.label_value}" style="display:none;"><input type="text" name="content[label_select][]" value="{$vo.label_select}" style="display:none;"><input type="text" name="content[label_rand][]" value="" style="display:none;"><input type="text" name="content[label_introduce][]" value="" style="display:none;">
+                                            <div class="quantity">
+                                                <button type="button" onclick="decrementValue(event)">-</button>
+                                                <input type="number" class="layui-input" name="content[label_value][]" value="0" oninput="if(value>1000)value=1000;if(value.length>4)value=value.slice(0,4);if(value<0)value=0" />
+                                                <button type="button" onclick="incrementValue(event)">+</button>
+                                            </div>
+                                            {if $vo.label_introduce!=''}
+                                            <span style="font-size: 12px;color: #888;">{$vo.label_introduce}</span>
+                                            {/if}
+                                        {elseif($vo.label_value==6)}
+                                            <input type="text" class="layui-input" id="date{$vo.label_rand}" value="" placeholder="yymmddhhii">
+                                            <input type="text" name="content[label_name][]" value="{$vo.label_name}" style="display:none;"><input type="text" name="content[label_value][]" value="{$vo.label_value}" style="display:none;"><input type="text" name="content[label_select][]" value="" style="display:none;"><input type="text" name="content[label_rand][]" value="{$vo.label_rand}" style="display:none;"><input type="text" name="content[label_introduce][]" value="" style="display:none;">
+                                        {/if}
+                                    </div>
+                                </div>
+                                {/volist}
+                                {/if}
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+
+        {if !empty($data['content'])}
+            {volist name="data['content']" id="vo"}
+                {if($vo.label_value==3)}
+                    laydate.render({
+                        elem: '#date{$vo.label_rand}' //指定元素
+                    });
+                {elseif($vo.label_value==6)}
+                    laydate.render({
+                        elem: '#date{$vo.label_rand}' //指定元素
+                        ,range:true
+                    });
+                {/if}
+            {/volist}
+        {/if}
+
+        form.on('select(lable_value)',function(data){
+            let val = data.value;
+            if(val==1){
+                $('.select_box').hide();
+                $('.introduce_box').hide();
+            }else if(val==2){
+                $('.select_box').hide();
+                $('.introduce_box').hide();
+            }else if(val==3){
+                $('.select_box').hide();
+                $('.introduce_box').hide();
+            }else if(val==4){
+                $('.select_box').show();
+                $('.introduce_box').hide();
+            }else if(val==5){
+                $('.select_box').hide();
+                $('.introduce_box').show();
+            }else if(val==6){
+                $('.select_box').hide();
+                $('.introduce_box').hide();
+            }
+        });
+
+        $('.add').click(function(){
+            let label_name = $('#label_name').val();
+            let label_value = $('#label_value').val();
+            let select_name = $('#select_name').val();
+            let introduce_name = $('#introduce_name').val();
+            let rand = new Date().valueOf();
+            if(label_name==''){
+                layer.msg('请输入标签名称');return false;
+            }
+
+            let html = '<div class="layui-form-item">\n' +
+                '                            <div class="layui-form-label">'+label_name+'</div>\n' +
+                '                            <div class="layui-input-block">\n';
+            if(label_value==1){
+                html += '<input type="text" class="layui-input" value="" placeholder=""/>\n'+
+                    '<input type="text" name="content[label_name][]" value="'+label_name+'" style="display:none;"><input type="text" name="content[label_value][]" value="'+label_value+'" style="display:none;"><input type="text" name="content[label_select][]" value="" style="display:none;"><input type="text" name="content[label_rand][]" value="" style="display:none;"><input type="text" name="content[label_introduce][]" value="" style="display:none;">\n';
+            }else if(label_value==2){
+                html += '<input type="number" class="layui-input" value="" placeholder=""/>\n'+
+                    '<input type="text" name="content[label_name][]" value="'+label_name+'" style="display:none;"><input type="text" name="content[label_value][]" value="'+label_value+'" style="display:none;"><input type="text" name="content[label_select][]" value="" style="display:none;"><input type="text" name="content[label_rand][]" value="" style="display:none;"><input type="text" name="content[label_introduce][]" value="" style="display:none;">\n';
+            }else if(label_value==3){
+                html += ' <input type="text" class="layui-input" id="date'+rand+'" value="" placeholder="yymmddhhii">\n'+
+                    '<input type="text" name="content[label_name][]" value="'+label_name+'" style="display:none;"><input type="text" name="content[label_value][]" value="'+label_value+'" style="display:none;"><input type="text" name="content[label_select][]" value="" style="display:none;"><input type="text" name="content[label_rand][]" value="'+rand+'" style="display:none;"><input type="text" name="content[label_introduce][]" value="" style="display:none;">\n';
+            }else if(label_value==4){
+                if(select_name==''){
+                    layer.msg('请输入选择框内容');return false;
+                }
+                let val = select_name.split('、');
+                html += '<select lay-search>\n';
+                for(let i=0;i<val.length;i++){
+                    html += '<option value="'+val[i]+'">'+val[i]+'</option>\n';
+                }
+                html += '</select>\n'+
+                    '<input type="text" name="content[label_name][]" value="'+label_name+'" style="display:none;"><input type="text" name="content[label_value][]" value="'+label_value+'" style="display:none;"><input type="text" name="content[label_select][]" value="'+select_name+'" style="display:none;"><input type="text" name="content[label_rand][]" value="" style="display:none;"><input type="text" name="content[label_introduce][]" value="" style="display:none;">\n';
+            }else if(label_value==5){
+                html = '   <div class="layui-form-item">        \n' +
+                    '        <label class="layui-form-label">'+label_name+'</label>\n' +
+                    '        <div class="layui-input-block">\n' +
+                    '           <input type="text" name="content[label_name][]" value="'+label_name+'" style="display: none;"><input type="text" name="content[label_value][]" value="'+label_value+'" style="display: none;"><input type="text" name="content[label_select][]" value="" style="display:none;"><input type="text" name="content[label_rand][]" value="" style="display:none;"><input type="text" name="content[label_introduce][]" value="'+introduce_name+'" style="display:none;">\n'+
+                    '           <div class="quantity">\n'+
+                    '                <button type="button" onclick="decrementValue(event)">-</button>\n'+
+                    '                <input type="number" class="layui-input" value="0" oninput="if(value>1000)value=1000;if(value.length>4)value=value.slice(0,4);if(value<0)value=0" />\n'+
+                    '                <button type="button" onclick="incrementValue(event)">+</button>\n'+
+                    '           </div>';
+                if(introduce_name!=''){
+                    html += '<span style="font-size: 12px;color: #888;">'+introduce_name+'</span>';
+                }
+                html += '    </div>\n' +
+                    '     </div>\n';
+            }else if(label_value==6){
+                html += ' <input type="text" class="layui-input" id="date'+rand+'" value="" placeholder="yymmddhhii">\n'+
+                    '<input type="text" name="content[label_name][]" value="'+label_name+'" style="display:none;"><input type="text" name="content[label_value][]" value="'+label_value+'" style="display:none;"><input type="text" name="content[label_select][]" value="" style="display:none;"><input type="text" name="content[label_rand][]" value="'+rand+'" style="display:none;"><input type="text" name="content[label_introduce][]" value="" style="display:none;">\n';
+            }
+            html += '                            </div>\n' +
+                '                        </div>';
+
+            $('.template_box').find('.layui-field-box').append(html);
+            form.render(null,'component-form-element');
+            if(label_value==3){
+                laydate.render({
+                    elem: '#date'+rand //指定元素
+                });
+            }else if(label_value==6){
+                laydate.render({
+                    elem: '#data'+rand
+                    ,range: true
+                })
+            }
+        });
+
+        form.on('submit(component-form-element)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            // if( $('#img_file-upload-list').children().length == 0 )
+            // {
+            //     layer.msg('请上传轮播图！');
+            //     return false;
+            // }
+
+            $.ajax({
+                url:"{:Url('admin/operaweb/save_quote')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+        // 轮播图文件
+        upload.render({
+            elem: '#img_file-upload'
+            ,url: '{:Url("admin/basic/upload_file")}'
+            ,accept: 'image'
+            ,data: { folder: 'centralize', type: 'website_rotate'}
+            ,multiple: false
+            ,number:1
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+
+                    $('#img_file-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="thumb[]" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+    });
+
+    function incrementValue(event) {
+        event.preventDefault();
+        var input = event.target.parentNode.querySelector('input[type="number"]');
+        var newValue = parseInt(input.value) + 1;
+        input.value = newValue > parseInt(input.max) ? input.value : newValue;
+    }
+
+    function decrementValue(event) {
+        event.preventDefault();
+        var input = event.target.parentNode.querySelector('input[type="number"]');
+        var newValue = parseInt(input.value) - 1;
+        if(newValue>=0){
+            input.value = newValue < parseInt(input.min) ? input.value : newValue;
+        }
+    }
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+
+</script>
+</body>
+</html>

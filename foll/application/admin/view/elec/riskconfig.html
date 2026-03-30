@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{$title}</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<table class="layui-table">
+    <thead>
+    <tr class="ths">
+        <th>身份触发系数</th>
+        <th>一人多票</th>
+        <th>一单多品</th>
+        <th>同品多购</th>
+        <th>当月峰值</th>
+        <th>当月额度</th>
+        <th>当年峰值</th>
+        <th>当年额度</th>
+         <th>号码上限</th>
+        <th>上限类型</th>
+        <th>上次更新</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {volist name="data" id="vo"}
+    <tr class="boys">
+        <td>{$vo.Percen}</td>
+        <td>{$vo.orderPurch}</td>
+        <td>{$vo.WayNum}</td>
+        <td>{$vo.ArtNo}</td>
+        <td>{$vo.monthNum}</td>
+        <td>{$vo.monthMoney}</td>
+        <td>{$vo.yearNum}</td>
+        <td>{$vo.yearMoney}</td>
+        <td>{$vo.mobile_number}</td>
+        <td>{$type[$vo.number_type]}</td>
+        <td>{$vo.up_time}</td>
+        <td>
+            <a href="#" onclick="edit('{$vo.id}');" class="layui-btn">编辑风控</a>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    layui.use(['layer','jquery'],function(){
+        layer = layui.layer;
+        $ = layui.jquery;
+    });
+
+    // 获取产品订单列表
+    function edit(id){
+        layer.open({
+            type:2,
+            title:'峰值编辑',
+            shadeClose:true,
+            shade:0.3,
+            area:['600px','450px'],
+            content:"{:Url('admin/risk/edit')}&ids="+id,
+            yes:function(){
+                setTimeout(function(){window.location.reload();},800);
+            },
+            end:function(){
+                setTimeout(function(){window.location.reload();},800);
+            }
+        });
+    }
+
+    function loding() {
+        layer.load();
+        setTimeout(function () {
+            layer.closeAll();
+        },5000);
+    }
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+{include file="public/header"}
+
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">网站名称</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" lay-verify="required" name="title" id="title" value="{$data['title']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">网站关键字</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" lay-verify="required" name="keywords" id="keywords" value="{$data['keywords']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">网站描述</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" lay-verify="required" name="description" id="description" value="{$data['description']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">网站域名</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" lay-verify="required" name="domain_name" id="domain_name" value="{$data['domain_name']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">备注</div>
+                            <div class="layui-input-block">
+                                <textarea name="remark" id="remark" class="layui-textarea" lay-verify="required" placeholder="请输入该网站备注">{$data['remark']}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+
+
+        form.on('submit(component-form-element)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+
+            $.ajax({
+                url:"{:Url('centralize/website/save_gather_website')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+
+</script>
+</body>
+</html>

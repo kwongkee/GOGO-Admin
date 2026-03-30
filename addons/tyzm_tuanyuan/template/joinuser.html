@@ -1,0 +1,98 @@
+{template 'common/header'}
+<div class="main">
+    <ul class="nav nav-tabs">
+	    <li class="active"><a href="JavaScript:;" onclick="window.location.reload();">入桌好友</a></li>
+        <li><a href="JavaScript:;"onclick="history.go(-1)">返回</a></li>
+    </ul>
+    
+  
+
+ 
+     <div style="padding:15px;">
+<div class="alert alert-success" role="alert">人数：{php echo $total;}</div>
+        <table class="table table-hover">
+
+            <thead class="navbar-inner">
+                <tr>
+                    <th>用户信息</th>
+                    <th>入座时间</th>
+					<th>ip</th>
+                </tr>
+
+            </thead>
+            <tbody>
+
+                {loop $list $row}
+
+                <tr>
+					<td style="text-align:center"><img src="{$row['avatar']}" width="48"><br />{$row['nickname']}</td>
+				   <td>
+					   {php echo date('Y-m-d H:i:s',$row[createtime]);}
+					</td>
+					
+					<td>
+					  {$row['user_ip']}
+					</td>
+
+                  
+                </tr>
+
+                {/loop}
+
+                <tr>
+                    <td colspan="3">
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+        {$pager}
+
+    </div>
+
+
+</div>
+<script>
+            $(function(){
+
+            $(".check_all").click(function(){
+            var checked = $(this).get(0).checked;
+                    $("input[type=checkbox]").attr("checked", checked);
+            });
+                    $("input[name=deleteall]").click(function(){
+
+            var check = $("input:checked");
+                    if (check.length < 1){
+            err('请选择要删除的记录!');
+                    return false;
+            }
+            if (confirm("确认要删除选择的记录?")){
+            var id = new Array();
+                    check.each(function(i){
+                    id[i] = $(this).val();
+                    });
+                    $.post('{php echo create_url('site/module', array('do' => 'deleteAll', 'name' => 'tyzm_pintu'))}', {idArr:id}, function(data){
+                    if (data.errno == 0)
+                    {
+                    location.reload();
+                    } else {
+                    alert(data.error);
+                    }
+
+
+                    }, 'json');
+            }
+
+            });
+                    });</script>
+<script>
+            function drop_confirm(msg, url){
+            if (confirm(msg)){
+            window.location = url;
+            }
+            }
+</script>
+
+{template 'common/footer'}

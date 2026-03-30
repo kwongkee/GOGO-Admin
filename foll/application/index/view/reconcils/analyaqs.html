@@ -1,0 +1,75 @@
+{include file="common/header"}
+
+	<style>
+		.header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+		.header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+		.header button{float: right;margin-top: -5px;}
+	</style>
+
+	<div class="header">
+		<!--<span>阶段列表</span>
+		<button class="layui-btn layui-btn-xs" style="float: right;" onclick="add();">添加</button>-->
+		<!--<div></div>-->
+		<!--<hr />-->
+	</div>
+	
+	{if condition="$flag eq false"}
+		<div style="font-size: 35px;font-weight: bold;width: 100%;color: silver;padding-top: 15%;text-align: center;">暂无数据</div>
+	{/if}
+
+{if condition="$flag eq true"}
+	<div style="width: 100%;font-size: 26px;font-weight: bold;text-align: center;padding-top: 5px;">订单平账</div>
+	<table class="layui-table">
+		<thead>
+			<tr>
+				<th>编号</th>
+				<th>订单编号</th>
+				<th>订单金额</th>
+				<th>长短款</th>
+				<th>订单时间</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			
+			{volist name="data" id="vo" key='k'}
+			<tr>
+				<td>{$k}</td>
+				<td>{$vo.ordersn}</td>
+				<td>{$vo.money}</td>
+				<td>{if condition="$vo.is_sort eq 'short'"} 短款  {elseif condition="$vo.is_sort eq 'long'"} 长款  {/if}</td>
+				<td>{$vo.date}</td>
+				<td>
+					<button class="layui-btn layui-btn-xs" onclick="ok({$vo.mid},'{$vo.pay_type}','{$vo.date}')">平账</button>
+				</td>
+			</tr>
+			{/volist}
+			
+		</tbody>
+	</table>
+{/if}
+</body>
+<script type="text/javascript">
+	layui.use(['layer','jquery'],function(){
+		$ = layui.jquery;
+		layer = layui.layer;
+	});
+
+	// 平账
+	function ok(gid,types,dates) {
+	
+		$.post("{:Url('Reconcils/CheckAnalyaqs')}",{'mid':gid,'payType':types,'dates':dates},function(res) {
+			console.dir(res);
+			if(res.code > 0){
+				layer.alert(res.msg,{icon:1});
+				window.location.reload();
+			} else {
+				layer.msg(res.msg);
+				window.location.reload();
+			}
+		},'json');
+	}
+	
+</script>
+
+{include file="common/footer"}

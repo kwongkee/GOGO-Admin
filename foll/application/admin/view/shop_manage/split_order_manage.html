@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="common/meta"}
+    <link rel="stylesheet" href="./static/hadmin/layui/css/layui.css"></link>
+</head>
+<body class="gray-bg">
+<div class="col-sm-12">
+    <div class="ibox float-e-margins">
+
+        <input style="float: left;width:20%;" type="text" name="hscode" value="" id="hscode" required lay-verify="required" placeholder="请输入税号" autocomplete="off" class="layui-input">
+        <a class="btn btn-info" href="#"  type="button" id="add" style="line-height:28px;"><i class="fa fa-plus"></i>添加</a>
+        <div class="ibox-content" style="display:block;" id="list1">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>编码</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name='list' id='vo'}
+                <tr>
+                    <td>{$vo.hs_code}</td>
+                    <td>
+                        <button class="layui-btn layui-btn-danger" onclick="del(this,{$vo.id});return false;"><i class="fa fa-plus"></i>删除</button>
+                    </td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="layui-box layui-laypage layui-laypage-default" style="margin-left:43%">{$page}</div>
+</body>
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/js/bootstrap.min.js?v=3.3.6"></script>
+<script src="./static/hadmin/layui/layui.all.js"></script>
+<script>
+    // admin/goods/add
+
+    layui.use(['form','layer'], function () {
+        form = layui.form;
+        var layer = layui.layer;
+    });
+    $('#add').bind('click',function () {
+       var val =$('#hscode').val();
+       if (val==""){
+           layer.msg('税号不能为空');
+           return;
+       }
+       $.ajax({
+           url:"{:Url('admin/shop/splitOrderManage')}",
+           type:"POST",
+           dataType:"json",
+           data:{hscode:val},
+           success:function (res) {
+               layer.msg(res.message);
+               setTimeout(function () {
+                   window.location.reload();
+               },1200);
+           },error:function (xhr) {
+               layer.msg('服务错误!');
+           }
+       })
+    });
+
+    function del(obj,id) {
+        layer.confirm('是否确定删除?', {icon: 3, title:'提示'}, function(index){
+            //do something
+            layer.close(index);
+            $.ajax({
+               url:"{:Url('admin/shop/delSplitOrderConditions')}&id="+id,
+                type:"GET",
+                dataType:"json",
+                success:function (res) {
+                   layer.msg(res.message);
+                    if (res.code==0){
+                        $(obj).parent().parent().remove();
+                    }
+                }
+            });
+        });
+        return false;
+    }
+
+</script>
+</html>
+

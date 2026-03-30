@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="Cache-Control" content="no-cache"/>
+<title>作业详情 - {$config['webtitle']}</title>
+<meta http-equiv="description" content="" />
+<meta name="renderer" content="webkit"/>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+<meta name="description" content="" id="description"/>
+<meta name="keywords" content=""/>
+<link rel="stylesheet" href="{$templateurl}css/css.css" type="text/css"/>
+<script src="{$templateurl}js/jquery-1.8.0.min.js" language="javascript"></script>
+</head>
+
+<body>
+<div class="kaoshizuoyetab">
+  <div id="TabbedPanels1" class="TabbedPanels">
+   
+    <div class="TabbedPanelsContentGroup">
+      <div class="TabbedPanelsContent" style="margin:0;">
+        <div class="warp_content clear">
+          <div class="job_list_content">
+          <div class="cuoti2018">
+          	<h1 style="padding-top:30px;">{$srdb['titlename']}<br /></h1>
+            <h2>
+				<a href="{$urltk}">查看题目</a>
+				<a href="{$urltk}&tab=hand" >已交作业学生</a>
+				<a href="{$urltk}&tab=whand">未交作业学生</a>
+				{if $srdb['state'] == '0'}
+				<br/><br/>
+				<a href="{$urltk}&tab=auditp" onclick="return confirm('本操作不可恢复，确认吗？');">确认已批改</a>
+				{/if}
+				<a href="{$urltk}&tab=delete" onclick="return confirm('本操作不可恢复，确认删除？');">删除作业</a>
+			</h2>
+            <div class="clear" style="height:36px;"></div>
+            <font>
+                <p><span>{$total_q}</span><i>题目总数</i></p>
+                <p><span>{$total_zg}</span><i>主观题</i></p>
+                <p><span>{$total_fzg}</span><i>非主观题</i></p>
+                <div class="clear"></div>
+           </font>
+          </div>
+          
+		  {if $tab == 'hand'}<!--已交作业-->
+		  
+		  <div id="TabbedPanels2" class="TabbedPanels kaoshizuoyetabbjzy">
+            <ul class="TabbedPanelsTabGroup">
+              <li class="TabbedPanelsTab {if $op == '0'}TabbedPanelsTabSelected{/if}" tabindex="0"><a href="{$urltk}&tab={$tab}" style="display:block;">全部</a></li>
+              <li class="TabbedPanelsTab {if $op == '1'}TabbedPanelsTabSelected{/if}" tabindex="0"><a href="{$urltk}&tab={$tab}&op=1" style="display:block;">未批改</a></li>
+              <li class="TabbedPanelsTab {if $op == '2'}TabbedPanelsTabSelected{/if}" tabindex="0" style="border:none;"><a href="{$urltk}&tab={$tab}&op=2" style="display:block;">已批改</a></li>
+            </ul>
+            <div class="TabbedPanelsContentGroup">
+              <div class="TabbedPanelsContent">
+              
+              	 <div class="banjine">          	
+					{loop $list $key $value}
+					<div class="a3">
+						<a href="{php echo $this->createMobileUrl('t_homework_students', array('fid'=>$value['fid'],'wid'=>$value['wid'],'bjid'=>$value['bjid']));}" class="b1">
+							{if $value[headimg]}
+							<img src="{php echo tomedia($value[headimg]);}" />
+							{else}
+							<img src="{$templateurl}images/DP3JS3PQPPP3owJUHS8qGeHepGP3w3.png" />
+							{/if}
+							<font><h2>{$value[name]}</h2></font>
+						</a>
+					</div>
+					{/loop}
+       			 </div>
+              
+              </div>
+            </div>
+          </div>
+		  
+		  {elseif $tab == 'whand'}<!--未交作业-->
+		  
+		  <div class="banjine" style="margin-top:10px;">
+			{loop $list_wj $key $value}
+			<div class="a3">
+				<a class="b1">
+					{if $value[headimg]}
+					<img src="{php echo tomedia($value[headimg]);}" />
+					{else}
+					<img src="{$templateurl}images/DP3JS3PQPPP3owJUHS8qGeHepGP3w3.png" />
+					{/if}
+					<font><h2>{$value[name]}</h2></font>
+				</a>
+			</div>
+			{/loop}
+          </div>
+		  
+		  {else}
+		   {loop $list $key $value}
+           <div class="job_list_box"> <a href="{$urltk}&tab=show&id={$value['id']}">
+              <h3>{php echo html_entity_decode($value['titlename']);} </h3>
+              <div> <span class="index_wap_joblist_comname_p" style="color:#F60;">[ {$type_arr[$value['type']]} ]</span> </div>
+              </a>
+              <div class="index_wap_joblist_flbox" style="padding:2px 0 0 0; color:#999;">所属知识点： 
+			  <a href="{php echo $this->createMobileUrl('knowledge', array('op'=>'show','id'=>$value['parentid']));}"> <span class="index_wap_joblist_fl">《{$zsdname[$value['id']]['titlename']}》</span></a>
+			  </div> 
+		   </div>
+           {/loop}
+			 
+		  {/if}	  
+		  <div style="text-align:center;">{$pager}</div>
+		    
+          </div>
+        </div>
+      </div>
+      
+      
+    </div>
+  </div>
+</div>
+<div class="clear"></div>
+<div class="clear"></div>
+
+<!--footer strat-->
+{template 't_footer'}
+</body>
+</html>

@@ -1,0 +1,1062 @@
+{include file="public/header"}
+
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .info_div{display: grid;grid-template-columns: repeat(2,1fr);-moz-column-gap: 0px;column-gap: 0px;row-gap: 0px;}
+    .layui-btn-primary{background:#1790ff;}
+    .layui-btn-waring{background:#f8ac59;}
+    .unit_name{min-width: 45px;text-align: center;}
+    @media screen and (max-width: 450px){
+        .info_div{display: grid;grid-template-columns: repeat(1,1fr);-moz-column-gap: 0px;column-gap: 0px;row-gap: 0px;}
+    }
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-group">
+            <input type="text" style="display:none;" name="warehouse_id" id="warehouse_id" value="{$warehouse_id}">
+            <input type="text" style="display:none;" name="printer_id" id="printer_id" value="{$printer_id}">
+            <input type="text" style="display:none;" name="express_id" id="express_id" value="{$express_id}">
+            <input type="text" style="display:none;" name="express_type" id="express_type" value="{$express_type}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        {if !empty($data)}
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">最低消费</label>
+                                <div class="layui-input-block disf">
+                                    <div class="mini_cost">
+                                        <select name="content[mini_cost][]" lay-filter="mini_cost">
+                                            <option value="0" {if $data['config_data']['mini_cost'][0]==0}
+                                            selected
+                                            {/if}>无最低</option>
+                                            <option value="1" {if $data['config_data']['mini_cost'][0]==1}
+                                            selected
+                                            {/if}>有最低</option>
+                                        </select>
+                                    </div>
+                                    <div class="minicost_div" style="display:  {if $data['config_data']['mini_cost'][0]==1}
+                                            flex
+                                            {else}
+                                            none
+                                            {/if};
+                                            {if $data['config_data']['mini_cost'][0]==1}
+                                            align-items:center;
+                                            {/if}">
+                                        <input type="text" name="content[mini_num][]" lay-verify="" placeholder="请输入最低消费值" autocomplete="off" class="layui-input" value="{$data['config_data']['mini_num'][0]}" onchange="mini_num(this)">
+                                        <div class="minicost_unit">
+                                            <select name="content[minicost_unit][]" lay-filter="minicost_unit">
+                                                <option value="">请选择单位</option>
+                                                {volist name="value['unit']" key="k" id="v"}
+                                                <option value="{$v['code_value']}" data-title="{$v['code_name']}" {if $data['config_data']['minicost_unit'][0]==$v['code_value']}
+                                                selected
+                                                {/if}>{$v['code_name']}</option>
+                                                {/volist}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-collapse jifei_qujian" lay-accordion>
+                                {volist name="data['config_data']['qj1'][0]" key="k2" id="v2"}
+                                <?php $k2-=1;?>
+                                <div class="layui-colla-item" data-idx="{$k2}">
+                                    <div class="layui-colla-title disf" style="justify-content: space-between;">
+                                        <h4>计费区间{$k2+1}</h4>
+                                        <div style="display:{if count($data['config_data']['qj1'][0])-1 != $k2}
+                                                    none
+                                                {else}
+                                                    flex
+                                                {/if};">
+                                            {if $k2!=0}<div class="layui-btn layui-btn-danger" onclick="del_method(this)">-</div>{/if}
+                                            <div class="layui-btn layui-btn-success" onclick="add_qujian(this,0)">+</div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-colla-content">
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">计费区间</label>
+                                            <div class="layui-input-block disf">
+                                                自&nbsp;
+                                                <input type="number" name="content[qj1][0][]" lay-verify="required" placeholder="数值" class="layui-input qujian" value="{$v2}">
+                                                <div class="unitdiv">
+                                                    <select name="content[unit][0][]" lay-filter="unit" lay-search>
+                                                        <option value="">请选择</option>
+                                                        {volist name="value['unit']" key="k" id="v"}
+                                                        <option value="{$v['code_value']}" data-title="{$v['code_name']}" {if $v['code_value']==$data['config_data']['unit'][0][0]}
+                                                        selected
+                                                        {/if}>{$v['code_name']}</option>
+                                                        {/volist}
+                                                    </select>
+                                                </div>
+                                                &nbsp;至&nbsp;
+                                                <div class="unitdiv">
+                                                    <select name="content[qj2_method][0][]" id="qj2_method" lay-filter="qj2_method">
+                                                        <option value="1" {if 1==$data['config_data']['qj2_method'][0][$k2]}
+                                                                selected
+                                                                {/if}>数值</option>
+                                                        <option value="2" {if 2==$data['config_data']['qj2_method'][0][$k2]}
+                                                                selected
+                                                                {/if}>以上</option>
+                                                    </select>
+                                                </div>
+                                                <input type="number" class="layui-input qujian qujian2" name="content[qj2][0][]" id="qj2" placeholder="数值" value="{$data['config_data']['qj2'][0][$k2]}" style="display:{if 2==$data['config_data']['qj2_method'][0][$k2]}
+                                                            none
+                                                            {/if};">
+                                                <div class="unit_name">{$data['config_data']['unit_name'][0][0]}</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">计费进阶</label>
+                                            <div class="layui-input-block disf">
+                                                <input type="number" class="layui-input" name="content[jinjie][0][]" id="jinjie" placeholder="数值" value="{$data['config_data']['jinjie'][0][$k2]}">
+                                                <div class="unit_name">{$data['config_data']['unit_name'][0][0]}</div>
+                                            </div>
+                                        </div>
+                                        <div class="layui-collapse jifei_fangshi" lay-accordion>
+                                            {volist name="data['config_data']['jf_method'][0][$k2]" key="k3" id="v3"}
+                                            <?php $k3-=1;?>
+                                            <div class="layui-colla-item" data-idx="{$k3}">
+                                                <div class="layui-colla-title disf" style="justify-content: space-between;">
+                                                    <h4>计费方式{$k3+1}</h4>
+                                                    <div style="display:{if count($data['config_data']['jf_method'][0][$k2])-1 != $k3}
+                                                                none
+                                                            {else}
+                                                                flex
+                                                            {/if};">
+                                                        {if $k3!=0}<div class="layui-btn layui-btn-danger" onclick="del_method(this)">-</div>{/if}
+                                                        <div class="layui-btn layui-btn-success" onclick="add_jifei(this,0)">+</div>
+                                                    </div>
+                                                </div>
+                                                <div class="layui-colla-content">
+                                                    <div class="layui-form-item">
+                                                        <label class="layui-form-label">计费方式</label>
+                                                        <div class="layui-input-block disf">
+                                                            <select name="content[jf_method][0][{$k2}][]" id="jf_method" lay-filter="jf_method">
+                                                                <option value="1" {if 1==$data['config_data']['jf_method'][0][$k2][$k3]}
+                                                                        selected
+                                                                        {/if}>首续计费</option>
+                                                                <option value="2" {if 2==$data['config_data']['jf_method'][0][$k2][$k3]}
+                                                                        selected
+                                                                        {/if}>按量计费</option>
+                                                                <option value="3" {if 3==$data['config_data']['jf_method'][0][$k2][$k3]}
+                                                                        selected
+                                                                        {/if}>分段计费</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="layui-form-item jf_method">
+                                                        <label class="layui-form-label"></label>
+                                                        <div class="layui-input-block">
+                                                            <!--首续重计费-->
+                                                            <div class="jf_div1" style="display:{if 1!=$data['config_data']['jf_method'][0][$k2][$k3]}
+                                                                            none
+                                                                        {/if};">
+                                                                <div class="disf">
+                                                                    首重&nbsp;
+                                                                    <input type="number" name="content[shouzhong][0][{$k2}][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="{$data['config_data']['shouzhong'][0][$k2][$k3]}">
+                                                                    <div class="unit_name">{$data['config_data']['unit_name'][0][0]}</div>
+                                                                    <div class="currencydiv">
+                                                                        <select class="currency_sel" name="content[currency][0][{$k2}][]" lay-search>
+                                                                            <option value="">请选择币种</option>
+                                                                            {volist name="value['currency']" key="k" id="v"}
+                                                                            <option value="{$v['id']}" {if $v['id']==$value['start_currency']['id']}
+                                                                            selected
+                                                                            {/if}>{$v['currency_symbol_standard']}</option>
+                                                                            {/volist}
+                                                                        </select>
+                                                                    </div>
+                                                                    <input type="number" name="content[shouzhong_money][0][{$k2}][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="{$data['config_data']['shouzhong_money'][0][$k2][$k3]}">
+                                                                </div>
+                                                                <div class="disf">
+                                                                    续重&nbsp;
+                                                                    <input type="number" name="content[xuzhong][0][{$k2}][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="{$data['config_data']['xuzhong'][0][$k2][$k3]}">
+                                                                    <div class="unit_name">{$data['config_data']['unit_name'][0][0]}</div>
+                                                                    <div class="currencydiv">
+                                                                        <select class="currency_sel" name="content[currency][0][{$k2}][]" lay-search>
+                                                                            <option value="">请选择币种</option>
+                                                                            {volist name="value['currency']" key="k" id="v"}
+                                                                            <option value="{$v['id']}" {if $v['id']==$value['start_currency']['id']}
+                                                                            selected
+                                                                            {/if}>{$v['currency_symbol_standard']}</option>
+                                                                            {/volist}
+                                                                        </select>
+                                                                    </div>
+                                                                    <input type="number" name="content[xuzhong_money][0][{$k2}][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="{$data['config_data']['xuzhong_money'][0][$k2][$k3]}">
+                                                                </div>
+                                                            </div>
+                                                            <!--按量计费-->
+                                                            <div class="jf_div2" style="display:{if 2!=$data['config_data']['jf_method'][0][$k2][$k3]}
+                                                                        none
+                                                                    {/if};">
+                                                                <div class="disf">
+                                                                    <input type="number" name="content[anliang][0][{$k2}][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="{$data['config_data']['anliang'][0][$k2][$k3]}">
+                                                                    <div class="unit_name">{$data['config_data']['unit_name'][0][0]}</div>
+                                                                    <div class="currencydiv">
+                                                                        <select class="currency_sel" name="content[currency][0][{$k2}][]" lay-search>
+                                                                            <option value="">请选择币种</option>
+                                                                            {volist name="value['currency']" key="k" id="v"}
+                                                                            <option value="{$v['id']}" {if $v['id']==$value['start_currency']['id']}
+                                                                            selected
+                                                                            {/if}>{$v['currency_symbol_standard']}</option>
+                                                                            {/volist}
+                                                                        </select>
+                                                                    </div>
+                                                                    <input type="number" name="content[anliang_money][0][{$k2}][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="{$data['config_data']['anliang_money'][0][$k2][$k3]}">
+                                                                </div>
+                                                            </div>
+                                                            <!--分段计费-->
+                                                            <div class="layui-collapse jf_div3 jifei_fenduan" lay-accordion style="display:{if 3!=$data['config_data']['jf_method'][0][$k2][$k3]}
+                                                                        none
+                                                                    {/if};">
+                                                                {volist name="data['config_data']['fenduan_num1'][0][$k2][$k3]" key="k4" id="v4"}
+                                                                <?php $k4-=1;?>
+                                                                <div class="layui-colla-item">
+                                                                    <div class="layui-colla-title disf" style="justify-content: space-between;">
+                                                                        <h4>分段计费{$k4+1}</h4>
+                                                                        <div style="display:{if count($data['config_data']['fenduan_num1'][0][$k2][$k3])-1 != $k4}
+                                                                                    none
+                                                                                {else}
+                                                                                    flex
+                                                                                {/if};">
+                                                                            {if $k4!=0}<div class="layui-btn layui-btn-danger" onclick="del_method(this)">-</div>{/if}
+                                                                            <div class="layui-btn layui-btn-success" onclick="add_fenduan(this,0)">+</div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="layui-colla-content">
+                                                                        <div class="disf">
+                                                                            <input type="number" name="content[fenduan_num1][0][{$k2}][{$k3}][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="{$data['config_data']['fenduan_num1'][0][$k2][$k3][$k4]}">
+                                                                            <div class="unit_name">{$data['config_data']['unit_name'][0][0]}</div>
+                                                                            &nbsp;至&nbsp;
+                                                                            <div class="unitdiv">
+                                                                                <select name="content[fenduan_method][0][{$k2}][{$k3}][]" lay-filter="fenduan_method">
+                                                                                    <option value="1" {if 1==$data['config_data']['fenduan_method'][0][$k2][$k3][$k4]}
+                                                                                            selected
+                                                                                            {/if}>数值</option>
+                                                                                    <option value="2" {if 2==$data['config_data']['fenduan_method'][0][$k2][$k3][$k4]}
+                                                                                            selected
+                                                                                            {/if}>以上</option>
+                                                                                </select>
+                                                                            </div>
+                                                                            <div class="fenduan_num">
+                                                                                <div class="disf">
+                                                                                    <input type="number" name="content[fenduan_num2][0][{$k2}][{$k3}][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="{$data['config_data']['fenduan_num2'][0][$k2][$k3][$k4]}" style="display:{if $data['config_data']['fenduan_method'][0][$k2][$k3][$k4]==2}
+                                                                                                none
+                                                                                                {/if};">
+                                                                                    <div class="unit_name">{$data['config_data']['unit_name'][0][0]}</div>
+                                                                                    <div class="currencydiv">
+                                                                                        <select class="currency_sel" name="content[currency][0][{$k2}][{$k3}][]" lay-search>
+                                                                                            <option value="">请选择币种</option>
+                                                                                            {volist name="value['currency']" key="k" id="v"}
+                                                                                            <option value="{$v['id']}" {if $v['id']==$value['start_currency']['id']}
+                                                                                            selected
+                                                                                            {/if}>{$v['currency_symbol_standard']}</option>
+                                                                                            {/volist}
+                                                                                        </select>
+                                                                                    </div>
+                                                                                    <input type="number" name="content[fenduan_money][0][{$k2}][{$k3}][]" lay-verify="" placeholder="数值" class="layui-input" value="{$data['config_data']['fenduan_money'][0][$k2][$k3][$k4]}">
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <?php $k4+=1;?>
+                                                                {/volist}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <?php $k3+=1;?>
+                                            {/volist}
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php $k2+=1;?>
+                                {/volist}
+                            </div>
+
+                            <!--体积算法-->
+                            <div class="layui-collapse" lay-accordion>
+                                <div class="layui-colla-item">
+                                    <div class="layui-colla-title">
+                                        <h4>体积算法</h4>
+                                    </div>
+                                    <div class="layui-colla-content">
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">比率</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" name="content[rate][]" lay-verify="required" placeholder="请输入比率" autocomplete="off" class="layui-input" value="{$data['config_data']['rate'][0]}">
+                                            </div>
+                                        </div>
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">分泡</label>
+                                            <div class="layui-input-block disf">
+                                                <select name="content[fenpao][]" lay-filter="fenpao">
+                                                    {volist name="value['fenpao']" key="k" id="v"}
+                                                    <option value="{$v['id']}"  {if $v['id']==$data['config_data']['fenpao'][0]}
+                                                    selected
+                                                    {/if}>{$v['name']}</option>
+                                                    {/volist}
+                                                    <option value="-1">自定义</option>
+                                                </select>
+                                                <input type="text" class="layui-input diy_fenpao" placeholder="请输入自定义分泡方式" name="diy_fenpao[]" style="display: none;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {else}
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">最低消费</label>
+                                <div class="layui-input-block disf">
+                                    <div class="mini_cost">
+                                        <select name="content[mini_cost][]" lay-filter="mini_cost">
+                                            <option value="0">无最低</option>
+                                            <option value="1">有最低</option>
+                                        </select>
+                                    </div>
+                                    <div class="minicost_div" style="display: none;">
+                                        <input type="text" name="content[mini_num][]" lay-verify="" placeholder="请输入最低消费值" autocomplete="off" class="layui-input" value="" onchange="mini_num(this)">
+                                        <div class="minicost_unit">
+                                            <select name="content[minicost_unit][]" lay-filter="minicost_unit">
+                                                <option value="">请选择单位</option>
+                                                {volist name="value['unit']" key="k" id="v"}
+                                                <option value="{$v['code_value']}" data-title="{$v['code_name']}">{$v['code_name']}</option>
+                                                {/volist}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-collapse jifei_qujian" lay-accordion>
+                                <div class="layui-colla-item" data-idx="0">
+                                    <div class="layui-colla-title disf" style="justify-content: space-between;">
+                                        <h4>计费区间1</h4>
+                                        <div>
+                                            <div class="layui-btn layui-btn-success" onclick="add_qujian(this,0)">+</div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-colla-content">
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">计费区间</label>
+                                            <div class="layui-input-block disf">
+                                                自&nbsp;
+                                                <input type="number" name="content[qj1][0][]" lay-verify="required" placeholder="数值" class="layui-input qujian" value="">
+                                                <div class="unitdiv">
+                                                    <select name="content[unit][0][]" lay-filter="unit" lay-search>
+                                                        <option value="">请选择</option>
+                                                        {volist name="value['unit']" key="k" id="v"}
+                                                        <option value="{$v['code_value']}" data-title="{$v['code_name']}">{$v['code_name']}</option>
+                                                        {/volist}
+                                                    </select>
+                                                </div>
+                                                &nbsp;至&nbsp;
+                                                <div class="unitdiv">
+                                                    <select name="content[qj2_method][0][]" id="qj2_method" lay-filter="qj2_method">
+                                                        <option value="1">数值</option>
+                                                        <option value="2">以上</option>
+                                                    </select>
+                                                </div>
+                                                <input type="number" class="layui-input qujian qujian2" name="content[qj2][0][]" id="qj2" placeholder="数值" value="">
+                                                <div class="unit_name"></div>
+                                            </div>
+                                        </div>
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">计费进阶</label>
+                                            <div class="layui-input-block disf">
+                                                <input type="number" class="layui-input" name="content[jinjie][0][]" id="jinjie" placeholder="数值" value="">
+                                                <div class="unit_name"></div>
+                                            </div>
+                                        </div>
+                                        <div class="layui-collapse jifei_fangshi" lay-accordion>
+                                            <div class="layui-colla-item" data-idx="0">
+                                                <div class="layui-colla-title disf" style="justify-content: space-between;">
+                                                    <h4>计费方式1</h4>
+                                                    <div>
+                                                        <div class="layui-btn layui-btn-success" onclick="add_jifei(this,0)">+</div>
+                                                    </div>
+                                                </div>
+                                                <div class="layui-colla-content">
+                                                    <div class="layui-form-item">
+                                                        <label class="layui-form-label">计费方式</label>
+                                                        <div class="layui-input-block disf">
+                                                            <select name="content[jf_method][0][0][]" id="jf_method" lay-filter="jf_method">
+                                                                <option value="1">首续计费</option>
+                                                                <option value="2">按量计费</option>
+                                                                <option value="3">分段计费</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="layui-form-item jf_method">
+                                                        <label class="layui-form-label"></label>
+                                                        <div class="layui-input-block">
+                                                            <div class="jf_div1">
+                                                                <div class="disf">
+                                                                    首重&nbsp;
+                                                                    <input type="number" name="content[shouzhong][0][0][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="">
+                                                                    <div class="unit_name"></div>
+                                                                    <div class="currencydiv">
+                                                                        <select class="currency_sel" name="content[currency][0][0][]" lay-search>
+                                                                            <option value="">请选择币种</option>
+                                                                            {volist name="value['currency']" key="k" id="v"}
+                                                                            <option value="{$v['id']}" {if $v['id']==$value['start_currency']['id']}
+                                                                            selected
+                                                                            {/if}>{$v['currency_symbol_standard']}</option>
+                                                                            {/volist}
+                                                                        </select>
+                                                                    </div>
+                                                                    <input type="number" name="content[shouzhong_money][0][0][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="">
+                                                                </div>
+                                                                <div class="disf">
+                                                                    续重&nbsp;
+                                                                    <input type="number" name="content[xuzhong][0][0][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="">
+                                                                    <div class="unit_name"></div>
+                                                                    <div class="currencydiv">
+                                                                        <select class="currency_sel" name="content[currency][0][0][]" lay-search>
+                                                                            <option value="">请选择币种</option>
+                                                                            {volist name="value['currency']" key="k" id="v"}
+                                                                            <option value="{$v['id']}" {if $v['id']==$value['start_currency']['id']}
+                                                                            selected
+                                                                            {/if}>{$v['currency_symbol_standard']}</option>
+                                                                            {/volist}
+                                                                        </select>
+                                                                    </div>
+                                                                    <input type="number" name="content[xuzhong_money][0][0][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="">
+                                                                </div>
+                                                            </div>
+                                                            <div class="jf_div2" style="display: none;">
+                                                                <div class="disf">
+                                                                    <input type="number" name="content[anliang][0][0][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="">
+                                                                    <div class="unit_name"></div>
+                                                                    <div class="currencydiv">
+                                                                        <select class="currency_sel" name="content[currency][0][0][]" lay-search>
+                                                                            <option value="">请选择币种</option>
+                                                                            {volist name="value['currency']" key="k" id="v"}
+                                                                            <option value="{$v['id']}" {if $v['id']==$value['start_currency']['id']}
+                                                                            selected
+                                                                            {/if}>{$v['currency_symbol_standard']}</option>
+                                                                            {/volist}
+                                                                        </select>
+                                                                    </div>
+                                                                    <input type="number" name="content[anliang_money][0][0][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="">
+                                                                </div>
+                                                            </div>
+                                                            <div class="layui-collapse jf_div3 jifei_fenduan" lay-accordion style="display: none;">
+                                                                <div class="layui-colla-item">
+                                                                    <div class="layui-colla-title disf" style="justify-content: space-between;">
+                                                                        <h4>分段计费1</h4>
+                                                                        <div>
+                                                                            <div class="layui-btn layui-btn-success" onclick="add_fenduan(this,0)">+</div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="layui-colla-content">
+                                                                        <div class="disf">
+                                                                            <input type="number" name="content[fenduan_num1][0][0][0][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="">
+                                                                            <div class="unit_name"></div>
+                                                                            &nbsp;至&nbsp;
+                                                                            <div class="unitdiv">
+                                                                                <select name="content[fenduan_method][0][0][0][]" lay-filter="fenduan_method">
+                                                                                    <option value="1">数值</option>
+                                                                                    <option value="2">以上</option>
+                                                                                </select>
+                                                                            </div>
+                                                                            <div class="fenduan_num">
+                                                                                <div class="disf">
+                                                                                    <input type="number" name="content[fenduan_num2][0][0][0][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="">
+                                                                                    <div class="unit_name"></div>
+                                                                                    <div class="currencydiv">
+                                                                                        <select class="currency_sel" name="content[currency][0][0][0][]" lay-search>
+                                                                                            <option value="">请选择币种</option>
+                                                                                            {volist name="value['currency']" key="k" id="v"}
+                                                                                            <option value="{$v['id']}" {if $v['id']==$value['start_currency']['id']}
+                                                                                            selected
+                                                                                            {/if}>{$v['currency_symbol_standard']}</option>
+                                                                                            {/volist}
+                                                                                        </select>
+                                                                                    </div>
+                                                                                    <input type="number" name="content[fenduan_money][0][0][0][]" lay-verify="" placeholder="数值" class="layui-input" value="">
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--体积算法-->
+                            <div class="layui-collapse" lay-accordion>
+                                <div class="layui-colla-item">
+                                    <div class="layui-colla-title">
+                                        <h4>体积算法</h4>
+                                    </div>
+                                    <div class="layui-colla-content">
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">比率</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" name="content[rate][]" lay-verify="required" placeholder="请输入比率" autocomplete="off" class="layui-input" value="">
+                                            </div>
+                                        </div>
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">分泡</label>
+                                            <div class="layui-input-block disf">
+                                                <select name="content[fenpao][]" lay-filter="fenpao">
+                                                    {volist name="value['fenpao']" key="k" id="v"}
+                                                    <option value="{$v['id']}">{$v['name']}</option>
+                                                    {/volist}
+                                                    <option value="-1">自定义</option>
+                                                </select>
+                                                <input type="text" class="layui-input diy_fenpao" placeholder="请输入自定义分泡方式" name="diy_fenpao[]" style="display: none;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">立即提交</button>
+                    <!--                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload','element'],function(){
+        var laydate = layui.laydate
+            ,layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery
+            ,upload = layui.upload
+            ,element = layui.element;
+
+        //分泡
+        form.on('select(fenpao)',function(data){
+            let val = data.value;
+            let t = this;
+            if(val==-1){
+                $(t).parent().parent().parent().parent().find('.diy_fenpao').show();
+            }else{
+                $(t).parent().parent().parent().parent().find('.diy_fenpao').hide();
+            }
+        });
+
+        //是否有最低值
+        form.on('select(mini_cost)',function(data){
+            let val = data.value;
+            let t = this;
+            if(val==0){
+                $(t).parents(":eq(3)").find('.minicost_div').hide();
+            }else{
+                $(t).parents(":eq(3)").find('.minicost_div').css({'display':'flex','align-items':'center'});
+            }
+        });
+
+        //最低值计量单位
+        form.on('select(minicost_unit)',function(data){
+            let val = data.value;
+            let t = this;
+            $(t).parents(":eq(8)").find('.unit_name').text($(t).text());
+            //把计费区间的计量单位也一齐选择
+            $(t).parents(":eq(8)").find('select[name="content[unit][]"]').val(val);
+            form.render(null,'component-form-group')
+        });
+
+        //货物计量单位
+        form.on('select(unit)',function(data){
+            let val = data.value;
+            let t = this;
+            $(t).parent().parent().parent().parent().parent().parent().parent().parent().parent().find('.unit_name').text($(t).text());
+        });
+
+        //区间最高限
+        form.on('select(qj2_method)',function(data){
+            let val = data.value;
+            let t = this;
+            if(val==1){
+                $(t).parent().parent().parent().parent().find('.qujian2').show();
+            }else{
+                $(t).parent().parent().parent().parent().find('.qujian2').hide();
+            }
+        });
+
+        //计费方式
+        form.on('select(jf_method)',function(data){
+            let val = data.value;
+            let t = this;
+            if(val==1){
+                $(t).parent().parent().parent().parent().parent().find('.jf_method').find('.jf_div1').show();
+                $(t).parent().parent().parent().parent().parent().find('.jf_method').find('.jf_div2').hide();
+                $(t).parent().parent().parent().parent().parent().find('.jf_method').find('.jf_div3').hide();
+            }else if(val==2){
+                $(t).parent().parent().parent().parent().parent().find('.jf_method').find('.jf_div1').hide();
+                $(t).parent().parent().parent().parent().parent().find('.jf_method').find('.jf_div2').show();
+                $(t).parent().parent().parent().parent().parent().find('.jf_method').find('.jf_div3').hide();
+            }else if(val==3){
+                $(t).parent().parent().parent().parent().parent().find('.jf_method').find('.jf_div1').hide();
+                $(t).parent().parent().parent().parent().parent().find('.jf_method').find('.jf_div2').hide();
+                $(t).parent().parent().parent().parent().parent().find('.jf_method').find('.jf_div3').show();
+            }
+        });
+
+        //分段计费
+        form.on('select(fenduan_method)',function(data){
+            let val = data.value;
+            let t = this;
+            if(val==2){
+                $(t).parent().parent().parent().parent().find('.fenduan_num').find('.qujian').hide();
+            }else{
+                $(t).parent().parent().parent().parent().find('.fenduan_num').find('.qujian').show();
+            }
+        });
+
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+
+            $.ajax({
+                url:"{:Url('admin/warehouse/save_freight_config')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+
+    //最低值
+    function mini_num(t){
+        var $ = layui.$
+            , layer = layui.layer;
+        let num = $(t).val();
+        $(t).parents(":eq(3)").find('.jifei_qujian').find('.layui-colla-item').eq(0).find('.layui-colla-content').eq(0).find('.layui-form-item').eq(0).find('input').eq(0).val(num);
+    }
+
+    //计费区间
+    function add_qujian(t,num){
+        var $ = layui.$
+            , layer = layui.layer
+            , form = layui.form
+            , element = layui.element;
+        let qj2_method = $(t).parents(":eq(2)").find('.layui-colla-content').find('#qj2_method').val();
+        let next_qj1 = 0;
+        if(qj2_method==2){
+            layer.msg('计费已选“以上”，不可新增计费');return false;
+        }else{
+            let qj2 = $(t).parents(":eq(2)").find('.layui-colla-content').find('#qj2').val();
+            let jinjie = $(t).parents(":eq(2)").find('.layui-colla-content').find('#jinjie').val();
+            if(qj2=='' || jinjie==''){
+                layer.msg('请先填写区间值');return false;
+            }
+            next_qj1 = parseFloat(qj2) + parseFloat(jinjie);
+        }
+        $(t).parent().hide();
+
+        // let num2 = $(t).parents(":eq(5)").data('idx');
+        let num2 = $(t).parents(":eq(3)").children().length;
+        let cnum = parseInt($(t).parents(":eq(3)").children().length) + 1;
+        let unit_name = $(t).parents(":eq(6)").find('.unit_name').eq(0).text();
+        let currency = $('input[name="start_currency"]').val();
+        // console.log(num2,cnum,unit_name);return false;
+        let html = '<div class="layui-colla-item" data-idx="'+num2+'">\n' +
+            '                                                            <div class="layui-colla-title disf" style="justify-content: space-between;">\n' +
+            '                                                                <h4>计费区间'+cnum+'</h4>\n' +
+            '                                                                <div>\n' +
+            '                                                                    <div class="layui-btn layui-btn-danger" onclick="del_method(this)">-</div>\n' +
+            '                                                                    <div class="layui-btn layui-btn-success" onclick="add_qujian(this,'+num+')">+</div>\n' +
+            '                                                                </div>\n' +
+            '                                                            </div>\n' +
+            '                                                            <div class="layui-colla-content">\n' +
+            '                                                                <div class="layui-form-item">\n' +
+            '                                                                    <label class="layui-form-label">计费区间</label>\n' +
+            '                                                                    <div class="layui-input-block disf">\n' +
+            '                                                                        自&nbsp;\n' +
+            '                                                                        <input type="number" name="content[qj1]['+num+']['+num2+']" readonly lay-verify="required" placeholder="数值" class="layui-input qujian" value="'+next_qj1+'">\n' +
+            '                                                                        <div class="unit_name">'+unit_name+'</div>\n' +
+            '                                                                        &nbsp;至&nbsp;\n' +
+            '                                                                        <div class="unitdiv">\n' +
+            '                                                                            <select name="content[qj2_method]['+num+']['+num2+']" id="qj2_method" lay-filter="qj2_method">\n' +
+            '                                                                                <option value="1">数值</option>\n' +
+            '                                                                                <option value="2">以上</option>\n' +
+            '                                                                            </select>\n' +
+            '                                                                        </div>\n' +
+            '                                                                        <input type="number" class="layui-input qujian qujian2" name="content[qj2]['+num+']['+num2+']" id="qj2" placeholder="数值" value="">\n' +
+            '                                                                        <div class="unit_name">'+unit_name+'</div>\n' +
+            '                                                                    </div>\n' +
+            '                                                                </div>\n' +
+            '                                                                <div class="layui-form-item">\n' +
+            '                                                                    <label class="layui-form-label">计费进阶</label>\n' +
+            '                                                                    <div class="layui-input-block disf">\n' +
+            '                                                                        <input type="number" class="layui-input" name="content[jinjie]['+num+']['+num2+']" id="jinjie" placeholder="数值" value="">\n' +
+            '                                                                        <div class="unit_name">'+unit_name+'</div>\n' +
+            '                                                                    </div>\n' +
+            '                                                                </div>\n' +
+            '                                                                <div class="layui-collapse jifei_fangshi" lay-accordion>\n' +
+            '                                                                    <div class="layui-colla-item" data-idx="0">\n' +
+            '                                                                        <div class="layui-colla-title disf" style="justify-content: space-between;">\n' +
+            '                                                                            <h4>计费方式1</h4>\n' +
+            '                                                                            <div>\n' +
+            '                                                                                <div class="layui-btn layui-btn-success" onclick="add_jifei(this,'+num+')">+</div>\n' +
+            '                                                                            </div>\n' +
+            '                                                                        </div>\n' +
+            '                                                                        <div class="layui-colla-content layui-show">\n' +
+            '                                                                            <div class="layui-form-item">\n' +
+            '                                                                                <label class="layui-form-label">计费方式</label>\n' +
+            '                                                                                <div class="layui-input-block disf">\n' +
+            '                                                                                    <select name="content[jf_method]['+num+']['+num2+'][]" id="jf_method" lay-filter="jf_method">\n' +
+            '                                                                                        <option value="1">首续计费</option>\n' +
+            '                                                                                        <option value="2">按量计费</option>\n' +
+            '                                                                                        <option value="3">分段计费</option>\n' +
+            '                                                                                    </select>\n' +
+            '                                                                                </div>\n' +
+            '                                                                            </div>\n' +
+            '                                                                            <div class="layui-form-item jf_method">\n' +
+            '                                                                                <label class="layui-form-label"></label>\n' +
+            '                                                                                <div class="layui-input-block">\n' +
+            '                                                                                    <div class="jf_div1">\n' +
+            '                                                                                        <div class="disf">\n' +
+            '                                                                                            首重&nbsp;\n' +
+            '                                                                                            <input type="number" name="content[shouzhong]['+num+']['+num2+'][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="">\n' +
+            '                                                                                            <div class="unit_name">'+unit_name+'</div>\n' +
+            '                                                                                            <div class="currencydiv">\n' +
+            '                                                                                                <select class="currency_sel" name="content[currency]['+num+']['+num2+'][]" lay-search>\n' +
+            '                                                                                                    <option value="">请选择币种</option>\n';
+        {volist name="value['currency']" key="k" id="v"}
+        if(currency=="{$v['id']}"){
+            html+='<option value="{$v['id']}" selected>{$v['currency_symbol_standard']}</option>';
+        }else{
+            html+='<option value="{$v['id']}">{$v['currency_symbol_standard']}</option>\n';
+        }
+        {/volist}
+    html+='                                                                                          </select>\n' +
+        '                                                                                            </div>\n' +
+        '                                                                                            <input type="number" name="content[shouzhong_money]['+num+']['+num2+'][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="">\n' +
+        '                                                                                        </div>\n' +
+        '                                                                                        <div class="disf">\n' +
+        '                                                                                            续重&nbsp;\n' +
+        '                                                                                            <input type="number" name="content[xuzhong]['+num+']['+num2+'][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="">\n' +
+        '                                                                                            <div class="unit_name">'+unit_name+'</div>\n' +
+        '                                                                                            <div class="currencydiv">\n' +
+        '                                                                                                <select class="currency_sel" name="content[currency]['+num+']['+num2+'][]" lay-search>\n' +
+        '                                                                                                    <option value="">请选择币种</option>\n';
+    {volist name="value['currency']" key="k" id="v"}
+    if(currency=="{$v['id']}"){
+        html+='<option value="{$v['id']}" selected>{$v['currency_symbol_standard']}</option>';
+    }else{
+        html+='<option value="{$v['id']}">{$v['currency_symbol_standard']}</option>\n';
+    }
+    {/volist}
+    html+='                                                                                          </select>\n' +
+        '                                                                                            </div>\n' +
+        '                                                                                            <input type="number" name="content[xuzhong_money]['+num+']['+num2+'][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="">\n' +
+        '                                                                                        </div>\n' +
+        '                                                                                    </div>\n' +
+        '                                                                                    <div class="jf_div2" style="display: none;">\n' +
+        '                                                                                        <div class="disf">\n' +
+        '                                                                                            <input type="number" name="content[anliang]['+num+']['+num2+'][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="">\n' +
+        '                                                                                            <div class="unit_name">'+unit_name+'</div>\n' +
+        '                                                                                            <div class="currencydiv">\n' +
+        '                                                                                                <select class="currency_sel" name="content[currency]['+num+']['+num2+'][]" lay-search>\n' +
+        '                                                                                                    <option value="">请选择币种</option>\n';
+    {volist name="value['currency']" key="k" id="v"}
+    if(currency=="{$v['id']}"){
+        html+='<option value="{$v['id']}" selected>{$v['currency_symbol_standard']}</option>';
+    }else{
+        html+='<option value="{$v['id']}">{$v['currency_symbol_standard']}</option>\n';
+    }
+    {/volist}
+    html+='                                                                                          </select>\n' +
+        '                                                                                            </div>\n' +
+        '                                                                                            <input type="number" name="content[anliang_money]['+num+']['+num2+'][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="">\n' +
+        '                                                                                        </div>\n' +
+        '                                                                                    </div>\n' +
+        '                                                                                    <div class="layui-collapse jf_div3 jifei_fenduan" lay-accordion style="display: none;">\n' +
+        '                                                                                        <div class="layui-colla-item">\n' +
+        '                                                                                            <div class="layui-colla-title disf" style="justify-content: space-between;">\n' +
+        '                                                                                                <h4>分段计费1</h4>\n' +
+        '                                                                                                <div>\n' +
+        '                                                                                                    <div class="layui-btn layui-btn-success" onclick="add_fenduan(this,'+num+')">+</div>\n' +
+        '                                                                                                </div>\n' +
+        '                                                                                            </div>\n' +
+        '                                                                                            <div class="layui-colla-content">\n' +
+        '                                                                                                <div class="disf">\n' +
+        '                                                                                                    <input type="number" name="content[fenduan_num1]['+num+']['+num2+'][0][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="">\n' +
+        '                                                                                                    <div class="unit_name">'+unit_name+'</div>\n' +
+        '                                                                                                    &nbsp;至&nbsp;\n' +
+        '                                                                                                    <div class="unitdiv">\n' +
+        '                                                                                                        <select name="content[fenduan_method]['+num+']['+num2+'][0][]" lay-filter="fenduan_method">\n' +
+        '                                                                                                            <option value="1">数值</option>\n' +
+        '                                                                                                            <option value="2">以上</option>\n' +
+        '                                                                                                        </select>\n' +
+        '                                                                                                    </div>\n' +
+        '                                                                                                    <div class="fenduan_num">\n' +
+        '                                                                                                        <div class="disf">\n' +
+        '                                                                                                            <input type="number" name="content[fenduan_num2]['+num+']['+num2+'][0][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="">\n' +
+        '                                                                                                            <div class="unit_name">'+unit_name+'</div>\n' +
+        '                                                                                                            <div class="currencydiv">\n' +
+        '                                                                                                                <select class="currency_sel" name="content[currency]['+num+']['+num2+'][0][]" lay-search>\n' +
+        '                                                                                                                    <option value="">请选择币种</option>\n';
+    {volist name="value['currency']" key="k" id="v"}
+    if(currency=="{$v['id']}"){
+        html+='<option value="{$v['id']}" selected>{$v['currency_symbol_standard']}</option>';
+    }else{
+        html+='<option value="{$v['id']}">{$v['currency_symbol_standard']}</option>\n';
+    }
+    {/volist}
+    html+='                                                                                                           </select>\n' +
+        '                                                                                                            </div>\n' +
+        '                                                                                                            <input type="number" name="content[fenduan_money]['+num+']['+num2+'][0][]" lay-verify="" placeholder="数值" class="layui-input" value="">\n' +
+        '                                                                                                        </div>\n' +
+        '                                                                                                    </div>\n' +
+        '                                                                                                </div>\n' +
+        '                                                                                            </div>\n' +
+        '                                                                                        </div>\n' +
+        '                                                                                    </div>\n' +
+        '                                                                                </div>\n' +
+        '                                                                            </div>\n' +
+        '                                                                        </div>\n' +
+        '                                                                    </div>\n' +
+        '                                                                </div>\n' +
+        '                                                            </div>\n' +
+        '                                                        </div>';
+
+    $(t).parents(":eq(3)").append(html);
+    form.render(null,'component-form-group');
+    element.render('collapse');
+}
+    //计费方式
+    function add_jifei(t,num){
+        var $ = layui.$
+            , layer = layui.layer
+            , form = layui.form
+            , element = layui.element;
+        //“首续计费”和“按量计费”不可再添加计费方式
+        let jf_method = $(t).parents(":eq(2)").find('.layui-colla-content').find('#jf_method').val();
+        if(jf_method==1 || jf_method==2){
+            layer.msg('“首续计费”和“按量计费”不可再添加计费方式');return false;
+        }
+        $(t).parent().hide();
+        let num2 = $(t).parents(":eq(5)").data('idx');
+        let num3 = $(t).parents(":eq(3)").children().length;
+        let cnum = parseInt($(t).parents(":eq(3)").children().length) + 1;
+        let unit_name = $(t).parents(":eq(11)").find('.unit_name').eq(0).text();
+        let currency = $('input[name="start_currency"]').val();
+        // console.log(num,num2,$(t).parents(":eq(3)").children(),cnum);
+
+        let html = '<div class="layui-colla-item" data-idx="'+num3+'">\n' +
+            '                                                                        <div class="layui-colla-title disf" style="justify-content: space-between;">\n' +
+            '                                                                            <h4>计费方式'+cnum+'</h4>\n' +
+            '                                                                            <div>\n' +
+            '                                                                                <div class="layui-btn layui-btn-danger" onclick="del_method(this)">-</div>\n' +
+            '                                                                                <div class="layui-btn layui-btn-success" onclick="add_jifei(this,'+num+')">+</div>\n' +
+            '                                                                            </div>\n' +
+            '                                                                        </div>\n' +
+            '                                                                        <div class="layui-colla-content layui-show">\n' +
+            '                                                                            <div class="layui-form-item">\n' +
+            '                                                                                <label class="layui-form-label">计费方式</label>\n' +
+            '                                                                                <div class="layui-input-block disf">\n' +
+            '                                                                                    <select name="content[jf_method]['+num+']['+num2+']['+num3+']" id="jf_method" lay-filter="jf_method">\n' +
+            '                                                                                        <option value="1" disabled>首续计费</option>\n' +
+            '                                                                                        <option value="2" disabled>按量计费</option>\n' +
+            '                                                                                        <option value="3" selected>分段计费</option>\n' +
+            '                                                                                    </select>\n' +
+            '                                                                                </div>\n' +
+            '                                                                            </div>\n' +
+            '                                                                            <div class="layui-form-item jf_method">\n' +
+            '                                                                                <label class="layui-form-label"></label>\n' +
+            '                                                                                <div class="layui-input-block">\n' +
+            '                                                                                    <div class="jf_div1" style="display:none;">\n' +
+            '                                                                                        <div class="disf">\n' +
+            '                                                                                            首重&nbsp;\n' +
+            '                                                                                            <input type="number" name="content[shouzhong]['+num+']['+num2+']['+num3+']" lay-verify="" placeholder="数值" class="layui-input qujian" value="">\n' +
+            '                                                                                            <div class="unit_name">'+unit_name+'</div>\n' +
+            '                                                                                            <div class="currencydiv">\n' +
+            '                                                                                                <select class="currency_sel" name="content[currency]['+num+']['+num2+']['+num3+']" lay-search>\n' +
+            '                                                                                                    <option value="">请选择币种</option>\n';
+        {volist name="value['currency']" key="k" id="v"}
+        if(currency=="{$v['id']}"){
+            html+='<option value="{$v['id']}" selected>{$v['currency_symbol_standard']}</option>';
+        }else{
+            html+='<option value="{$v['id']}">{$v['currency_symbol_standard']}</option>\n';
+        }
+        {/volist}
+            html += '                                                                                        </select>\n' +
+                '                                                                                            </div>\n' +
+                '                                                                                            <input type="number" name="content[shouzhong_money]['+num+']['+num2+']['+num3+']" lay-verify="" placeholder="数值" class="layui-input qujian" value="">\n' +
+                '                                                                                        </div>\n' +
+                '                                                                                        <div class="disf">\n' +
+                '                                                                                            续重&nbsp;\n' +
+                '                                                                                            <input type="number" name="content[xuzhong]['+num+']['+num2+']['+num3+']" lay-verify="" placeholder="数值" class="layui-input qujian" value="">\n' +
+                '                                                                                            <div class="unit_name">'+unit_name+'</div>\n' +
+                '                                                                                            <div class="currencydiv">\n' +
+                '                                                                                                <select class="currency_sel" name="content[currency]['+num+']['+num2+']['+num3+']" lay-search>\n' +
+                '                                                                                                    <option value="">请选择币种</option>\n';
+            {volist name="value['currency']" key="k" id="v"}
+            if(currency=="{$v['id']}"){
+                html+='<option value="{$v['id']}" selected>{$v['currency_symbol_standard']}</option>';
+            }else{
+                html+='<option value="{$v['id']}">{$v['currency_symbol_standard']}</option>\n';
+            }
+            {/volist}
+                html += '                                                                                        </select>\n' +
+                    '                                                                                            </div>\n' +
+                    '                                                                                            <input type="number" name="content[xuzhong_money]['+num+']['+num2+']['+num3+']" lay-verify="" placeholder="数值" class="layui-input qujian" value="">\n' +
+                    '                                                                                        </div>\n' +
+                    '                                                                                    </div>\n' +
+                    '                                                                                    <div class="jf_div2" style="display: none;">\n' +
+                    '                                                                                        <div class="disf">\n' +
+                    '                                                                                            <input type="number" name="content[anliang]['+num+']['+num2+']['+num3+']" lay-verify="" placeholder="数值" class="layui-input qujian" value="">\n' +
+                    '                                                                                            <div class="unit_name">'+unit_name+'</div>\n' +
+                    '                                                                                            <div class="currencydiv">\n' +
+                    '                                                                                                <select class="currency_sel" name="content[currency]['+num+']['+num2+']['+num3+']" lay-search>\n' +
+                    '                                                                                                    <option value="">请选择币种</option>\n';
+                {volist name="value['currency']" key="k" id="v"}
+                if(currency=="{$v['id']}"){
+                    html+='<option value="{$v['id']}" selected>{$v['currency_symbol_standard']}</option>';
+                }else{
+                    html+='<option value="{$v['id']}">{$v['currency_symbol_standard']}</option>\n';
+                }
+                {/volist}
+                    html +='                                                                                         </select>\n' +
+                        '                                                                                            </div>\n' +
+                        '                                                                                            <input type="number" name="content[anliang_money]['+num+']['+num2+']['+num3+']" lay-verify="" placeholder="数值" class="layui-input qujian" value="">\n' +
+                        '                                                                                        </div>\n' +
+                        '                                                                                    </div>\n' +
+                        '                                                                                    <div class="layui-collapse jf_div3 jifei_fenduan" lay-accordion style="display: block;">\n' +
+                        '                                                                                        <div class="layui-colla-item">\n' +
+                        '                                                                                            <div class="layui-colla-title disf" style="justify-content: space-between;">\n' +
+                        '                                                                                                <h4>分段计费1</h4>\n' +
+                        '                                                                                                <div>\n' +
+                        '                                                                                                    <div class="layui-btn layui-btn-success" onclick="add_fenduan(this,'+num+')">+</div>\n' +
+                        '                                                                                                </div>\n' +
+                        '                                                                                            </div>\n' +
+                        '                                                                                            <div class="layui-colla-content">\n' +
+                        '                                                                                                <div class="disf">\n' +
+                        '                                                                                                    <input type="number" name="content[fenduan_num1]['+num+']['+num2+']['+num3+'][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="">\n' +
+                        '                                                                                                    <div class="unit_name">'+unit_name+'</div>\n' +
+                        '                                                                                                    &nbsp;至&nbsp;\n' +
+                        '                                                                                                    <div class="unitdiv">\n' +
+                        '                                                                                                        <select name="content[fenduan_method]['+num+']['+num2+']['+num3+'][]" lay-filter="fenduan_method">\n' +
+                        '                                                                                                            <option value="1">数值</option>\n' +
+                        '                                                                                                            <option value="2">以上</option>\n' +
+                        '                                                                                                        </select>\n' +
+                        '                                                                                                    </div>\n' +
+                        '                                                                                                    <div class="fenduan_num">\n' +
+                        '                                                                                                        <div class="disf">\n' +
+                        '                                                                                                            <input type="number" name="content[fenduan_num2]['+num+']['+num2+']['+num3+'][]" lay-verify="" placeholder="数值" class="layui-input qujian" value="">\n' +
+                        '                                                                                                            <div class="unit_name">'+unit_name+'</div>\n' +
+                        '                                                                                                            <div class="currencydiv">\n' +
+                        '                                                                                                                <select class="currency_sel" name="content[currency]['+num+']['+num2+']['+num3+'][]" lay-search>\n' +
+                        '                                                                                                                    <option value="">请选择币种</option>\n';
+                    {volist name="value['currency']" key="k" id="v"}
+                    if(currency=="{$v['id']}"){
+                        html+='<option value="{$v['id']}" selected>{$v['currency_symbol_standard']}</option>';
+                    }else{
+                        html+='<option value="{$v['id']}">{$v['currency_symbol_standard']}</option>\n';
+                    }
+                    {/volist}
+                        html += '                                                                                                        </select>\n' +
+                            '                                                                                                            </div>\n' +
+                            '                                                                                                            <input type="number" name="content[fenduan_money]['+num+']['+num2+']['+num3+'][]" lay-verify="" placeholder="数值" class="layui-input" value="">\n' +
+                            '                                                                                                        </div>\n' +
+                            '                                                                                                    </div>\n' +
+                            '                                                                                                </div>\n' +
+                            '                                                                                            </div>\n' +
+                            '                                                                                        </div>\n' +
+                            '                                                                                    </div>\n' +
+                            '                                                                                </div>\n' +
+                            '                                                                            </div>\n' +
+                            '                                                                        </div>\n' +
+                            '                                                                    </div>';
+                        $(t).parents(":eq(3)").append(html);
+                        form.render(null,'component-form-group');
+                        element.render('collapse');
+                    }
+    //分段计费
+    function add_fenduan(t,num){
+        var $ = layui.$
+            , layer = layui.layer
+            , form = layui.form
+            , element = layui.element;
+        $(t).parent().hide();
+        let num2 = $(t).parents(":eq(10)").data('idx');
+        let num3 = $(t).parents(":eq(7)").data('idx');
+        let num4 = $(t).parents(":eq(3)").find('.layui-colla-item').length;
+        let cnum = parseInt($(t).parents(":eq(3)").find('.layui-colla-item').length) + 1;
+        let unit_name = $(t).parents(":eq(16)").find('.unit_name').eq(0).text();//11 16
+        let currency = $('input[name="start_currency"]').val();
+
+        let html = '<div class="layui-colla-item ">\n' +
+            '                                                                                            <div class="layui-colla-title disf" style="justify-content: space-between;">\n' +
+            '                                                                                                <h4>分段计费'+cnum+'</h4>\n' +
+            '                                                                                                <div>\n' +
+            '                                                                                                    <div class="layui-btn layui-btn-danger" onclick="del_method(this)">-</div>\n' +
+            '                                                                                                    <div class="layui-btn layui-btn-success" onclick="add_fenduan(this,'+num+')">+</div>\n' +
+            '                                                                                                </div>\n' +
+            '                                                                                            </div>\n' +
+            '                                                                                            <div class="layui-colla-content">\n' +
+            '                                                                                                <div class="disf">\n' +
+            '                                                                                                    <input type="number" name="content[fenduan_num1]['+num+']['+num2+']['+num3+']['+num4+']" lay-verify="" placeholder="数值" class="layui-input qujian" value="">\n' +
+            '                                                                                                    <div class="unit_name">'+unit_name+'</div>\n' +
+            '                                                                                                    &nbsp;至&nbsp;\n' +
+            '                                                                                                    <div class="unitdiv">\n' +
+            '                                                                                                        <select name="content[fenduan_method]['+num+']['+num2+']['+num3+']['+num4+']" lay-filter="fenduan_method">\n' +
+            '                                                                                                            <option value="1">数值</option>\n' +
+            '                                                                                                            <option value="2">以上</option>\n' +
+            '                                                                                                        </select>\n' +
+            '                                                                                                    </div>\n' +
+            '                                                                                                    <div class="fenduan_num">\n' +
+            '                                                                                                        <div class="disf">\n' +
+            '                                                                                                            <input type="number" name="content[fenduan_num2]['+num+']['+num2+']['+num3+']['+num4+']" lay-verify="" placeholder="数值" class="layui-input qujian" value="">\n' +
+            '                                                                                                            <div class="unit_name">'+unit_name+'</div>\n' +
+            '                                                                                                            <div class="currencydiv">\n' +
+            '                                                                                                                <select class="currency_sel" name="content[currency]['+num+']['+num2+']['+num3+']['+num4+']" lay-search>\n' +
+            '                                                                                                                    <option value="">请选择币种</option>\n';
+        {volist name="value['currency']" key="k" id="v"}
+        if(currency=="{$v['id']}"){
+            html+='<option value="{$v['id']}" selected>{$v['currency_symbol_standard']}</option>';
+        }else{
+            html+='<option value="{$v['id']}">{$v['currency_symbol_standard']}</option>\n';
+        }
+        {/volist}
+            html += '                                                                                                        </select>\n' +
+                '                                                                                                            </div>\n' +
+                '                                                                                                            <input type="number" name="content[fenduan_money]['+num+']['+num2+']['+num3+']['+num4+']" lay-verify="" placeholder="数值" class="layui-input" value="">\n' +
+                '                                                                                                        </div>\n' +
+                '                                                                                                    </div>\n' +
+                '                                                                                                </div>\n' +
+                '                                                                                            </div>\n' +
+                '                                                                                        </div>';
+
+            $(t).parents(":eq(3)").append(html);
+            form.render(null,'component-form-group');
+            element.render('collapse');
+        }
+</script>
+</body>
+</html>

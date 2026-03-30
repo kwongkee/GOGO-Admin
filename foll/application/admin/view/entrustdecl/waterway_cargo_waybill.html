@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>水路货物运单</title>
+    <!--<link rel="stylesheet" href="/layuiadmin/style/invoice2.css" />-->
+    <link rel="stylesheet" href="https://decl.gogo198.cn/layuiadmin/style/driver.css" />
+
+    <style type="text/css">
+        .diyform input {border: 1px solid #333 !important;padding: 5px 5px;box-sizing: border-box;}
+        .btn{width:300px;line-height:40px}
+        body{overflow-y: auto;}
+        .page{width: 842.32pt;margin: 0 auto;margin-left:5px;}
+        #printId{width: 100%;background: white;font-size: 10pt;}
+        .content>div{width: 100%;height: 610pt;padding-top: 5px;}
+        .w_line1{display:flex;align-items:center;justify-content:space-between;margin-top:20mm;}
+        .w_line1 .pay_method{width:50mm;border:1px solid #000;display:flex;align-items:center;}
+        .w_line1 .pay_method .p_left{writing-mode:tb-rl;width:22%;font-size:14px;border-right:1px solid #000;box-sizing:border-box;padding:7px 11px;}
+        .w_line1 .pay_method .p_right{width:78%;}
+        .w_line1 .title p:nth-of-type(1){font-weight:900;font-size:30px;border-bottom:1px solid #000;}
+        .w_line1 .title p:nth-of-type(2){font-weight:600;font-size:20px;text-align:center;}
+        .w_line1 .contract{width:81mm;border:1px solid #000;box-sizing:border-box;padding:7px 8px;font-size:14px;text-indent:2em;}
+        .driver-mid{color:#000;}
+        .driver-table{font-size:14px;border-top:5px solid #000;border-left:5px solid #000;border-right:5px solid #000;border-bottom:1px solid #000;}
+        .driver-table .dt1{width:6mm;writing-mode:tb-rl;}
+        .driver-table .dt2{width:39mm;max-width:39mm;min-width:37mm;}
+        .driver-table .dt3{width:39mm;display:flex;align-items:center;padding:0;border-bottom:0;}
+        .driver-table .dt3 .dt3-left{width:45%;}
+        .driver-table .dt3 .dt3-left div{padding:0.5em;}
+        .driver-table .dt3 .dt3-left div:nth-of-type(1){border-right:1px solid #000;border-bottom:1px solid #000;}
+        .driver-table .dt3 .dt3-left div:nth-of-type(2){border-right:1px solid #000;}
+        .driver-table .dt3 .dt3-right{width:75%;}
+        .driver-table .dt3 .dt3-right div{padding:0.5em;box-sizing:border-box;}
+        .driver-table .dt3 .dt3-right div:nth-of-type(1){border-bottom:1px solid #000;}
+        .driver-table .dt3 .dt3-right div:nth-of-type(2){height: 8mm;max-height: 8mm;min-height: 5mm;}
+        .driver-table .dt4{writing-mode:tb-rl;width:11mm;}
+        .driver-table .dt5{width:69mm;max-width:69mm;min-width:58mm;}
+        .driver-table .dt6{writing-mode:tb-rl;width:11mm;}
+        .driver-table .dt7{width:80mm;max-width:80mm;min-width:70mm;}
+        .w_line2{width:100%;display:flex;}
+        .w_line2 .dt1{width:48.2mm;max-width:48.2mm;min-width:42.2mm;border-right:1px solid #000;border-bottom:1px solid #000;}
+        .w_line2 .dt2{width:23mm;max-width:23mm;min-width:18mm;border-right:1px solid #000;border-bottom:1px solid #000;}
+        .w_line2 .dt3{width:14.6mm;max-width:14.6mm;min-width:9mm;border-right:1px solid #000;border-bottom:1px solid #000;}
+        .w_line2 .dt4{width:14mm;max-width:14mm;min-width:9mm;border-right:1px solid #000;border-bottom:1px solid #000;}
+        .w_line2 .dt5{width:14mm;max-width:14mm;min-width:9mm;border-right:1px solid #000;border-bottom:1px solid #000;padding:2mm 1mm;}
+        .w_line2 .dt6{width:30mm;max-width:30mm;min-width:25mm;border-bottom:1px solid #000;}
+        .w_line2 .t-left{border-collapse: collapse;text-align:center;border-left:5px solid #000;border-right:5px solid #000;border-bottom:1px solid #000;}
+        .w_line2 .t-left th{font-weight:unset;}
+        .w_line2 .t-left td{height:18px;max-height:18px;min-height:13px;white-space: nowrap;}
+        .w_line2 .t-right{width: 117.2mm;border-collapse: collapse;text-align:center;border:1px solid #000;border-top:5px solid #000;border-left:0;}
+        .w_line2 .t-right .load_info{width:50mm;max-width:50mm;min-width:40mm;}
+        .w_line2 .t-right .clip,.w_line3 .t-right .clip{width: 100px;height: 50px;background-color: #fff;position: relative;padding: 0 !important;}
+        .w_line2 .t-right .t1{padding: 2mm 1mm;height: 12mm;border-bottom: 1px solid #000;}
+        .w_line2 .t-right .t2{height:28mm;border-bottom: 1px solid #000;}
+        .w_line2 .t-right .t3{height:8.8mm;border-bottom: 1px solid #000;}
+        .w_line2 .t-right .t4 .t4-1{width:9mm;border-right:1px solid #000;}
+        .w_line2 .t-right .t4 .t4-2{width:5mm;border-right:1px solid #000;}
+        .w_line2 .t-right .t4 .t4-3{width:9.4mm;border-right:1px solid #000;}
+        .w_line2 .t-right .t4 .t4-4{width:9mm;border-right:1px solid #000;background:linear-gradient(158deg, transparent 49.5%, #000 51.5%, #000 50.5%, transparent 52.5%);position:relative;}
+        .w_line2 .t-right .t4 .t4-5{width:6mm;border-right:1px solid #000;}
+        .w_line2 .t-right .t4 .t4-6{width:9mm;border-right:1px solid #000;background:linear-gradient(158deg, transparent 49.5%, #000 51.5%, #000 50.5%, transparent 52.5%);position:relative;}
+        .w_line2 .t-right .t4 td{height:7mm;}
+        .w_line2 .t-right .t5 td{height:8.1mm;}
+        .w_line2 .t-right .t5 .t5-1{font-size:12px;border-right:1px solid #000;border-top:1px solid #000;border-bottom:1px solid #000;}
+        .w_line3{width:100%;display:flex;}
+        .w_line3 .t-left{width:90mm;border-left:5px solid #000;border-bottom:5px solid #000;border-right:5px solid #000;border-collapse: collapse;text-align: center;}
+        .w_line3 .t-left .t-1{width:1mm;border-right:1px solid #000;padding:0 1mm;box-sizing:border-box;}
+        .w_line3 .t-left .t-2{position:relative;}
+        .w_line3 .t-left .t-2 .t-2-chapter{padding-left: 30mm;padding-top:20mm;}
+        .w_line3 .t-left .t-2 .t-2-chapter p:nth-of-type(1){letter-spacing:10px;padding-left:10px;}
+        .w_line3 .t-left .t-2 .date{margin-top:5mm;padding-top:5mm;padding-left:45mm;}
+        .w_line3 .t-mid{border-collapse: collapse;width:62.5mm;border-right:1px solid #000;border-bottom:1px solid #000;border-top:5px solid #000;}
+        .w_line3 .t-mid .t-1 .t1{width:10mm;border-right:1px solid #000;padding: 0 18px;box-sizing: border-box;}
+        .w_line3 .t-mid .t-1 td{height:5mm;text-align:center;}
+        .w_line3 .t-mid .t-1 .t2{width:16mm;border-right:1px solid #000;border-bottom:1px solid #000;}
+        .w_line3 .t-mid .t-1 .t3{border-bottom:1px solid #000;}
+        .w_line3 .t-mid .t-2 .t2{height:8.6mm;border-right:1px solid;border-bottom:1px solid;width: 10mm;max-width: 10mm;min-width: 5mm;}
+        .w_line3 .t-mid .t-2 .t3{border-bottom:1px solid;width: 30mm;max-width: 30mm;min-width: 25mm;}
+        .w_line3 .t-right{border-collapse: collapse;width:117.3mm;border-right:1px solid;border-bottom:1px solid;}
+        .w_line3 .t-right .t-1 td{width:10mm;height:5mm;border-right:1px solid;border-bottom:1px solid;}
+        .w_line3 .t-right .t-1 .td-1{width:31px;background:linear-gradient(151deg, transparent 49.5%, #000 51.5%, #000 50.5%, transparent 52.5%);position:relative;}
+        .w_line3 .t-right .t-1 .td-2{width:20px;text-align: center;}
+        .w_line3 .t-right .t-1 .td-3{width:32.7px;background:linear-gradient(152deg, transparent 49.5%, #000 51.5%, #000 50.5%, transparent 52.5%);position:relative;}
+        .w_line3 .t-right .t-1 .td-4{width:31px;text-align: center;}
+        .w_line3 .t-right .t-1 .td-5{width:55px;text-align: center;}
+        .w_line3 .t-right .t-2 td{height:7.4mm;border-right:1px solid;border-bottom:1px solid;}
+        .w_line3 .t-right .t-2 .td-1{width:31px;max-width:31px;min-width:25px;}
+        .w_line3 .t-right .t-2 .td-2{width:17px;max-width:17px;min-width:12px;}
+        .w_line3 .t-right .t-2 .td-3{width:29px;max-width:29px;min-width:24px;}
+        .w_line3 .t-right .t-2 .td-4{width:28px;max-width:28px;min-width:23px;}
+        .w_line3 .t-right .t-2 .td-5{width:52px;max-width:52px;min-width:47px;}
+        .driver-bg{height:190mm;}
+    </style>
+</head>
+
+<body>
+<div class="page root">
+    <div class="page_box">
+        <div id="printId">
+            <div class="content">
+                <div>
+                    <div class="driver-bg">
+                        <div class="driver-mid flex-grow-1">
+                            <div class="w_line1">
+                               <div class="pay_method">
+                                   <div class="p_left">
+                                       付款方式
+                                   </div>
+                                   <div class="p_right payment_mode">
+                                       
+                                   </div>
+                               </div>
+                               <div class="title">
+                                   <p>水路货物运单</p>
+                                   <p>(货物进场装船联)</p>
+                               </div>
+                               <div class="contract">
+                                   本运单经承托双方签认后具有合同效力，承运人与托运人、收货人之间的权利、义务关系和责任界限均按《水路货物运输规则》及运杂费用的有关规定办理。
+                               </div>
+                            </div>
+                            <div style="display:flex;margin-top:5mm;">
+                                <table class="driver-table">
+                                    <tr>
+                                        <th class="dt1">运单号</th>
+                                        <th class="dt2 waybill_no"></th>
+                                        <th class="dt3">
+                                            <div class="dt3-left">
+                                                <div>起运港</div>
+                                                <div>到达港</div>
+                                            </div>
+                                            <div class="dt3-right">
+                                                <div class="departure"></div>
+                                                <div class="arrival"></div>
+                                            </div>
+                                        </th>
+                                        <th class="dt4">发货人</th>
+                                        <th class="dt5 sender"></th>
+                                        <th class="dt6">收货人</th>
+                                        <th class="dt7 receiver"></th>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="w_line2">
+                                <table class="t-left">
+                                    <tbody>
+                                        <tr>
+                                            <th class="dt1">发货标志</th>
+                                            <th class="dt2">货名</th>
+                                            <th class="dt3">件数</th>
+                                            <th class="dt4">包装</th>
+                                            <th class="dt5">体积<br/>立方米</th>
+                                            <th class="dt6">毛重<br/>(公斤)</th>    
+                                        </tr>
+                                        <tr class="tl-1">
+                                            <td class="dt1 ship_mark" rowspan="7" style="">
+
+                                            </th>
+                                            <td class="dt2"></th>
+                                            <td class="dt3"></th>
+                                            <td class="dt4" style="line-height: 3mm;">
+
+                                            </th>
+                                            <td class="dt5"></th>
+                                            <td class="dt6"></th>
+                                        </tr>
+                                        <tr class="tl-2">
+                                            <td class="dt2"></th>
+                                            <td class="dt3"></th>
+                                            <td class="dt4"></th>
+                                            <td class="dt5"></th>
+                                            <td class="dt6"></th>    
+                                        </tr>
+                                        <tr class="tl-2">
+                                            <td class="dt2"></th>
+                                            <td class="dt3"></th>
+                                            <td class="dt4"></th>
+                                            <td class="dt5"></th>
+                                            <td class="dt6"></th>    
+                                        </tr>
+                                        <tr class="tl-2">
+                                            <td class="dt2"></th>
+                                            <td class="dt3"></th>
+                                            <td class="dt4"></th>
+                                            <td class="dt5"></th>
+                                            <td class="dt6"></th>    
+                                        </tr>
+                                        <tr class="tl-2">
+                                            <td class="dt2"></th>
+                                            <td class="dt3"></th>
+                                            <td class="dt4"></th>
+                                            <td class="dt5"></th>
+                                            <td class="dt6"></th>    
+                                        </tr>
+                                        <tr class="tl-2">
+                                            <td class="dt2"></th>
+                                            <td class="dt3"></th>
+                                            <td class="dt4"></th>
+                                            <td class="dt5"></th>
+                                            <td class="dt6"></th>    
+                                        </tr>
+                                        <tr class="tl-3">
+                                            <td class="dt2">合计</th>
+                                            <td class="dt3 sum_piece"></th>
+                                            <td class="dt4"></th>
+                                            <td class="dt5 sum_volume"></th>
+                                            <td class="dt6 sum_gross"></th>
+                                        </tr>
+                                        <tr>
+                                            <td class="dt1"></td>
+                                            <td class="dt2" colspan="5" style="text-align:left;padding: 2mm 1mm;">运输合同编号：<span class="ys_contract"></span></th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <table class="t-right pro_comein">
+                                    <tr class="t1" >
+                                        <td colspan="6">装货船名、地点、时间</td>
+                                    </tr>
+                                    <tr class="t2">
+                                        <td colspan="6" class="load_info"></td>
+                                    </tr>
+                                    <tr class="t3">
+                                        <td colspan="6">货物进场记录</td>
+                                    </tr>
+                                    <tr class="t4">
+                                        <td class="t4-1">日期</td>
+                                        <td class="t4-2">
+                                            来车<br/>
+                                            (驳)
+                                        </td>
+                                        <td class="t4-3">货名</td>
+                                        <td class="t4-4">
+                                            <span style="position: absolute;left: 6px;top: 4px;z-index: 1;color: #000;">件数</span>
+                                            <span style="position: absolute;right: 6px;bottom: 4px;z-index: 1;color: #000;">重量</span>
+                                        </td>
+                                        <td class="t4-5">堆放地点</td>
+                                        <td class="t4-6">
+                                            <span style="position: absolute;left: 6px;top: 4px;z-index: 1;color: #000;">仓库员</span>
+                                            <span style="position: absolute;right: 1px;bottom: -1px;z-index: 1;color: #000;">发货人</span>
+                                        </td>
+                                    </tr>
+                                    <tr class="t5">
+                                        <td class="t5-1"></td>
+                                        <td class="t5-1"></td>
+                                        <td class="t5-1"></td>
+                                        <td class="t5-1"></td>
+                                        <td class="t5-1"></td>
+                                        <td class="t5-1"></td>
+                                    </tr>
+                                    <tr class="t5">
+                                        <td class="t5-1"></td>
+                                        <td class="t5-1"></td>
+                                        <td class="t5-1"></td>
+                                        <td class="t5-1"></td>
+                                        <td class="t5-1"></td>
+                                        <td class="t5-1"></td>
+                                    </tr>
+                                    <tr class="t5">
+                                        <td class="t5-1"></td>
+                                        <td class="t5-1"></td>
+                                        <td class="t5-1"></td>
+                                        <td class="t5-1"></td>
+                                        <td class="t5-1"></td>
+                                        <td class="t5-1"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="w_line3">
+                                <table class="t-left">
+                                    <tr>
+                                        <td class="t-1">特约事项</td>
+                                        <td class="t-2">
+                                            <div class="t-2-chapter">
+                                                <p>托运人</p>
+                                                <p>(公章)</p>
+                                                <img src="./chapter1210.png" alt="" style="width:50mm;height:36mm;position:absolute;top: 13px;left: 114px;">
+                                            </div>
+                                            <div class="date waybill_date">
+                                                <span class="year"></span>年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="month"></span>月&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="day"></span>日
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <table class="t-mid" cellspacing="1">
+                                    <tr class="t-1">
+                                        <td class="t1" rowspan="4">货物实装记录</td>
+                                        <td class="t2">
+                                            开装<br>
+                                            日期
+                                        </td>
+                                        <td class="t3">货名</td>
+                                    </tr>
+                                    <tr class="t-2">
+                                        <td class="t2"></td>
+                                        <td class="t3"></td>
+                                    </tr>
+                                    <tr class="t-2">
+                                        <td class="t2"></td>
+                                        <td class="t3"></td>
+                                    </tr>
+                                    <tr class="t-2">
+                                        <td class="t2"></td>
+                                        <td class="t3"></td>
+                                    </tr>
+                                </table>
+                                <table class="t-right" >
+                                    <tr class="t-1">
+                                        <td class="td-1">
+                                            <span style="position: absolute;left: 6px;top: 4px;z-index: 1;color: #000;">件数</span>
+                                            <span style="position: absolute;right: 6px;bottom: 4px;z-index: 1;color: #000;">重量</span>
+                                        </td>
+                                        <td class="td-2">
+                                            装完<br>
+                                            时间
+                                        </td>
+                                        <td class="td-3">
+                                            <span style="position: absolute;left: 6px;top: 4px;z-index: 1;color: #000;">仓库员</span>
+                                            <span style="position: absolute;right: 6px;bottom: 4px;z-index: 1;color: #000;">发货人</span>
+                                        </td>
+                                        <td class="td-4">海关验放</td>
+                                        <td class="td-5">船方签认</td>
+                                    </tr>
+                                    <tr class="t-2">
+                                        <td class="td-1"></td>
+                                        <td class="td-2"></td>
+                                        <td class="td-3"></td>
+                                        <td class="td-4"></td>
+                                        <td class="td-5"></td>
+                                    </tr>
+                                    <tr class="t-2">
+                                        <td class="td-1"></td>
+                                        <td class="td-2"></td>
+                                        <td class="td-3"></td>
+                                        <td class="td-4"></td>
+                                        <td class="td-5"></td>
+                                    </tr>
+                                    <tr class="t-2">
+                                        <td class="td-1"></td>
+                                        <td class="td-2"></td>
+                                        <td class="td-3"></td>
+                                        <td class="td-4"></td>
+                                        <td class="td-5"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="diyform" style='background: #fff;margin-bottom: 10px;padding: 10px;width: 520px;height:500px;overflow:scroll;position: fixed;top: 150px;right: 40px;border:1px solid;'>
+    <div class="layui-form-item" style="width: auto;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">商城订单编号</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="请填写商城订单编号" name="lading_no" id="lading_no" value="" />
+                <button onclick="connect()" class="btn" style="width: 4em;height: 2.2em;padding: 0;line-height: 0;">关联</button>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">付款方式</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="请填写付款方式" name="payment_mode" id="payment_mode" value="" />
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">运单号</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="请填写运单号" name="waybill_no" id="waybill_no" value="" />
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">起运港</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input list="browsers" name="departure" id="departure" placeholder="请选择起运港">
+                <datalist id="browsers">
+                    <option value="">请选择起运港</option>
+                    {foreach $distinate_port as $k=>$v}
+                    <option value="{$v['code_name']}">{$v['code_name']}/{$v['code_value']}</option>
+                    {/foreach}
+                </datalist>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">到达港</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input list="browsers2" name="arrival" id="arrival" placeholder="请选择到达港">
+                <datalist id="browsers2">
+                    <option value="">请选择到达港</option>
+                    {foreach $arr_country as $k=>$v}
+                    <option value="{$v['code_name']}/{$v['code_value']}">{$v['code_name']}/{$v['code_value']}</option>
+                    {/foreach}
+                </datalist>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">发货人</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="请填写发货人" name="sender" id="sender" value="" />
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">收货人</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="请填写收货人" name="receiver" id="receiver" value="" />
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">发货标志</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="请填写发货标志,换行加'、'" name="ship_mark" id="ship_mark" value="" />
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">装货信息</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="装货船名、地点、时间" name="load_info" id="load_info" value="" />
+            </div>
+        </div>
+    </div>
+
+    <h4>货物信息</h4>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">货名</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="货名" name="goods_name" id="goods_name" value="" />
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">件数</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="件数" name="goods_piece" id="goods_piece" value="" />
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">包装</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input list="browsers3" name="goods_packing" id="goods_packing" placeholder="请选择包装">
+                <datalist id="browsers3">
+                    <option value="">请选择包装</option>
+                    {foreach $packing_type as $k=>$v}
+                    <option value="{$v['code_name']}-{$v['code_value']}">{$v['code_name']}/{$v['code_value']}</option>
+                    {/foreach}
+                </datalist>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">体积</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="体积" name="goods_volume" id="goods_volume" value="" />
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">毛重</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="毛重" name="goods_gross" id="goods_gross" value="" />
+            </div>
+        </div>
+    </div>
+    <button type="button" style="width: 5em;" class="btn" onclick="createGoods();">添加</button>
+
+    <h4>合计</h4>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">件数</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="件数" name="sum_piece" id="sum_piece" value="" />
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">体积</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="体积" name="sum_volume" id="sum_volume" value="" />
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">毛重</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="毛重" name="sum_gross" id="sum_gross" value="" />
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">运输合同号</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="运输合同号" name="ys_contract" id="ys_contract" value="" />
+            </div>
+        </div>
+    </div>
+
+    <h4>货物进场记录</h4>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">日期</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="日期" name="pro_date" id="pro_date" value="" />
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">来车(驳)</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="来车(驳)" name="income_vehicle" id="income_vehicle" value="" />
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">货名</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="货名" name="pro_name" id="pro_name" value="" />
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">件数/重量</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="件数/重量" name="piece_weight" id="piece_weight" value="" />
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">堆放地点</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="堆放地点" name="stack_place" id="stack_place" value="" />
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">发货人</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="仓库员/发货人" name="pro_sender" id="pro_sender" value="" />
+            </div>
+        </div>
+    </div>
+    <button type="button" style="width: 5em;" class="btn" onclick="createPro();">添加</button>
+
+    <h4>货物实装记录</h4>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">开装日期</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="开装日期" name="open_date" id="open_date" value="" />
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">货名</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="货名" name="real_name" id="real_name" value="" />
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">件数/重量</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="件数/重量" name="real_piece_weight" id="real_piece_weight" value="" />
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">装完时间</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="装完时间" name="finish_time" id="finish_time" value="" />
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">发货人</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="发货人" name="real_sender" id="real_sender" value="" />
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">海关验放</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="海关验放" name="customs_check" id="customs_check" value="" />
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">船方签认</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="船方签认" name="consign" id="consign" value="" />
+            </div>
+        </div>
+    </div>
+    <button type="button" style="width: 5em;" class="btn" onclick="createRealPro();">添加</button>
+
+    <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+        <div class="layui-inline layui-select-fs">
+            <label class="layui-form-label" style="display: inline-block;font-size: 15px;">运单日期</label>
+            <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                <input type="text" placeholder="20211214" name="waybill_date" id="waybill_date" value="" />
+            </div>
+        </div>
+    </div>
+</div>
+<div style="padding: 30px 0;text-align: center;">
+    <button type="button"  class="btn" onclick="createPDF()">生成</button>
+</div>
+<script src="./static/doc/jquery.min.js"></script>
+<!--<script src="https://www.jq22.com/jquery/jquery-1.10.2.js"></script>-->
+<script src="./static/doc/html2canvas.min.js"></script>
+<script src="./static/doc/jspdf.min.js"></script>
+
+<script>
+    $(function(){
+        // 付款方式
+        $('#payment_mode').bind('input propertychange',function() {
+            $('.payment_mode').text($(this).val());
+        });
+        // 运单号
+        $('#waybill_no').bind('input propertychange',function() {
+            $('.waybill_no').text($(this).val());
+        });
+        // 起运港
+        $('#departure').bind('input propertychange',function() {
+            let val = $(this).val();
+            val = val.split('（');
+            $('.departure').text(val[0]);
+        });
+        // 到达港
+        $('#arrival').bind('input propertychange',function() {
+            let val = $(this).val();
+            val = val.split('/');
+            $('.arrival').text(val[0]);
+        });
+        // 发货人
+        $('#sender').bind('input propertychange',function() {
+            $('.sender').text($(this).val());
+        });
+        // 收货人
+        $('#receiver').bind('input propertychange',function() {
+            $('.receiver').text($(this).val());
+        });
+        // 发货标志
+        $('#ship_mark').bind('input propertychange',function() {
+            let val = $(this).val();
+            val = val.split('、');
+            let html = '';
+            for(var i=0;i<=val.length;i++){
+                if(typeof(val[i])!='undefined'){
+                    html+=val[i]+'</br>';
+                }
+            }
+            $('.ship_mark').html(html);
+        });
+        //装货信息
+        $('#load_info').bind('input propertychange',function() {
+            $('.load_info').text($(this).val());
+        });
+
+        //合计-件数
+        $('#sum_piece').bind('input propertychange',function() {
+            $('.sum_piece').text($(this).val());
+        });
+        //体积
+        $('#sum_volume').bind('input propertychange',function() {
+            $('.sum_volume').text($(this).val());
+        });
+        //毛重
+        $('#sum_gross').bind('input propertychange',function() {
+            $('.sum_gross').text($(this).val());
+        });
+        //运输合同号
+        $('#ys_contract').bind('input propertychange',function() {
+            $('.ys_contract').text($(this).val());
+        });
+
+        //运单日期
+        $('#waybill_date').bind('input propertychange',function() {
+            let val = $(this).val();
+            if(val.length==4){
+                $('.waybill_date').find('.year').text(val.substr(0,4));
+            }
+            if(val.length==6){
+                let v = val.substr(4,6);
+                $('.waybill_date').find('.month').text(val.substr(4,6));
+            }
+            if(val.length==8){
+                let v = val.substr(6,8);
+                $('.waybill_date').find('.day').text(val.substr(6,8));
+            }
+        });
+
+    });
+    var times=0;
+    function connect(){
+        let lading_no = $('#lading_no').val();
+        if(lading_no=='' || typeof(lading_no)=='undefined'){
+            alert('请输入商城订单号！');
+            return false;
+        }
+        $.ajax({
+            url:'{:Url("admin/entrustDecl/waterway_cargo_waybill")}',
+            method:'post',
+            data:{lading_no:lading_no},
+            dataType:'JSON',
+            success:function(res){
+                if(res.code == 1)
+                {
+                    alert(res.msg);
+                    $('.waybill_no').text(res.dataList.info.waybill_no);
+                    $('.departure').text(res.dataList.departure_port);
+                    $('.arrival').text(res.dataList.destination_port);
+                    $('.sender').text(res.dataList.info.deliver.company_name);
+                    $('.receiver').text(res.dataList.info.receive.company_name);
+                    $('.load_info').text(res.dataList.info.load_info);
+                    
+                    //商品
+                    let goods = res.dataList.goods;
+                    
+                    for(var i=0;i<goods.length;i++){
+                        var dt4 = '';
+                        if(goods[i]['goods']['packing_type'].length>=3){
+                            for(var j=1;j<=goods[i]['goods']['packing_type'].length;j++){
+                                if(isInteger(j/3)){
+                                    var dt = goods[i]['goods']['packing_type'];
+                                    var dtl = goods[i]['goods']['packing_type'].length-j;
+                                   
+                                    dt4+=dt.substr(((j/3)-1)*3,4)+'</br>';
+                                    
+                                    if(j==9){break;}
+                                }
+                            }
+                        }else{
+                            dt4 =goods[i]['goods']['packing_type'];
+                        }
+                        let html = '<tr class="tl-2">\n' +
+                            '          <td class="dt2">\n' +goods[i]['goods']['goods_name']+
+                            '          </td><td class="dt3">\n' +goods[i]['total']+
+                            '          </td><td class="dt4" style="line-height:3mm;">\n' +dt4+
+                            '          </td><td class="dt5">\n' +''+
+                            '          </td><td class="dt6">    \n' +goods[i]['goods']['grosswt']+
+                            '          </td></tr>';
+                
+                        if(!$('.w_line2').find('.t-left').find('tr').eq(1).hasClass('changeGoods')){
+                            let html ='    <td class="dt2">\n' +goods[i]['goods']['goods_name']+
+                                '          </td><td class="dt3">\n' +goods[i]['total']+
+                                '          </td><td class="dt4" style="line-height:3mm;">\n' +dt4+
+                                '          </td><td class="dt5">\n' +''+
+                                '          </td><td class="dt6">    \n' +goods[i]['goods']['grosswt']+
+                                '          </td>';
+                            $('.w_line2').find('.t-left').find('tr').eq(1).addClass('changeGoods');
+                            $('.w_line2').find('.t-left').find('tr').eq(1).find('.dt2').remove();
+                            $('.w_line2').find('.t-left').find('tr').eq(1).find('.dt3').remove();
+                            $('.w_line2').find('.t-left').find('tr').eq(1).find('.dt4').remove();
+                            $('.w_line2').find('.t-left').find('tr').eq(1).find('.dt5').remove();
+                            $('.w_line2').find('.t-left').find('tr').eq(1).find('.dt6').remove();
+                            $('.w_line2').find('.t-left').find('tr').eq(1).find('.ship_mark').after(html);
+                        }else{
+                            
+                            for(var jj=0;jj<5;jj++){
+                                console.log(times+' '+jj);
+                                if(times==jj){
+                                    $('.w_line2').find('.t-left').find('.tl-2').eq(jj).remove();
+                                    if(jj==4){
+                                        $('.w_line2').find('.t-left').find('.tl-2').eq(jj-1).after(html);
+                                    }else{
+                                        $('.w_line2').find('.t-left').find('.tl-2').eq(jj).before(html);
+                                    }
+                                    times++;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }else{
+                    alert(res.msg);return false;
+                }
+            },
+            error:function (data) {
+                layer.msg('系统错误');
+            }
+        });
+    }
+
+    function isInteger(obj) {
+        return obj%1 === 0
+    }
+
+    //创建货物
+    function createGoods(){
+        let goods_name = $('#goods_name').val();
+        let goods_piece = $('#goods_piece').val();
+        let goods_packing = $('#goods_packing').val();
+        goods_packing = goods_packing.split('-');
+        let goods_volume = $('#goods_volume').val();
+        let goods_gross = $('#goods_gross').val();
+
+        var dt4 = '';
+        if(goods_packing[0].length>=3){
+            for(var i=1;i<=goods_packing[0].length;i++){
+                if(isInteger(i/3)){
+                    var dt = goods_packing[0];
+                    var dtl = goods_packing[0].length-i;
+                    // if(dtl==1){
+                    //     //加上最后一个
+                    //     dt4+=dt.substr(((i/3)-1)*3,4)+'</br>';
+                    // }else{
+                    dt4+=dt.substr(((i/3)-1)*3,4)+'</br>';
+                    // }
+                    if(i==9){break;}
+                }
+            }
+        }else{
+            dt4 =goods_packing[0];
+        }
+
+        let html = '<tr class="tl-2">\n' +
+            '          <td class="dt2">\n' +goods_name+
+            '          </td><td class="dt3">\n' +goods_piece+
+            '          </td><td class="dt4" style="line-height:3mm;">\n' +dt4+
+            '          </td><td class="dt5">\n' +goods_volume+
+            '          </td><td class="dt6">    \n' +goods_gross+
+            '          </td></tr>';
+
+        if(!$('.w_line2').find('.t-left').find('tr').eq(1).hasClass('changeGoods')){
+            let html ='    <td class="dt2">\n' +goods_name+
+                '          </td><td class="dt3">\n' +goods_piece+
+                '          </td><td class="dt4" style="line-height:3mm;">\n' +dt4+
+                '          </td><td class="dt5">\n' +goods_volume+
+                '          </td><td class="dt6">    \n' +goods_gross+
+                '          </td>';
+            $('.w_line2').find('.t-left').find('tr').eq(1).addClass('changeGoods');
+            $('.w_line2').find('.t-left').find('tr').eq(1).find('.dt2').remove();
+            $('.w_line2').find('.t-left').find('tr').eq(1).find('.dt3').remove();
+            $('.w_line2').find('.t-left').find('tr').eq(1).find('.dt4').remove();
+            $('.w_line2').find('.t-left').find('tr').eq(1).find('.dt5').remove();
+            $('.w_line2').find('.t-left').find('tr').eq(1).find('.dt6').remove();
+            $('.w_line2').find('.t-left').find('tr').eq(1).find('.ship_mark').after(html);
+        }else{
+            for(var i=0;i<5;i++){
+                if(times==i){
+                    $('.w_line2').find('.t-left').find('.tl-2').eq(i).remove();
+                    if(i==4){
+                        $('.w_line2').find('.t-left').find('.tl-2').eq(i-1).after(html);
+                    }else{
+                        $('.w_line2').find('.t-left').find('.tl-2').eq(i).before(html);
+                    }
+                    times++;
+                    break;
+                }
+            }
+        }
+    }
+
+    //创建货物进场记录
+    function createPro(){
+        //日期
+        let pro_date = $('#pro_date').val();
+        //来车
+        let income_vehicle = $('#income_vehicle').val();
+        //货名
+        let pro_name = $('#pro_name').val();
+        //件数/重量
+        let piece_weight = $('#piece_weight').val();
+        //堆放地点
+        let stack_place = $('#stack_place').val();
+        //发货人
+        let sender = $('#pro_sender').val();
+        
+        let html = '<tr class="t5 insertT5">\n'+
+                        '<td class="t5-1">'+pro_date+'</td>\n'+
+                        '<td class="t5-1">'+income_vehicle+'</td>\n'+
+                        '<td class="t5-1">'+pro_name+'</td>\n'+
+                        '<td class="t5-1">'+piece_weight+'</td>\n'+
+                        '<td class="t5-1">'+stack_place+'</td>\n'+
+                        '<td class="t5-1">'+sender+'</td>\n'+
+                    '</tr>';
+        if(!$('.pro_comein').find('.t5').eq(0).hasClass('insertT5')){
+            $('.pro_comein').find('.t5').eq(0).remove();
+            $('.pro_comein').find('.t4').after(html);
+        }else{
+            if(!$('.pro_comein').find('.t5').eq(1).hasClass('insertT5')){
+                $('.pro_comein').find('.t5').eq(1).remove();
+                $('.pro_comein').find('.insertT5').after(html);
+            }else{
+                if(!$('.pro_comein').find('.t5').eq(2).hasClass('insertT5')){
+                    $('.pro_comein').find('.t5').eq(2).remove();
+                    $('.pro_comein').find('.insertT5:last').after(html);
+                }
+            }
+        }
+    }
+    
+    //创建货物实装记录
+    function createRealPro(){
+        //日期
+        let open_date = $('#open_date').val();
+        let real_name = $('#real_name').val();
+        //货名
+        let real_piece_weight = $('#real_piece_weight').val();
+        //件数/重量
+        let finish_time = $('#finish_time').val();
+        //堆放地点
+        let real_sender = $('#real_sender').val();
+        //发货人
+        let customs_check = $('#customs_check').val();
+        let consign = $('#consign').val();
+        
+        let html1 = '<tr class="t-2 insertT2">\n'+
+                        '<td class="t2">'+open_date+'</td>\n'+
+                        '<td class="t3">'+real_name+'</td>\n'+
+                    '</tr>';
+        
+        let html2 = '<tr class="t-2 insertT2">\n'+
+                        '<td class="td-1">'+real_piece_weight+'</td>\n'+
+                        '<td class="td-2">'+finish_time+'</td>\n'+
+                        '<td class="td-3">'+real_sender+'</td>\n'+
+                        '<td class="td-3">'+customs_check+'</td>\n'+
+                        '<td class="td-5">'+consign+'</td>\n'+
+                    '</tr>';
+                    
+        if(!$('.w_line3').find('.t-mid').find('.t-2').eq(0).hasClass('insertT2')){
+            $('.w_line3').find('.t-mid').find('.t-2').eq(0).remove();
+            $('.w_line3').find('.t-right').find('.t-2').eq(0).remove();
+            $('.w_line3').find('.t-mid').find('.t-1').after(html1);
+            $('.w_line3').find('.t-right').find('.t-1').after(html2);
+        }else{
+            if(!$('.w_line3').find('.t-mid').find('.t-2').eq(1).hasClass('insertT2')){
+                 $('.w_line3').find('.t-mid').find('.t-2').eq(1).remove();
+                 $('.w_line3').find('.t-right').find('.t-2').eq(1).remove();
+                 $('.w_line3').find('.t-mid').find('.insertT2').after(html1);
+                 $('.w_line3').find('.t-right').find('.insertT2').after(html2);
+            }else{
+                if(!$('.w_line3').find('.t-mid').find('.t-2').eq(2).hasClass('insertT2')){
+                    $('.w_line3').find('.t-mid').find('.t-2').eq(2).remove();
+                     $('.w_line3').find('.t-right').find('.t-2').eq(2).remove();
+                     $('.w_line3').find('.t-mid').find('.insertT2:last').after(html1);
+                     $('.w_line3').find('.t-right').find('.insertT2:last').after(html2);
+                }
+            }
+        }
+       
+        
+    }
+    
+    // 生成pdf
+    function createPDF() {
+        html2canvas(document.querySelector("#printId"), {
+            allowTaint: !0,
+            scale: 2
+        }).then((function(canvas) {
+
+            var contentWidth = canvas.width;
+            var contentHeight = canvas.height;
+
+            //一页pdf显示html页面生成的canvas高度;
+            var pageHeight = contentWidth / 595.28 * 841.89;
+            //未生成pdf的html页面高度
+            var leftHeight = contentHeight;
+            //pdf页面偏移
+            var position = 0;
+            //a4纸的尺寸[595.28,841.89]，html页面生成的canvas在pdf中图片的宽高
+            var imgWidth = 801.89 ;
+            var imgHeight = 575.28;
+
+            var pageData = canvas.toDataURL('image/jpeg', 1.0);
+
+            // document.body.appendChild(canvas);
+
+            var pdf = new jsPDF('l', 'pt', 'a4');
+            //有两个高度需要区分，一个是html页面的实际高度，和生成pdf的页面高度(841.89)
+            //当内容未超过pdf一页显示的范围，无需分页
+            if (leftHeight < pageHeight) {
+                pdf.addImage(pageData, 'JPEG', 30, 0, imgWidth, imgHeight );
+            } else {
+                while(leftHeight > 0) {
+                    pdf.addImage(pageData, 'JPEG', 30, position, imgWidth, imgHeight)
+                    leftHeight -= pageHeight;
+                    position -= 821.89;
+                    //避免添加空白页
+                    if(leftHeight > 0) {
+                        pdf.addPage();
+                    }
+                }
+            }
+
+            var pdfName = '水路货物运单.pdf';
+            // 将pdf输入为base格式的字符串
+            var buffer = pdf.output("datauristring");
+            // 将base64格式的字符串转换为file文件
+            var myfile = dataURLtoFile(buffer, pdfName);
+            var formdata = new FormData();
+            formdata.append('file', myfile);
+            formdata.append('folder', 'payer_pay');
+            formdata.append('type', 'highway_manifest');
+
+            let ship_mark = $('#ship_mark').val();
+            let lading_no = $('#lading_no').val();
+            if(ship_mark=='' || typeof(ship_mark)=='undefined'){
+                alert('请输入发货标志');return false;
+            }
+            //保存水路货物运单
+            $.ajax({
+                url:"{:url('admin/Entrustdecl/waterway_paper_info')}",
+                method:'post',
+                data:{type:'wateway',ship_mark:ship_mark,ordersn:lading_no},
+                dataType:'JSON',
+                success:function(res){
+                    pdf.save(pdfName);
+                },
+                error:function (data) {
+                    alert('系统错误');
+                }
+            })
+
+
+            // $.ajax({
+            //     url:'{{url("/mobile/trade/check_pdf")}}',
+            //     method:'get',
+            //     data:{ trade_id: '', 'trade_type': 1, type: 'highway_manifest' },
+            //     dataType:'JSON',
+            //     success:function(res){
+            //         if(res.code == 1)
+            //         {
+            //             alert(res.msg);
+            //         }else{
+            //             $.ajax({
+            //                 url:'{{url("/mobile/upload/upload_file")}}',
+            //                 method:'post',
+            //                 data:formdata,
+            //                 processData: false,
+            //                 contentType : false,
+            //                 dataType:'JSON',
+            //                 success:function(res){
+            //                     if(res.code == 1)
+            //                     {
+            //                         $.ajax({
+            //                             url:'{{url("/mobile/trade/save_pdf")}}',
+            //                             method:'post',
+            //                             data:{ trade_id: '', 'trade_type': 1, type: 'highway_manifest', pdf_sn: '', file_path: res.file_path, _token: ''},
+            //                             dataType:'JSON',
+            //                             success:function(res){
+            //                                 if(res.code == 1)
+            //                                 {
+            //                                     alert('生成成功');
+            //                                     pdf.save('Highway_manifest_'+pdfName);
+            //                                 }else{
+            //                                     alert(res.msg);
+            //                                 }
+            //                             },
+            //                             error:function (data) {
+            //                                 layer.msg('系统错误',{time:2000});
+            //                             }
+            //                         });
+
+            //                     }
+            //                 },
+            //                 error:function (data) {
+            //                     layer.msg('系统错误',{time:2000});
+            //                 }
+            //             });
+            //         }
+            //     },
+            //     error:function (data) {
+            //         layer.msg('系统错误',{time:2000});
+            //     }
+            // });
+        }))
+    }
+
+    //将base64转换为文件对象
+    function dataURLtoFile(dataurl, filename) {
+        var arr = dataurl.split(',');
+        var mime = arr[0].match(/:(.*?);/)[1];
+        var bstr = atob(arr[1]);
+        var n = bstr.length;
+        var u8arr = new Uint8Array(n);
+        while(n--){
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        //转换成file对象
+        return new File([u8arr], filename, {type:mime});
+        //转换成成blob对象
+        //return new Blob([u8arr],{type:mime});
+    }
+</script>
+
+</body>
+</html>

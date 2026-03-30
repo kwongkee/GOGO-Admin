@@ -1,0 +1,160 @@
+{include file="public/header"}
+<body style="padding: 10px;">
+
+<div class="header">
+    <span>账单列表</span>
+    <!--button class="layui-btn layui-btn-sm" onclick="add()">添加</button-->
+    <div></div>
+</div>
+
+<table class="layui-table">
+    <thead>
+    <tr>
+        <th>代理人</th>
+        <th>日期</th>
+        <th>批次编号</th>
+
+        <th>验证成功</th>
+        <th>验证失败</th>
+        <th>验证费用</th>
+
+        <th>支付成功</th>
+        <th>支付失败</th>
+        <th>支付费用</th>
+
+        <th>申报成功</th>
+        <th>申报失败</th>
+        <th>申报费用</th>
+
+    </tr>
+    </thead>
+
+    <tbody>
+
+    {volist name="datas" id="vo"}
+        <tr>
+            <td>{$conf['did']|getAgents}</td>
+            <td>{$conf['day']}</td>
+            <td>{$vo.batch_num}</td>
+
+            <td><input type="text" name="valVotes" value="{$vo.valVotes}" class="layui-input" onchange="change(this,{$vo.id})"></td>
+            <td><input type="text" name="valFail"  value="{$vo.valFail}"  class="layui-input" onchange="change(this,{$vo.id})"></td>
+            <td><input type="text" name="valMoney" value="{$vo.valMoney}" class="layui-input" onchange="change(this,{$vo.id})"></td>
+
+            <td><input type="text" name="paySuccvalue" value="{$vo.paySuccvalue}" class="layui-input" onchange="change(this,{$vo.id})"></td>
+            <td><input type="text" name="payFailvalue" value="{$vo.payFailvalue}" class="layui-input" onchange="change(this,{$vo.id})"></td>
+            <td><input type="text" name="payMoney"     value="{$vo.payMoney}"     class="layui-input" onchange="change(this,{$vo.id})"></td>
+
+            <td><input type="text" name="declVotes" value="{$vo.declVotes}" class="layui-input" onchange="change(this,{$vo.id})"></td>
+            <td><input type="text" name="declFail"  value="{$vo.declFail}"  class="layui-input" onchange="change(this,{$vo.id})"></td>
+            <td><input type="text" name="declMoney" value="{$vo.declMoney}" class="layui-input" onchange="change(this,{$vo.id})"></td>
+
+        </tr>
+    {/volist}
+
+    </tbody>
+</table>
+
+
+<div class="layui-input-block">
+    <input type="hidden" name="did" value="{$conf['did']}">
+    <input type="hidden" name="uid" value="{$conf['uid']}">
+    <input type="hidden" name="bill_id" value="{$conf['bill_id']}">
+    <input type="hidden" name="day" value="{$conf['day']}">
+    <input type="hidden" name="ordersn" value="{$conf['ordersn']}">
+
+    <button class="layui-btn-xm layui-btn" did="{$conf['did']}" uid="{$conf['uid']}" bill_id="{$conf['bill_id']}" day="{$conf['day']}" ordersn="{$conf['ordersn']}" onclick="check(this)">确认提交</button>
+</div>
+
+
+</body>
+<script type="text/javascript">
+
+    layui.use(['layer'],function() {
+        layer = layui.layer;
+        $     = layui.jquery;
+    });
+
+
+    // 编辑操作
+    function edit(id)
+    {
+        layer.open({
+            type:2,
+            title:'配置商户',
+            shade:0.3,
+            area:['480px','420px'],
+            content:'{:Url("agents/config/edit")}&id='+id
+        });
+    }
+
+
+    // change datas
+    function change(e,id)
+    {
+        var name = $(e).attr('name');
+        var val  = $(e).val();
+        var upid = id;
+
+        $.ajax({
+            url:'{:Url("agents/bill/update")}',
+            type:'post',
+            dataType:'json',
+            data:{
+                name:name,
+                val:val,
+                upid:upid,
+            },
+            success:function(su) {
+                if(su.code) {
+                    layer.msg(su.msg,{icon:1});
+                } else {
+                    layer.msg(su.msg,{icon:2});
+                }
+            },
+            error:function(e){
+                console.log('连接失败'+e);
+            }
+
+        })
+    }
+
+
+    //
+    function check(e)
+    {
+        var did = $(e).attr('did');
+        var uid = $(e).attr('uid');
+        var bill_id = $(e).attr('bill_id');
+        var day     = $(e).attr('day');
+        var ordersn = $(e).attr('ordersn');
+
+        $.ajax({
+            url:'{:Url("agents/bill/check")}',
+            type:'POST',
+            dataType: 'json',
+            data:{
+                did:did,
+                uid:uid,
+                bill_id:bill_id,
+                day:day,
+                ordersn:ordersn
+            },
+            success:function(su){
+                if(su.code == 1) {
+                    layer.msg(su.msg,{icon:1});
+                    setTimeout(function(){
+                       layer.closeAll();
+                       parent.window.location.reload();
+                    },2000);
+                } else {
+                    layer.msg(su.msg,{icon:2});
+                }
+            },
+            error:function(er){}
+        })
+
+    }
+
+</script>
+</html>

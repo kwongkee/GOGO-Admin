@@ -1,0 +1,161 @@
+{template 'common/header'}
+
+
+<style>
+	html, body {background: #f9f9f9;}
+	body{font-size: 14px; }
+	.form-control.edui-default {height: auto;border: 0;-webkit-box-shadow: inset 0 0px 0px rgba(0,0,0,0.075);box-shadow: inset 0 0px 0px rgba(0,0,0,0.075);}
+	.image-item,.image-item-add{position: relative; width: 80px; height: 80px; line-height: 80px; text-align: center; margin: 0 .5em .5em 0; border: 1px solid #ddd; border-radius:4px; float: left; cursor: pointer;}
+	.image-item,.image-item-add .fa-plus{color: green;}
+	.image-item img{max-width: 100%; max-height: 100%; vertical-align: middle;}
+	.image-item .image-item-change{position: absolute; bottom: 0; left: 0; width:100%; height: 25px; line-height: 25px; color: #fff; background: rgba(51,51,51,.5); border-bottom-left-radius: 4px; border-bottom-right-radius:4px; display: none;}
+	.image-item .fa.fa-times{position: absolute; top: -5px; right: -5px; width: 20px; height: 20px; line-height: 20px; font-size: 14px; text-align: center; z-index: 10; cursor: pointer; color: #FFF; background: #888; border-radius: 100%; display: none;}
+	.image-item .fa.fa-times:hover{background: #000;}
+	.image-item:hover .fa.fa-times,.image-item:hover .image-item-change{display: block;}
+</style>
+<div class="clearfix">
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="javascript:;"><i class="fa fa-edit"></i> 模块配置参数</a></li>
+	</ul>
+	<div class="form-group" style="padding: 10px;">
+			</div>
+	
+	<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data" id="form1">
+		<div class="panel panel-default">
+			<div class="panel-heading">模块配置参数</div>
+			<div class="panel-body">
+									<div class="form-group">
+						<label class="col-md-2 control-label">直播列表标题 </label>
+						<div class="col-sm-10 col-md-10  col-lg-10" >
+															<input type="text" name="live_title" value="{$settings['live_title']}" class="form-control" />
+														<span class="help-block"></span>
+						</div>
+					</div>
+									<div class="form-group">
+						<label class="col-md-2 control-label">直播列表分享标题 </label>
+						<div class="col-sm-10 col-md-10  col-lg-10" >
+						{php echo tpl_form_field_image('live_list_share_title',$settings['live_list_share_title']);}
+						</div>
+					</div>
+									<div class="form-group">
+						<label class="col-md-2 control-label">直播列表分享摘要 </label>
+						<div class="col-sm-10 col-md-10  col-lg-10" >
+															<input type="text" name="live_list_share_desc" value="{$settings['live_list_share_desc']}" class="form-control" />
+														<span class="help-block"></span>
+						</div>
+					</div>
+									<div class="form-group">
+						<label class="col-md-2 control-label">直播列表分享图片 </label>
+						<div class="col-sm-10 col-md-10  col-lg-10" >
+						{php echo tpl_form_field_image('live_list_share_img',$settings['live_list_share_img']);}
+						</div>
+					</div>
+									<div class="form-group">
+						<label class="col-md-2 control-label">直播显示条数 </label>
+						<div class="col-sm-10 col-md-10  col-lg-10" >
+															<input type="number" name="live_count" value="{$settings['live_count']}" class="form-control" data-param-type="number" />
+														<span class="help-block"></span>
+						</div>
+					</div>
+									<div class="form-group">
+						<label class="col-md-2 control-label">直播信息显示条数 </label>
+						<div class="col-sm-10 col-md-10  col-lg-10" >
+															<input type="number" name="message_count" value="{$settings['message_count']}" class="form-control" data-param-type="number" />
+														<span class="help-block"></span>
+						</div>
+					</div>
+									<div class="form-group">
+						<label class="col-md-2 control-label">留言显示条数 </label>
+						<div class="col-sm-10 col-md-10  col-lg-10" >
+															<input type="number" name="comment_count" value="{$settings['comment_count']}" class="form-control" data-param-type="number" />
+														<span class="help-block"></span>
+						</div>
+					</div>
+									<div class="form-group">
+						<label class="col-md-2 control-label">是否开启自动刷新 </label>
+						<div class="col-sm-10 col-md-10  col-lg-10" >
+																								<label class="radio-inline">
+										<input type="radio" name="autoload_status" value="0" {if $settings['autoload_status'] == '0'}checked="checked" {/if}/>
+										关闭									</label>
+																	<label class="radio-inline">
+										<input type="radio" name="autoload_status" value="1" {if $settings['autoload_status'] == '1'}checked="checked" {/if}/>
+										开启									</label>
+																						<span class="help-block"></span>
+						</div>
+					</div>
+									<div class="form-group">
+						<label class="col-md-2 control-label">刷新间隔 </label>
+						<div class="col-sm-10 col-md-10  col-lg-10" >
+															<input type="number" name="autoload_time" value="{$settings['autoload_time']}" class="form-control" data-param-type="number" />
+														<span class="help-block"></span>
+						</div>
+					</div>
+									<div class="form-group">
+						<label class="col-md-2 control-label">是否开启打赏 </label>
+						<div class="col-sm-10 col-md-10  col-lg-10" >
+																								<label class="radio-inline">
+										<input type="radio" name="reward_status" value="0" {if $settings['reward_status'] == '0'}checked="checked" {/if} />
+										关闭									</label>
+																	<label class="radio-inline">
+										<input type="radio" name="reward_status" value="1"  {if $settings['reward_status'] == '1'}checked="checked" {/if}/>
+										开启									</label>
+																						<span class="help-block"></span>
+						</div>
+					</div>
+									<div class="form-group">
+						<label class="col-md-2 control-label">公众号类型 </label>
+						<div class="col-sm-10 col-md-10  col-lg-10" >
+																								<label class="radio-inline">
+										<input type="radio" name="account_type" value="0" {if $settings['account_type'] == '0'}checked="checked" {/if}/>
+										订阅号									</label>
+																	<label class="radio-inline">
+										<input type="radio" name="account_type" value="1"  {if $settings['account_type'] == '1'}checked="checked" {/if}/>
+										服务号									</label>
+																						<span class="help-block"></span>
+						</div>
+					</div>
+									<div class="form-group">
+						<label class="col-md-2 control-label">身份标识(appId) </label>
+						<div class="col-sm-10 col-md-10  col-lg-10" >
+															<input type="text" name="wx_pay_appid" value="{$settings['wx_pay_appid']}" class="form-control" />
+														<span class="help-block"></span>
+						</div>
+					</div>
+									<div class="form-group">
+						<label class="col-md-2 control-label">身份密钥(appSecret) </label>
+						<div class="col-sm-10 col-md-10  col-lg-10" >
+															<input type="text" name="wx_pay_appsecret" value="{$settings['wx_pay_appsecret']}" class="form-control" />
+														<span class="help-block"></span>
+						</div>
+					</div>
+									<div class="form-group">
+						<label class="col-md-2 control-label">微信支付商户号(MchId) </label>
+						<div class="col-sm-10 col-md-10  col-lg-10" >
+															<input type="text" name="wx_pay_mchid" value="{$settings['wx_pay_mchid']}" class="form-control" />
+														<span class="help-block"></span>
+						</div>
+					</div>
+									<div class="form-group">
+						<label class="col-md-2 control-label">商户支付密钥(API密钥) </label>
+						<div class="col-sm-10 col-md-10  col-lg-10" >
+															<input type="text" name="wx_pay_apikey" value="{$settings['wx_pay_apikey']}" class="form-control" />
+														<span class="help-block"></span>
+						</div>
+					</div>
+									<div class="form-group">
+						<label class="col-md-2 control-label">微信关注二维码 </label>
+						<div class="col-sm-10 col-md-10  col-lg-10" >
+						{php echo tpl_form_field_image('wx_qrcode',$settings['wx_qrcode']);}
+						</div>
+					</div>
+								<div class="form-group">
+					<div class="col-sm-offset-2 col-xs-offset-2 col-md-offset-2 col-lg-offset-1 col-sm-10 col-xs-12 col-sm-10 col-md-10 col-lg-11 ">
+						<button type="submit" class="btn btn-primary" name="submit" value="提交">提交</button>
+						 <input type="hidden" name="token" value="{$_W['token']}" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+	
+</div>

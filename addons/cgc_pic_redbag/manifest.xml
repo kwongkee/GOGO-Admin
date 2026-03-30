@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.baidu.com" versionCode="0.6">
+	<application setting="true">
+		<name><![CDATA[图片朋友圈红包]]></name>
+		<identifie><![CDATA[cgc_pic_redbag]]></identifie>
+		<version><![CDATA[1.5.5]]></version>
+		<type><![CDATA[services]]></type>
+		<ability><![CDATA[图片朋友圈红包]]></ability>
+		<description><![CDATA[分享到朋友圈发图片获得一个红包]]></description>
+		<author><![CDATA[微赞]]></author>
+		<url><![CDATA[http://www.baidu.com]]></url>
+	</application>
+	<platform>
+		<subscribes>
+		</subscribes>
+		<handles>
+			<message type="text" />
+		</handles>
+		<rule embed="false" />
+		<card embed="false" />
+	</platform>
+	<bindings>
+		<cover>
+			<entry title="用户资料输入" do="user" state="" direct="false" />
+			<entry title="订阅号发红包" do="bind" state="" direct="false" />
+			<entry title="领取卡券入口" do="wx_card" state="" direct="false" />
+		</cover>
+		<menu>
+			<entry title="用户图片记录" do="cgc_pic_redbag" state="" direct="false" />
+			<entry title="会员记录" do="cgc_pic_redbag_user" state="" direct="false" />
+			<entry title="批量图片审批" do="bat_pic_approve" state="" direct="false" />
+		</menu>
+	</bindings>
+	<install><![CDATA[
+
+DROP TABLE IF EXISTS `ims_cgc_pic_redbag`;
+CREATE TABLE `ims_cgc_pic_redbag` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uniacid` int(3) NOT NULL,
+  `title` varchar(300) NOT NULL DEFAULT '' COMMENT '活动名称',
+  `openid` varchar(300) NOT NULL DEFAULT '' COMMENT 'openid',
+  `nickname` varchar(300) NOT NULL DEFAULT '' COMMENT '用户昵称',
+  `headimgurl` varchar(300) NOT NULL DEFAULT '' COMMENT '粉丝头像',
+  `province` varchar(30) NOT NULL DEFAULT '' COMMENT '省',
+  `city` varchar(30) NOT NULL DEFAULT '' COMMENT '城市',
+  `remark` text NOT NULL COMMENT '备注',
+  `pic` varchar(300) NOT NULL DEFAULT '' COMMENT '粉丝上传的图片',
+  `hb_status` int(1) NOT NULL DEFAULT '0' COMMENT '红包状态 0,未发放1,已发放',
+  `jy_openid` varchar(300) NOT NULL DEFAULT '' COMMENT '借用的openid',
+  `hb_money` decimal(6,2) NOT NULL DEFAULT '0.00' COMMENT '红包金额',
+  `createtime` int(10) DEFAULT NULL,
+  `media_id` varchar(100) DEFAULT NULL,
+  `sh_status` int(1) NOT NULL DEFAULT '0',
+  `addr` varchar(300) DEFAULT NULL,
+  `tel` varchar(30) DEFAULT NULL,
+  `check_redpack_money` decimal(6,2) NOT NULL DEFAULT '0.00' COMMENT '审核红包金额',
+  `addr2` varchar(300) NOT NULL DEFAULT '' COMMENT '备用地址',
+  `IP` varchar(30) NOT NULL DEFAULT '' COMMENT 'IP地址',
+  `realname` varchar(300) NOT NULL DEFAULT '' COMMENT '真实姓名',
+  PRIMARY KEY (`id`),
+  KEY `cgc_pic_redbag_ground1` (`uniacid`,`openid`,`hb_status`),
+  KEY `cgc_pic_redbag_ground2` (`uniacid`,`hb_status`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `ims_cgc_pic_redbag_user`;
+CREATE TABLE `ims_cgc_pic_redbag_user` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uniacid` int(3) NOT NULL,
+  `nickname` varchar(300) NOT NULL DEFAULT '' COMMENT '用户昵称',
+  `openid` varchar(300) NOT NULL DEFAULT '' COMMENT 'openid',
+  `province` varchar(30) NOT NULL DEFAULT '' COMMENT '省',
+  `city` varchar(30) NOT NULL DEFAULT '' COMMENT '城市',
+  `addr` varchar(300) NOT NULL DEFAULT '' COMMENT '用户地址',
+  `tel` varchar(31) NOT NULL DEFAULT '' COMMENT '电话',
+  `addr2` varchar(300) NOT NULL DEFAULT '' COMMENT '备用地址',
+  `IP` varchar(30) NOT NULL DEFAULT '' COMMENT 'IP地址',
+  `realname` varchar(30) NOT NULL DEFAULT '' COMMENT '真实姓名',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+	]]></install>
+	<uninstall><![CDATA[uninstall.php]]></uninstall>
+	<upgrade><![CDATA[upgrade.php]]></upgrade>
+</manifest>

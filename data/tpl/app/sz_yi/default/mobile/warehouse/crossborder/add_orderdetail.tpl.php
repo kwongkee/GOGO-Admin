@@ -1,0 +1,218 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/header', TEMPLATE_INCLUDEPATH)) : (include template('common/header', TEMPLATE_INCLUDEPATH));?>
+<title>增加费用事项</title>
+<link href="../addons/sz_yi/static/css/layui.css" rel="stylesheet">
+<style>
+    .layui-fluid{background:#f8f8f8;}
+    .header{background:#fff;}
+    .header .logo{width:100%;height:auto;}
+    .white_bg{background:#fff;border-radius:5px;}
+    .cen_notice{padding:10px 15px;box-sizing: border-box;border-bottom:1px solid rgb(229,229,229);font-size:13px;}
+    .menu_box1{border-right:2px solid #f8f8f8;border-bottom:2px solid #f8f8f8;}
+    .menu_box2{border-bottom:2px solid #f8f8f8;}
+    .menu_box3{border-right:2px solid #f8f8f8;}
+    .menu_part1{padding: 25px 0 25px 5px;justify-content: center;}
+    .menu_part1 img{width:45px;margin-right:5px;}
+    .menu_part1 .menu_part1_text p:nth-of-type(1){color:#717171;}
+    .menu_part1 .menu_part1_text p:nth-of-type(2){font-size:13px;color:#9a9a9a;margin-top:12px;}
+
+    .menu_part2_container{justify-content: space-between;}
+    .menu_part2_container .layui-col-xs3{width:24%;}
+    .menu_part2{text-align: center;background:#fff;padding:10px 0;box-sizing: border-box;border-radius:5px;}
+    .menu_part2 img{width:35px;}
+    .menu_part2 p{font-size:13px;}
+
+    .line_part{width:100%;border-radius:5px;background:#fff;overflow: hidden;margin-bottom:10px;}
+    .line_part .line_blue{background:#1790FF;width:5px;height:100px;max-height: 150px;min-height:100px;}
+    .line_part .line_part_content{width:100%;padding:10px;box-sizing: border-box;}
+    .line_part .line_part_content .line_title{font-weight: bold;max-width: 200px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;-webkit-line-clamp: 1;}
+    .line_part .line_part_content .line_time{color:#a9a9a9;font-size:13px;}
+    .line_part .line_part_content .line_price{font-size:13px;margin:10px 0;}
+    .line_part .line_part_content .line_price .line_price_red{color:#ff2222;}
+    .line_part .line_part_content .line_accept{font-size:13px;width:100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;-webkit-line-clamp: 1;}
+
+    .layui-layer-hui .layui-layer-content{color:#fff;}
+    .factoryInfo,.is_beian,.data_service3,.boxInfo,.orderInfo,.is_wait2,.is_penalty2,.reject_remark{display:none;}
+
+    div{overflow: visible;}
+    .line{width:100%;height:1px;background:#eee;margin:5px 0;}
+    .layui-card{float:left;padding:5px 0;box-sizing:border-box;}
+    .up{background:#009688;}
+    .layui-card-header{font-size:16px;font-weight:bold;}
+    .layui-col-xs12 .title{font-size:15px;font-weight:bold;}
+    .disf{display:flex;align-items:center;}
+    .event{float:left;border: 1px solid #efefef;margin-bottom: 10px;padding: 10px;}
+    .layui-table th{font-size:14px;font-weight:bold;color:#000;}
+    .layui-table thead tr{background: rgb(189,215,238);color:#000;font-weight: bold;}
+    .layui-table tr td,.layui-table th{text-align:center;}
+    .layui-card-header{background: rgb(189,215,238);}
+
+</style>
+<div class="layui-fluid" style="background:#fff;">
+    <div class="layui-row layui-col-space15" style="padding:10px;">
+        <form class="layui-form" lay-filter="component-form-element1" style="padding-left:0;padding-right:0;">
+            <div class="layui-col-xs12">
+                <div class="layui-col-xs3 title">
+                    订单类型
+                </div>
+                <div class="layui-col-xs9">
+                    <select name="type" id="type" lay-filter="type" lay-verify="required">
+                        <option value="">请选择订单类型</option>
+                        <option value="1">拖车订单</option>
+                        <option value="2">仓储订单</option>
+                    </select>
+                </div>
+            </div>
+            <div class="line layui-col-xs12"></div>
+            <div class="layui-col-xs12" style="display:none;">
+                <div class="layui-col-xs3 title">
+                    费用类别
+                </div>
+                <div class="layui-col-xs9 order_type2">
+                    <select name="type2" id="type2" lay-filter="type2">
+                        <option value="8">自定义增加费</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-col-xs12">
+                <div class="layui-col-xs3 title">
+                    日期时间
+                </div>
+                <div class="layui-col-xs9">
+                    <input type="text" class="layui-input" name="content[event_date]" id="event_date" value="" placeholder="yymmddhhii" lay-verify="required">
+                </div>
+            </div>
+            <div class="line layui-col-xs12"></div>
+            <div class="layui-col-xs12">
+                <div class="layui-col-xs3 title">
+                    费用类别
+                </div>
+                <div class="layui-col-xs9">
+                    <select name="content[event_type]" lay-search lay-verify="required">
+                        <option value="">请选择费用类别</option>
+                        <option value="1">应付费用</option>
+                        <option value="2">代付费用</option>
+                        <option value="3">其他费用</option>
+                    </select>
+                </div>
+            </div>
+            <div class="line layui-col-xs12"></div>
+            <div class="layui-col-xs12">
+                <div class="layui-col-xs3 title">
+                    订单事项
+                </div>
+                <div class="layui-col-xs9">
+                    <input type="text" name="content[event_name]" value="" placeholder="请填写订单事项名称" autocomplete="off" class="layui-input" lay-verify="required">
+                </div>
+            </div>
+            <div class="line layui-col-xs12"></div>
+            <div class="layui-col-xs12">
+                <div class="layui-col-xs3 title">
+                    计价单位
+                </div>
+                <div class="layui-col-xs9">
+                    <select name="content[event_unit]" lay-search lay-verify="required">
+                        <option value="">请选择计价单位</option>
+                        <?php  if(is_array($unit)) { foreach($unit as $k => $vo) { ?>
+                        <option value="<?php  echo $vo['code_value'];?>"><?php  echo $vo['code_name'];?></option>
+                        <?php  } } ?>
+                    </select>
+                </div>
+            </div>
+            <div class="line layui-col-xs12"></div>
+            <div class="layui-col-xs12">
+                <div class="layui-col-xs3 title">
+                    订单单价
+                </div>
+                <div class="layui-col-xs9 disf val">
+                    <select name="content[event_currency]" lay-search lay-verify="required">
+                        <option value="">请选择计价币种</option>
+                        <?php  if(is_array($currency)) { foreach($currency as $k => $vo) { ?>
+                        <option value="<?php  echo $vo['code_value'];?>"><?php  echo $vo['code_name'];?></option>
+                        <?php  } } ?>
+                    </select>
+                    <input type="number" class="layui-input" name="content[event_price]" placeholder="请填写单价" value="" lay-verify="required">
+                </div>
+            </div>
+            <div class="line layui-col-xs12"></div>
+            <div class="layui-col-xs12">
+                <div class="layui-col-xs3 title">
+                    计价数量
+                </div>
+                <div class="layui-col-xs9">
+                    <input type="number" class="layui-input" name="content[event_num]" placeholder="请填写计价数量" value="" lay-verify="required">
+                </div>
+            </div>
+            <div class="line layui-col-xs12"></div>
+            <div class="layui-col-xs12">
+                <div class="layui-col-xs3 title">
+                    应付金额
+                </div>
+                <div class="layui-col-xs9">
+                    <input type="number" class="layui-input event_totalprice" name="content[event_totalprice]" placeholder="请填写应付金额" value="" lay-verify="required">
+                </div>
+            </div>
+            <div class="line layui-col-xs12"></div>
+            <div class="layui-col-xs12">
+                <div class="layui-col-xs3 title">
+                    摘要备注
+                </div>
+                <div class="layui-col-xs9">
+                    <input type="text" class="layui-input" name="content[event_remark]" placeholder="备注(选填)" value="">
+                </div>
+            </div>
+            <div class="line layui-col-xs12"></div>
+            <div class="layui-form-item" style="margin-top: 15px;text-align: center;">
+                <div class="layui-btn layui-btn-md back layui-btn-primary">返回主页</div>
+                <button class="layui-btn layui-btn-normal submit" lay-submit="" lay-filter="component-form-element" style="background:#F7931E !important;">确认添加</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript" src="../addons/sz_yi/static/js/layui/layui.js"></script>
+<script>
+    layui.use(['layer','jquery','element','laydate','form'], function() {
+        var layer = layui.layer
+            , $ = layui.jquery
+            , element = layui.element
+            , laydate = layui.laydate
+            , form = layui.form;
+
+        laydate.render({
+            elem: '#event_date'
+            ,type: 'date'
+            ,format: 'MM月dd日'
+        });
+        
+        $('.back').click(function(){
+            window.history.back(-1);
+        });
+
+        form.render(null,'component-form-element1');
+
+        form.on('submit(component-form-element)', function(data){
+            layer.load(); //上传loading
+            $.ajax({
+                url:"https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=warehouse&p=crossborder&op=add_orderdetail&m=sz_yi&id=<?php  echo $id;?>",
+                type:'post',
+                dataType:'JSON',
+                data:data.field,
+                success:function(res){
+                    layer.closeAll('loading'); //关闭loading
+                    layer.msg(res.msg,{time:3000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            
+            return false;
+        });
+
+    });
+</script>

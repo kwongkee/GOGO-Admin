@@ -1,0 +1,424 @@
+{template 'common/warehouse_header'}
+{template 'common/warehouse_innerpage_header'}
+<style>
+    .banner img{width:100%;}
+    div{overflow: visible;}
+
+    .info_box_top{border-top:1px solid #eee;border-bottom:1px solid #eee;}
+    .info_box{margin-top:10px;float:left;width:100%;}
+    .info_box .title{color:#666;padding:10px 10px;box-sizing: border-box;}
+    .info_box .val{padding:10px 10px;box-sizing: border-box;}
+    .info_box .layui-col-xs12{background:#fff;}
+    .info_box .line{width:100%;height:1px;background:#eee;}
+    .info_box .add_package{background:#fff;text-align: center;width: 80%;margin: 10px auto;padding: 10px 0;border-radius: 5px;border: 1px solid #1790FF;font-size: 15px;}
+    .info_box .package_info{float:left;}
+    .info_box .package_info .del{display:none;}
+    .info_box .package_info .del .del_box{color:#1790FF;justify-content: center;padding:10px;box-sizing:border-box;}
+
+    .info_box .info_box_bottom{border-top:1px solid #eee;padding:10px;box-sizing: border-box;}
+    .info_box .info_box_bottom .btn_desc{color:#999;}
+    .info_box .info_box_bottom .layui-col-xs4{text-align: right;}
+    .info_box .info_box_bottom .yes_select{color:#5fb878;font-weight: 600;}
+    .info_box .info_box_bottom .no_select{color:#ff2222;font-weight: 600;}
+    .info_box .title_bar{text-align:center;padding:10px 0;box-sizing: border-box;border-bottom:1px solid #eee;color:#fff;background:#1790FF;}
+    .info_box .add_height{line-height: 35px;}
+    .package_info .goods_info{margin-top:10px;}
+    .package_info .goods_info:nth-of-type(1){margin-top:0;}
+    .layui-tab-brief>.layui-tab-title .layui-this{color:#1790FF;}
+    .layui-tab-brief>.layui-tab-title .layui-this:after{border-bottom:2px solid #1790FF;}
+    .layui-tab-title{background:#fff;}
+
+    /**layui框架**/
+    .layui-icon-ok:before{content:"√"}
+    .layui-form-checkbox{width:18px;height:18px;line-height: 18px;padding-right:18px;margin-right:2px;}
+    .layui-form-checkbox i{width:18px;height:18px;border-left:1px solid #d2d2d2;}
+    .layui-btn-normal{background:#1790FF;}
+    .layui-layer-hui .layui-layer-content{color:#fff;}
+</style>
+
+<div class="layui-col-xs12">
+    <form class="layui-form" lay-filter="component-form-element">
+        <div class="info_box info_box_top">
+            <div class="layui-col-xs12">
+                <div class="layui-col-xs4 title disf" id="camera_call">快递单号<img src="../addons/sz_yi/static/images/camera.png" alt="" style="width:25px;margin-left:5px;"></div>
+                <div class="layui-col-xs8 val disf" style="padding: 5px 10px 5px 0;box-sizing: border-box;">
+                    <input type="text" name="express_no" id="express_no" class="layui-input" placeholder="请扫描快递条形码" lay-verify="required" readonly>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="info_search" style="display:none;"></div>
+
+        <!--包裹认领-->
+        <div class="upload_info info_box" style="display:none;">
+            <div class="layui-col-xs12 title_bar">填写信息<span style="color:#ff2222;">*</span></div>
+            <div class="layui-col-xs12 express_company">
+                <div class="layui-col-xs3 title">快递公司</div>
+                <div class="layui-col-xs9 val">
+                    <select name="express_id" id="express_id" lay-search>
+                        {loop $express_company $k $v}
+                            <option value="{$v['id']}">{$v['name']}</option>
+                        {/loop}
+                    </select>
+                </div>
+            </div>
+            <!--<div class="layui-col-xs12 title_bar" style="margin-top:10px;">预设收费</div>-->
+            <!--loop $consolidation_status $k $v-->
+                <!--<div class="layui-col-xs12">-->
+                    <!--<div class="layui-col-xs3 title">$v['name']（HK$）</div>-->
+                    <!--<div class="layui-col-xs9 val">-->
+                        <!--<input type="text" class="layui-input" name="service_$v['code']" placeholder="请填写$v['name']费用">-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--/loop-->
+        </div>
+
+        <div class="info_box info_btn_box" style="margin: 10px 0 20px;text-align: center;display:none;">
+            <div>
+                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element1" style="width:90%;"></button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    layui.use(['layer','jquery','form','element','upload'],function() {
+        var layer = layui.layer
+            , $ = layui.jquery
+            , form = layui.form
+            , upload = layui.upload
+            , element = layui.element;
+
+        form.render(null, 'component-form-element');
+
+        upload.render({
+            elem: '#pic_file-upload'
+            ,url: 'https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=util&m=sz_yi&p=uploader'
+            ,accept: 'images'
+            ,acceptMime: 'image/*'
+            ,data: {file: "file",'op':'upload'}
+            ,multiple: true
+            ,before:function(res){
+                layer.load();
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.status == 'success')
+                {
+                    var length = $('#pic_file-upload-list').children().length;
+                    $('#pic_file-upload-list').append('<div style="display: inline-block;margin-top:10px;"><img onclick="seePic(this);" src="/attachment/'+ res.filename +'" class="layui-upload-img" onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png" style="width:30px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -20px;top: -13px;">删除</button><input type="hidden" name="pic_file['+length+']" value="'+res.filename+'"></div>')
+                }
+            }
+        });
+
+        form.on('submit(component-form-element1)', function(data){
+            //layer.msg(JSON.stringify(data.field));
+
+            $.ajax({
+                url:"./index.php?i=3&c=entry&p=index&do=warehouse&m=sz_yi&op=sure_receive",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.result.msg,{time:3000}, function () {
+                        if(res.status == 0)
+                        {
+                            window.location.reload();
+                            // window.location.href = "./index.php?i=3&c=entry&p=index&do=warehouse&m=sz_yi&op=warehouse_goods_up_down"
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg("系统错误",{time:3000});
+                }
+            });
+            return false;
+        });
+    });
+</script>
+
+{template 'common/footer'}
+<script>
+    require(['https://res.wx.qq.com/open/js/jweixin-1.2.0.js'],function(wx){
+        window.shareData = {php echo json_encode($_W['shopshare'])};
+
+        jssdkconfig = {php echo json_encode($_W['account']['jssdkconfig']);} || { jsApiList:[] };
+
+        jssdkconfig.debug = false;
+        jssdkconfig.jsApiList = ['checkJsApi','onMenuShareTimeline','onMenuShareAppMessage','onMenuShareQQ','onMenuShareWeibo','showOptionMenu','scanQRCode'];
+        wx.config(jssdkconfig);
+
+        $('#camera_call').click(function(){
+            wx.scanQRCode({
+                desc: 'scanQRCode desc',
+                needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+                scanType: ["barCode"], // 可以指定扫二维码还是一维码，默认二者都有    "qrCode",
+                success: function (res) {
+                    if(res.resultStr=='scan resultStr is here'){
+                        alert('请使用手机打开扫描！');return;
+                    }
+                    var result = res.resultStr.split(',');
+                    // 回调
+                    $('#express_no').val(result[1]);
+
+                    //查询是否已预报，是：显示货件信息；否：是否插入无主件认领列表
+                    if(result[1]){
+                        express_info(result[1]);
+                    }
+                },
+                error: function(res){
+                    if(res.errMsg.indexOf('function_not_exist') > 0){
+                        alert('版本过低请升级')
+                    }
+                }
+            });
+        });
+
+        //默认
+        express_info('123456789');
+    });
+
+    function express_info(express_no){
+        var layer = layui.layer
+            , $ = layui.jquery
+            , form = layui.form
+            , html = '';
+        $.ajax({
+            url:"./index.php?i=3&c=entry&p=index&do=warehouse&m=sz_yi&op=get_order_info",
+            method:'post',
+            data:{'express_no':express_no,'type':1},
+            dataType:'JSON',
+            success:function(res){
+                layer.msg(res.result.msg,{time:3000}, function () {
+                    if(res.status == 1) {
+                        //有预报
+                        html += '<input name="id" style="display: none;" value="'+res.result.data.id+'">';
+
+                        html += '<div class="info_box">\n' +
+                            '        <div class="package_info pack">\n' +
+                            '                <div class="layui-col-xs12 title_bar">订单表头</div>\n'+
+                            '                <div class="layui-col-xs12">\n' +
+                            '                    <div class="layui-col-xs3 title">买家昵称</div>\n' +
+                            '                    <div class="layui-col-xs9 val">\n' +
+                            res.result.data.user_info.name+'('+res.result.data.user_info.id+')'+
+                            '                    </div>\n' +
+                            '                </div>\n' +
+                            '                <div class="line layui-col-xs12"></div>\n' +
+                            '                <div class="layui-col-xs12">\n' +
+                            '                    <div class="layui-col-xs3 title">联系电话</div>\n' +
+                            '                    <div class="layui-col-xs9 val">\n' +
+                            res.result.data.user_info.mobile+
+                            '                    </div>\n' +
+                            '                </div>\n' +
+                            '                <div class="line layui-col-xs12"></div>\n' +
+                            '                <div class="layui-col-xs12">\n' +
+                            '                    <div class="layui-col-xs3 title">订单编号</div>\n' +
+                            '                    <div class="layui-col-xs9 val">\n' +
+                                res.result.data.ordersn+
+                            '                    </div>\n' +
+                            '                </div>\n' +
+                            '                <div class="line layui-col-xs12"></div>\n' +
+                            '                <div class="layui-col-xs12">\n' +
+                            '                    <div class="layui-col-xs3 title">发往仓库</div>\n' +
+                            '                    <div class="layui-col-xs9 val">\n' +
+                                res.result.data.warehouse_id+
+                            '                    </div>\n' +
+                            '                </div>\n' +
+                            '                <div class="line layui-col-xs12"></div>\n' +
+                            '                <div class="layui-col-xs12">\n' +
+                            '                    <div class="layui-col-xs3 title">快递公司</div>\n' +
+                            '                    <div class="layui-col-xs9 val">\n' +
+                                res.result.data.express_id+
+                            '                    </div>\n' +
+                            '                </div>\n' +
+                            '                <div class="line layui-col-xs12"></div>\n' +
+                            '                <div class="layui-col-xs12">\n' +
+                            '                    <div class="layui-col-xs3 title">快递单号</div>\n' +
+                            '                    <div class="layui-col-xs9 val">\n' +
+                                res.result.data.express_no+
+                            '                    </div>\n' +
+                            '                </div>\n' +
+                            '                <div class="line layui-col-xs12"></div>\n' +
+                            '                <div class="layui-col-xs12">\n' +
+                            '                    <div class="layui-col-xs3 title">包裹备注</div>\n' +
+                            '                    <div class="layui-col-xs9 val">\n' +
+                            res.result.data.package_remark+
+                            '                    </div>\n' +
+                            '                </div>\n'+
+                            '            <div class="layui-col-xs12 title_bar" style="margin-top:10px;">订单表体</div>\n'+
+                            '            <div class="layui-tab layui-col-xs12 layui-tab-brief">\n' +
+                            '              <ul class="layui-tab-title">\n';
+                            for(var ii=0;ii<res.result.goods_data.length;ii++) {
+                                let active = '';
+                                if(ii==0){
+                                    active = 'layui-this';
+                                }
+                               html += '                   <li class="'+active+'">'+res.result.goods_data[ii].name+'</li>\n';
+                            }
+                        html+='            </ul>\n'+
+                            '              <div class="layui-tab-content">\n';
+                        for(var ii=0;ii<res.result.goods_data.length;ii++) {
+                            let active = '';
+                            if(ii==0){
+                                active = 'layui-show';
+                            }
+                            html+='        <div class="layui-tab-item '+active+'">\n' +
+                            '                   <div class="layui-col-xs12 goods_info">' +
+                                '                <div class="layui-col-xs12">\n' +
+                                '                    <div class="layui-col-xs3 title">货物名称</div>\n' +
+                                '                    <div class="layui-col-xs9 val">\n' +
+                                res.result.goods_data[ii].name+
+                                '                    </div>\n' +
+                                '                </div>\n' +
+                                '                <div class="line layui-col-xs12"></div>\n' +
+                                '                <div class="layui-col-xs12">\n' +
+                                '                    <div class="layui-col-xs3 title">货物价值(￥)</div>\n' +
+                                '                    <div class="layui-col-xs9 val">\n' +
+                                res.result.goods_data[ii].money+
+                                '                    </div>\n' +
+                                '                </div>\n' +
+                                '                <div class="line layui-col-xs12"></div>\n' +
+                                '                <div class="layui-col-xs12">\n' +
+                                '                    <div class="layui-col-xs3 title">货物品牌</div>\n' +
+                                '                    <div class="layui-col-xs9 val">\n' +
+                                res.result.goods_data[ii].brand+
+                                '                    </div>\n' +
+                                '                </div>\n' +
+                                '                <div class="line layui-col-xs12"></div>\n' +
+                                '                <div class="layui-col-xs12">\n' +
+                                '                    <div class="layui-col-xs3 title">货物类型</div>\n' +
+                                '                    <div class="layui-col-xs9 val">\n' +
+                                '                        <div class="layui-col-xs12">\n' +
+                                res.result.goods_data[ii].cate_item+
+                                '                        </div>\n' +
+                                '                    </div>\n' +
+                                '                </div>\n' +
+                                '                <div class="line layui-col-xs12"></div>\n' +
+                                '                <div class="layui-col-xs12">\n' +
+                                '                    <div class="layui-col-xs3 title">货物属性</div>\n' +
+                                '                    <div class="layui-col-xs9 val">\n' +
+                                res.result.goods_data[ii].good_item+
+                                '                    </div>\n' +
+                                '                </div>\n' +
+                                '                <div class="line layui-col-xs12"></div>\n' +
+                                '                <div class="layui-col-xs12">\n' +
+                                '                    <div class="layui-col-xs3 title">货物数量</div>\n' +
+                                '                    <div class="layui-col-xs9 val">\n' +
+                                res.result.goods_data[ii].num+res.result.goods_data[ii].unit+
+                                '                    </div>\n' +
+                                '                </div>\n' +
+                                '                <div class="line layui-col-xs12"></div>\n' +
+                                '                <div class="layui-col-xs12">\n' +
+                                '                    <div class="layui-col-xs3 title">货物净重(kg)</div>\n' +
+                                '                    <div class="layui-col-xs9 val">\n' +
+                                res.result.goods_data[ii].netwt+
+                                '                    </div>\n' +
+                                '                </div>\n' +
+                                '                <div class="line layui-col-xs12"></div>\n' +
+                                '                <div class="layui-col-xs12">\n' +
+                                '                    <div class="layui-col-xs3 title">货物毛重(kg)</div>\n' +
+                                '                    <div class="layui-col-xs9 val">\n' +
+                                res.result.goods_data[ii].grosswt+
+                                '                    </div>\n' +
+                                '                </div>\n'+
+                            '                   </div>\n'+
+                            '              </div>\n';
+                        }
+                            html+='              </div>\n'+
+                            '            </div>\n';
+                            html+='            </div>\n' +
+                            '        </div>\n'+
+                            '                <div class="line layui-col-xs12"></div>\n' +
+                            '        <div class="info_box" style="margin-top:10px;">\n' +
+                            '            <div class="layui-col-xs12 info_box_bottom">\n' +
+                            '                <div class="layui-col-xs8">\n' +
+                            '                    <div class="btm_title">拆除快递包装</div>\n' +
+                            '                    <div class="btn_desc">打包时将拆除快递包装</div>\n' +
+                            '                </div>\n' +
+                            '                <div class="layui-col-xs4">\n';
+                            if(res.result.data.packingSwitch1==1){
+                                html += '<div class="yes_select">是</div>';
+                            }else{
+                                html += '<div class="no_select">否</div>';
+                            }
+
+                            html += '                </div>\n' +
+                            '            </div>\n' +
+                            '            <div class="layui-col-xs12 info_box_bottom">\n' +
+                            '                <div class="layui-col-xs8">\n' +
+                            '                    <div class="btm_title">拆除商品包装</div>\n' +
+                            '                    <div class="btn_desc">打包时将拆除商品包装，如衣服自带防水袋、鞋盒之类的</div>\n' +
+                            '                </div>\n' +
+                            '                <div class="layui-col-xs4">\n';
+                            if(res.result.data.packingSwitch2==1){
+                                html += '<div class="yes_select">是</div>';
+                            }else{
+                                html += '<div class="no_select">否</div>';
+                            }
+                            html += '                </div>\n' +
+                            '            </div>\n' +
+                            '            <div class="layui-col-xs12 info_box_bottom">\n' +
+                            '                <div class="layui-col-xs8">\n' +
+                            '                    <div class="btm_title">赠品丢弃</div>\n' +
+                            '                    <div class="btn_desc">赠品有可能会改变原快递的包裹属性，导致无法选择你原来想走的线路。勾选后，仓库人员凭借经验判断是否为赠品，如果扔错，仓库免责。常见赠品有小卡片、胶水、精油、润滑液、电池（不可寄）、小零食等。</div>\n' +
+                            '                </div>\n' +
+                            '                <div class="layui-col-xs4">\n';
+                            if(res.result.data.packingSwitch3==1){
+                                html += '<div class="yes_select">是</div>';
+                            }else{
+                                html += '<div class="no_select">否</div>';
+                            }
+                            html += '                </div>\n';
+                            '            </div>\n' +
+                            '        </div>\n';
+
+                        html += '            </div></div>\n';
+                            // '<div class="info_box" style="margin-top:10px;">\n'+
+                            // '        <div class="layui-col-xs12 title_bar" style="margin-top:10px;">预设收费</div>\n';
+                            // for(let ii=0;ii<res.result.consolidation_status.length;ii++){
+                            //     html+='        <div class="layui-col-xs12">\n' +
+                            //         '             <div class="layui-col-xs3 title">'+res.result.consolidation_status[ii]['name']+'（HK$）</div>\n' +
+                            //         '             <div class="layui-col-xs9 val"><input name="service_'+res.result.consolidation_status[ii]['code']+'" lay-verify="required" class="layui-input" placeholder="请填写'+res.result.consolidation_status[ii]['name']+'费用"></div>\n' +
+                            //         '        </div>\n'+
+                            //         '        <div class="line layui-col-xs12"></div>\n';
+                            // }
+
+                            // html+='</div>';
+
+                            $('.info_btn_box').find('.layui-btn').text('确认收货，并通知买家');
+                            $('.upload_info').hide();
+                    }else if(res.status == 2){
+                        //没有预报，插入无主件列表
+
+                        $('.info_btn_box').find('.layui-btn').text('确认收货，并等候认领');
+                        $('.upload_info').show();
+                    }
+                    if(res.status==1 || res.status==2){
+                        $('.info_search').html(html);
+                        $('.info_search').show();
+                        $('.info_btn_box').show();
+                    }
+                });
+            },
+            error:function (data) {
+                layer.msg("系统错误",{time:2000});
+            }
+        });
+        form.render(null, 'component-form-element');
+    }
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+
+        }, function(){
+
+        });
+    }
+</script>

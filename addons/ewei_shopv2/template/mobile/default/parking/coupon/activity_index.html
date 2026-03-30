@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <title>卡卷中心</title>
+    <link rel="stylesheet" href="../addons/ewei_shopv2/static/css/coupon/media.css">
+    <link rel="stylesheet" href="../addons/ewei_shopv2/static/css/coupon/icomoon.css">
+    <link rel="stylesheet" href="../addons/ewei_shopv2/static/css/coupon/index.css">
+</head>
+
+<body>
+<!--<img src="../addons/ewei_shopv2/static/css/coupon/images/toolbar.png" alt="">-->
+<div class="view">
+    <!-- 优惠券 -->
+    {if !empty($couponRes)}
+    {loop $couponRes  $item}
+    <div class="all_cart own_tool coupon">
+        <div class="ac_content">
+            <!-- 内容 -->
+            <div class="box_top" style="background-color: #3399FF;">
+                <div class="bt_title1">
+                    <span class="rmb">￥</span>
+                    <span class="big_num">{$item['coupon_money']}</span>
+                    <span class="sm_font">({php echo str_replace('X',$item['enough'],$useType[$item['coupon_use_term']])})</span>
+                </div>
+                <div class="bt_title2">
+                    已领取/剩余：{$item['receiveNum']}/{$item['stock']} 发行总数：{$item['total']}
+                </div>
+                <div class="bt_title3">
+                    <i class="icon-time"></i>
+                    {if empty($item['coupon_get_stime'])||empty($item['coupon_get_etime'])}
+                    不限
+                    {else}
+                    {php echo date('Y-m-d H:i',$item['coupon_get_stime'])} 至 {php echo date('Y-m-d H:i',$item['coupon_get_etime'])}
+                    {/if}
+                    {if $item['receiveNum']==$item['totel']||$nowTime>$item['coupon_get_etime']}
+                    <a href="javascript:;">已结束</a>
+                    {else}
+                        {if empty($item['isReceive'])}
+                            <a href="javascript:;">正在进行</a>
+                        {else}
+                            <a href="javascript:;">已领取</a>
+                        {/if}
+                    {/if}
+                </div>
+            </div>
+            {if empty($item['isReceive'])}
+            <div class="box_tool clearfix" onclick="receive('{$item[coupon_num]}')">
+                <a href="javascript:;" style="margin-left: 35%;">
+                    <!--<span class="icon-share"></span>-->
+                    点击领取
+                </a>
+                <!--<a href="javascript:;">-->
+                <!--<span class="icon-share"></span>-->
+                <!--分享-->
+                <!--</a>-->
+            </div>
+            {/if}
+
+        </div>
+    </div>
+    {/loop}
+    {/if}
+
+
+</div>
+
+</div>
+</body>
+<script src="../addons/ewei_shopv2/static/js/jquery-3.1.1.min.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    var isBtn = false;
+    function receive(id) {
+        if (isBtn){
+            return false;
+        } 
+        isBtn  = true;
+        $.ajax({
+            url:"{php echo mobileUrl('parking/coupon/coupon_receive')}",
+            type:'GET',
+            data:{id:id},
+            dataType:'json',
+            success:function (res) {
+                console.log(res);
+                if (res.status ==0){
+                    isBtn =false;
+                }
+                alert(res.result.message);
+            },
+            error:function (err) {
+                alert('服务器链接失败！');
+            }
+        });
+        return false;
+    }
+</script>
+</html>

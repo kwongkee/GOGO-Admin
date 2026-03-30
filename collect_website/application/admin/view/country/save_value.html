@@ -1,0 +1,290 @@
+{include file="common/header_inner_new"}
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+<style>
+    .format1,.format2,.url,.seo_content,.other_link,.other_navbar{display:none;}
+    .seo_content{border:1px solid #eee;padding:20px;box-sizing: border-box;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <input type="text" style="display:none;" name="pid" id="pid" value="{$pid}">
+            <input type="text" style="display:none;" name="level" id="level" value="{$level}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">分类名称</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" lay-verify="required" name="name" value="{$data['name']}" placeholder="分类名称">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">详情说明</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" {if $id!=0}lay-verify="required"{/if} name="desc" value="{$data['desc']}" placeholder="详情说明">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">详情标签</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" {if $id!=0}lay-verify="required"{/if} name="keywords" value="{$data['keywords']}" placeholder="详情标签">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">详情链接</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" lay-verify="" name="link" value="{$data['link']}" placeholder="详情链接">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">适用渠道</div>
+                            <div class="layui-input-block">
+                                <div id="channel" class="xm-select-demo"></div>
+                            </div>
+                        </div>
+                        <div class="merchant">
+                            {if $id>0 && !empty($data['channel'])}
+                                {volist name="data.channel2" key="key2" id="vo"}
+                                    {volist name="channel_name" key="key" id="vo2"}
+                                    {if $vo2['id']==$vo}
+                                        <div class="layui-form-item merchant{$vo}">
+                                            <div class="layui-form-label">{$vo2['name']}<br>适用商户</div>
+                                            <div class="layui-input-block select_merchant">
+                                                    <div id="merchant{$vo}" class="xm-select-demo"></div>
+                                                </div>
+                                        </div>
+                                    {/if}
+                                    {/volist}
+                                {/volist}
+                            {/if}
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">参考图片</div>
+                            <div class="layui-input-block">
+                                <div class="layui-upload" style="margin-top: 10px;">
+                                    <button type="button" class="layui-btn" id="img_file-upload">上传图片</button>
+                                    <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                                        预览图：
+                                        <div class="layui-upload-list" id="img_file-upload-list">
+                                            {if !empty($data['img'])}
+                                                {volist name="data.img" id="vo"}
+                                                    <div style="display: inline-block;">
+                                                        <img onclick="seePic(this);" src="/{$vo}" class="layui-upload-img" style="width:80px;height:80px;">
+                                                        <button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button>
+                                                        <input type="hidden" name="img[]" value="{$vo}">
+                                                    </div>
+                                                {/volist}
+                                            {/if}
+                                        </div>
+                                    </blockquote>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">适用国地</div>
+                            <div class="layui-input-block">
+                                <div id="country" class="xm-select-demo"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+<script src="./static/hadmin/assets/layui/xm-select.js"></script>
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload','colorpicker'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+        var colorpicker = layui.colorpicker;
+
+        xmSelect.render({
+            el: '#country',
+            // paging: true,
+            // pageSize: 5,
+            filterable: true,
+            prop: {
+                name: 'param2',
+                value: 'id',
+            },
+            autoRow: true,
+            toolbar: {
+                show: true, //显示工具条
+                list: ['ALL', 'REVERSE', 'CLEAR']
+            },
+            data: {$country},
+            initValue:[{$data['country']}],
+            height:300,
+            name: "country",
+            // layVerify: 'required',
+            layVerType: 'msg',
+        });
+
+        {if $id>0 && !empty($data['channel'])}
+            {volist name="data.channel2" key="key2" id="vo"}
+                xmSelect.render({
+                    el: '#merchant{$vo}',
+                    // paging: true,
+                    // pageSize: 5,
+                    filterable: true,
+                    prop: {
+                        name: 'realname',
+                        value: 'id',
+                    },
+                    autoRow: true,
+                    data: {$data['select_merchant'][$key2-1]},
+                    initValue:[{$data['merchants'][$key2-1]}],
+                    height:300,
+                    name: "merchant{$vo}",
+                    // layVerify: 'required',
+                    layVerType: 'msg',
+                });
+            {/volist}
+        {/if}
+
+        xmSelect.render({
+            el: '#channel',
+            // paging: true,
+            // pageSize: 5,
+            filterable: true,
+            prop: {
+                name: 'name',
+                value: 'id',
+            },
+            autoRow: true,
+            data: {$channel},
+            initValue:[{$data['channel']}],
+            height:300,
+            name: "channel",
+            // layVerify: 'required',
+            layVerType: 'msg',
+            on:function(data){
+                if(data.isAdd == true){
+                    let html = '<div class="layui-form-item merchant'+data.change[0]['id']+'">\n' +
+                        '                            <div class="layui-form-label">'+data.change[0].name+'<br>适用商户</div>\n' +
+                        '                            <div class="layui-input-block select_merchant">\n' +
+                        '                                <div id="merchant'+data.change[0]['id']+'" class="xm-select-demo"></div>\n'+
+                        '                            </div>\n' +
+                        '                        </div>';
+                    $('.merchant').append(html);
+                    $.ajax({
+                        url: '{:Url("admin/country/get_merchant")}',
+                        data: {'channel_id': data.change[0]['id']},
+                        type: 'post',
+                        cache: false,
+                        dataType: 'json',
+                        success: function (data2) {
+                            xmSelect.render({
+                                el: '#merchant'+data.change[0]['id'],
+                                // paging: true,
+                                // pageSize: 5,
+                                filterable: true,
+                                prop: {
+                                    name: 'realname',
+                                    value: 'id',
+                                },
+                                autoRow: true,
+                                data: data2.data,
+                                // initValue:[data2.is_select],
+                                height:300,
+                                name: "merchant"+data.change[0]['id'],
+                                // layVerify: 'required',
+                                layVerType: 'msg',
+                            });
+                            form.on('component-form-element');
+                        }
+                    });
+                }else{
+                    $('.merchant').find('.merchant'+data.change[0]['id']).remove();
+                }
+            }
+        });
+
+        // 轮播图文件
+        upload.render({
+            elem: '#img_file-upload'
+            ,url: '{:Url("admin/basic/upload_file")}'
+            ,accept: 'image'
+            ,data: { folder: 'centralize', type: 'website_value'}
+            ,multiple: false
+            ,number:1
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+
+                    $('#img_file-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="img[]" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+
+            // if(data.field['editorValue']==''){
+            //     layer.msg('请输入内容！');
+            //     return false;
+            // }
+
+            // if( $('#img_file-upload-list').children().length == 0 )
+            // {
+            //     layer.msg('请上传主图！');
+            //     return false;
+            // }
+
+            $.ajax({
+                url:"{:Url('admin/country/save_value')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+</script>
+</body>
+</html>

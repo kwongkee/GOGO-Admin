@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<!-- 控制浏览器缓存 -->
+		<meta http-equiv="Cache-Control" content="no-store" />
+		<!-- 优先使用 IE 最新版本和 Chrome -->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<!-- 页面描述 -->
+		<meta name="description" content="不超过150个字符" />
+		<!-- 页面关键词 -->
+		<meta name="keywords" content="" />
+		<link rel="stylesheet" href="../addons/ewei_shopv2/static/css/frozenui/css/frozen.css">
+		<link rel="stylesheet" href="../addons/ewei_shopv2/static/ydui/ydui.css">
+		<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+		<!-- 引入YDUI脚本 -->
+		<script src="../addons/ewei_shopv2/static/ydui/ydui.js"></script>
+		
+		<title><?=$title?></title>
+		<style>
+			* {margin: 0;padding: 0;box-sizing: border-box;}
+			
+			html,body {height: 100%;overflow: hidden;}
+			
+			.clearfix:after {content: "\200B";display: block;height: 0;clear: both;}
+			
+			.clearfix {*zoom: 1;}
+			
+			/*IE/7/6*/
+			
+			.shuru div::-webkit-scrollbar {width: 0;height: 0;-webkit-transition: 1s;}
+			
+			.shuru div::-webkit-scrollbar-thumb {background-color: #a7afb4;background-clip: padding-box;min-height: 28px;}
+			
+			.shuru div::-webkit-scrollbar-thumb:hover {background-color: #525252;background-clip: padding-box;min-height: 28px;}
+			
+			.shuru div::-webkit-scrollbar-track-piece {background-color: #ccd0d2;}
+			
+			.wrap {position: relative;margin: auto;max-width: 640px;min-width: 320px;width: 100%;height: 100%;background: #F0EFF5;overflow: hidden;/*padding-top: 10px;*/}
+			
+			.layer-content {position: absolute;left: 50%;bottom: -200px;width: 100%;max-width: 640px;height: auto;z-index: 12;-webkit-transform: translateX(-50%);transform: translateX(-50%);}
+			
+			/* 输入表单 */
+			
+			.edit_cash {display: block;margin-top: 15px;padding: 15px;margin: 0 auto;width: 90%;border: 1px solid #CFCFCF;border-radius: 10px;background-color: #fff;}
+			
+			.edit_cash p {font-size: 14px;color: #8D8D8F;}
+			
+			.shuru {position: relative;margin-bottom: 10px;}
+			
+			.shuru div {border: none;width: 100%;height: 50px;font-size: 25px;line-height: 50px;border-bottom: 1px solid #CFCFCF;text-indent: 30px;outline: none;white-space: pre;overflow-x: scroll;}
+			
+			.shuru span {position: absolute;top: 5px;font-size: 25px;}
+			
+			.submit {display: block;margin: 10px auto 0;
+			width: 90%;height: 40px;font-size: 16px;color: #fff;background: #04BE02;/*border: 1px solid #47D14C;*/border-radius: 3px;
+			border: none;
+			}
+			
+			.submit1 {display: block;margin: 10px auto 0;
+			width: 90%;height: 40px;font-size: 16px;color: #fff;background: #18b4ed;/*border: 1px solid #47D14C;*/border: none;border-radius: 3px;}
+			
+			
+			/* 键盘 */
+			
+			.form_edit {width: 100%;background: #D1D4DD;}
+			
+			.form_edit> div {margin-bottom: 2px;margin-right: 0.5%;float: left;width: 33%;height: 45px;text-align: center;color: #333;line-height: 45px;font-size: 18px;font-weight: 600;background-color: #fff;border-radius: 5px;}
+			
+			.form_edit> div:nth-child(3n) {margin-right: 0;}
+			
+			.form_edit> div:last-child {background-color: #DEE1E9;}
+			
+			#header{width: 100%;text-align: center;
+			margin-bottom: 8px;
+			font-size: 16px;
+			border-bottom: 1px solid silver;
+			font-weight: 300;
+				background: #04BE02;
+				line-height: 40px;
+				color: white;
+			}
+			#pay{widows: 90px;text-align: center;margin: 5px auto;}
+			
+			#mone{width: 70%;height: auto;}
+			#mone>li{width: 100%;height: 25px;line-height: 25px;font-size:14px;}
+			#go{display: inline-block;width: 30%;float: right;margin-top: 25px;font-size: 16px;}
+		</style>
+	</head>
+	<body>
+		
+		<div class="wrap">
+				
+			<div id="header"><?php echo $mcinfo['shop_name'];?></div>
+			
+			<form action="" class="edit_cash">				
+				<p>请输入消费劵金额</p>
+				<div class="shuru">
+					<span>&yen;</span>
+					<div id="div"></div>
+				</div>
+				<lable id="payError" style="display: none;color: red;">ssd</lable>
+				<p>可询问工作人员消费劵总额</p>
+				
+				<?php if(!empty($getm)){?>
+				
+				<section class="ui-input-wrap ui-border-t" id="ph" style="background: white;padding-left: -12px;display: none;">
+				    <div class="ui-input ui-border-radius" style="margin-left:0px;margin-right: 10px;">
+				        <!--<input type="text" name="" value="" placeholder="请输入手机号码获取">-->
+				        <input type="text" id="phone" maxlength="11" pattern="[0-9]*" placeholder="请输入手机号码获取" autocomplete="off" />
+				    </div>
+				     <button class="ui-btn" type="button" id="getM" style="background: #47D14C;color: white;">获取返利 </button>
+				</section>
+				
+				<?php }else {?>
+				<section class="ui-input-wrap ui-border-t" id="ph" style="background: white;padding-left: -12px;">
+				    <div class="ui-input ui-border-radius" style="margin-left:0px;margin-right: 10px;">
+				        <!--<input type="text" name="" value="" placeholder="请输入手机号码获取">-->
+				        <input type="text" id="phone" maxlength="11" pattern="[0-9]*" placeholder="请输入手机号码获取" autocomplete="off" />
+				    </div>
+				     <button class="ui-btn" type="button" id="getM" style="background: #47D14C;color: white;">获取返利 </button>
+				</section>
+				<?php }?>
+				
+				<span id="Teltext" style="display: none;color: red;">1212</span>
+				<div style="width: 100%;height: auto;">
+					<ul id="mone" style="float: left;">
+						<li>您当前总返利为：<lable style="color: goldenrod;"><?php echo $getm['money']?$getm['money']:'0.00'?></lable>元</li>
+						<li>本次消费可获得返利：<lable style="color: goldenrod;"><?php echo $money;?></lable>元</li>
+					</ul>
+					<a id="go" href="<?php echo mobileUrl('goods');?>">前往使用</a>
+				</div>
+				<div id="" style="clear: both;"></div>
+			</form>
+
+			<div id="pay">
+				<input type="submit" value="微信支付" class="submit" />
+				<input type="submit" value="支付宝支付" class="submit1" /> 
+				<input type="hidden" name="postUrl" id="postUrl" value="<?php echo mobileUrl('money/money/wechat');?>" />
+				<input type="hidden" name="postUrl1" id="postUrl1" value="<?php echo mobileUrl('money/money/alipay');?>" />
+				<input type="hidden" name="getMoney" id="getMoney" value="<?php echo mobileUrl('money/money/getMoney');?>" />
+				<input type="hidden" name="money" id="money" value="<?=$money?>" />
+			</div>
+					
+		</div>
+		
+		<div class="layer"></div>
+		
+		<div class="layer-content" id="anniu" style="bottom:0">
+			<div class="form_edit clearfix">
+				<div class="num">1</div>
+				<div class="num">2</div>
+				<div class="num">3</div>
+				<div class="num">4</div>
+				<div class="num">5</div>
+				<div class="num">6</div>
+				<div class="num">7</div>
+				<div class="num">8</div>
+				<div class="num">9</div>
+				<div class="num">.</div>
+				<div class="num">0</div>
+				<div id="remove">删除</div>
+			</div>
+		</div>
+		
+		<script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script>
+		<script>
+			$(function(){
+				
+				$('#phone').focus(function() {
+					
+					$('.layer-content').animate({
+						bottom: '-200px'
+					}, 200);
+					
+//					$('#anniu').css('display','none');
+				})
+				
+				//会员注册手机号码
+				$("#phone").blur(function() {//会员注册手机号码
+					var t = $('#phone').val();
+					
+					if(t!= '') {
+						
+						if (isPhoneNo($.trim($('#phone').val())) == false) {
+							$('#phone').val('').focus().val(t);
+							$('#Teltext').html('您输入的手机号码不正确，请重新输入！');
+							$('#Teltext').css('display','block');
+						}else{
+							$('#Teltext').css('display','none');
+						}
+						
+					}else {
+						$('#Teltext').css('display','none');
+					}
+					
+				});
+				
+				$('#phone').keydown(function(){
+					$('#Phone').maxLength(11);//控制输入长度				
+				});
+				
+				$('#getM').click(function(){
+					
+					var phones = $.trim($('#phone').val());//手机号码；
+					var openid = '';
+					var moneys = $('#money').val();
+					var postUrl = $('#getMoney').val();
+					
+					if ($.trim($('#phone').val()).length == 0) {	
+						$('#phone').val('').focus().val($('#phone').val());
+						$('#Teltext').html('请输入手机号码');
+						$('#Teltext').css('display','block');
+						return false;
+					}
+					
+					if (isPhoneNo($.trim($('#phone').val())) == false) {
+						$('#phone').val('').focus().val('');
+						$('#Teltext').html('您输入的手机号码不正确，请重新输入！');
+						$('#Teltext').css('display','block');
+						return false;
+					}else{
+						$('#Teltext').css('display','none');
+					}
+					
+					$.post(postUrl,{phone:phones,getM:'yes',money:moneys},function(result){
+						console.dir(result);
+						
+				       if(result.state > 0){
+				       		$('#Teltext').html(result.msg);
+				       		$('#Teltext').css('display','block');
+				       		$('#phone').val('').focus().val('');   
+				       }else{
+				       	
+				       	   $('#ph').css('display','none');
+				       	   $('#Teltext').html(result.msg);
+				       	   $('#Teltext').css('display','block');
+				       	   $('#Teltext').css('color','green');
+				       }
+				    },"json");
+				});
+				
+
+				// 验证手机号
+				function isPhoneNo(phone) {
+					var pattern = /^1[34578]\d{9}$/;
+					return pattern.test(phone);
+				}
+				
+				//填写信息
+				$('.infor-sub').click(function(e){
+					$('.layer').hide();
+					$('.form').hide();
+					e.preventDefault();		//阻止表单提交
+				})
+				
+				
+				//微信支付2018-01-25
+				$('.submit').click(function(e) {
+					
+					if($("#div").text() != "" || $("#div").text()>'0') {
+
+						//原跳转链接，需要获取公众号ID
+						var urls = "http://shop.gogo198.cn/addons/ewei_shopv2/payment/oauth/pay_oauth.php?payMoney="+$("#div").text()+"&oauth=yes&type=wechat&title="+$('#header').text();
+//						location.href = url;
+
+						$.ajax({
+				           url:$('#postUrl').val(),
+				            type:'post',
+				            data:'payMoney='+$("#div").text()+'&title='+$('#header').text()+'&mcid='+<?php echo $mcinfo['id']?$mcinfo['id']:1;?>,
+				            dataType:'json',
+				            success:function(data) {
+				            	console.dir(data);
+				                if(data.statu == 'success'){
+									location.href = data.payurl;
+				                }else if(data.payurl == 'sub_appid and sub_openid not match'){
+//									alert('支付错误，请重新支付！');
+									location.href = urls;
+				                }else {
+				                	$('#payError').html('支付错误，请重新支付！');
+									$('#payError').css('display','block');
+				                }
+				            }
+				      	});
+						
+					}else{
+						$('#payError').html('请输入消费券金额');
+						$('#payError').css('display','block');
+					}
+				})
+				
+				// 支付宝支付2018-01-25
+				$('.submit1').click(function(e) {
+					
+					if($("#div").text() != "" || $("#div").text()>'0') {
+						
+						$.ajax({
+				           url:$('#postUrl1').val(),
+				            type:'post',//商家mcid 要改；
+				            data:'payMoney='+$("#div").text()+'&title='+$('#header').text()+'&mcid='+<?php echo $mcinfo['id']?$mcinfo['id']:1;?>,
+				            dataType:'json',
+				            success:function(data) {
+				            	console.dir(data);
+				                if(data.statu == 'success'){
+									location.href = data.payurl;
+				                }else{
+									alert('支付错误，请重新支付！');
+				                }
+				            }
+				      	});
+						
+					}else{
+
+						$('#payError').html('请输入消费券金额');
+						$('#payError').css('display','block');
+					}
+				})
+				
+				// 监听#div内容变化，改变支付按钮的颜色
+				$('#div').bind('DOMNodeInserted', function(){
+					if($("#div").text()!="" || $("#div").text()>'0') {
+						
+						$('.submit').removeClass('active');
+//						$('.submit').attr('disabled', false);
+						
+					}else{
+						
+						$('.submit').addClass('active');
+//						$('.submit').attr('disabled', true);
+						
+					}
+				})
+				$('#div').trigger('DOMNodeInserted');
+				
+				$('.shuru').click(function(e){
+					
+					$('.layer-content').animate({
+						bottom: 0
+					}, 200)
+					e.stopPropagation();
+					
+				})
+				
+				//bottom 控制键盘显示隐藏
+				$('.wrap').click(function(){
+					$('.layer-content').animate({
+						bottom: '-200px'
+					}, 200)
+				})
+				
+				$('.form_edit .num').click(function(){
+					var oDiv = document.getElementById("div");
+//					oDiv.innerHTML += this.innerHTML;
+					
+					if(oDiv.innerHTML.length >= 9 ){
+						oDiv.innerHTML = oDiv.innerHTML;
+						
+					}else{
+						
+						oDiv.innerHTML += this.innerHTML;
+					}
+					
+					
+				})
+				$('#remove').click(function(){
+					var oDiv = document.getElementById("div");
+					var oDivHtml = oDiv.innerHTML;
+					oDiv.innerHTML = oDivHtml.substring(0,oDivHtml.length-1);
+				})
+			})
+			
+			
+		//字符长度控制；
+		jQuery.fn.maxLength = function(max){  
+		        this.each(function(){  
+		            var type = this.tagName.toLowerCase();  
+		            var inputType = this.type? this.type.toLowerCase() : null;  
+		            if(type == "input" && inputType == "text" || inputType == "password" || inputType == "number"){  
+		                //Apply the standard maxLength  
+		                this.maxLength = max;  
+		            }  
+		            else if(type == "textarea"){  
+		                this.onkeypress = function(e){  
+		                    var ob = e || event;  
+		                    var keyCode = ob.keyCode;  
+		                    var hasSelection = document.selection? document.selection.createRange().text.length > 0 : this.selectionStart != this.selectionEnd;  
+		                    return !(this.value.length >= max && (keyCode > 50 || keyCode == 32 || keyCode == 0 || keyCode == 13) && !ob.ctrlKey && !ob.altKey && !hasSelection);  
+		                };  
+		                this.onkeyup = function(){  
+		                    if(this.value.length > max){  
+		                        this.value = this.value.substring(0,max);  
+		                    }  
+		                };  
+		            }  
+		        });  
+		   };
+		</script>
+	</body>
+</html>

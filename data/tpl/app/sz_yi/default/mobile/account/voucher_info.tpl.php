@@ -1,0 +1,767 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/header', TEMPLATE_INCLUDEPATH)) : (include template('common/header', TEMPLATE_INCLUDEPATH));?>
+<!--<title>自定义收款</title>-->
+<style type="text/css">
+    body {margin:0px; background:#efefef; font-family:'微软雅黑'; -moz-appearance:none;}
+    .info_main {height:auto;  background:#fff; margin-top:14px; border-bottom:1px solid #e8e8e8; border-top:1px solid #e8e8e8;}
+    .info_main .line {margin:0 10px; height:40px; border-bottom:1px solid #e8e8e8; line-height:40px; color:#999;font-size:15px;}
+    .info_main .line .title {height:40px; width:80px; line-height:40px; color:#444; float:left; font-size:15px;}
+    .info_main .line .info { width:100%;float:right;margin-left:-80px; overflow: auto;white-space: nowrap;}
+    .info_main .line .inner { margin-left:80px; }
+    .info_main .line .inner input {height:40px; width:100%;display:block; padding:0px; margin:0px; border:0px; float:left; font-size:14px;}
+    .info_main .line .inner .user_sex {line-height:40px;}
+    .info_sub {height:44px; margin:14px 5px; background:#1E9FFF !important; border-radius:4px; text-align:center; font-size:16px; line-height:44px; color:#fff;}
+    .select { border:1px solid #ccc;height:25px;}
+    .disf{display:flex;}
+    /**合同文件**/
+    .info_main .images {width:fit-content;max-width:90%;height:38px;white-space:nowrap;overflow-x:scroll; }
+    .info_main .images .img { display:inline-block;position:relative;width:30px;height:30px;border:1px solid #e9e9e9;margin-right:5px;margin-top:5px;}
+    .info_main .images .img img { position:absolute;top:0; width:100%;height:100%;}
+    .info_main .images .img .minus { position:absolute;color:red;width:8px;height:12px;top:-18px;right:-1px;}
+    .info_main .plus {width:30px;height:30px;border:1px solid #e9e9e9; color:#dedede;; font-size:18px;line-height:30px;text-align:center;margin-top:2px;}
+    .info_main .plus i { left:7px;top:7px;}
+
+    .table thead td{background-color: #ecf6fc !important;}
+    .see{box-sizing: border-box;width:fit-content;padding: 2px 4px;font-size: 15px;color: #fff;background: #1E9FFF;text-align:center;}
+
+    .page_head{width:100%;background:#fff;margin-bottom:5px;box-shadow:0 0 4px #ddd;padding:10px 0 10px;display:flex;align-items:center;}
+    .page_head .left{width:25%;display:flex;align-items:center;font-size:15px;}
+    .page_head .left .back{width:11px;height:11px;border-top:2px solid #000;border-left:2px solid #000;transform:rotate(-50deg);margin-left:15px;margin-right:5px;}
+    .page_head .right{width:75%;text-align:center;padding-right:80px;font-size:15px;padding-top:2px;}
+    a{text-decoration: none;text-underline: none;}
+
+    /**评论**/
+    .tt-wrapper-inner {margin-left: 30px;margin-right: 30px;}
+    .pt-editor {padding-top: 36px;}
+    .form-default {position: relative;}
+    .pt-editor .pt-title {color: #182730;font-weight: 600;font-size: 16px;line-height: 26px;margin: 0;padding: 0 0 12px 0;letter-spacing: 0.01em;}
+    .form-default .form-group {margin-bottom: 13px;}
+    .form-default textarea.form-control {padding: 20px 30px 23px 28px;width: 100%;box-sizing: border-box;}
+    @media (min-width: 576px){
+        .pt-editor .pt-row {display: -webkit-box;display: -ms-flexbox;display: flex;-webkit-box-orient: horizontal;-webkit-box-direction: normal;-ms-flex-direction: row;flex-direction: row;-ms-flex-wrap: nowrap;flex-wrap: nowrap;-webkit-box-pack: justify;-ms-flex-pack: justify;justify-content: space-between;-ms-flex-line-pack: stretch;align-content: stretch;-webkit-box-align: start;-ms-flex-align: start;align-items: flex-start;}
+    }
+    .pt-editor .pt-row {padding-bottom: 12px;}
+    .btn.btn-secondary {background-color: #2172cd;color: #ffffff;}
+    .btn.btn-secondary {background-color: #2172cd;color: #ffffff;}
+    .btn {padding: 6px 15px;font-size: 14px;line-height: 1.57142857;border-radius: 3px;-webkit-transition: border .2s linear, color .2s linear, width .2s linear, background-color .2s linear;-o-transition: border .2s linear, color .2s linear, width .2s linear, background-color .2s linear;transition: border .2s linear, color .2s linear, width .2s linear, background-color .2s linear;-webkit-font-smoothing: subpixel-antialiased;}
+    /**回复**/
+    .tt-single-topic-list > .tt-item:not([class^="tt-wrapper-success"]) {background-color: #ffffff;}
+    @media (max-width: 1024px){
+        .tt-single-topic {padding: 15px 20px 15px 20px;}
+    }
+    .tt-single-topic {position: relative;box-sizing: border-box;}
+    .tt-single-topic .tt-item-header .tt-item-info.info-top {display: -webkit-box;display: -ms-flexbox;display: flex;-webkit-box-orient: horizontal;-webkit-box-direction: normal;-ms-flex-direction: row;flex-direction: row;-ms-flex-wrap: nowrap;flex-wrap: nowrap;-webkit-box-pack: justify;-ms-flex-pack: justify;justify-content: space-between;-ms-flex-line-pack: center;align-content: center;-webkit-box-align: center;-ms-flex-align: center;align-items: center;padding-top: 6px;padding-bottom: 8px;box-sizing: border-box;}
+    @media (max-width: 1024px){
+        .tt-single-topic .tt-item-header .tt-item-info.info-top .tt-avatar-title {-ms-flex: 2 1 auto;-webkit-box-flex: 2;flex: 2 1 auto;}
+    }
+    .tt-single-topic .tt-item-header .tt-item-info.info-top .tt-avatar-title {color: #666f74;font-size: 14px;line-height: 26px;letter-spacing: 0.01em;padding-right: 15px;}
+    .tt-single-topic .tt-item-header .tt-item-info.info-top .tt-avatar-title a {color: #666f74;display: inline-block;margin-right: 11px;}
+    .tt-single-topic .tt-item-header .tt-item-info.info-top .tt-info-time {white-space: nowrap;font-size: 14px;color: #666f74;padding: 0 0px 0 0;}
+    .tt-single-topic .tt-item-header.pt-noborder + .tt-item-description {padding-top: 5px;margin-bottom:10px;}
+    .tt-single-topic .tt-item-description {padding-top: 21px;letter-spacing: 0.01em;}
+    @media (max-width: 575px){
+        .tt-single-topic .tt-item-info.info-bottom {display: -webkit-box;display: -ms-flexbox;display: flex;-webkit-box-orient: horizontal;-webkit-box-direction: normal;-ms-flex-direction: row;flex-direction: row;-ms-flex-wrap: wrap;flex-wrap: wrap;-webkit-box-pack: justify;-ms-flex-pack: justify;justify-content: space-between;-ms-flex-line-pack: start;align-content: flex-start;-webkit-box-align: start;-ms-flex-align: start;align-items: flex-start;}
+    }
+    @media (max-width: 575px){
+        .tt-single-topic .tt-item-info.info-bottom .tt-icon-btn {margin-left: 0px;}
+    }
+
+    /**提供文件**/
+    .approveFile{display:none;width: 80%;position: fixed;background: #ffffff;border-radius: 5px;z-index:1000;transform:translate(-50%,-50%);top: 50%;left:50%;}
+    .approveFile .confirm{height: 50px;border-top: 1px solid #eee;display: flex;width:100%;}
+    .approveFile .confirm>span{flex: 1;height: 50px;line-height: 50px;font-size: 16px;text-align: center;}
+    .approveFile .confirm>span:nth-child(1){color: red;}
+    .approveFile .confirm>span:nth-child(2){border-left: 1px solid #eee;}
+    .approveFile .title{text-align: center;border-bottom: 1px solid #eee;margin-bottom: 10px;}
+    .approveFile .title>p{height: 40px;line-height: 40px;text-align: center;font-size: 18px;font-weight: bold;}
+    .approveFile .important{color: red;}
+
+    /**原始凭证**/
+    .send_express{display:none;width: 80%;position: absolute;background: #ffffff;border-radius: 5px;z-index:1000;transform:translate(-50%,-50%);top: 50%;left:50%;}
+    .send_express .pic_div{height: 200px;max-height: 200px;min-height: 200px;overflow: scroll;padding:4px;width:100%;text-align:center;}
+    .send_express .confirm{height: 50px;border-top: 1px solid #eee;display: flex;}
+    .send_express .confirm>span{flex: 1;height: 50px;line-height: 50px;font-size: 16px;text-align: center;}
+    .send_express .confirm>span:nth-child(1){color: red;}
+    .send_express .confirm>span:nth-child(2){border-left: 1px solid #eee;}
+    .send_express .title{text-align: center;border-bottom: 1px solid #eee;margin-bottom: 10px;}
+    .send_express .title>p{height: 40px;line-height: 40px;text-align: center;font-size: 18px;font-weight: bold;}
+    .send_express .important{color: red;}
+
+    .voucher_show{display:block;}
+    .voucher_hide,.origin_voucher_hide{display:none;}
+</style>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.core-2.5.2.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.core-2.5.2-zh.js" type="text/javascript"></script>
+<link href="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.core-2.5.2.css" rel="stylesheet" type="text/css" />
+<link href="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.animation-2.5.2.css" rel="stylesheet" type="text/css" />
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.datetime-2.5.1.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.datetime-2.5.1-zh.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.android-ics-2.5.2.js" type="text/javascript"></script>
+<link href="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.android-ics-2.5.2.css" rel="stylesheet" type="text/css" />
+
+<link href="../addons/sz_yi/template/mobile/default/static/js/star-rating.css" media="all" rel="stylesheet" type="text/css"/>
+<script src="../addons/sz_yi/template/mobile/default/static/js/star-rating.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/ajaxfileupload.js" type="text/javascript"></script>
+<link type="text/css" rel="stylesheet" href="../addons/sz_yi/static/css/bootstrap.min.css" />
+
+<div id="container">
+    <div class="page_head">
+        <div class="left">
+            <div class="back"></div>
+            <div style="font-size:15px;padding-top:2px;">返回</div>
+        </div>
+        <div class="right">
+            登记编号[<?php  echo $data['reg_number'];?>]
+        </div>
+    </div>
+    <?php  if($data['method']==1) { ?>
+        <div class="info_main">
+            <div class="line">
+                <div class="title">凭证形式</div>
+                <div class="info"><div class="inner">
+                    <?php echo $data['voucher_form']==1?'纸质文件':'电子文件';?>
+                </div></div>
+            </div>
+            <div class="line">
+                <div class="title">凭证类别</div>
+                <div class='info'>
+                    <div class='inner'>
+                        <?php  echo $data['type_name'];?>
+                    </div>
+                </div>
+            </div>
+            <?php  if($data['type']==3) { ?>
+                <!--凭证日期-->
+                <div class="line">
+                    <div class="title">凭证日期</div>
+                    <div class="info"><div class="inner">
+                        <?php  echo $data['voucher_date'];?>
+                    </div></div>
+                </div>
+                <div class="line">
+                    <div class="title">凭证数量</div>
+                    <div class="info"><div class="inner">
+                        <?php  echo $data['attach_cert'];?><?php echo $data['voucher_unit']==1?'张':'份';?>
+                    </div></div>
+                </div>
+                <?php  if(!empty($data['express_voucher'])) { ?>
+                <!--文件信息-->
+                <div class="line"><div class="title">原始凭证</div><div class='info'><div class='inner'>
+                    <?php  if(is_array($data['express_voucher'])) { foreach($data['express_voucher'] as $k => $v) { ?>
+                    <a href="https://shop.gogo198.cn/attachment/<?php  echo $v;?>" style="margin-right:3px;">文件<?php  echo $k+1;?></a>
+                    <?php  } } ?>
+                </div></div></div>
+                <?php  } ?>
+            <?php  } ?>
+            <div class="line">
+                <div class="title">提交方式</div>
+                <div class="info"><div class="inner">
+                    <?php echo $data['submit_method']==1?'快递提交':'网络提交';?>
+                </div></div>
+            </div>
+
+            <?php  if($data['type']==1 || $data['type']==2) { ?>
+                <table class="table table-striped tab1" style="table-layout:fixed;word-break: break-all;margin:10px 0;">
+                <thead>
+                <tr>
+                    <td>凭证类别</td>
+                    <td>凭证数量</td>
+                    <td class="<?php  if($data['voucher_form']==2) { ?>voucher_show<?php  } else { ?>origin_voucher_hide<?php  } ?>">原始凭证</td>
+                </tr>
+                </thead>
+                <tbody>
+                    <?php  if(is_array($data['voucher_type'])) { foreach($data['voucher_type'] as $k => $v) { ?>
+                        <?php  if(!empty($v)) { ?>
+                            <tr>
+                            <td>
+                                <?php  if($data['type']==1) { ?>
+                                    <?php  if($v==1) { ?>销售发票<?php  } ?>
+                                    <?php  if($v==2) { ?>销售收据<?php  } ?>
+                                    <?php  if($v==3) { ?>收入证明<?php  } ?>
+                                <?php  } ?>
+
+                                <?php  if($data['type']==2) { ?>
+                                    <?php  if($v==1) { ?>付款发票<?php  } ?>
+                                    <?php  if($v==2) { ?>付款收据<?php  } ?>
+                                    <?php  if($v==3) { ?>付款证明<?php  } ?>
+                                <?php  } ?>
+                            </td>
+                            <td>
+                                <?php  echo $data['attach_cert'][$k];?>
+                                <?php  if($data['voucher_unit'][$k]==1) { ?>张<?php  } ?>
+                                <?php  if($data['voucher_unit'][$k]==2) { ?>份<?php  } ?>
+                            </td>
+                            <td class="<?php  if($data['voucher_form']==2) { ?>voucher_show<?php  } else { ?>origin_voucher_hide<?php  } ?>">
+                                <div class="see origin_voucher_ogid" data-i="<?php  echo $k+1;?>" onclick="voucher_see(<?php  echo $k+1;?>)">查看</div>
+                            </td>
+                        </tr>
+                        <?php  } ?>
+                    <?php  } } ?>
+                </tbody>
+            </table>
+            <?php  } ?>
+
+        </div>
+    <?php  } ?>
+
+    <?php  if($data['method']==0) { ?>
+        <?php  if(($data['type']==1 || $data['type']==2)) { ?>
+            <div class="info_main">
+            <?php  if(!empty($data['voucher_type_name'])) { ?>
+            <div class="line">
+                <div class="title">凭证类别</div>
+                <div class='info'>
+                    <div class='inner'>
+                        <?php  echo $data['voucher_type_name'];?>
+                    </div>
+                </div>
+            </div>
+            <?php  } ?>
+            <?php  if(!empty($data['type_name'])) { ?>
+            <div class="line">
+                <div class="title">凭证类型</div>
+                <div class='info'>
+                    <div class='inner'>
+                        <?php  echo $data['type_name'];?>
+                    </div>
+                </div>
+            </div>
+            <?php  } ?>
+            <?php  if(!empty($data['voucher'])) { ?>
+            <!--凭证编号-->
+            <div class="line"><div class="title">凭证编号</div><div class='info'><div class='inner'><?php  echo $data['voucher'];?></div></div></div>
+            <?php  } ?>
+            <div class="line">
+                <div class="title">登记日期</div>
+                <div class="info"><div class="inner">
+                    <?php  echo date('Y-m-d H:i',$data['createtime'])?>
+                </div></div>
+            </div>
+            <?php  if(!empty($data['voucher_date'])) { ?>
+            <!--凭证日期-->
+            <div class="line">
+                <div class="title">凭证日期</div>
+                <div class="info"><div class="inner">
+                    <?php  echo $data['voucher_date'];?>
+                </div></div>
+            </div>
+            <?php  } ?>
+            <?php  if(!empty($data['tax_classify_inp'])) { ?>
+            <!--内容名称-->
+            <div class="line tax_classify_inp" style="display:none;">
+                <div class="title">分类名称</div>
+                <div class="info"><div class="inner">
+                    <?php  echo $data['tax_classify_inp'];?>
+                </div></div>
+            </div>
+            <?php  } ?>
+            <!--收/付款状态-->
+            <div class="line">
+                <div class="title">
+                    <?php  echo $data['type_name2'];?>
+                </div>
+                <div class="info"><div class="inner">
+                    <?php  echo $data['money_status'];?>
+                </div></div>
+            </div>
+            <?php  if(!empty($data['currency'])) { ?>
+            <!--凭证金额-->
+            <div class="line" style="display:none;">
+                <div class="title">凭证币种</div>
+                <div class="info"><div class="inner">
+
+                </div></div>
+            </div>
+            <?php  } ?>
+            <?php  if(!empty($data['trade_price'])) { ?>
+            <div class="line"><div class="title">凭证金额</div><div class='info'><div class='inner'><?php  echo $data['currency'];?> <?php  echo $data['trade_price'];?></div></div></div>
+            <?php  } ?>
+            <?php  if(!empty($data['currency2'])) { ?>
+            <!--收/付金额-->
+            <div class="line"  style="display:none;">
+                <div class="title"><?php  if($data['type']==1) { ?>收款<?php  } ?><?php  if($data['type']==2) { ?>付款<?php  } ?>币种</div>
+                <div class="info"><div class="inner">
+
+                </div></div>
+            </div>
+            <?php  } ?>
+            <?php  if(!empty($data['trade_price2'])) { ?>
+            <div class="line"><div class="title"><?php  if($data['type']==1) { ?>收款<?php  } ?><?php  if($data['type']==2) { ?>付款<?php  } ?>金额</div><div class='info'><div class='inner'><?php  echo $data['currency2'];?> <?php  echo $data['trade_price2'];?></div></div></div>
+            <?php  } ?>
+            <?php  if($data['currency2']!='(CNY)人民币') { ?>
+                <div class="line"><div class="title">交易汇率</div><div class='info'><div class='inner'><?php  echo $data['trade_rate'];?></div></div></div>
+            <?php  } ?>
+            <?php  if(!empty($data['collect_type'])) { ?>
+            <!--收款方式-->
+            <div class="line">
+                <div class="title">收款方式</div>
+                <div class="inner">
+                    <?php  echo $data['collect_type'];?>
+                </div>
+            </div>
+            <?php  } ?>
+            <?php  if(!empty($data['collect_account']['type'])) { ?>
+                <!--转账收款-->
+                <?php  if(($data['collect_type']!="现金付款" && $data['collect_type']!="现金收款")) { ?>
+                <div class="line" style="height: 100px;line-height: 25px;"><div class="title" style="background:#fff;z-index:99;">账户信息</div><div class="info"><div class="inner" style="z-index:98;">
+                账户类型：<?php  echo $data['collect_account']['type'];?><br>
+                    银行名称：<?php  echo $data['collect_account']['bank_name'];?><br>
+                    银行账号：<?php  echo $data['collect_account']['bank_account'];?><br>
+                    账号名称：<?php  echo $data['collect_account']['name'];?>
+                </div></div></div>
+                <?php  } ?>
+            <?php  } ?>
+            <?php  if(!empty($data['account_receipt'])) { ?>
+            <!--文件信息-->
+            <div class="line"><div class="title">回单/截图</div><div class='info'><div class='inner'>
+                <?php  if(is_array($data['account_receipt'])) { foreach($data['account_receipt'] as $k => $v) { ?>
+                <a href="https://shop.gogo198.cn/attachment/<?php  echo $v;?>" style="margin-right:3px;">文件<?php  echo $k+1;?></a>
+                <?php  } } ?>
+            </div></div></div>
+            <?php  } ?>
+            <?php  if(!empty($data['attach_cert'])) { ?>
+            <!--随附凭证-->
+            <div class="line"><div class="title">随附凭证</div><div class='info'><div class='inner'><?php  echo $data['attach_cert'];?>张</div></div></div>
+            <?php  } ?>
+            <!--提交方式-->
+            <div class="line"><div class="title">提交方式</div><div class='info'><div class='inner'>
+                <?php  if($data['submit_method']==1) { ?>快递提交<?php  } ?>
+                <?php  if($data['submit_method']==2) { ?>电邮提交<?php  } ?>
+            </div></div></div>
+            <!--凭证-->
+            <?php  if(!empty($data['express_voucher'])) { ?>
+                <div class="line"><div class="title">凭证文件</div><div class='info'><div class='inner'>
+                    <?php  if(is_array($data['express_voucher'])) { foreach($data['express_voucher'] as $k => $v) { ?>
+                    <a href="https://shop.gogo198.cn/attachment/<?php  echo $v;?>" style="margin-right:3px;">文件<?php  echo $k+1;?></a>
+                    <?php  } } ?>
+                </div></div></div>
+            <?php  } ?>
+
+            <!--自定义备注-->
+            <div class="line">
+                <div class="title">我的备注</div>
+                <div class="inner" style="overflow-x:scroll;">
+                    <?php  echo $data['diy_remark'];?>
+                </div>
+            </div>
+
+            <!--补充文件-->
+            <?php  if($data['other_file']!='') { ?>
+            <div class="line"><div class="title">补充文件</div><div class='info'><div class='inner'>
+                <?php  if(is_array($data['other_file'])) { foreach($data['other_file'] as $k => $v) { ?>
+                <a href="https://shop.gogo198.cn/attachment/<?php  echo $v;?>" style="margin-right:3px;">文件<?php  echo $k+1;?></a>
+                <?php  } } ?>
+            </div></div></div>
+            <?php  } ?>
+        </div>
+        <?php  } ?>
+
+        <?php  if($data['type']==3) { ?>
+            <!--对账单信息-->
+            <div class="info_main">
+                <div class="line">
+                    <div class="title">账户类型</div>
+                    <div class='info'>
+                        <div class='inner'>
+                            <?php  if($data['bill_account_type']==1) { ?>企业账户<?php  } ?>
+                            <?php  if($data['bill_account_type']==2) { ?>个人账户<?php  } ?>
+                            <?php  if($data['bill_account_type']==3) { ?>支付账户<?php  } ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="line" style="height: 100px;line-height: 25px;"><div class="title" style="background:#fff;z-index:99;">账户信息</div><div class="info"><div class="inner" style="z-index:98;">
+                    账户类型：<?php  echo $data['bill_account']['type'];?><br>
+                    银行名称：<?php  echo $data['bill_account']['bank_name'];?><br>
+                    银行账号：<?php  echo $data['bill_account']['bank_account'];?><br>
+                    账号名称：<?php  echo $data['bill_account']['name'];?>
+                </div></div></div>
+                <!--启始日期-->
+                <div class="line">
+                    <div class="title">账单启始</div>
+                    <div class="inner">
+                        <?php  echo $data['bill_startDate'];?>
+                    </div>
+                </div>
+                <!--截止日期-->
+                <div class="line">
+                    <div class="title">账单截止</div>
+                    <div class="inner">
+                        <?php  echo $data['bill_endDate'];?>
+                    </div>
+                </div>
+                <!--币种-->
+                <div class="line">
+                    <div class="title">账单币种</div>
+                    <div class="inner">
+                        <?php  echo $data['currency3'];?>
+                    </div>
+                </div>
+                <!--余额-->
+                <div class="line">
+                    <div class="title">账单余额</div>
+                    <div class="inner">
+                        <?php  echo $data['bill_price'];?>
+                    </div>
+                </div>
+                <div class="line"><div class="title">账单文件</div><div class='info'><div class='inner'>
+                    <?php  if(is_array($data['bill_file'])) { foreach($data['bill_file'] as $k => $v) { ?>
+                    <a href="https://shop.gogo198.cn/attachment/<?php  echo $v;?>" style="margin-right:3px;">文件<?php  echo $k+1;?></a>
+                    <?php  } } ?>
+                </div></div></div>
+                <div class="line">
+                    <div class="title">登记日期</div>
+                    <div class="info"><div class="inner">
+                        <?php  echo date('Y-m-d H:i',$data['createtime'])?>
+                    </div></div>
+                </div>
+                <!--自定义备注-->
+                <div class="line">
+                    <div class="title">我的备注</div>
+                    <div class="inner">
+                        <?php  echo $data['diy_remark'];?>
+                    </div>
+                </div>
+            </div>
+        <?php  } ?>
+    <?php  } ?>
+
+    <!--评论-->
+    <div class="tt-item" id="item10" style="background:#fff;">
+        <div class="comment_title" style="text-align:center;font-size:15px;padding-top:15px;">——&nbsp;凭证评论&nbsp;——</div>
+        <?php  if(empty($voucher_comment)) { ?>
+            <div class="no_comment" style="text-align:center;font-size:15px;padding-top:15px;">暂无评论!</div>
+        <?php  } else { ?>
+            <?php  if(is_array($voucher_comment)) { foreach($voucher_comment as $v) { ?>
+            <div class="tt-single-topic" style="border-bottom:1px solid #999;">
+                <div class="tt-item-header pt-noborder">
+                    <div class="tt-item-info info-top">
+                        <div class="tt-avatar-title">
+                            <?php  echo $v['identify'];?>
+                        </div>
+                        <a href="javascript:;" class="tt-info-time"><?php  echo $v['createtime'];?></a>
+                    </div>
+                </div>
+                <div class="tt-item-description">
+                    <?php  if(!empty($v['content'])) { ?>
+                        <?php  echo $v['content'];?><br>
+                    <?php  } else { ?>
+                        <?php  if(is_array($v['file'])) { foreach($v['file'] as $k2=>$v2) { ?>
+                            <a href="https://shop.gogo198.cn/attachment/<?php  echo $v2;?>" target="_blank">
+                                <img src="https://shop.gogo198.cn/attachment/<?php  echo $v2;?>" alt="" style="width:30px;height:30px;display:inline-block;"  onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png">
+                            </a>
+                        <?php  } } ?>
+                    <?php  } ?>
+
+                    <!--评论里的评论-->
+                    <?php  if(!empty($v['allReplay'])) { ?>
+                        <?php  if(is_array($v['allReplay'])) { foreach($v['allReplay'] as $v2) { ?>
+                        <div class="tt-single-topic" style="border-bottom:1px solid #999;">
+                            <div class="tt-item-header pt-noborder">
+                                <div class="tt-item-info info-top">
+                                    <div class="tt-avatar-title">
+                                        <?php  echo $v2['identify'];?>
+                                    </div>
+                                    <a href="javascript:;" class="tt-info-time"><?php  echo $v2['createtime'];?></a>
+                                </div>
+                            </div>
+                            <div class="tt-item-description">
+                                <?php  if(!empty($v2['content'])) { ?>
+                                    <?php  echo $v2['content'];?><br>
+                                <?php  } else { ?>
+                                    <?php  if(is_array($v2['file'])) { foreach($v2['file'] as $k3=>$v3) { ?>
+                                    <a href="https://shop.gogo198.cn/attachment/<?php  echo $v3;?>" target="_blank">
+                                        <img src="https://shop.gogo198.cn/attachment/<?php  echo $v3;?>" alt="" style="width:30px;height:30px;display:inline-block;"  onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png">
+                                    </a>
+                                    <?php  } } ?>
+                                <?php  } ?>
+                            </div>
+                        </div>
+                        <?php  } } ?>
+                    <?php  } ?>
+                </div>
+                <div class="tt-item-info info-bottom">
+                    <a href="javascript:reply(<?php  echo $v['id'];?>);" class="tt-icon-btn tt-hover-02 tt-small-indent" title="回复" style="margin-top:10px;padding:4px 8px;box-sizing:border-box;background-color: #2172cd;color: #ffffff;">
+                        回复
+                    </a>
+                </div>
+                <div class="tt-wrapper-inner replytxtarea<?php  echo $v['id'];?>" style="display:none;">
+                    <div class="pt-editor form-default">
+                        <div class="form-group">
+                            <textarea name="reply<?php  echo $v['id'];?>" class="form-control" rows="5" placeholder="发表您的回复内容！~"></textarea>
+                        </div>
+                        <div class="pt-row">
+    
+                            <div class="col-auto">
+                                <a href="javascript:sendreply(<?php  echo $v['id'];?>);" class="btn btn-secondary btn-width-lg">发表</a>
+                                <a href="javascript:replyFile(<?php  echo $v['id'];?>);" class="btn btn-secondary btn-width-lg" style="text-decoration: none;background: #45bb1f;">提供文件</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php  } } ?>
+        <?php  } ?>
+
+    </div>
+    <div class="tt-wrapper-inner">
+        <div class="pt-editor form-default">
+            <h6 class="pt-title">发表您的评论</h6>
+
+            <div class="form-group">
+                <textarea name="message" id="message" class="form-control" rows="5" placeholder="让我们开始吧"></textarea>
+            </div>
+            <div class="pt-row">
+
+                <div class="col-auto" style="text-align:right;">
+                    <a href="javascript:send();" class="btn btn-secondary btn-width-lg" style="text-decoration: none;">发表</a>
+                    <a href="javascript:sendFile(<?php  echo $data['id'];?>);" class="btn btn-secondary btn-width-lg" style="text-decoration: none;background: #45bb1f;">提供文件</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--提供文件-->
+<div class="mask" style="position: fixed; margin: 0px; padding: 0px;background: rgba(0, 0, 0,0.6); z-index: 999; width: 100%; height: 100%; transition: all 0.2s ease 0s;display:none;left: 0;top: 0;"></div>
+<div class="approveFile" id="approveFile">
+    <div class="title">
+        <p class="important" style="margin:0;">提供文件</p>
+    </div>
+    <div class="info_main" style="margin-top:0;">
+        <div class="line"><div class="title">提供文件</div><div class='info'><div class='inner'>
+            <div class="pic img_info" data-ogid='0' data-max='99' style="height:38px;overflow-x: scroll;display: flex;align-items: center;">
+                <div class="images">
+                </div>
+                <div class="plus" style="position:relative;" ><i class="fa fa-plus" style="position:absolute;"></i>
+                    <input type="file" name='imgFile0' id='imgFile0'  style="position:absolute;width:30px;height:30px;-webkit-tap-highlight-color: transparent;filter:alpha(Opacity=0); opacity: 0;" />
+                </div>
+            </div>
+        </div></div></div>
+        <input type="text" name="reply_id" id="reply_id" value="" style="display:none;"/>
+        <input type="text" name="reply_type" id="reply_type" value="" style="display:none;"/>
+    </div>
+    <div class="confirm">
+        <span class="close-but" onClick="fnClose(1)">关闭</span>
+        <span class="close-but" onClick="fnClose(2)">提供</span>
+    </div>
+</div>
+<script src="../addons/sz_yi/static/js/dist/ajaxfileupload.js" type="text/javascript"></script>
+<script id="tpl_img" type="text/html">
+    <div class='img' data-img='<%filename%>'>
+        <img src='<%url%>' onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png" />
+        <div class='minus'><i class='fa fa-minus-circle'></i></div>
+    </div>
+</script>
+<?php  if(($data['method']==1 && $data['type']!=3)) { ?>
+    <!--修改时查看原始凭证-->
+    <?php  if(is_array($data['voucher_type'])) { foreach($data['voucher_type'] as $k => $v) { ?>
+        <?php  if(!empty($v)) { ?>
+            <div class="send_express" id="send_express<?php  echo $k+1;?>" style="display: none;">
+            <div class="title">
+                <p class="important">原始凭证信息</p>
+            </div>
+            <div class="pic_div">
+                <?php  if(!empty($data['express_voucher'])) { ?>
+                    <?php  if(is_array($data['express_voucher'][$k])) { foreach($data['express_voucher'][$k] as $v2) { ?>
+                        <div style="margin:0 10px 10px 0;box-shadow: 0px 0px 4px 0px #999;display:inline-block;">
+                            <!--download="v2"-->
+                            <a href="https://shop.gogo198.cn/attachment/<?php  echo $v2;?>">
+                                <img src="https://shop.gogo198.cn/attachment/<?php  echo $v2;?>" style="width:100px;height:100px;" onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png" >
+                            </a>
+                        </div>
+                    <?php  } } ?>
+                <?php  } ?>
+            </div>
+            <div class="confirm" style="width:100%;">
+                <span class="close-but" onclick="voucherClose(<?php  echo $k+1;?>)">关闭</span>
+            </div>
+        </div>
+        <?php  } ?>
+    <?php  } } ?>
+<?php  } ?>
+<script language="javascript">
+    $(function(){
+        $('.page_head').find('.left').click(function(){
+          window.history.back(-1); 
+       });
+        require(['tpl', 'core'], function(tpl, core) {
+            //文件
+            $('.minus_del').click(function () {
+                $(this).parent().remove();
+                core.json('util/uploader', {op: 'remove', file: $(this).parent().data('img')}, function (rjson) {
+                    if (rjson.status == 1) {
+
+                    }
+                    $('.plus').show();
+                }, false, true);
+            });
+
+            $('.plus input').change(function () {
+                core.loading('正在上传');
+
+                var comment = $(this).closest('.img_info');
+                var ogid = comment.data('ogid');
+                var max = comment.data('max');
+
+                $.ajaxFileUpload({
+                    url: core.getUrl('util/uploader'),
+                    data: {file: "imgFile" + ogid, 'op': 'uploadFile'},
+                    secureuri: false,
+                    fileElementId: 'imgFile' + ogid,
+                    dataType: 'json',
+                    success: function (res, status) {
+                        core.removeLoading();
+                        if (res.status == 0) {
+                            alert(res.message);
+                            return;
+                        }
+                        var obj = $(tpl('tpl_img', res));
+                        $('.images', comment).append(obj);
+
+                        $('.minus', comment).click(function () {
+                            let t = $(this);
+                            let del_img = $(this).parent()[0].dataset.img;
+                            // $(obj).data('img')
+                            core.json('util/uploader', {op: 'remove', file: del_img}, function (rjson) {
+                                if (rjson.status == 1) {
+                                    // $(obj).remove();
+                                    t.parent().remove();
+                                }
+                                $('.plus', comment).show();
+                            }, false, true);
+                        });
+
+                        if ($('.img', comment).length >= max) {
+                            $('.plus', comment).hide();
+
+                        }
+                    }, error: function (data, status, e) {
+                        core.removeLoading();
+                        core.tip.show('上传失败!');
+                    }
+                });
+            });
+        });
+    });
+
+    function voucher_see(ogid){
+        $('.mask').show();
+        $('#send_express'+ogid).show();
+    }
+
+    function voucherClose(ogid){
+        $('.mask').hide();
+        $('#send_express'+ogid).hide();
+    }
+    function send(){
+        let msg = $('#message').val();
+        let identify = "<?php  echo $identify;?>";
+
+        if($('#message').isEmpty()){
+            alert('请输入评论内容');return;
+        }
+        
+        $.ajax({
+            url: "<?php  echo $this->createMobileUrl('account/register');?>",
+            type: 'POST',
+            dataType: 'json',
+            data: {'op': 'voucher_comment', 'identify': identify,'msg':msg,'id':"<?php  echo $data['id'];?>"},
+            success: function (json) {
+                if(json.status==1){
+                    alert(json.result.msg);
+                    
+                    setTimeout(function(){
+                        window.location.reload();
+                    },2000);
+                }
+            }
+        });
+    }
+    
+    function reply(id){
+        if($('.replytxtarea'+id).css('display')=='block'){
+            $('.replytxtarea'+id).hide();    
+        }else{
+            $('.replytxtarea'+id).show();
+        }
+    }
+    
+    function sendreply(id){
+        let msg = $('textarea[name="reply'+id+'"]').val();
+        let identify = "<?php  echo $identify;?>";
+        
+        $.ajax({
+            url: "<?php  echo $this->createMobileUrl('account/register');?>",
+            type: 'POST',
+            dataType: 'json',
+            data: {'op': 'voucher_comment', 'pid':id,'identify': identify,'msg':msg,'id':"<?php  echo $data['id'];?>"},
+            success: function (json) {
+                if(json.status==1){
+                    alert(json.result.msg);
+                    
+                    setTimeout(function(){
+                        window.location.reload();
+                    },2000);
+                }
+            }
+        });
+    }
+
+    //回复-大
+    function sendFile(id){
+        $('.approveFile').show();
+        $('.mask').show();
+        $('#reply_id').val(id);
+        $('#reply_type').val(2);
+    }
+
+    //回复-小
+    function replyFile(id){
+        $('.approveFile').show();
+        $('.mask').show();
+        $('#reply_id').val(id);
+        $('#reply_type').val(1);
+    }
+
+    function fnClose(typ){
+        if(typ==1){
+            $('#reply_type').val('');
+            $('#reply_id').val('');
+            $('#approveFile').hide();
+            $('.mask').hide();
+        }else if(typ==2){
+            //提交文件评论
+            var file = [];
+            $('.img_info[data-ogid=0]').find('.img').each(function(){
+                file.push($(this).data('img'));
+            });
+            if(file.length==0){
+                alert('请上传文件');return false;
+            }
+            var reply_id=$('#reply_id').val();
+            var reply_type=$('#reply_type').val();
+            var identify = "<?php  echo $identify;?>";
+
+            $.ajax({
+                url:"<?php  echo $this->createMobileUrl('account/register');?>",
+                type:'POST',
+                dataType:'json',
+                data:{'op':'voucher_comment','type':6,'pid':reply_id,'identify': identify,'id':"<?php  echo $data['id'];?>",'reply_id':reply_id,'reply_type':reply_type,'file':file},
+                success:function(json) {
+                    if(json.status==1){
+                        alert(json.result.msg);
+                        $('#reply_type').val('');
+                        $('#reply_id').val('');
+                        $('#approveFile').hide();
+                        $('.mask').hide();
+                        setTimeout(function(){
+                            window.location.reload();
+                        },3000);
+                    }
+                }
+            });
+        }
+
+    }
+</script>
+
+<?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/footer', TEMPLATE_INCLUDEPATH)) : (include template('common/footer', TEMPLATE_INCLUDEPATH));?>

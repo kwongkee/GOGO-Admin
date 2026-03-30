@@ -1,0 +1,533 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/header', TEMPLATE_INCLUDEPATH)) : (include template('common/header', TEMPLATE_INCLUDEPATH));?>
+<title>业务账单</title>
+<link href="../addons/sz_yi/static/css/layui.css" rel="stylesheet">
+<style>
+    .layui-fluid{background:#f8f8f8;}
+    .header{background:#fff;}
+    .header .logo{width:100%;height:auto;}
+    .white_bg{background:#fff;border-radius:5px;}
+    .cen_notice{padding:10px 15px;box-sizing: border-box;border-bottom:1px solid rgb(229,229,229);font-size:13px;}
+    .menu_box1{border-right:2px solid #f8f8f8;border-bottom:2px solid #f8f8f8;}
+    .menu_box2{border-bottom:2px solid #f8f8f8;}
+    .menu_box3{border-right:2px solid #f8f8f8;}
+    .menu_part1{padding: 25px 0 25px 5px;justify-content: center;}
+    .menu_part1 img{width:45px;margin-right:5px;}
+    .menu_part1 .menu_part1_text p:nth-of-type(1){color:#717171;}
+    .menu_part1 .menu_part1_text p:nth-of-type(2){font-size:13px;color:#9a9a9a;margin-top:12px;}
+
+    .menu_part2_container{justify-content: space-between;}
+    .menu_part2_container .layui-col-xs3{width:24%;}
+    .menu_part2{text-align: center;background:#fff;padding:10px 0;box-sizing: border-box;border-radius:5px;}
+    .menu_part2 img{width:35px;}
+    .menu_part2 p{font-size:13px;}
+
+    .line_part{width:100%;border-radius:5px;background:#fff;overflow: hidden;margin-bottom:10px;}
+    .line_part .line_blue{background:#1790FF;width:5px;height:100px;max-height: 150px;min-height:100px;}
+    .line_part .line_part_content{width:100%;padding:10px;box-sizing: border-box;}
+    .line_part .line_part_content .line_title{font-weight: bold;max-width: 200px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;-webkit-line-clamp: 1;}
+    .line_part .line_part_content .line_time{color:#a9a9a9;font-size:13px;}
+    .line_part .line_part_content .line_price{font-size:13px;margin:10px 0;}
+    .line_part .line_part_content .line_price .line_price_red{color:#ff2222;}
+    .line_part .line_part_content .line_accept{font-size:13px;width:100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;-webkit-line-clamp: 1;}
+
+    .layui-layer-hui .layui-layer-content{color:#fff;}
+    .factoryInfo,.is_beian,.data_service3,.boxInfo,.orderInfo,.is_wait2,.is_penalty2{display:none;}
+
+    div{overflow: visible;}
+    .line{width:100%;height:1px;background:#eee;margin:5px 0;}
+    .layui-card{float:left;padding:5px 0;box-sizing:border-box;}
+    .up{background:#009688;}
+    .layui-card-header{font-size:16px;font-weight:bold;}
+    .layui-col-xs12 .title{font-size:15px;font-weight:bold;}
+    .disf{display:flex;align-items:center;}
+    .event{float:left;border: 1px solid #efefef;margin-bottom: 10px;padding: 10px;}
+    .layui-table th{font-size:14px;font-weight:bold;color:#000;}
+    .layui-table thead tr{background: rgb(189,215,238);color:#000;font-weight: bold;}
+    .layui-table tr td,.layui-table th{text-align:center;}
+    .layui-card-header{background: rgb(189,215,238);}
+
+</style>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15" style="padding-top:5px;">
+        <form class="layui-form" lay-filter="component-form-element1" style="padding-left:0;padding-right:0;">
+            <div class="layui-col-md12" style="float:left;background:#fff;">
+                <div class="layui-col-xs12" style="padding:10px;box-sizing: border-box;display: flex;align-items: center;">
+                    <div class="layui-col-xs3 title">
+                        <img src="../addons/sz_yi/static/images/gogo_order_avatar.jpg" alt="" style="width:100px;">
+                    </div>
+                    <div class="layui-col-xs8 val" style="text-align: center;font-weight:bold;font-size:20px;">
+                        账单详情
+                    </div>
+                </div>
+                <div class="line layui-col-xs12"></div>
+                <div class="layui-col-xs12" style="padding:10px;box-sizing: border-box;">
+                    <div class="layui-col-xs3 title">付款客户</div>
+                    <div class="layui-col-xs8 val" style="text-align: center;font-size:15px;font-weight: bold;">
+                        <?php  echo $order['payer_name'];?>
+                    </div>
+                </div>
+                <input class="pageNum" value="1" style="display:none;" name="pageNum">
+
+                <div class="layui-card ladInfo">
+                    <div class="layui-card-header">提单信息(1/4)</div>
+                    <div class="layui-card-body">
+                        <div class="layui-col-xs12">
+                            <div class="layui-col-xs3 title">港口</div>
+                            <div class="layui-col-xs9 val">
+                                <div class="disf">
+                                    <select name="fPort" lay-verify="required" lay-search lay-filter="fPort">
+                                        <?php  if(is_array($fPort)) { foreach($fPort as $k => $val) { ?>
+                                        <option value="<?php  echo $val['code'];?>" data-id="<?php  echo $val['id'];?>" <?php  if($val['code']==$order['fPort']) { ?>selected<?php  } ?>><?php  echo $val['name'];?></option>
+                                        <?php  } } ?>
+                                    </select>
+                                    <div class="sport">
+                                        <select name="sPort" lay-verify="required" lay-search style="margin-left:5px;">
+                                            <?php  if(is_array($sPort)) { foreach($sPort as $k => $val) { ?>
+                                            <option value="<?php  echo $val['code'];?>" data-id="<?php  echo $val['id'];?>" <?php  if($val['code']==$order['sPort']) { ?>selected<?php  } ?>><?php  echo $val['name'];?></option>
+                                            <?php  } } ?>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="line layui-col-xs12"></div>
+                        <div class="layui-col-xs12">
+                            <div class="layui-col-xs3 title">主提单号</div>
+                            <div class="layui-col-xs9 val">
+                                <input type="text" class="layui-input" name="lading_no" placeholder="请输入主提单号" lay-verify="required" id="lading_no" value="<?php  echo $order['lading_no'];?>">
+                            </div>
+                        </div>
+                        <div class="line layui-col-xs12"></div>
+                        <div class="layui-col-xs12">
+                            <div class="layui-col-xs3 title">船名</div>
+                            <div class="layui-col-xs9 val">
+                                <input type="text" class="layui-input" name="ship_name" placeholder="请输入船名" lay-verify="required" value="<?php  echo $order['ship_name'];?>">
+                            </div>
+                        </div>
+                        <div class="line layui-col-xs12"></div>
+                        <div class="layui-col-xs12">
+                            <div class="layui-col-xs3 title">航次</div>
+                            <div class="layui-col-xs9 val">
+                                <input type="text" class="layui-input" name="voyage" placeholder="请输入航次" lay-verify="required" value="<?php  echo $order['voyage'];?>">
+                            </div>
+                        </div>
+                        <div class="line layui-col-xs12"></div>
+                        <div class="layui-col-xs12">
+                            <div class="layui-col-xs3 title">目的港</div>
+                            <div class="layui-col-xs9 val">
+                                <input type="text" class="layui-input" name="destination_port" placeholder="请输入目的港" lay-verify="required" value="<?php  echo $order['destination_port'];?>">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-card factoryInfo">
+                    <div class="layui-card-header">工厂信息(2/4)</div>
+                    <div class="layui-card-body">
+                        <div class="layui-col-xs12">
+                            <div class="layui-col-xs3 title">装柜地点</div>
+                            <div class="layui-col-xs9 val">
+                                <input type="text" class="layui-input" name="factory_address" placeholder="请输入装柜地点" lay-verify="required" value="<?php  echo $order['factory_address'];?>">
+                            </div>
+                        </div>
+                        <div class="line layui-col-xs12"></div>
+                        <div class="layui-col-xs12">
+                            <div class="layui-col-xs3 title">工厂联系人</div>
+                            <div class="layui-col-xs9 val">
+                                <input type="text" class="layui-input" name="factory_contacter" placeholder="请输入工厂联系人" lay-verify="required" value="<?php  echo $order['factory_contacter'];?>">
+                            </div>
+                        </div>
+                        <div class="line layui-col-xs12"></div>
+                        <div class="layui-col-xs12">
+                            <div class="layui-col-xs3 title">联系人电话</div>
+                            <div class="layui-col-xs9 val">
+                                <input type="text" class="layui-input" name="factory_mobile" placeholder="请输入联系人电话" lay-verify="required" value="<?php  echo $order['factory_mobile'];?>">
+                            </div>
+                        </div>
+                        <div class="line layui-col-xs12"></div>
+                        <div class="layui-col-xs12">
+                            <div class="layui-col-xs3 title">工厂是否禁区</div>
+                            <div class="layui-col-xs9 val">
+                                <select name="is_penalty" id="is_penalty" lay-filter="is_penalty" lay-verify="required">
+                                    <option value="">请选择</option>
+                                    <option value="1" <?php  if($order['is_penalty']==1) { ?>selected<?php  } ?>>否</option>
+                                    <option value="2" <?php  if($order['is_penalty']==2) { ?>selected<?php  } ?>>是</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="line layui-col-xs12 is_penalty2" <?php  if($order['is_penalty']==2) { ?>style="display:block;"<?php  } ?>></div>
+                            <div class="layui-col-xs12 is_penalty2" <?php  if($order['is_penalty']==2) { ?>style="display:block;"<?php  } ?>>
+                            <div class="layui-col-xs3 title">通行办法</div>
+                            <div class="layui-col-xs9 val">
+                                <input type="text" class="layui-input" name="approach_idea" placeholder="请输入通行办法" value="<?php  echo $order['approach_idea'];?>">
+                            </div>
+                        </div>
+                        <div class="line layui-col-xs12"></div>
+                        <div class="layui-col-xs12">
+                            <div class="layui-col-xs3 title">是否位于保税区内</div>
+                            <div class="layui-col-xs9 val">
+                                <select name="is_baoshui" id="is_baoshui" lay-filter="is_baoshui">
+                                    <option value="">请选择</option>
+                                    <option value="1" <?php  if($order['is_baoshui']==1) { ?>selected<?php  } ?>>否</option>
+                                    <option value="2" <?php  if($order['is_baoshui']==2) { ?>selected<?php  } ?>>是</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="line layui-col-xs12 is_beian" <?php  if($order['is_baoshui']==2) { ?>style="display:block;"<?php  } ?>></div>
+                            <div class="layui-col-xs12 is_beian" <?php  if($order['is_baoshui']==2) { ?>style="display:block;"<?php  } ?>>
+                            <div class="layui-col-xs3 title">是否需要备案</div>
+                            <div class="layui-col-xs9 val">
+                                <select name="is_beian" id="is_beian">
+                                    <option value="">请选择</option>
+                                    <option value="1" <?php  if($order['is_beian']==1) { ?>selected<?php  } ?>>否</option>
+                                    <option value="2" <?php  if($order['is_beian']==2) { ?>selected<?php  } ?>>是</option>
+                                </select>
+                            </div>
+                    </div>
+                    <div class="line layui-col-xs12"></div>
+                    <div class="layui-col-xs12">
+                        <div class="layui-col-xs3 title">件毛体数据提供方式</div>
+                        <div class="layui-col-xs9 val">
+                            <select name="data_service" id="data_service" lay-filter="data_service" lay-verify="required">
+                                <option value="">请选择提供方式</option>
+                                <option value="1" <?php  if($order['data_service']==1) { ?>selected<?php  } ?>>装柜地点提供</option>
+                                <option value="2" <?php  if($order['data_service']==2) { ?>selected<?php  } ?>>固定我们提供</option>
+                                <option value="3" <?php  if($order['data_service']==3) { ?>selected<?php  } ?>>不固定，我们或者装柜地点提供</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="line layui-col-xs12 data_service3" <?php  if($order['data_service']==3) { ?>style="display:block;"<?php  } ?>></div>
+                        <div class="layui-col-xs12 data_service3" <?php  if($order['data_service']==3) { ?>style="display:block;"<?php  } ?>>
+                        <div class="layui-col-xs3 title">本次件毛体数据将由</div>
+                        <div class="layui-col-xs9 val">
+                            <select name="data_service3" id="data_service3">
+                                <option value="">请选择提供方式</option>
+                                <option value="1" <?php  if($order['data_service3']==1) { ?>selected<?php  } ?>>装柜地点提供</option>
+                                <option value="2" <?php  if($order['data_service3']==2) { ?>selected<?php  } ?>>我们提供</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+        <div class="layui-card boxInfo">
+            <div class="layui-card-header">做箱计划(3/4)</div>
+            <div class="layui-card-body">
+                <div class="layui-col-xs12">
+                    <div class="layui-col-xs3 title">做箱时间</div>
+                    <div class="layui-col-xs9 val">
+                        <input type="text" class="layui-input" name="making_date" id="making_date" placeholder="yymmddhhii" lay-verify="required" value="<?php  echo $order['making_date'];?>">
+                    </div>
+                </div>
+                <div class="line layui-col-xs12"></div>
+                <div class="layui-col-xs12">
+                    <div class="layui-col-xs3 title">提单号</div>
+                    <div class="layui-col-xs9 val">
+                        <input type="text" class="layui-input" name="lading_no2" placeholder="请输入提单号" lay-verify="required" id="lading_no2" readonly="readonly" value="<?php  echo $order['lading_no'];?>">
+                    </div>
+                </div>
+                <div class="line layui-col-xs12"></div>
+                <div class="layui-col-xs12">
+                    <div class="layui-col-xs3 title">预计货重(吨)</div>
+                    <div class="layui-col-xs9 val">
+                        <input type="text" class="layui-input" name="estimate_weight" placeholder="请输入预计货重(吨)" lay-verify="required" value="<?php  echo $order['estimate_weight'];?>">
+                    </div>
+                </div>
+                <div class="line layui-col-xs12"></div>
+                <div class="layui-col-xs12">
+                    <div class="layui-col-xs3 title">箱型</div>
+                    <div class="layui-col-xs9 val">
+                        <select name="box_type" id="box_type" lay-filter="box_type" lay-search lay-verify="required">
+                            <option value="">请选择箱型</option>
+                            <option value="20尺普柜" <?php  if($order['box_type']=='20尺普柜') { ?>selected<?php  } ?>>20尺普柜</option>
+                            <option value="40尺普柜" <?php  if($order['box_type']=='40尺普柜') { ?>selected<?php  } ?>>40尺普柜</option>
+                            <option value="45尺柜" <?php  if($order['box_type']=='45尺柜') { ?>selected<?php  } ?>>45尺柜</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="line layui-col-xs12"></div>
+                <div class="layui-col-xs12">
+                    <div class="layui-col-xs3 title">箱量</div>
+                    <div class="layui-col-xs9 val">
+                        <input type="number" class="layui-input" name="box_num" lay-verify="required" placeholder="请填写箱量" value="<?php  echo $order['box_num'];?>">
+                    </div>
+                </div>
+
+                <div class="line layui-col-xs12"></div>
+                <div class="layui-col-xs12">
+                    <div class="layui-col-xs3 title">做箱要求</div>
+                    <div class="layui-col-xs9 val">
+                        <textarea name="making_requrest" class="layui-textarea" placeholder="做箱要求（选填）" value="<?php  echo $order['making_requrest'];?>"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-card orderInfo">
+            <div class="layui-card-header">下单信息(4/4)</div>
+            <div class="layui-card-body">
+                <div class="layui-col-xs12">
+                    <div class="layui-col-xs3 title">做箱时间是否等开港/通知</div>
+                    <div class="layui-col-xs9 val">
+                        <select name="is_wait" id="is_wait" lay-filter="is_wait" lay-verify="required">
+                            <option value="">请选择</option>
+                            <option value="1" <?php  if($order['is_wait']==1) { ?>selected<?php  } ?>>否(按约定时间做箱)</option>
+                            <option value="2" <?php  if($order['is_wait']==2) { ?>selected<?php  } ?>>是</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="line layui-col-xs12 is_wait2" <?php  if($order['is_wait']==2) { ?>style="display:block;"<?php  } ?>></div>
+                    <div class="layui-col-xs12 is_wait2" <?php  if($order['is_wait']==2) { ?>style="display:block;"<?php  } ?>>
+                    <div class="layui-col-xs3 title">等待方式</div>
+                    <div class="layui-col-xs9 val">
+                        <select name="is_wait2" id="is_wait2">
+                            <option value="">请选择</option>
+                            <option value="1" <?php  if($order['is_wait2']==1) { ?>selected<?php  } ?>>等通知做箱</option>
+                            <option value="2" <?php  if($order['is_wait2']==2) { ?>selected<?php  } ?>>等开港做箱</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="line layui-col-xs12"></div>
+                <div class="layui-col-xs12">
+                    <div class="layui-col-xs3 title">截单时间</div>
+                    <div class="layui-col-xs9 val">
+                        <input type="text" class="layui-input" name="end_date" id="end_date" placeholder="yymmddhhii" lay-verify="required" value="<?php  echo $order['end_date'];?>">
+                    </div>
+                </div>
+                <div class="line layui-col-xs12"></div>
+                <div class="layui-col-xs12">
+                    <div class="layui-col-xs3 title">委托报关</div>
+                    <div class="layui-col-xs9 val">
+                        <select name="is_entrust" id="is_entrust" lay-filter="is_entrust" lay-verify="required">
+                            <option value="">请选择</option>
+                            <option value="1" <?php  if($order['is_entrust']==1) { ?>selected<?php  } ?>>否</option>
+                            <option value="2" <?php  if($order['is_entrust']==2) { ?>selected<?php  } ?>>是</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+                <div class="layui-form-item" style="margin-top: 15px;text-align: center;">
+                    <div class="layui-btn layui-btn-md back layui-btn-primary">返回主页</div>
+                    <div class="layui-btn layui-btn-normal up" style="display:none;">上一页</div>
+                    <?php  if($order['status']==1) { ?>
+                    <button class="layui-btn layui-btn-normal submit" lay-submit="" lay-filter="component-form-element" style="display:none;background:#F7931E !important;">提交修改</button>
+    <!--                <div class="layui-btn layui-btn-danger" onclick="cancel()">冻结</div>-->
+                    <?php  } ?>
+                    <?php  if($order['status']==2) { ?>
+                    <div class="layui-btn layui-btn-normal" style="background:#F7931E;" onclick="javascript:window.location.href='https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=domestic&m=sz_yi&p=collection&op=search';">查看支付账单</div>
+                    <?php  } ?>
+                    <div class="layui-btn layui-btn-normal down">下一页</div>
+
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript" src="../addons/sz_yi/static/js/layui/layui.js"></script>
+<script>
+    layui.use(['layer','jquery','element','laydate','form'], function() {
+        var layer = layui.layer
+            , $ = layui.jquery
+            , element = layui.element
+            , laydate = layui.laydate
+            , form = layui.form;
+
+        $('.back').click(function(){
+            window.history.back(-1);
+        });
+
+        form.on('select(fPort)',function(data){
+            let val = data.value;
+            $.ajax({
+                url:"https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=freight&p=freight&op=get_sport&m=sz_yi",
+                type:'post',
+                dataType:'JSON',
+                data:{code:val},
+                success:function(res){
+                    layer.closeAll('loading'); //关闭loading
+                    // layer.msg(res.msg,{time:3000}, function () {
+                        if(res.code == 0)
+                        {
+                            let html = '<select name="sPort" lay-search lay-verify="required">\n';
+
+                            for(let i=0;i<res.data.length;i++){
+                                html += '           <option value="'+res.data[i].code+'">'+res.data[i].name+'</option>';
+                            }
+
+                            html += '</select>';
+
+                            $('.sport').html(html);
+                            form.render(null,'component-form-element1');
+                        }
+                    // });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+        });
+
+        laydate.render({
+            elem: '#etd_date'
+            ,format: 'yyyy-MM-dd'
+        });
+
+        laydate.render({
+            elem: '#making_date'
+            ,type: 'datetime'
+            ,format: 'yyyy-MM-dd HH:mm'
+        });
+
+        laydate.render({
+            elem: '#end_date'
+            ,type: 'datetime'
+            ,format: 'yyyy-MM-dd HH:mm'
+        });
+
+        form.render(null,'component-form-element1');
+        form.render(null,'verify-element1');
+
+        form.on('select(is_penalty)',function(data){
+            var val = data.value;
+
+            if(val==1){
+                $('.is_penalty2').hide();
+            }else if(val==2){
+                $('.is_penalty2').show();
+            }
+        });
+
+        form.on('select(is_baoshui)',function(data){
+            var val = data.value;
+
+            if(val==1){
+                $('.is_beian').hide();
+            }else if(val==2){
+                $('.is_beian').show();
+            }
+        });
+
+        form.on('select(data_service)',function(data){
+            var val = data.value;
+
+            if(val==1 || val==2){
+                $('.data_service3').hide();
+            }else if(val==3){
+                $('.data_service3').show();
+            }
+        });
+
+        form.on('select(is_wait)',function(data){
+            var val = data.value;
+
+            if(val==1){
+                $('.is_wait2').hide();
+            }else if(val==2){
+                $('.is_wait2').show();
+            }
+        });
+
+        //上一页
+        $('.up').click(function(){
+            let pnum = $('.pageNum').val();
+            let num = parseInt(pnum) - 1;
+            $('.pageNum').val(num);
+
+            if(num==1){
+                $('.ladInfo').show();
+                $('.factoryInfo').hide();
+                $('.boxInfo').hide();
+                $('.orderInfo').hide();
+
+                $('.up').hide();
+                $('.down').show();
+                $('.submit').hide();
+                $('.back').show();
+            }else if(num==2){
+                $('.ladInfo').hide();
+                $('.factoryInfo').show();
+                $('.boxInfo').hide();
+                $('.orderInfo').hide();
+                $('.submit').hide();
+            }else if(num==3){
+                $('.ladInfo').hide();
+                $('.factoryInfo').hide();
+                $('.boxInfo').show();
+                $('.orderInfo').hide();
+
+                $('.down').show();
+                $('.submit').hide();
+            }else if(num==41){
+                $('.ladInfo').hide();
+                $('.factoryInfo').hide();
+                $('.boxInfo').hide();
+                $('.orderInfo').show();
+            }
+        });
+
+        //下一页
+        $('.down').click(function(){
+            let pnum = $('.pageNum').val();
+            let num = 1 + parseInt(pnum);
+            $('.pageNum').val(num);
+
+            if(num==2){
+                $('.ladInfo').hide();
+                $('.factoryInfo').show();
+                $('.boxInfo').hide();
+                $('.orderInfo').hide();
+                $('.up').show();
+                $('.back').hide();
+            }else if(num==3){
+                $('.ladInfo').hide();
+                $('.factoryInfo').hide();
+                $('.boxInfo').show();
+                $('.orderInfo').hide();
+                $('.up').show();
+                $('.back').hide();
+            }else if(num==4){
+                $('.ladInfo').hide();
+                $('.factoryInfo').hide();
+                $('.boxInfo').hide();
+                $('.orderInfo').show();
+                $('.down').hide();
+                $('.up').show();
+                $('.submit').show();
+                $('.back').hide();
+            }
+        });
+
+        form.on('submit(component-form-element)', function(data){
+            layer.load(); //上传loading
+            $.ajax({
+                url:"https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=freight&p=freight&op=order_detail&m=sz_yi&id=<?php  echo $id;?>&update=1",
+                type:'post',
+                dataType:'JSON',
+                data:data.field,
+                success:function(res){
+                    layer.closeAll('loading'); //关闭loading
+                    layer.msg(res.msg,{time:3000}, function () {
+                        if(res.code == 0)
+                        {
+                            window.location.reload();
+                        }else if(res.code==-1){
+
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+
+            return false;
+        });
+
+        $('#lading_no').bind('input propertychange', function() {
+            $('#lading_no2').val($(this).val());
+        });
+    });
+</script>

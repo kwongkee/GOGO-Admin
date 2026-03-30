@@ -1,0 +1,166 @@
+{template 'common/header'}
+<title>基本配置</title>
+<style type="text/css">
+    body {margin:0px; background:#efefef; font-family:'微软雅黑'; -moz-appearance:none;}
+    .info_main {height:auto;  background:#fff; margin-top:14px; border-bottom:1px solid #e8e8e8; border-top:1px solid #e8e8e8;}
+    .info_main .line {margin:0 10px; height:40px; border-bottom:1px solid #e8e8e8; line-height:40px; color:#999;}
+    .info_main .line .title {height:40px; width:80px; line-height:40px; color:#444; float:left; font-size:14px;}
+    .info_main .line .info { width:100%;float:right;margin-left:-80px; }
+    .info_main .line .inner { margin-left:80px; }
+    .info_main .line .inner input {height:40px; width:100%;display:block; padding:0px; margin:0px; border:0px; float:left; font-size:14px;}
+    .info_main .line .inner .user_sex {line-height:40px;}
+    .info_sub {height:44px; margin:14px 5px; background:#31cd00; border-radius:4px; text-align:center; font-size:16px; line-height:44px; color:#fff;}
+    .select { border:1px solid #ccc;height:25px;}
+    .floatBox{position: fixed;right: 10px;z-index: 999;font-size: 14px;width: 52px;height: 52px;transition: all .7s;background: #3388FF !important;bottom: 140px;border-radius: 50%;text-align: center;padding: 0;padding-top:6px;box-sizing:border-box;}
+    .floatBox div{color: #fff !important;}
+    .table{width:100%;font-size:15px;}
+    .table tr{height:25px;}
+
+    .table tr td:nth-of-type(2){width:20%;}
+    .see{box-sizing: border-box;padding: 2px 4px;font-size: 15px;color: #fff;background: #1E9FFF;text-align:center;}
+    
+    .page_head{width:100%;background:#fff;margin-bottom:5px;box-shadow:0 0 4px #ddd;padding:10px 0 10px;}
+    .page_head .left{width:20%;display:flex;align-items:center;font-size:15px;}
+    .page_head .left .back{width:13px;height:13px;border-top:2px solid #000;border-left:2px solid #000;transform:rotate(-50deg);margin-left:15px;margin-right:5px;}
+    a{text-decoration: none;text-underline: none;}
+</style>
+
+<link type="text/css" rel="stylesheet" href="../addons/sz_yi/static/css/bootstrap.min.css" />
+<script type="text/javascript" src="../addons/sz_yi/template/pc/default/static/js/bootstrap.min.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../addons/sz_yi/static/travel_express/css/hui.css" />
+<script type="text/javascript" src="../addons/sz_yi/template/mobile/default/enterprise/static/js/hui.js" charset="UTF-8"></script>
+<div class="page_head">
+    <div class="left">
+        <div class="back"></div>
+        <div style="font-size:15px;padding-top:2px;">返回</div>
+    </div>
+</div>
+<div id="container">
+    <div class="hui-wrap">
+        <div style="padding-top:10px;">
+            <div class="hui-segment" id="cate">
+                <a href="javascript:changeDom(1);" class="hui-segment-active">企业账户</a>
+                <a href="javascript:changeDom(2);">个人账户</a>
+                <a href="javascript:changeDom(3);">支付账户</a>
+            </div>
+            <div id="domsIn" style="padding-top:10px; text-align:center;">
+                <div class="info_main">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <td>银行账号</td>
+                            <td>银行名称</td>
+                            <td>账号名称</td>
+                            <td>操作</td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {loop $account $v}
+                        <tr>
+                            <td>{$v['bank_account']}</td>
+                            <td>{$v['bank_name']}</td>
+                            <td>{$v['name']}</td>
+                            <td><div class="see" onclick='see({$v["id"]})'>查看</div></td>
+                        </tr>
+                        {/loop}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="floatBox">
+        <div>添加</div>
+        <div>账号</div>
+    </div>
+</div>
+
+<script language="javascript">
+    //点击切换函数可以根据实际业务需求编写业务代码
+    function changeDom(index){
+        index--;
+        var html = '';
+        
+         $.ajax({
+            url:"<?php echo $this->createMobileUrl('account/register');?>",
+            type:'POST',
+            dataType:'json',
+            data:{'op':'basic_set','type':index+1},
+            success:function(json) {
+                if(json.status==1){
+                   var dat = json.result.data;
+                  
+                   if(index==2){
+                        html = '<div class="info_main">\n' +
+                        '                    <table class="table table-striped">\n' +
+                        '                        <thead>\n' +
+                        '                        <tr>\n' +
+                        '                            <td>支付公司</td>\n' +
+                        '                            <td>支付账号</td>\n' +
+                        '                            <td>账号名称</td>\n' +
+                        '                            <td>操作</td>\n' +
+                        '                        </tr>\n' +
+                        '                        </thead>\n' +
+                        '                        <tbody>\n';
+                        for(var i2=0;i2<dat.length;i2++){
+                        html+='                  <tr>\n' +
+                        '                            <td>'+dat[i2]['bank_account']+'</td>\n' +
+                        '                            <td>'+dat[i2]['bank_name']+'</td>\n' +
+                        '                            <td>'+dat[i2]['name']+'</td>\n' +
+                        '                            <td><div class="see" onclick=\'see('+dat[i2]['id']+')\'>查看</div></td>\n' +
+                        '                        </tr>\n';
+                        }
+                        html+='                        </tbody>\n' +
+                        '                    </table>\n' +
+                        '                </div>';
+            
+                    }else{
+                        html = '<div class="info_main">\n' +
+                        '                    <table class="table table-striped">\n' +
+                        '                        <thead>\n' +
+                        '                        <tr>\n' +
+                        '                            <td>银行账号</td>\n' +
+                        '                            <td>银行名称</td>\n' +
+                        '                            <td>账号名称</td>\n' +
+                        '                            <td>操作</td>\n' +
+                        '                        </tr>\n' +
+                        '                        </thead>\n' +
+                        '                        <tbody>\n';
+                        for(var i2=0;i2<dat.length;i2++){
+                        html+='                   <tr>\n' +
+                        '                            <td>'+dat[i2]['bank_account']+'</td>\n' +
+                        '                            <td>'+dat[i2]['bank_name']+'</td>\n' +
+                        '                            <td>'+dat[i2]['name']+'</td>\n' +
+                        '                            <td><div class="see" onclick=\'see('+dat[i2]['id']+')\'>查看</div></td>\n' +
+                        '                        </tr>\n';
+                        }
+                        html+='                        </tbody>\n' +
+                        '                    </table>\n' +
+                        '                </div>';
+                        
+                    }
+                    hui('#domsIn').html(html);
+                    hui('#cate a').eq(index).addClass('hui-segment-active').siblings().removeClass('hui-segment-active');
+                }
+            },error:function(json){
+                alert('数据出错！');
+            }
+        });
+    }
+   $(function(){
+       $('.page_head').find('.left').click(function(){
+          window.history.back(-1); 
+       });
+       $('.floatBox').click(function(){
+           window.location.href="./index.php?i=3&c=entry&do=account&m=sz_yi&p=register&op=add_account";
+       })
+   });
+
+    function see(id) {
+        window.location.href="./index.php?i=3&c=entry&do=account&m=sz_yi&p=register&op=edit_account&id="+id;
+    }
+</script>
+
+{template 'common/footer'}

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>海关申报系统菜单管理</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header button{float: right;margin-top: -5px;}
+        .header div{border-bottom: solid 2px #009688;margin-top: 8px;}
+    </style>
+</head>
+<body style="padding: 10px;">
+<div class="header">
+    <span>二次对账商户信息</span>
+    <div></div>
+</div>
+
+<button class="layui-btn layui-btn-primary layui-btn-sm" style="float: right;margin: 5px 0px 5px 0px;" onclick="backs()">返回上级菜单</button>
+
+<table class="layui-table">
+    <thead>
+        <tr>
+            <th>用户名称</th>
+            <th>用户手机</th>
+            <th>身份费率</th>
+            <th>申报费率</th>
+            <th>支付费率</th>
+            <th>支付折扣</th>
+            <th>是否开启</th>
+            <th>申报失败</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    {volist name="data" id="vo"}
+    <tr>
+        <td>{$vo.user_name}</td>
+        <td>{$vo.user_tel}</td>
+        <td>{$vo.idfee}</td>
+        <td>{$vo.sbfee}</td>
+        <td>{$vo.payfee}</td>
+        <td>{$vo.payhfee}</td>
+        <td><button href="javascript:void(0);" class="layui-btn layui-btn-sm layui-btn-primary">{$vo.isOpen == 1 ? '已开启':'已关闭'}</button></td>
+        <td><button href="javascript:void(0);" class="layui-btn layui-btn-sm layui-btn-primary">{$vo.isCharge == 1 ? '收费':'不收费'}</button></td>
+        <td>
+            <button class="layui-btn layui-btn-warm layui-btn-xs" onclick="edit({$vo.id})">编辑</button>
+            <button class="layui-btn layui-btn-danger layui-btn-xs" onclick="del({$vo.id})">删除</button>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+
+<script>
+    //Demo
+    layui.use('form', function(){
+        var form = layui.form;
+        $  = layui.jquery;
+    });
+
+    function backs() {
+        window.history.go(-1);
+    }
+
+    function edit(id)
+    {
+        layer.open({
+            type:2,
+            title:'编辑用户信息',
+            shade:0.3,
+            area:['500px','520px'],
+            content:"{:Url('admin/merchant/edit')}&id="+id, //弹窗内容
+            cancel:function (e) {
+            }
+        });
+    }
+
+    // 删除
+    function del(id)
+    {
+        layer.confirm('您确定删除吗？',{icon:2,btn:['确定','取消']},function(){
+
+            $.ajax({
+                url:"{:Url('admin/merchant/doDel')}",
+                type:"POST",
+                dataType:"json",
+                data:{id:id},
+                success:function (res) {
+                    if(res.code == 1) {
+                        layer.msg(res.msg,{icon:1});
+                        setTimeout(function(){
+                            layer.closeAll();
+                            window.location.reload();
+                        },1000)
+                    } else {
+                        layer.msg(res.msg,{icon:2});
+                    }
+                    console.log(res);
+                },
+                error:function (xhr) {
+                    layer.msg('服务器接收失败，请稍后重试...');
+                }
+            });
+
+        })
+
+    }
+
+</script>
+</html>

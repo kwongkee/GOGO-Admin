@@ -1,0 +1,239 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/header', TEMPLATE_INCLUDEPATH)) : (include template('common/header', TEMPLATE_INCLUDEPATH));?>
+<!--<title>项目配置中心</title>-->
+<style type="text/css">
+    body {margin:0px; background:#efefef; font-family:'微软雅黑'; -moz-appearance:none;}
+    .info_main {height:auto;  background:#fff; margin-top:14px; border-bottom:1px solid #e8e8e8; border-top:1px solid #e8e8e8;}
+    .info_main .line {margin:0 10px; height:40px; border-bottom:1px solid #e8e8e8; line-height:40px; color:#999;display:flex;}
+    .info_main .line .title {height:40px; width:80px; line-height:40px; color:#444; float:left; font-size:14px;}
+    .info_main .line .info { width:100%;float:right;margin-left:-80px; }
+    .info_main .line .inner { margin-left:80px; }
+    .info_main .line .inner input {height:40px; width:100%;display:block; padding:0px; margin:0px; border:0px; float:left; font-size:14px;}
+    .info_main .line .inner .user_sex {line-height:40px;}
+    .info_sub {height:44px; margin:14px 5px; background:#31cd00; border-radius:4px; text-align:center; font-size:16px; line-height:44px; color:#fff;}
+    .select { border:1px solid #ccc;height:25px;}
+    .table{width:100%;font-size:15px;}
+    .table tr{height:25px;}
+    .table tr td{vertical-align: middle !important;}
+    
+    .table tr td:nth-of-type(2){width:20%;}
+    .see{box-sizing: border-box;padding: 4px 10px;font-size: 14px;color: #fff;background: #1E9FFF;text-align:center;}
+    .chakan{font-size:14px;padding:4px 10px;background:#1EA01E;width:fit-content;color:#fff;}
+    .submit{font-size:14px;padding:4px 10px;background:#ff5555;width:fit-content;margin-left:10px;margin-right:5px;color:#fff;}
+    .sign_box{display:none;width: 80%;position: absolute;background: #ffffff;border-radius: 5px;z-index:1000;transform:translate(-50%,-50%);top: 50%;left:50%;}
+    .sign_box .confirm{height: 50px;border-top: 1px solid #eee;display: flex;}
+    .sign_box .confirm>span{flex: 1;height: 50px;line-height: 50px;font-size: 16px;text-align: center;}
+    .sign_box .confirm>span:nth-child(1){color: red;}
+    .sign_box .confirm>span:nth-child(2){border-left: 1px solid #eee;}
+    .sign_box .important{color: red;}
+    .sign_box .title{text-align: center;border-bottom: 1px solid #eee;margin-bottom: 10px;}
+    .sign_box .title>p{height: 40px;line-height: 40px;text-align: center;font-size: 18px;font-weight: bold;}
+
+    .page_head{width:100%;background:#fff;margin-bottom:5px;box-shadow:0 0 4px #ddd;padding:10px 0 10px;display:flex;align-items:center;}
+    .page_head .left{width:20%;display:flex;align-items:center;font-size:15px;}
+    .page_head .left .back{width:13px;height:13px;border-top:2px solid #000;border-left:2px solid #000;transform:rotate(-50deg);margin-left:15px;margin-right:5px;}
+    .page_head .right{width:80%;text-align:center;padding-right:80px;font-size:15px;padding-top:2px;}
+
+    .table_title{width: 100%;background: #1E9FFF;color: #fff;font-size: 15px;padding: 5px;text-align: center;margin-top: 5px;}
+    a{text-decoration: none;text-underline: none;}
+</style>
+
+<link type="text/css" rel="stylesheet" href="../addons/sz_yi/template/pc/default/static/css/bootstrap.min.css" />
+<script type="text/javascript" src="../addons/sz_yi/static/js/dist/bootstrap.min.js"></script>
+<div class="page_head">
+    <div class="left">
+        <div class="back"></div>
+        <div style="font-size:15px;padding-top:2px;">返回</div>
+    </div>
+    <div class="right">
+        <?php  echo str_replace('-','年',$tax_info['decl_date']);?>月税费申报
+    </div>
+</div>
+<div id="container">
+    <div class="info_main table-responsive">
+        <?php  if(empty($tax_info)) { ?>
+        <div class="line" style="text-align:center;">暂无信息</div>
+        <?php  } else { ?>
+            <div class="psd">
+                <div style="text-align:left;margin: 0;padding: 5px 0 5px 10px;background: #CDF;display:flex;align-items:center;justify-content:space-between;">
+                    <div style="width:55%;word-break: break-word;"><?php  echo $tax_info['name'];?></div>
+                    <?php  if($tax_info['status']!=1) { ?>
+                        <?php  if($is_show_queren==1) { ?>
+                        <!--登记端-->
+                        <select name="opera_queren" onchange="opera_queren(this,<?php  echo $tax_info['id'];?>)" style="margin-right:10px;display:none;">
+                            <option value="">请选择操作</option>
+                            <option value="1" data-m="1">确认无误</option>
+                            <option value="2" data-m="1">有误需纠</option>
+                        </select>
+                        <?php  } else { ?>
+                        <!--管理端-->
+                        <select name="opera_queren" onchange="opera_queren(this,<?php  echo $tax_info['id'];?>)" style="margin-right:10px;display:none;">
+                            <option value="">请选择操作</option>
+                            <option value="1" data-m="2">确认无误</option>
+                            <option value="2" data-m="2">有误需纠</option>
+                        </select>
+                        <?php  } ?>
+                    <?php  } else { ?>
+                    <div class="see" style="margin-right:10px;background:#666;">已确认</div>
+                    <?php  } ?>
+                </div>
+    
+                <div class="table_title">营业收入</div>
+                <table class="table table-striped" style="margin-bottom:0;table-layout:fixed;word-break: break-all;">
+                    <tr>
+                        <td>收入类别</td>
+                        <td style="width:100px;">项目</td>
+                        <td style="width:60px;">币种</td>
+                        <td style="width:100px;">金额</td>
+                    </tr>
+                    <?php  if(is_array($income)) { foreach($income as $val) { ?>
+                    <tr>
+                        <td><?php  echo $val['name'];?></td>
+                        <td><?php  echo $val['project'];?></td>
+                        <td><?php  echo $val['currency'];?></td>
+                        <td><?php  echo $val['price'];?></td>
+                    </tr>
+                    <?php  } } ?>
+                </table>
+
+                <div class="table_title">营运支出</div>
+                <table class="table table-striped" style="margin-bottom:0;table-layout:fixed;word-break: break-all;">
+                    <tr>
+                        <td>支出类别</td>
+                        <td style="width:100px;">项目</td>
+                        <td style="width:60px;">币种</td>
+                        <td style="width:100px;">金额</td>
+                    </tr>
+                    <?php  if(is_array($cost)) { foreach($cost as $val) { ?>
+                    <tr>
+                        <td><?php  echo $val['name'];?></td>
+                        <td><?php  echo $val['project'];?></td>
+                        <td><?php  echo $val['currency'];?></td>
+                        <td><?php  echo $val['price'];?></td>
+                    </tr>
+                    <?php  } } ?>
+                </table>
+
+                <div class="table_title">本期税费</div>
+                <table class="table table-striped" style="margin-bottom:0;table-layout:fixed;word-break: break-all;">
+                    <tr>
+                        <td>申报税种</td>
+                        <td style="width:100px;">项目</td>
+                        <td style="width:60px;">币种</td>
+                        <td style="width:100px;">金额</td>
+                    </tr>
+                    <?php  if(is_array($taxes)) { foreach($taxes as $val) { ?>
+                    <tr>
+                        <td><?php  echo $val['name'];?></td>
+                        <td><?php  echo $val['project'];?></td>
+                        <td><?php  echo $val['currency'];?></td>
+                        <td><?php  echo $val['price'];?></td>
+                    </tr>
+                    <?php  } } ?>
+                </table>
+
+                <div class="table_title">本期利润</div>
+                <table class="table table-striped" style="margin-bottom:0;table-layout:fixed;word-break: break-all;text-align:center;">
+                    <tr>
+                        <td style="width:50%;">币种</td>
+                        <td style="width:50%;">金额</td>
+                    </tr>
+                    <?php  if(is_array($profit)) { foreach($profit as $val) { ?>
+                    <tr>
+                        <td><?php  echo $val['currency'];?></td>
+                        <td><?php  echo $val['money'];?></td>
+                    </tr>
+                    <?php  } } ?>
+                </table>
+            </div>
+        <?php  } ?>
+    </div>
+    <?php  if($is_accounting==0) { ?>
+         <?php  if($is_show_queren==1) { ?>
+            <!--登记端-->
+            <?php  if($tax_info['status']==0) { ?>
+                <div style="display:flex;align-items:center;justify-content:center;margin-top:10px;">
+                    <div class="see" onclick="opera_queren(1,<?php  echo $tax_info['id'];?>,1)">确认无误</div>
+                    <div class="see" style="background:#ff5555;margin-left:10px;" onclick="opera_queren(2,<?php  echo $tax_info['id'];?>,1)">有误需纠</div>
+                </div>
+            <?php  } ?>
+        <?php  } else { ?>
+            <!--管理端-->
+            <div style="display:flex;align-items:center;justify-content:center;margin-top:10px;">
+                <?php  if($tax_info['manage_status']==0) { ?>
+                    <div class="see" onclick="opera_queren(1,<?php  echo $tax_info['id'];?>,2)">确认无误</div>
+                    <div class="see" style="background:#ff5555;margin-left:10px;" onclick="opera_queren(2,<?php  echo $tax_info['id'];?>,2)">有误需纠</div>
+                <?php  } ?>
+                <?php  if($tax_info['status']==2 && $tax_info['manage_status']!=2) { ?>
+                    <div class="see" style="background:#ff5555;" onclick="opera_queren(2,<?php  echo $tax_info['id'];?>,2)">有误需纠</div>
+                <?php  } ?>
+            </div>
+        <?php  } ?>
+    <?php  } ?>
+</div>
+
+<script language="javascript">
+    require(['tpl', 'core'], function(tpl, core) {
+
+    });
+
+    $(function(){
+        $('.page_head').find('.left').click(function(){
+            window.history.back(-1);
+        });
+    });
+
+    function opera_queren(selected,tax_id,m){
+        // let selected = $(t).children(':selected').val();
+        // let m = $(t).children(':selected').data('m');
+
+        if(selected==1){
+            //确认无误
+            operation(tax_id,1,m);
+        }else if(selected==2){
+            //有误
+            operation(tax_id,2,m);
+        }
+    }
+
+    function operation(id,typ,manager){
+        if(typ==1){
+            //正确无误
+            if(confirm('确定当月税费正确无误？')){
+                $.ajax({
+                    url:"<?php  echo $this->createMobileUrl('account/register');?>",
+                    type:'POST',
+                    dataType:'json',
+                    data:{'op':'taxes_info','typ':typ,'tax_id':id,'manager':manager},
+                    success:function(json) {
+                        if(json.status==1){
+                            alert(json.result.msg);
+                            setTimeout(function(){
+                                window.location.reload();
+                            },2000);
+                        }
+                    }
+                });
+            }
+        }else if(typ==2){
+            //正确有误
+            if(confirm('确定当月税费有误？')){
+                $.ajax({
+                    url:"<?php  echo $this->createMobileUrl('account/register');?>",
+                    type:'POST',
+                    dataType:'json',
+                    data:{'op':'taxes_info','typ':typ,'tax_id':id,'manager':manager},
+                    success:function(json) {
+                        if(json.status==1){
+                            alert(json.result.msg);
+                            setTimeout(function(){
+                                window.location.reload();
+                            },2000);
+                        }
+                    }
+                });
+            }
+        }
+    }
+</script>
+
+<?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/footer', TEMPLATE_INCLUDEPATH)) : (include template('common/footer', TEMPLATE_INCLUDEPATH));?>

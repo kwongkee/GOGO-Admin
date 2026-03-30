@@ -1,0 +1,291 @@
+{include file="common/header_inner_new"}
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .other_link,.other_navbar,.other_pic,.other_msg,.other_keywords,.other_pic,.other_msg{display:none;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <input type="text" style="display:none;" name="guide_id" value="{$guide_id}">
+            <input type="text" style="display:none;" name="top_id" value="{$top_id}">
+            <input type="text" style="display:none;" name="pid" value="{$pid}">
+            <input type="text" style="display:none;" name="system_id" value="{$system_id}">
+
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">导流方式</div>
+                            <div class="layui-input-block">
+                                <select name="go_other" id="go_other" lay-filter="go_other">
+                                    <option value="0" {if $data['go_other']==0}selected{/if}>无</option>
+<!--                                    <option value="1" {if $data['go_other']==1}selected{/if}>分享插件</option>-->
+<!--                                    <option value="2" {if $data['go_other']==2}selected{/if}>商品详情</option>-->
+                                    <option value="3" {if $data['go_other']==3}selected{/if}>应用链接</option>
+                                    <option value="4" {if $data['go_other']==4}selected{/if}>第三方链接</option>
+<!--                                    <option value="5" {if $data['go_other']==5}selected{/if}>搜索结果</option>-->
+<!--                                    <option value="6" {if $data['go_other']==6}selected{/if}>我要咨询</option>-->
+<!--                                    <option value="7" {if $data['go_other']==7}selected{/if}>去找客服</option>-->
+                                    <option value="8" {if $data['go_other']==8}selected{/if}>图文链接</option>
+                                    <option value="9" {if $data['go_other']==9}selected{/if}>消息链接</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item other_link" style="display:{if $data['go_other']==4}block{else}none{/if}">
+                            <div class="layui-form-label">网址链接</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" name="link" placeholder="请输入第三方链接" value="{$data['link']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item other_navbar" style="display:{if $data['go_other']==3}block{else}none{/if}">
+                            <div class="layui-form-label">应用链接</div>
+                            <div class="layui-input-block">
+                                <select name="other_navbar" lay-filter="other_navbar" lay-search>
+                                    <option value="">请选择菜单</option>
+                                    {volist name="type['list']" id="vo"}
+                                    <option value="{$vo.id}" data-name="{$vo.name}" {if $data['other_navbar']==$vo.id}selected{/if}>{$vo.name}</option>
+                                    {if !empty($vo.childMenu)}
+                                    {volist name="vo.childMenu" id="vo2"}
+                                    <option value="{$vo2.id}" data-name="{$vo2.name}" {if $data['other_navbar']==$vo2.id}selected{/if}>--{$vo2.name}</option>
+                                    {if !empty($vo2.childMenu)}
+                                    {volist name="vo2.childMenu" id="vo3"}
+                                    <option value="{$vo3.id}" data-name="{$vo3.name}" {if $data['other_navbar']==$vo3.id}selected{/if}>----{$vo3.name}</option>
+                                    {if !empty($vo3.childMenu)}
+                                    {volist name="vo3.childMenu" id="vo4"}
+                                    <option value="{$vo4.id}" data-name="{$vo4.name}" {if $data['other_navbar']==$vo4.id}selected{/if}>------{$vo4.name}</option>
+                                    {/volist}
+                                    {/if}
+                                    {/volist}
+                                    {/if}
+                                    {/volist}
+                                    {/if}
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item other_pic" style="display:{if $data['go_other']==8}block{else}none{/if}">
+                            <div class="layui-form-label">图文链接</div>
+                            <div class="layui-input-block">
+                                <select name="other_pic" lay-filter="other_pic" lay-search>
+                                    <option value="">请选择图文</option>
+                                    {volist name="type['pic_list']" id="vo"}
+                                        <option value="{$vo.id}" data-name="{$vo.name}" {if $data['other_pic']==$vo.id}selected{/if}>{$vo.name}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item other_msg" style="display:{if $data['go_other']==9}block{else}none{/if}">
+                            <div class="layui-form-label">消息链接</div>
+                            <div class="layui-input-block">
+                                <select name="other_msg" lay-filter="other_msg" lay-search>
+                                    <option value="">请选择消息</option>
+                                    {volist name="type['msg_list']" id="vo"}
+                                    <option value="{$vo.id}" data-name="{$vo.name}" {if $data['other_msg']==$vo.id}selected{/if}>{$vo.name}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">卡片名称</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" lay-verify="required" name="name" value="{$data['name']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">卡片描述</div>
+                            <div class="layui-input-block">
+                                <textarea name="desc" id="desc" class="layui-textarea" lay-verify="required" placeholder="请输入卡片描述...">{$data['desc']}</textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">卡片图片（{if $website_index['format_type']==10}365*305{elseif($website_index['format_type']==9)}255*255{elseif($website_index['format_type']==11)}360*215{elseif($website_index['format_type']==12)}{if $system_id==3}400*600{else}365*565{/if}{elseif($website_index['format_type']==13)}560*3605{else}370*215{/if}px）</div>
+                            <div class="layui-input-block">
+                                <div class="layui-upload" style="margin-top: 10px;">
+                                    <button type="button" class="layui-btn" id="img_file-upload">上传图片(一张)</button>
+                                    <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                                        预览图：
+                                        <div class="layui-upload-list" id="img_file-upload-list">
+                                            {if !empty($data['back_content'])}
+                                            <div style="display: inline-block;">
+                                                <img onclick="seePic(this);" src="/{$data['back_content']}" class="layui-upload-img" style="width:80px;height:80px;">
+                                                <button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button>
+                                                <input type="hidden" name="back_content[]" value="{$data['back_content']}">
+                                            </div>
+                                            {/if}
+                                        </div>
+                                    </blockquote>
+                                </div>
+                            </div>
+                        </div>
+
+<!--                        if $guide_info['content_id']==4-->
+<!--                            &lt;!&ndash;节日版式&ndash;&gt;-->
+<!--                            <div class="layui-form-item need_name">-->
+<!--                                <div class="layui-form-label">卡片描述</div>-->
+<!--                                <div class="layui-input-block">-->
+<!--                                    <input type="text" class="layui-input" lay-verify="" name="desc" value="$data['desc']">-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        /if-->
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload'],function(){
+        var laydate = layui.laydate,
+            layer = layui.layer,
+            form  = layui.form,
+            $ = layui.jquery,
+            upload = layui.upload;
+
+        form.on('select(go_other)',function(data){
+            let val = data.value;
+
+            if(val==0 || val==1 || val==6 || val==7){
+                $('.goods_link,.other_link,.other_navbar,.other_keywords,.other_pic,.other_msg').hide();
+            }
+            else if(val==2){
+                //商品详情
+                $('.goods_link').show();
+                $('.other_link,.other_navbar,.other_keywords,.other_pic,.other_msg').hide();
+            }
+            else if(val==3){
+                //网站菜单
+                $('.other_navbar').show();
+                $('.other_link,.goods_link,.other_keywords,.other_pic,.other_msg').hide();
+            }
+            else if(val==4){
+                //网址链接
+                $('.other_link').show();
+                $('.goods_link,.other_navbar,.other_keywords,.other_pic,.other_msg').hide();
+            }
+            else if(val==5){
+                //搜索结果
+                $('.other_keywords').show();
+                $('.other_link,.other_navbar,.goods_link,.other_pic,.other_msg').hide();
+            }
+            else if(val==8){
+                //图文链接
+                $('.other_pic').show();
+                $('.other_link,.other_navbar,.goods_link,.other_msg').hide();
+            }
+            else if(val==9){
+                //消息链接
+                $('.other_msg').show();
+                $('.other_link,.other_navbar,.goods_link,.other_pic').hide();
+            }
+
+            $('input[name="name"]').val('');
+            // $('#img_file-upload-list').html("");
+        });
+
+        //选择菜单
+        form.on('select(other_navbar)',function(data){
+            let val = data.value;
+            var selectElement = document.querySelector('select[name="other_navbar"]');
+            var selectedOption = selectElement.options[selectElement.selectedIndex];
+
+            let name = selectedOption.getAttribute('data-name');
+
+            $('input[name="name"]').val(name);
+        });
+
+        form.on('submit(component-form-element)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            if( $('#img_file-upload-list').children().length == 0 )
+            {
+                layer.msg('请上传卡片图片！');
+                return false;
+            }
+
+            $.ajax({
+                url:"{:Url('admin/operaweb/save_home_content')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+        // pc轮播图文件
+        upload.render({
+            elem: '#img_file-upload'
+            ,url: '{:Url("admin/basic/upload_file")}'
+            ,accept: 'file'
+            ,data: { folder: 'centralize', type: 'website_index'}
+            ,multiple: false
+            ,number:1
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+                    $('#img_file-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="back_content[]" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+    });
+
+    function seePic(obj){
+        var layer = layui.layer,$ = layui.$;
+        layer.open({
+            type: 1,
+            title: false,
+            closeBtn: 1,
+            area: ['80%','auto'],
+            skin: 'layui-layer-nobg',
+            shadeClose: true,
+            content: '<img width="100%" src="' + $(obj)[0].src + '" />'
+        });
+    }
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+
+</script>
+</body>
+</html>

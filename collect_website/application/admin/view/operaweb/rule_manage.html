@@ -1,0 +1,283 @@
+{include file="common/header_new"}
+
+<style>
+    .disf{display:flex;align-items: center;}
+    img{ width:20px;height:20px;}
+    .copy_all{cursor:pointer;}
+</style>
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <h3 style="text-align: center;">历史版本管理</h3>
+                <div id="toolbar" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;">
+                    <div class="disf">
+                        <button type="button" href="javascript:;" onclick="save();" class="btn btn-default">
+                            新增版本
+                        </button>
+                    </div>
+                </div>
+                <input type="text" id="cs" style="display: none;" value="">
+                <table id="table"
+
+                /*默认排序项*/
+                data-sort-name="createtime"
+                data-sort-order="desc"
+                /*工具栏相关*/
+                data-toolbar="#toolbar"
+                data-search="false"          /*搜索框*/
+                data-search-on-enter-key="false"
+                data-show-refresh="true"    /*刷新按钮*/
+                /*分页相关*/
+                data-side-pagination="server"
+                data-pagination="true"      /*显示分页*/
+                data-page-size="10"         /*每页显示条数*/
+                /*移动端相关*/
+                data-mobile-responsive="true"
+                data-card-view="true"
+                data-show-columns="true"
+                /*radio or checkbox字段名称*/
+                data-select-item-name="id" >
+
+                <thead>
+                <tr>
+                    <th data-field="checkbox"
+                        data-align="center"
+                        data-checkbox="true"></th>
+                    <!--                    <th data-field="id"-->
+                    <!--                        data-align="center"-->
+                    <!--                        data-sortable="true"-->
+                    <!--                        data-visible="true">ID</th>-->
+                    <th data-field="createtime"
+                        data-align="center"
+                        data-sortable="true">发布日期</th>
+                    <th data-field="effecttime"
+                        data-align="center"
+                        data-sortable="true">生效日期</th>
+                    <th data-field="version"
+                        data-align="center"
+                        data-sortable="true">版本编号</th>
+                    <th data-field="link"
+                        data-align="center"
+                        data-sortable="true">规则文本</th>
+                    <th data-field="manage"
+                        data-align="center"
+                        data-sortable="true"
+                        data-formatter="actionFormatter">操作</th>
+                </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var table;
+
+    $(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:url('admin/operaweb/rule_manage')}&pid={$pid}&key_id={$key_id}",
+            queryParams: queryParams,
+        });
+        $('.form-control').attr('placeholder','搜索新闻名称');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.id;
+        var title = row.version;
+
+        var result = "";
+        result += '<button style="margin-right: 5px;" type="button" onclick="edit('+id+',\''+title+'\')" class="btn btn-primary btn-xs">修订规则</button>';
+        result += '<button style="margin-right: 5px;" type="button" onclick="generate_pdf('+id+')" class="btn btn-warning btn-xs">生成PDF</button>';
+        if(row.status==0){
+            result += '<button style="margin-right: 5px;" type="button" onclick="del('+id+',\''+title+'\',1)" class="btn btn-danger btn-xs">隐藏规则</button>';
+        }else{
+            result += '<button style="margin-right: 5px;" type="button" onclick="del('+id+',\''+title+'\',0)" class="btn btn-warning btn-xs">取消隐藏</button>';
+        }
+
+        return result;
+    }
+
+    function edit(id,name){
+        var index = layer.open({
+            type: 2,
+            title: '{$pname} \\ {$kname} \\ {$vname} \\ 修改['+name+']',
+            area:['100%','100%'],
+            content: "{:url('admin/operaweb/save_platform_rule')}&pid={$pid}&key_id={$key_id}&id="+id
+        });
+        // layer.full(index);
+    }
+
+    function save(title) {
+        var index = layer.open({
+            type: 2,
+            title: '{$pname} \\ {$kname} \\ {$vname} \\ 新增版本',
+            area:['100%','100%'],
+            content: "{:url('admin/operaweb/save_platform_rule')}&pid={$pid}&key_id={$key_id}"
+        });
+        // layer.full(index);
+    }
+
+    function open_rule(id){
+        window.open('https://www.gogo198.net/?s=index/rule&pid={$pid}&id='+id);
+    }
+    function generate_pdf(id){
+        // $.ajax({
+        //     url: "<?php echo Url('admin/operaweb/rule_pdf'); ?>",
+        //     data: {'id': id},
+        //     type: 'post',
+        //     cache: false,
+        //     dataType: 'json',
+        //     success: function (data) {
+        //
+        //     }
+        // });
+        window.open("<?php echo Url('admin/operaweb/rule_pdf'); ?>&id="+id);
+    }
+
+
+    function share(id){
+        $.ajax({
+            url: "<?php echo Url('admin/operaweb/share_rule_img'); ?>",
+            data: {'id': id},
+            type: 'post',
+            cache: false,
+            dataType: 'json',
+            success: function (data) {
+                layer.open({
+                    type: 1,
+                    title: '长按保存规则链接二维码',
+                    area:['80%','50%'],
+                    content: "<div style='text-align: center;margin-top:50px;'><img src='"+data.img+"' style='width:150px;height:150px;'><p style='font-size:15px;margin-top:10px;'>长按保存规则链接二维码</p></div>"
+                });
+            }
+        });
+    }
+
+    function xs_all(this1){
+        var link = $(this1).attr('data-link');
+        document.getElementById("cs").innerHTML=link;
+
+        //開始複製
+        var oInput = document.createElement('textarea');
+        // oInput.value = document.getElementById("cs").innerText;
+        oInput.value = link;
+        document.body.appendChild(oInput);
+        oInput.select(); // 选择对象
+        document.execCommand("Copy"); // 执行浏览器复制命令
+        oInput.remove();
+        alert("复制成功");
+    }
+
+    function export_exl(){
+        window.location.href="<?php echo Url('admin/operaweb/out_news'); ?>";
+        // return false;
+        // $.ajax({
+        //     url: "<?php echo Url('admin/operaweb/out_news'); ?>",
+        //     data:{},
+        //     type:'post',
+        //     cache:false,
+        //     dataType:'json',
+        //     success:function(data){
+        //         if(data.code==0)
+        //         {
+        //             // layer.msg(data.msg, {
+        //             //     icon: 1,
+        //             //     time: 2000
+        //             // }, function(){
+        //             //     window.location.reload();
+        //             // });
+        //             return true;
+        //
+        //         }else {
+        //             layer.msg(data.msg, {icon:2, time:2000});
+        //             return false;
+        //         }
+        //     },
+        //     error:function() {
+        //         layer.msg('系统出错,请重试',{icon:2,time:1000});
+        //     }
+        // });
+    }
+
+    function openWindow(t,id,title){
+        let val = $(t).val();
+
+        let url = '';
+        if(val==1){
+            url = "{:Url('admin/officialwebsite/base_setting')}";
+        }else if(val==2){
+            url = "{:Url('admin/officialwebsite/menu_list')}";
+        }else if(val==3){
+            url = "{:Url('admin/officialwebsite/rotate_list')}";
+        }else if(val==4){
+            url = "{:Url('admin/officialwebsite/index_list')}";
+        }else if(val==5){
+            url = "{:Url('admin/officialwebsite/index_list')}";
+        }
+        if(url!=''){
+            var index = layer.open({
+                type: 2,
+                title: title,
+                area:['100%','100%'],
+                content: url+'&id='+id
+            });
+        }
+    }
+
+    function del(id,title,typ){
+        let msg = '';
+        if(typ==1){
+            msg='隐藏';
+        }else{
+            msg='取消隐藏';
+        }
+        layer.confirm('确认'+msg+'该平台规则吗？',function(index){
+            $.ajax({
+                url: "<?php echo Url('admin/operaweb/hide_rule_manage'); ?>",
+                data:{'id':id,'typ':typ},
+                type:'post',
+                cache:false,
+                dataType:'json',
+                success:function(data){
+                    if(data.code==0)
+                    {
+                        layer.msg(data.msg, {
+                            icon: 1,
+                            time: 2000
+                        }, function(){
+                            window.location.reload();
+                        });
+                        return true;
+                    }else {
+                        layer.msg(data.message, {icon:2, time:2000});
+                        return false;
+                    }
+                },
+                error:function() {
+                    layer.msg('系统出错,请重试',{icon:2,time:1000});
+                }
+            });
+        });
+    }
+
+</script>
+
+</body>
+</html>

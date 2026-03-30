@@ -1,0 +1,411 @@
+{template 'common/warehouse_header'}
+<style>
+    .banner img {
+        width: 100%;
+    }
+
+    div {
+        overflow: visible;
+    }
+
+    .info_box_top {
+        border-top: 1px solid #eee;
+        border-bottom: 1px solid #eee;
+    }
+
+    .info_box {
+        margin-top: 10px;
+        float: left;
+        width: 100%;
+    }
+
+    .info_box .layui-col-xs12 {
+        background: #fff;
+    }
+
+    .info_search_box .order_head {
+        padding: 10px;
+        box-sizing: border-box;
+        background: #1790FF;
+        color: #fff;
+    }
+
+    .info_search_box .disf {
+        padding: 10px;
+        box-sizing: border-box;
+        color: #666;
+    }
+
+    .info_box .title {
+        color: #666;
+        padding: 10px 10px;
+        box-sizing: border-box;
+    }
+
+    .info_box .val {
+        padding: 10px 10px;
+        box-sizing: border-box;
+    }
+
+    .info_box .line {
+        width: 100%;
+        height: 1px;
+        background: #eee;
+    }
+
+    .line {
+        width: 100%;
+        height: 1px;
+        background: #eee;
+    }
+
+    .info_box .info_box_bottom {
+        border-top: 1px solid #eee;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .info_box .info_box_bottom .btn_desc {
+        color: #999;
+    }
+
+    .info_box .info_box_bottom .layui-col-xs4 {
+        text-align: right;
+    }
+
+    .info_box .title_bar {
+        text-align: center;
+        padding: 10px 0;
+        box-sizing: border-box;
+        border-bottom: 1px solid #eee;
+        color: #fff;
+        background: #1790FF;
+    }
+
+    /**layui框架**/
+    .layui-icon-ok:before {
+        content: "√"
+    }
+
+    .layui-form-checkbox {
+        width: 18px;
+        height: 18px;
+        line-height: 18px;
+        padding-right: 18px;
+        margin-right: 2px;
+    }
+
+    .layui-form-checkbox i {
+        width: 18px;
+        height: 18px;
+        border-left: 1px solid #d2d2d2;
+    }
+
+    .layui-btn-normal {
+        background: #1790FF;
+    }
+
+    .layui-layer-hui .layui-layer-content {
+        color: #fff;
+    }
+
+    .g_info{border-bottom:2px solid #1790FF;}
+    .g_info:last-child{border-bottom:0;}
+    .layui-tab{margin-bottom:0;}
+    .layui-tab-brief>.layui-tab-title .layui-this{color:#1790FF;}
+    .layui-tab-brief>.layui-tab-title .layui-this:after{border-bottom:2px solid #1790FF;}
+    .layui-tab-title{background:#fff;}
+
+    .layui-table,.layui-table thead th{text-align: center;}
+    .layui-table .spin_input{width:33.33%;}
+
+    .service_price{display:none;}
+</style>
+
+<div class="layui-col-xs12 inspection_box">
+    <form class="layui-form" lay-filter="component-form-element">
+        <input type="text" value="{$data['orderid']}" name="orderid" style="display: none;">
+        <input type="text" value="{$data['status2']}" name="status2" style="display: none;">
+        {if ( $spin_info['status']==0 || $spin_info['status']==1 )}
+            <input type="text" value="{$spin_info['status']}" name="spin_status" style="display: none;">
+        {/if}
+
+        <div class="upload_info info_box">
+            <div class="layui-col-xs12 title_bar">{if $spin_info['status']!=3}原始货物信息{else}分拆后货物信息{/if}<span style="color:#ff2222;">*</span></div>
+
+            <div class="layui-tab layui-col-xs12 layui-tab-brief">
+                <ul class="layui-tab-title">
+                    {loop $goods $k $v}
+                    <li class="{if $k==0}layui-this{/if}">{$v['name']}</li>
+                    {/loop}
+                </ul>
+                <div class="layui-tab-content">
+                    {loop $goods $k $v}
+                    <div class="layui-tab-item {if $k==0}layui-show{/if}">
+                        <input type="text" name="gid[]" value="{$v['id']}" style="display: none;">
+                        <div class="layui-col-xs12 g_info">
+                            <div class="layui-col-xs12">
+                                <div class="layui-col-xs3 title">货物名称</div>
+                                <div class="layui-col-xs9 val disf">
+                                    {$v['name']}
+                                </div>
+                            </div>
+                            <div class="line layui-col-xs12"></div>
+                            <div class="layui-col-xs12">
+                                <div class="layui-col-xs3 title">货物价值</div>
+                                <div class="layui-col-xs9 val disf">
+                                    ￥ {$v['money']}
+                                </div>
+                            </div>
+                            <div class="line layui-col-xs12"></div>
+                            <div class="layui-col-xs12">
+                                <div class="layui-col-xs3 title">货物品牌</div>
+                                <div class="layui-col-xs9 val disf">
+                                    {$v['brand']}
+                                </div>
+                            </div>
+                            <div class="line layui-col-xs12"></div>
+                            <div class="layui-col-xs12">
+                                <div class="layui-col-xs3 title">货物类型</div>
+                                <div class="layui-col-xs9 val disf">
+                                    {$v['cate_item']}
+                                </div>
+                            </div>
+                            <div class="line layui-col-xs12"></div>
+                            <div class="layui-col-xs12">
+                                <div class="layui-col-xs3 title">货物属性</div>
+                                <div class="layui-col-xs9 val disf">
+                                    <!--<div id="good_item$v['id']}" class="xm-select-demo"></div>-->
+                                    {$v['good_item']}
+                                </div>
+                            </div>
+                            <div class="line layui-col-xs12"></div>
+                            <div class="layui-col-xs12">
+                                <div class="layui-col-xs3 title">货物数量</div>
+                                <div class="layui-col-xs9 val disf">
+                                    {$v['num']}
+                                </div>
+                            </div>
+                            <div class="line layui-col-xs12"></div>
+                            <div class="layui-col-xs12">
+                                <div class="layui-col-xs3 title">货物单件净重(kg)</div>
+                                <div class="layui-col-xs9 val disf">
+                                    {$v['netwt']}
+                                </div>
+                            </div>
+                            <div class="line layui-col-xs12"></div>
+                            <div class="layui-col-xs12">
+                                <div class="layui-col-xs3 title">货物单件毛重(kg)</div>
+                                <div class="layui-col-xs9 val disf">
+                                    {$v['grosswt']}
+                                </div>
+                            </div>
+                            {if $spin_info['status']==2}
+                            <!--支付了再修改-->
+                            <div class="line layui-col-xs12"></div>
+                            <div class="layui-col-xs12">
+                                <div class="layui-col-xs3 title">货物总体积(cm)</div>
+                                <div class="layui-col-xs9 val disf">
+                                    <input type="number" name="origin_length[]" class="layui-input spin_input" value="{$v['length']}" lay-verify="required" placeholder="长度">
+                                    <input type="number" name="origin_width[]" class="layui-input spin_input" value="{$v['width']}" lay-verify="required" placeholder="宽度">
+                                    <input type="number" name="origin_height[]" class="layui-input spin_input" value="{$v['height']}" lay-verify="required" placeholder="高度">
+                                </div>
+                            </div>
+                            {/if}
+                        </div>
+                    </div>
+                    {/loop}
+                </div>
+            </div>
+        </div>
+
+        <!--分拆信息-->
+        {if $spin_info['status']!=1}
+        <div class="upload_info info_box">
+            <div class="layui-col-xs12 title_bar">需分拆货物信息<span style="color:#ff2222;">*</span></div>
+            <table class="layui-table spin_goods_list" style="margin-top:0;">
+                <thead>
+                    <th>货物名称</th>
+                    <th>货物数量</th>
+                    {if ($spin_info['status']==-1 || $spin_info['status']==0)}
+                    <th style="width:50%;">货物总体积(cm)</th>
+                    {/if}
+                </thead>
+                <tbody>
+                {loop $spin_info['spin_info'] $k $v}
+                    <tr>
+                        <td>{$v['gname']}<input type="text" name="spin_gid[]" value="{$v['gid']}" style="display: none;"></td>
+                        <td>{$v['num']}</td>
+                        {if ($spin_info['status']==-1 || $spin_info['status']==0)}
+                        <td class="disf" style="justify-content: space-between;">
+                            <input type="number" name="spin_length[]" class="layui-input spin_input" value="" lay-verify="required" placeholder="长度">
+                            <input type="number" name="spin_width[]" class="layui-input spin_input" value="" lay-verify="required" placeholder="宽度">
+                            <input type="number" name="spin_height[]" class="layui-input spin_input" value="" lay-verify="required" placeholder="高度">
+                        </td>
+                        {/if}
+                    </tr>
+                {/loop}
+                </tbody>
+            </table>
+        </div>
+        {/if}
+
+        <!--是否同意分拆-->
+        {if $spin_info['status']==-2}
+            <div class="upload_info info_box">
+                <div class="layui-col-xs12 disf">
+                    <div class="layui-col-xs3 title">损毁状态</div>
+                    <div class="layui-col-xs9 val">
+                        {$spin_info['damage_info']['name']}
+                    </div>
+                </div>
+                <div class="layui-col-xs12 disf">
+                    <div class="layui-col-xs3 title">仓库备注</div>
+                    <div class="layui-col-xs9 val">
+                        {$spin_info['damage_info']['remark']}
+                    </div>
+                </div>
+            </div>
+        {else}
+            <div class="upload_info info_box">
+                {if ($spin_info['status']==0 || $spin_info['status']==-1)}
+                <div class="layui-col-xs12 disf">
+                    <div class="layui-col-xs3 title">损毁状态</div>
+                    <div class="layui-col-xs9 val">
+                        <select name="damage_status" id="damage_status" lay-filter="damage_status">
+                            <option value="0">无损毁</option>
+                            {loop $damage_status $k $v}
+                            <option value="{$v['code']}">{$v['name']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                </div>
+                {/if}
+                {if ( $spin_info['status']==-1 || $spin_info['status']==0 )}
+                    <!--拒绝通过和待审核时显示-->
+                    <div class="line layui-col-xs12 spin_status"></div>
+                    <div class="layui-col-xs12 disf spin_status">
+                        <div class="layui-col-xs3 title">分拆状态</div>
+                        <div class="layui-col-xs9 val">
+                            <select name="spin_status" id="spin_status" lay-filter="spin_status">
+                                <option value="0">请选择分拆状态</option>
+                                <option value="1">同意分拆</option>
+                                <option value="-1">拒绝分拆</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="line layui-col-xs12"></div>
+                    <div class="layui-col-xs12 remark disf" style="display:none;">
+                        <div class="layui-col-xs3 title add_height">备注</div>
+                        <div class="layui-col-xs9 val">
+                            <input type="text" class="layui-input" name="remark" id="remark" placeholder="备注（选填）">
+                        </div>
+                    </div>
+                    <div class="line layui-col-xs12 service_price"></div>
+                    <div class="layui-col-xs12 disf service_price">
+                        <div class="layui-col-xs3 title add_height">服务收费（HK$）</div>
+                        <div class="layui-col-xs9 val">
+                            <input type="number" class="layui-input" name="service_price" placeholder="请填写服务收费金额（HK$）" value="1">
+                        </div>
+                    </div>
+                    <!--<div class="line layui-col-xs12"></div>-->
+                    <!--<div class="layui-col-xs12 service_price disf" style="display:none;">-->
+                        <!--<div class="layui-col-xs3 title add_height">分拆费用(HK$)</div>-->
+                        <!--<div class="layui-col-xs9 val">-->
+                            <!--<input type="number" class="layui-input" name="service_84" id="service_84" placeholder="请填写分拆费用(HK$)">-->
+                        <!--</div>-->
+                    <!--</div>-->
+                {/if}
+                <!--if ( $spin_info['status']==2 || $spin_info['status']==3 )-->
+                    <div class="layui-col-xs12 shelf_number disf">
+                        <div class="layui-col-xs3 title add_height">货架号</div>
+                        <div class="layui-col-xs9 val">
+                            <input type="text" class="layui-input" name="shelf_number" lay-verify="required" placeholder="请填写分拆后包裹货架号" value="{$order['shelf_number']}">
+                        </div>
+                    </div>
+                <!--/if-->
+                {if $spin_info['status']!=1}
+                    <div class="info_box info_btn_box" style="margin: 10px 0 20px;text-align: center;">
+                        <div>
+                            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element1" style="width:90%;">立即提交</button>
+                        </div>
+                    </div>
+                {/if}
+            </div>
+        {/if}
+    </form>
+</div>
+
+<!--<script type="text/javascript" src="../addons/sz_yi/static/js/layui/xm-select.js"></script>-->
+<!--<script src="https://decl.gogo198.cn/layuiadmin/layui/xm-select.js"></script>-->
+
+<script>
+    //一句话即可完成js工作
+    hui.numberBox();
+
+    layui.use(['layer', 'jquery', 'form', 'element', 'upload'], function () {
+        var layer = layui.layer
+            , $ = layui.jquery
+            , form = layui.form
+            , upload = layui.upload
+            , element = layui.element;
+        form.render(null, 'component-form-element');
+
+        form.on('select(spin_status)',function(data){
+            let val = data.value;
+            if(val==1){
+                $('.remark').hide();
+                $('.service_price').show();
+                $('#remark').val('');
+            }else if(val==-1){
+                $('.remark').show();
+                $('.service_price').hide();
+                $('#service_price').val('');
+            }
+            form.render(null, 'component-form-element');
+        });
+
+        form.on('select(damage_status)',function(data){
+            let val = data.value;
+            if(val!=0){
+                $('.remark').show();
+                $('.service_price').hide();
+                $('.spin_status').hide();
+            }else if(val==0){
+                $('.remark').hide();
+                $('.service_price').hide();
+                $('.spin_status').show();
+            }
+            form.render(null, 'component-form-element');
+        });
+
+        form.on('submit(component-form-element1)', function (data) {
+            //layer.msg(JSON.stringify(data.field));
+            if(data.field['spin_status']==0 && data.field['damage_status']==0){
+                layer.msg('请选择分拆状态');return false;
+            }
+            if(data.field['spin_status']==1 && (data.field['service_price']=='' || typeof(data.field['service_price'])=='undefined')){
+                layer.msg('请填写服务费用');return false;
+            }
+            $.ajax({
+                url: "./index.php?i=3&c=entry&p=index&do=warehouse&m=sz_yi&op=sure_spinoff",
+                method: 'post',
+                data: data.field,
+                dataType: 'JSON',
+                success: function (res) {
+                    layer.msg(res.result.msg, {time: 3000}, function () {
+                        if (res.status == 0) {
+                            parent.location.reload();
+                            // window.location.href = "./index.php?i=3&c=entry&p=index&do=warehouse&m=sz_yi&op=warehouse_goods_up_down"
+                        }
+                    });
+                },
+                error: function (data) {
+                    layer.msg("系统错误", {time: 3000});
+                }
+            });
+            return false;
+        });
+
+    });
+</script>

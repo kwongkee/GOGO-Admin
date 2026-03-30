@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">-->
+    <meta name="viewport" content="width=device-width, initial-scale=0.4,maximum-scale=1.0, user-scalable=0" />
+    <title>{if $type==1}发件人联{/if}{if $type==2}集运商联{/if}{if $type==3}运营商联{/if}</title>
+    <link rel="stylesheet" href="./static/doc/invoice2.css" />
+    <link rel="stylesheet" href="./static/doc/pi_invoice.css" />
+    <!--<link rel="stylesheet" href="./static/hadmin/layui/css/layui.css">-->
+    <style type="text/css">
+        .btn{width:300px;line-height:40px}
+        body{overflow-y: auto;}
+        .page{width: 595.32pt;margin: 0;}
+        /*645pt*/
+        .content>div{width: 100%;height: fit-content;padding-top: 30px;padding-bottom: 30px;box-sizing: border-box;}
+        #printId{width: 100%;background: white;font-size: 18px;}
+        input{border: 1px #000 solid;padding: 5px;}
+        .layui-form-label{width: 110px;}
+        body{color: #505050;}
+        .diyform input{border:1px solid #333 !important;padding:5px 5px;box-sizing:border-box;}
+        .layui-form-label{width:100px;}
+        .goodsinfo input{
+            font-size: 12pt;
+            color: #000;
+            font-family: "arial, helvetica, sans-serif";
+            background:none;
+            border:0;
+        }
+        .goodsinfo #goods_qty{width:40px;text-align:right;}
+        .goodsinfo #goods_price_cny,.goodsinfo #goods_total_price_cny{width:100px;text-align:left;}
+        .diyform .layui-form-item:nth-child(even){margin-left:15px;}
+        .layui-upload-file{display:none;}
+        .layui-btn{
+            background-color: #009688;
+            color: #fff;
+            white-space: nowrap;
+            text-align: center;
+            font-size: 14px;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            padding:4px 6px;
+            box-sizing:border-box;
+        }
+        .page_box .pi-top{color:#000;font-size:23.5pt;font-weight:bold;text-align:center;margin-bottom:3mm;height:fit-content;margin-top:2em;}
+        .pi-mid{height:unset !important;}
+        .paper{width: 190mm;margin: 0 auto;}
+        .p-line2{margin-top:1em;text-indent:2em;padding-left: 0em;font-size: 12pt;width: 185mm;margin-left: 3.8em;}
+        .p-line3{width:160mm;margin:0 auto;text-align: right;margin-top:10px;font-size:10.5pt;}
+        .p-line4{width: 448pt;margin: 0 auto;text-align: right;font-size: 9pt;margin-top: 1mm;margin-left: 87pt;}
+        .p-line5{width:190mm;margin:0 auto;}
+        .p-line5 img{margin-left: auto;}
+        .p-line6{width:190mm;margin:0 auto;display:flex;align-items: baseline;margin-bottom: 3px;}
+        .p-line6 .num:nth-of-type(1){font-size:9pt;}
+        .p-line6 .num:nth-of-type(2){font-size:9pt;margin-left: 70px;}
+        .p-line6 .num:nth-of-type(3){font-size: 14pt;letter-spacing: 3.5px;margin-left: 42mm;}
+        .pi-table tr th{padding-top:0;font-weight: 100;font-size: 9pt;}
+        .pi-table tr th div{height:15px;width:fit-content;font-family:'宋体';}
+        .pi-table tr th .first_pad{padding-left:3px;color:#000;width:100%;box-sizing: border-box;font-size:9pt;font-family:'宋体';}
+        .paper-goods tr th div{height:12px;font-size: 7.5pt !important;}
+        .paper-dash{border-top:0;}
+        .paper-dash th{border-bottom:1px dashed #000;width:200mm;height:20px;}
+        .pi-bg{height:unset;}
+        .p-line7{width:190mm;margin:0 auto;border-bottom:1px dashed #000;}
+        .p-line8{width:165mm;margin:0 auto;font-size:12pt;margin-top:10px;}
+        .p-line9{width: 66mm;margin: 0 auto;font-size: 10.5pt;margin-left: 127mm;margin-top: 10px;text-align:center;position:relative;}
+        .p-line9 p:nth-of-type(1){white-space:nowrap;}
+        .p-line9 p:nth-of-type(2){margin-top:10px;}
+        .p-line10{display: flex;align-items:center;width:200mm;margin:0 auto;margin-top:35px;font-size:14px;}
+        .p-line10 div:nth-of-type(2){margin-left:20mm;}
+        #content-main {
+            height: calc(100% - 100px);
+            overflow: hidden;
+        }
+
+        /**运单联样式**/
+        .pdf_logo{width:200px;padding-top:3mm;}
+        .logo_div{background: #DDEBF7;height:30mm !important;}
+        #barcode{margin:0 auto;}
+        .website_intro{background: #DDEBF7;height:23mm !important;}
+        .website_intro div{margin:0 auto;font-size:20pt;font-weight: 800;}
+        .website_intro div:first-child{padding-top:3mm;}
+        .website_intro div:last-child{margin-top:4mm;}
+        .website_link{height:7mm !important;margin:0 auto;font-size: 14pt;font-weight: 800;}
+
+        .to_div{background: #FFE699;height:23mm !important;font-size: 12pt !important;font-weight: 800;padding-top: 10mm;}
+        .shipping{background: #FFE699;height:9mm !important;font-size: 12pt !important;font-weight: 800;padding-top: 2mm;}
+        .from{background: #FFE699;height:15mm !important;font-size: 12pt !important;font-weight: 800;padding-top: 5mm;}
+        .value_div{background: #F8CBAD;height:9mm !important;font-size: 12pt !important;font-weight: 800;padding-top: 2mm;}
+
+        .center{margin:0 auto;text-align: center !important;}
+        .font_weight{font-weight:800 !important;}
+        .sample_size{font-size:10pt !important;height:7mm !important;}
+        .border-top{border-top:1px solid #000;}
+        /**运单联样式**/
+    </style>
+</head>
+
+<body style="font-family:宋体;">
+<div class="page root">
+    <div class="page_box">
+        <div id="printId">
+            <div class="content">
+                <div>
+                    <div class="pi-mid flex-grow-1">
+                        <div class="num2">
+                            <table class="pi-table" cellspacing="0" cellpadding="0">
+                                <tbody>
+                                    <tr>
+                                        <th style="width: 55mm;min-width:55mm;max-width:55mm;border-right:1px solid #000;">
+                                            <div class="first_pad logo_div"><img src="./static/img/pdf_logo.png" alt="" class="pdf_logo"></div>
+                                        </th>
+                                        <th style="width: 85mm;min-width:85mm;max-width:85mm;border-right:1px solid #000;text-align: center;">
+                                            <img id="barcode" style="width:100%;"/>
+                                        </th>
+                                        <th style="width: 49.7mm;min-width:49.7mm;max-width:49.7mm;">
+                                            <div class="first_pad website_intro" style="border-bottom:1px solid #000;">
+                                                <div>GOGO</div>
+                                                <div>EXPRESS</div>
+                                            </div>
+                                            <div class="website_link">www.gogo198.net</div>
+                                        </th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="pi-table" cellspacing="0" cellpadding="0">
+                                <tbody>
+                                    <tr>
+                                        <th style="width: 55mm;min-width:55mm;max-width:55mm;border-right:1px solid #000;height:25mm !important;">
+                                            <div class="first_pad to_div center" style="height:100% !important;">To</div>
+                                        </th>
+                                        <th style="width: 135mm;min-width:135mm;max-width:135mm;border-right:1px solid #000;text-align: center;vertical-align: baseline;">
+                                            <table class="pi-table" cellspacing="0" cellpadding="0">
+                                                <tbody>
+                                                    <tr>
+                                                        <th class="font_weight sample_size center" style="width: 25mm;min-width:25mm;max-width:25mm;border-right:1px solid #000;">收件人Name</th>
+                                                        <th class="sample_size center" style="width: 60mm;min-width:60mm;max-width:60mm;border-right:1px solid #000;">{$pinfo['receive_name']}</th>
+                                                        <th class="font_weight sample_size center" style="width: 25mm;min-width:25mm;max-width:25mm;border-right:1px solid #000;">国家Country</th>
+                                                        <th class="sample_size center" style="width: 24mm;min-width:24mm;max-width:24mm;border-right:1px solid #000;">{$pinfo['receive_postal_country']}</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="font_weight sample_size center border-top" style="width: 25mm;min-width:25mm;max-width:25mm;border-right:1px solid #000;">地址Address</th>
+                                                        <th class="sample_size center border-top" colspan="3" style="width: 109mm;min-width:109mm;max-width:109mm;border-right:1px solid #000;">{$pinfo['true_receive_address']}</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="font_weight sample_size center border-top" style="width: 25mm;min-width:25mm;max-width:25mm;border-right:1px solid #000;">电话TEL</th>
+                                                        <th class="sample_size center border-top" style="width: 60mm;min-width:60mm;max-width:60mm;border-right:1px solid #000;">{$pinfo['receive_mobile_area']}-{$pinfo['receive_mobile']}</th>
+                                                        <th class="font_weight sample_size center border-top" style="width: 25mm;min-width:25mm;max-width:25mm;border-right:1px solid #000;">邮编Post Code</th>
+                                                        <th class="sample_size center border-top" style="width: 24mm;min-width:24mm;max-width:24mm;border-right:1px solid #000;">{volist name="pinfo.receive_postal" id="vo"}{$vo}{/volist}</th>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="pi-table" cellspacing="0" cellpadding="0">
+                                <tbody>
+                                <tr>
+                                    <th style="width: 55mm;min-width:55mm;max-width:55mm;border-right:1px solid #000;height:9mm;">
+                                        <div class="first_pad center shipping" style="height:100% !important;">Shipping</div>
+                                    </th>
+                                    <th class="sample_size center" style="width: 135mm;min-width:135mm;max-width:135mm;border-right:1px solid #000;text-align: center;vertical-align: baseline;padding-top:2mm;">
+                                        {$pinfo['logistics_channel']['line_name']}
+                                    </th>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <table class="pi-table" cellspacing="0" cellpadding="0">
+                                <tbody>
+                                <tr>
+                                    <th style="width: 55mm;min-width:55mm;max-width:55mm;border-right:1px solid #000;height:15mm;">
+                                        <div class="first_pad center from" style="height:100% !important;">From</div>
+                                    </th>
+                                   <th style="width: 135mm;min-width:135mm;max-width:135mm;border-right:1px solid #000;text-align: center;vertical-align: baseline;">
+                                       <table class="pi-table" cellspacing="0" cellpadding="0">
+                                           <tbody>
+                                           <tr>
+                                               <th class="font_weight sample_size center" style="width: 25mm;min-width:25mm;max-width:25mm;border-right:1px solid #000;height:7.1mm !important;">寄件人Name</th>
+                                               <th class="sample_size center" style="width: 60mm;min-width:60mm;max-width:60mm;border-right:1px solid #000;">{$pinfo['send_name']}</th>
+                                               <th class="font_weight sample_size center" style="width: 25mm;min-width:25mm;max-width:25mm;border-right:1px solid #000;">国家Country</th>
+                                               <th class="sample_size center" style="width: 24mm;min-width:24mm;max-width:24mm;border-right:1px solid #000;">{$pinfo['send_postal_country']}</th>
+                                           </tr>
+                                           <tr>
+                                               <th class="font_weight sample_size center border-top" style="width: 25mm;min-width:25mm;max-width:25mm;border-right:1px solid #000;height:7.1mm !important;">地址Address</th>
+                                               <th class="sample_size center border-top" colspan="3" style="width: 109mm;min-width:109mm;max-width:109mm;border-right:1px solid #000;">{$pinfo['true_send_address']}</th>
+                                           </tr>
+                                           </tbody>
+                                       </table>
+                                   </th>
+                                </tr>
+                                </tbody>
+                            </table>
+                            {volist name="pinfo.goods_list.valueid" key="key2" id="vo"}
+                                {volist name="vo" key="key3" id="vo2"}
+                                    <table class="pi-table" cellspacing="0" cellpadding="0">
+                                        <tbody>
+                                        <tr>
+                                            <th style="width: 55mm;min-width:55mm;max-width:55mm;border-right:1px solid #000;">
+                                                <div class="first_pad center value_div">{$vo2}</div>
+                                            </th>
+<!--                                            <th class="sample_size center" style="width: 135mm;min-width:135mm;max-width:135mm;border-right:1px solid #000;text-align: center;vertical-align: baseline;padding-top:2mm;">-->
+<!--                                                $pinfo['goods_list']['value_desc'][$key2-1][$key3-1]-->
+<!--                                            </th>-->
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                {/volist}
+                            {/volist}
+                            <table class="pi-table" cellspacing="0" cellpadding="0">
+                                <tbody>
+                                <tr>
+                                    <th style="width: 55mm;min-width:55mm;max-width:55mm;border-right:1px solid #000;height:9mm;">
+                                        <div class="first_pad center value_div" style="height:100% !important;">集运仓库</div>
+                                    </th>
+                                    <th class="sample_size center" style="width: 135mm;min-width:135mm;max-width:135mm;border-right:1px solid #000;text-align: center;vertical-align: baseline;padding-top:2mm;">
+                                        {$pinfo['true_merchant_address']}
+                                    </th>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div style="display:none;">
+                                <table class="pi-table" cellspacing="0" cellpadding="0">
+                                    <tbody>
+                                    <tr>
+                                        <th style="width: 55mm;min-width:55mm;max-width:55mm;border-right:1px solid #000;height:15mm;">
+                                            <div class="first_pad center from" style="height:100% !important;">商户信息</div>
+                                        </th>
+                                        <th style="width: 135mm;min-width:135mm;max-width:135mm;border-right:1px solid #000;text-align: center;vertical-align: baseline;">
+                                            <table class="pi-table" cellspacing="0" cellpadding="0">
+                                                <tbody>
+                                                <tr>
+                                                    <th class="font_weight sample_size center" style="width: 25mm;min-width:25mm;max-width:25mm;border-right:1px solid #000;height:7.1mm !important;">商户名称</th>
+                                                    <th class="sample_size center" style="width: 60mm;min-width:60mm;max-width:60mm;border-right:1px solid #000;">{$pinfo['merchant_name']}</th>
+                                                    <th class="font_weight sample_size center" style="width: 25mm;min-width:25mm;max-width:25mm;border-right:1px solid #000;">商户电话</th>
+                                                    <th class="sample_size center" style="width: 24mm;min-width:24mm;max-width:24mm;border-right:1px solid #000;">{$pinfo['phone']}</th>
+                                                </tr>
+                                                <tr>
+                                                    <th class="font_weight sample_size center border-top" style="width: 25mm;min-width:25mm;max-width:25mm;border-right:1px solid #000;height:7.1mm !important;">仓库地址</th>
+                                                    <th class="sample_size center border-top" colspan="3" style="width: 109mm;min-width:109mm;max-width:109mm;border-right:1px solid #000;">{$pinfo['true_merchant_address']}</th>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </th>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <table class="pi-table" cellspacing="0" cellpadding="0">
+                                    <tbody>
+                                    <tr>
+                                        <th style="width: 190mm;min-width:190mm;max-width:190mm;border-right:1px solid #000;height:9mm;">
+                                            <div class="first_pad center value_div" style="height:100% !important;">货物信息</div>
+                                        </th>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <table class="pi-table" cellspacing="0" cellpadding="0">
+                                    <tbody>
+                                    <tr>
+                                        <th style="width: 55mm;min-width:55mm;max-width:55mm;border-right:1px solid #000;height:25mm !important;">
+                                            <div class="first_pad to_div center" style="height:100% !important;">货物清单</div>
+                                        </th>
+                                        <th style="width: 135mm;min-width:135mm;max-width:135mm;border-right:1px solid #000;text-align: center;vertical-align: baseline;">
+                                            {volist name="pinfo.goods_list.brand_desc" key="key4" id="vo"}
+                                                <table class="pi-table" cellspacing="0" cellpadding="0" {if $key4%2==0}style="background:#DDEBF7;"{/if}>
+                                                    <tbody>
+                                                    <tr>
+                                                        <th class="font_weight sample_size center" style="width: 22mm;min-width:22mm;max-width:22mm;border-right:1px solid #000;">货物描述</th>
+                                                        <th class="sample_size center" style="width: 68mm;min-width:68mm;max-width:68mm;border-right:1px solid #000;">{$vo}</th>
+                                                        <th class="font_weight sample_size center" style="width: 22mm;min-width:22mm;max-width:22mm;border-right:1px solid #000;">货物数量</th>
+                                                        <th class="sample_size center" style="width: 22mm;min-width:22mm;max-width:22mm;border-right:1px solid #000;">{$pinfo['goods_list']['num'][$key4-1]}{$pinfo['goods_list']['unit'][$key4-1]}</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="font_weight sample_size center border-top" style="width: 22mm;min-width:22mm;max-width:22mm;border-right:1px solid #000;">货物属性</th>
+                                                        <th class="sample_size center" colspan="3" style="width: 25mm;min-width:25mm;max-width:25mm;border-right:1px solid #000;">
+<!--                                                            volist name="pinfo.goods_list.value" key="key2" id="vo"-->
+<!--                                                                if $key2==$key4-->
+<!--                                                                    volist name="vo" key="key3" id="vo2"-->
+<!--                                                                    <table class="pi-table" cellspacing="0" cellpadding="0">-->
+<!--                                                                        <tbody>-->
+<!--                                                                        <tr>-->
+<!--                                                                            <th style="width: 32mm;min-width:32mm;max-width:32mm;border-right:1px solid #000;">-->
+<!--                                                                                <div class="font_weight sample_size center">$vo2</div>-->
+<!--                                                                            </th>-->
+<!--                                                                            <th class="sample_size center" style="width: 80mm;min-width:80mm;max-width:80mm;border-right:1px solid #000;text-align: center;vertical-align: baseline;padding-top:2mm;">-->
+<!--                                                                                $pinfo['goods_list']['value_desc'][$key2-1][$key3-1]-->
+<!--                                                                            </th>-->
+<!--                                                                        </tr>-->
+<!--                                                                        </tbody>-->
+<!--                                                                    </table>-->
+<!--                                                                    /volist-->
+<!--                                                                /if-->
+<!--                                                            /volist-->
+                                                        </th>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            {/volist}
+                                        </th>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <table class="pi-table" cellspacing="0" cellpadding="0">
+                                    <tbody>
+                                    <tr>
+                                        <th style="width: 55mm;min-width:55mm;max-width:55mm;border-right:1px solid #000;height:14mm !important;">
+                                            <div class="first_pad to_div center" style="height:100% !important;padding-top:6mm !important;">货物材积</div>
+                                        </th>
+                                        <th style="width: 135mm;min-width:135mm;max-width:135mm;border-right:1px solid #000;text-align: center;vertical-align: baseline;">
+                                            <table class="pi-table" cellspacing="0" cellpadding="0">
+                                                    <tbody>
+                                                    <tr>
+                                                        <th class="font_weight sample_size center" style="width: 22mm;min-width:22mm;max-width:22mm;border-right:1px solid #000;">长</th>
+                                                        <th class="sample_size center" style="width: 23mm;min-width:23mm;max-width:23mm;border-right:1px solid #000;">{$pinfo['goods_volumn']['long']}{$pinfo['goods_volumn']['unit']}</th>
+                                                        <th class="font_weight sample_size center" style="width: 22mm;min-width:22mm;max-width:22mm;border-right:1px solid #000;">宽</th>
+                                                        <th class="sample_size center" style="width: 23mm;min-width:23mm;max-width:23mm;border-right:1px solid #000;">{$pinfo['goods_volumn']['width']}{$pinfo['goods_volumn']['unit']}</th>
+                                                        <th class="font_weight sample_size center" style="width: 22mm;min-width:22mm;max-width:22mm;border-right:1px solid #000;">高</th>
+                                                        <th class="sample_size center" style="width: 22mm;min-width:22mm;max-width:22mm;border-right:1px solid #000;">{$pinfo['goods_volumn']['height']}{$pinfo['goods_volumn']['unit']}</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="font_weight sample_size center border-top" style="width: 22mm;min-width:22mm;max-width:22mm;border-right:1px solid #000;">体积比</th>
+                                                        <th class="sample_size center border-top" style="width: 23mm;min-width:23mm;max-width:23mm;border-right:1px solid #000;">{$pinfo['goods_volumn']['volumn']}</th>
+                                                        <th class="font_weight sample_size center border-top" style="width: 22mm;min-width:22mm;max-width:22mm;border-right:1px solid #000;">毛重</th>
+                                                        <th class="sample_size center border-top" colspan="3" style="width: 23mm;min-width:23mm;max-width:23mm;border-right:1px solid #000;">{$pinfo['goods_volumn']['grosswt']}{$pinfo['goods_volumn']['unit2']}</th>
+                                                    </tr>
+                                                    </tbody>
+                                            </table>
+                                        </th>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <table class="pi-table" cellspacing="0" cellpadding="0">
+                                    <tbody>
+                                    <tr>
+                                        <th style="width: 55mm;min-width:55mm;max-width:55mm;border-right:1px solid #000;height:6mm !important;">
+                                            <div class="first_pad to_div center" style="height:100% !important;padding-top:2mm !important;">物流渠道</div>
+                                        </th>
+                                        <th style="width: 135mm;min-width:135mm;max-width:135mm;border-right:1px solid #000;text-align: center;vertical-align: baseline;">
+                                            <table class="pi-table" cellspacing="0" cellpadding="0">
+                                                    <tbody>
+                                                    <tr>
+                                                        <th class="font_weight sample_size center" style="width: 22mm;min-width:22mm;max-width:22mm;border-right:1px solid #000;">集运商</th>
+                                                        <th class="sample_size center" style="width: 45mm;min-width:45mm;max-width:45mm;border-right:1px solid #000;">{$pinfo['logistics_channel']['name']}</th>
+                                                        <th class="font_weight sample_size center" style="width: 22mm;min-width:22mm;max-width:22mm;border-right:1px solid #000;">渠道名称</th>
+                                                        <th class="sample_size center" style="width: 45mm;min-width:45mm;max-width:45mm;border-right:1px solid #000;">{$pinfo['logistics_channel']['line_name']}</th>
+                                                    </tr>
+                                                    </tbody>
+                                            </table>
+                                        </th>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <table class="pi-table" cellspacing="0" cellpadding="0">
+                                    <tbody>
+                                    <tr>
+                                        <th style="width: 55mm;min-width:55mm;max-width:55mm;border-right:1px solid #000;height:6mm !important;">
+                                            <div class="first_pad to_div center" style="height:100% !important;padding-top:7mm !important;">物流运单</div>
+                                        </th>
+                                        <th style="width: 135mm;min-width:135mm;max-width:135mm;border-right:1px solid #000;text-align: center;vertical-align: baseline;">
+                                            {volist name="pinfo.logistics_waybill.express" key="key2" id="vo"}
+                                            <table class="pi-table" cellspacing="0" cellpadding="0" {if $key2%2==0}style="background:#DDEBF7;"{/if}>
+                                                    <tbody>
+                                                    <tr>
+                                                        <th class="font_weight sample_size center" style="width: 22mm;min-width:22mm;max-width:22mm;border-right:1px solid #000;">第{$key2}段</th>
+                                                        <th class="font_weight sample_size center" style="width: 22mm;min-width:22mm;max-width:22mm;border-right:1px solid #000;">物流商名称</th>
+                                                        <th class="sample_size center" style="width: 23mm;min-width:23mm;max-width:23mm;border-right:1px solid #000;">{$vo}</th>
+                                                        <th class="font_weight sample_size center" style="width: 22mm;min-width:22mm;max-width:22mm;border-right:1px solid #000;">物流单号</th>
+                                                        <th class="sample_size center" style="width: 45mm;min-width:45mm;max-width:45mm;border-right:1px solid #000;">{$pinfo['logistics_waybill']['express_no'][$key2-1]}</th>
+                                                    </tr>
+                                                    </tbody>
+                                            </table>
+                                            {/volist}
+                                        </th>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <table class="pi-table" cellspacing="0" cellpadding="0">
+                                    <tbody>
+                                    <tr>
+                                        <th style="width: 190mm;min-width:190mm;max-width:190mm;border-right:1px solid #000;height:9mm;">
+                                            <div class="first_pad center value_div" style="height:100% !important;">计费信息</div>
+                                        </th>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <table class="pi-table" cellspacing="0" cellpadding="0">
+                                    <tbody>
+                                    <tr>
+                                        <th style="width: 55mm;min-width:55mm;max-width:55mm;border-right:1px solid #000;height:6mm !important;">
+                                            <div class="first_pad to_div center" style="height:100% !important;padding-top:1mm !important;">计费重量</div>
+                                        </th>
+                                        <th style="width: 135mm;min-width:135mm;max-width:135mm;border-right:1px solid #000;text-align: center;vertical-align: middle;font-size:10pt;">
+                                            {$pinfo['sure_fee_list']['true_weight']}
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th class="border-top" style="width: 55mm;min-width:55mm;max-width:55mm;border-right:1px solid #000;height:6mm !important;">
+                                            <div class="first_pad to_div center" style="height:100% !important;padding-top:1mm !important;">首重单价</div>
+                                        </th>
+                                        <th class="border-top" style="width: 135mm;min-width:135mm;max-width:135mm;border-right:1px solid #000;text-align: center;vertical-align: middle;font-size:10pt;">
+                                            {$pinfo['sure_fee_list']['first_weight']}{$pinfo['sure_fee_list']['unit']} / {$pinfo['sure_fee_list']['first_price']}{$pinfo['sure_fee_list']['currency']}
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th class="border-top" style="width: 55mm;min-width:55mm;max-width:55mm;border-right:1px solid #000;height:6mm !important;">
+                                            <div class="first_pad to_div center" style="height:100% !important;padding-top:1mm !important;">续重单价</div>
+                                        </th>
+                                        <th class="border-top" style="width: 135mm;min-width:135mm;max-width:135mm;border-right:1px solid #000;text-align: center;vertical-align: middle;font-size:10pt;">
+                                            {$pinfo['sure_fee_list']['second_weight']}{$pinfo['sure_fee_list']['unit']} / {$pinfo['sure_fee_list']['second_price']}{$pinfo['sure_fee_list']['currency']}
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th class="border-top" style="width: 55mm;min-width:55mm;max-width:55mm;border-right:1px solid #000;height:6mm !important;">
+                                            <div class="first_pad to_div center" style="height:100% !important;padding-top:1mm !important;">计重进阶</div>
+                                        </th>
+                                        <th class="border-top" style="width: 135mm;min-width:135mm;max-width:135mm;border-right:1px solid #000;text-align: center;vertical-align: middle;font-size:10pt;">
+                                            不足 {$pinfo['sure_fee_list']['insu_weight']}{$pinfo['sure_fee_list']['unit']} 按照 {$pinfo['sure_fee_list']['cont_weight']}{$pinfo['sure_fee_list']['unit']} 计费
+                                        </th>
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+                                <table class="pi-table" cellspacing="0" cellpadding="0">
+                                    <tbody>
+                                    <tr>
+                                        <th style="width: 55mm;min-width:55mm;max-width:55mm;border-right:1px solid #000;height:6mm !important;">
+                                            <div class="first_pad to_div center" style="height:100% !important;padding-top:6mm !important;">附加费用</div>
+                                        </th>
+                                        <th style="width: 135mm;min-width:135mm;max-width:135mm;border-right:1px solid #000;text-align: center;vertical-align: middle;font-size:10pt;">
+                                            {volist name="pinfo.sure_fee_list.fee_desc" key="key2" id="vo"}
+                                            <table class="pi-table" cellspacing="0" cellpadding="0"  {if $key2%2==0}style="background:#DDEBF7;"{/if}>
+                                                <tbody>
+                                                <tr>
+                                                    <th class="font_weight sample_size center" style="width: 22mm;min-width:22mm;max-width:22mm;border-right:1px solid #000;">费用描述</th>
+                                                    <th class="sample_size center" colspan="3" style="width: 23mm;min-width:23mm;max-width:23mm;border-right:1px solid #000;">{$vo}</th>
+                                                    <!--<th style="width:25mm;min-width:25mm;"></th>-->
+                                                    <!--<th style="width:25mm;min-width:25mm;"></th>-->
+                                                </tr>
+                                                <tr>
+                                                    <th class="font_weight sample_size center border-top" style="width: 22mm;min-width:22mm;max-width:22mm;border-right:1px solid #000;">金额</th>
+                                                    <th class="sample_size center border-top" style="width: 45mm;min-width:45mm;max-width:45mm;border-right:1px solid #000;">{$pinfo['sure_fee_list']['fee_money'][$key2-1]}</th>
+                                                    <th class="font_weight sample_size center border-top" style="width: 22mm;min-width:22mm;max-width:22mm;border-right:1px solid #000;">币种</th>
+                                                    <th class="sample_size center border-top" colspan="3" style="width: 45mm;min-width:45mm;max-width:45mm;border-right:1px solid #000;">{$pinfo['sure_fee_list']['fee_currency'][$key2-1]}</th>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                            {/volist}
+                                        </th>
+                                    </tr>
+                                </table>
+                                <table class="pi-table" cellspacing="0" cellpadding="0">
+                                <tbody>
+                                <tr>
+                                    <th style="width: 55mm;min-width:55mm;max-width:55mm;border-right:1px solid #000;height:6mm !important;">
+                                        <div class="first_pad to_div center" style="height:100% !important;padding-top:1mm !important;">运费总价</div>
+                                    </th>
+                                    <th class="font_weight" style="width: 135mm;min-width:135mm;max-width:135mm;border-right:1px solid #000;text-align: center;vertical-align: middle;font-size:10pt;">
+                                        {$pinfo['sure_fee_list']['total_money']}{$pinfo['sure_fee_list']['currency']}
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th class="border-top" style="width: 55mm;min-width:55mm;max-width:55mm;border-right:1px solid #000;height:6mm !important;">
+                                        <div class="first_pad to_div center" style="height:100% !important;padding-top:1mm !important;">附加总价</div>
+                                    </th>
+                                    <th class="border-top" style="width: 135mm;min-width:135mm;max-width:135mm;border-right:1px solid #000;text-align: center;vertical-align: middle;font-size:10pt;">
+                                        {volist name="pinfo.sure_fee_list.total_fee_currency" key="key2" id="vo"}
+                                        <table class="pi-table" cellspacing="0" cellpadding="0"  {if $key2%2==0}style="background:#DDEBF7;"{/if}>
+                                            <tbody>
+                                            <tr>
+                                                <th class="font_weight sample_size center" style="width: 135mm;min-width:135mm;max-width:135mm;border-right:1px solid #000;">{$pinfo['sure_fee_list']['total_fee_price'][$key2-1]}{$vo}</th>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                        {/volist}
+                                    </th>
+                                </tr>
+                                </tbody>
+                            </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="padding: 30px 0;text-align: center;position: fixed;top: 0;right: 3em;">
+    <button type="button" style="width: 10em;background:#1790ff;border:0;color:#fff;font-size: 20px;" class="btn" onclick="createPDF()">生成PDF</button>
+</div>
+
+<script src="./static/doc/jquery.min.js"></script>
+<script src="./static/doc/html2canvas.min.js"></script>
+<script src="./static/doc/jspdf.min.js"></script>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/doc/JsBarcode.all.min.js"></script>
+<script>
+    //条形码生成器
+    var barcode = document.getElementById('barcode'),
+        str = "{$parcel['express_no']}",
+        options = {
+            format: "CODE128",
+            displayValue: true,
+            fontSize: 18,
+            height: 50,
+            margin:10,
+        };
+    JsBarcode(barcode, str, options); //原生
+    function changeGName(classname){
+        $('.gnameInput').css('display','inline-block');
+        $('.gnameInput #gname').val($('.'+classname).text()).attr('data-classname',classname);
+    }
+    function changeGDescribe(classname){
+        $('.gDescribeInput').css('display','inline-block');
+        $('.gDescribeInput #gdescribe').val($('.'+classname).text()).attr('data-classname',classname);
+    }
+    // 随机数
+    function randomNum(minNum,maxNum){
+        switch(arguments.length){
+            case 1:
+                return parseInt(Math.random()*minNum+1,10);
+                break;
+            case 2:
+                return parseInt(Math.random()*(maxNum-minNum+1)+minNum,10);
+                break;
+            default:
+                return 0;
+                break;
+        }
+    }
+
+    layui.use(['form','upload','laydate'], function(){
+        var upload = layui.upload;
+        // 买方章
+        upload.render({
+            elem: '#buyer_file-upload'
+            ,url: '{:Url("admin/entrymanage/upload_seal_file")}'
+            ,accept: 'image'
+            ,data: { folder: 'pi_buyer', type: 'seal_file'}
+            ,multiple: false
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+                    $('.buyerSeal').attr('src','/'+res.file_path);
+                    // .css('width','175px').css('height','118px')
+                }
+            }
+        });
+    });
+
+    // 生成pdf
+    function createPDF() {
+        var layer = layui.layer;
+        html2canvas(document.querySelector("#printId"), {
+            allowTaint: !0,
+            scale: 2
+        }).then((function(canvas) {
+
+            var contentWidth = canvas.width;
+            var contentHeight = canvas.height;
+
+            //一页pdf显示html页面生成的canvas高度;
+            var pageHeight = contentWidth / 595.28 * 841.89;
+            //未生成pdf的html页面高度
+            var leftHeight = contentHeight;
+            //pdf页面偏移
+            var position = 0;
+            //a4纸的尺寸[595.28,841.89]，html页面生成的canvas在pdf中图片的宽高
+            var imgWidth = 555.28;
+            var imgHeight = 555.28/contentWidth * contentHeight;
+
+            var pageData = canvas.toDataURL('image/jpeg', 1.0);
+
+            var pdf = new jsPDF('', 'pt', 'a4');
+            //有两个高度需要区分，一个是html页面的实际高度，和生成pdf的页面高度(841.89)
+            //当内容未超过pdf一页显示的范围，无需分页
+            if (leftHeight < pageHeight) {
+                pdf.addImage(pageData, 'JPEG', 30, 0, imgWidth, imgHeight );
+            } else {
+                while(leftHeight > 0) {
+                    pdf.addImage(pageData, 'JPEG', 30, position, imgWidth, imgHeight);
+                    leftHeight -= pageHeight;
+                    position -= 841.89-10.89;
+                    //避免添加空白页
+                    if(leftHeight > 0) {
+                        pdf.addPage();
+                    }
+                }
+            }
+
+            var pdfName = "{if $type==1}发件人联{/if}{if $type==2}集运商联{/if}{if $type==3}运营商联{/if}.pdf";
+            // 将pdf输入为base格式的字符串
+            var buffer = pdf.output("datauristring");
+            // 将base64格式的字符串转换为file文件
+            var myfile = dataURLtoFile(buffer, pdfName);
+            var formdata = new FormData();
+            formdata.append('file', myfile);
+            formdata.append('folder', 'payer_pay');
+            formdata.append('type', 'pi_invoice');
+            pdf.save(pdfName);
+
+        }))
+    }
+
+    //将base64转换为文件对象
+    function dataURLtoFile(dataurl, filename) {
+        var arr = dataurl.split(',');
+        var mime = arr[0].match(/:(.*?);/)[1];
+        var bstr = atob(arr[1]);
+        var n = bstr.length;
+        var u8arr = new Uint8Array(n);
+        while(n--){
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        //转换成file对象
+        return new File([u8arr], filename, {type:mime});
+        //转换成成blob对象
+        //return new Blob([u8arr],{type:mime});
+    }
+</script>
+
+</body>
+</html>

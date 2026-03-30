@@ -1,0 +1,56 @@
+{template '_headers'}
+
+<div class="warp">
+    <div class="container">
+        <form action="" id="forms">
+            <div class="shop-input">
+                角色名称： <input type="text" id="roleName" name="roleName" placeholder="请输入角色名称">
+            </div>
+            <div class="shop-sel">
+                角色权限：
+                <select name="rolePermiss" id="rolePermiss">
+                    <option value="rw">可读可写</option>
+                    <!--<option value="w">可读禁写</option>-->
+                    <option value="n">禁读禁写</option>
+                </select>
+            </div>
+            <input type="hidden" name="method" value="add">
+            <div class="login-btn">
+                <button id="alertBtn" type="button" class="zbox-btn zbox-btn-blue zbox-btn-outlined login">提交</button>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+<script>
+    $('#alertBtn').click(function(){
+
+        var roleName = $('#roleName').val();
+        if(roleName == '') {
+            $.DialogByZ.Alert({Title: "提示", Content: '请填写角色名称！',BtnL:"确定",FunL:alerts})
+            return false;
+        }
+
+        var urls = "{php echo url('entry',array('do'=>'index','p'=>'roledoadd','m'=>'mer_chats'))}";
+        var formData = $('#forms').serialize();
+        $.ajax({
+            url:urls,
+            type:'POST',
+            data:formData,
+            success:function(res) {
+                // 获取成功改变按钮
+                var red = JSON.parse(res);
+                if(red.code != 1) {
+                    $.DialogByZ.Alert({Title: "提示", Content: red.msg,BtnL:"确定",FunL:alerts})
+                }
+                $.DialogByZ.Alert({Title: "提示", Content: red.msg,BtnL:"确定",FunL:alerts})
+                setTimeout(function(){
+                    window.history.go(-1);
+                },1200);
+            }
+        });
+    });
+</script>
+{template '_footers'}

@@ -1,0 +1,133 @@
+{template 'web/link'}
+    <style>
+        .layui-table thead tr{
+            background-color:#ecf6fc;
+        }
+        .layui-table thead tr th{
+            color: #1b7ab6;
+        }
+        .layui-input-block {
+            margin-left: 0;
+            min-height: 5px;
+        }
+        hr{
+            margin: 41px 0 0;
+        }
+        .layui-btn{
+            height: initial;
+            line-height: normal;
+            padding: 10px 15px;
+        }
+    </style>
+
+        <!-- 内容主体区域 -->
+        <div style="padding: 15px;">
+            <div class="laytitle"><span>角色权限</span></div>
+            <div class="site-demo-button" id="addDemo" style="margin-bottom: 0; float: right; <!--margin-right: 5%;-->">
+                <button type="button" class="layui-btn layui-btn-normal" onclick="addRole();">新增角色</button>
+            </div>
+            <hr class="layui-bg-blue">
+
+            <div class="layui-form">
+                <table class="layui-table">
+                    <thead>
+                        <tr>
+                            <th>角色名称</th>
+                            <th>权限操作</th>
+                            <th>新增/更新时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                    {loop $system $inx $item}
+                        <tr>
+                            <td>{$item['roleName']}</td>
+                            <td>{$sys[$item['rolePermiss']]}</td>
+                            <td>{php echo date('Y-m-d H:i',$item['time'])}</td>
+                            <td>
+                                <div>
+                                    <div class="site-demo-button" id="layerDemo" style="margin-bottom: 0; float: left; margin-right: 10px;">
+                                        <button type="button" class="layui-btn layui-btn-warm" onclick="edit({$item['id']})">编辑</button>
+                                    </div>
+                                    <button type="button" class="layui-btn layui-btn-danger" onclick="del({$item['id']})" style="margin-bottom: 0; float: left; margin-right: 10px;">删除</button>
+                                </div>
+                            </td>
+                        </tr>
+                    {/loop}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+<script>
+    layui.use(['form', 'layedit', 'laydate'], function(){
+        var form = layui.form
+            ,layer = layui.layer
+            ,layedit = layui.layedit
+            ,laydate = layui.laydate;
+
+        //表单赋值
+        layui.$('#LAY-component-form-setval').on('click', function(){
+            form.val('example', {
+                "like[checkbox]": true //复选框选中状态
+            });
+        });
+
+    });
+
+    // 新增角色
+    function addRole() {
+        var urls = "{php echo WebUrl('mer_chats',array('m'=>'mer_chats','do'=>'index','p'=>'addrole'))}";
+        layer.open({
+            type:2,
+            title:'新增角色',
+            area:['350px','280px'],
+            skin:'layui-layer-lan',
+            content:urls
+        });
+    }
+
+
+    // 编辑角色
+    function edit(id) {
+        var urls = "{php echo WebUrl('mer_chats',array('m'=>'mer_chats','do'=>'index','p'=>'editrole'))}&id="+id;
+        layer.open({
+            type:2,
+            title:'编辑角色',
+            area:['350px','280px'],
+            skin:'layui-layer-lan',
+            content:urls
+        });
+    }
+
+    // 删除操作
+    function del(id) {
+        var urls = "{php echo WebUrl('mer_chats',array('m'=>'mer_chats','do'=>'index','p'=>'delrole'))}";
+        layer.confirm('您确定要删除吗？', {
+            btn: ['确定','取消'] //按钮
+        }, function() {
+            $.ajax({
+                url:urls,
+                type:'POST',
+                data:{
+                    id:id
+                },
+                success:function(red) {
+                    var res = JSON.parse(red);
+                    if(res.code != 1){
+                        layer.msg(res.msg);
+                        return false;
+                    }
+                    layer.msg(res.msg);
+                    setTimeout(function(){
+                        window.location.reload();
+                    },1500);
+                }
+            });
+        }, function(){
+            layer.msg('取消', {icon: 2});
+        });
+    }
+</script>

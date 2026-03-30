@@ -1,0 +1,902 @@
+{include file="common/header_inner_new"}
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .layui-input-block{line-height: 38px;}
+    .phone,.select_box,.introduce_box{display:none;}
+    .quote_box{padding: 15px;margin-top:15px;}
+    
+    .layui-form-label{width:100px;}
+    .layui-card-body{padding:0;}
+    .layui-fluid{padding:0;}
+    .layui-input-block{line-height:38px;}
+    .right{text-align: right;margin-bottom:10px;}
+    .template_box{margin-bottom:0;}
+    /**数量增减框样式start**/
+    .quantity {display: flex;align-items: center;}
+    .quantity input[type="number"] {text-align: center;}
+    .quantity button {background-color: transparent;cursor: pointer;font-size: 20px;padding: 0 5px;border: 1px solid #e6e6e6;height: 38px;width: 50px;}
+    /**数量增减框样式end**/
+    .input95{width: 95%;}
+    .input80{width:80%;}
+    .input50{width:50%;}
+    .input31{width:36.5%;}
+    .input30{width:30%;}
+    .input20{width:20%;}
+    .input15{width:15%;}
+    .marbtm10{margin-bottom:0px;}
+    .disf_legend{width: 38%;padding-right: 0 !important;margin-right: 0 !important;padding-left: 0;}
+    .template_namebox{margin-left: 21px;}
+    .template_remark{width:94.5%;}
+    .fake_input{line-height: 38px;overflow: hidden;}
+    .this_textarea{display: none;padding:10px;box-sizing: border-box;text-align: center;}
+    .template_name{border: 1px solid #fff;padding-left: 0;padding-right: 0;width: 100px;margin-left: 20px;margin-right: 10px;text-align: center;}
+    .template_remark{color:#000;}
+    .addBox{margin-bottom:10px;}
+    .quote_box{padding: 15px;margin-top:15px;}
+    /**聊天模板**/
+    #edui1_iframeholder{height:150px !important;}
+    .conatact_info{padding:10px;box-sizing: border-box;}
+    .chat_content{border:1px solid #eee;height:300px;margin-bottom:5px;overflow-y:scroll;background:rgb(240,230,221);}
+    .chat_content .center{width: fit-content;margin: 0 auto;padding: 5px 20px;box-sizing: border-box;background: unset;border-radius: 8px;margin-top: 10px;font-weight:bolder;}
+    .conatact_info .right{float:right;margin-top:5px;}
+    .conatact_info .left{float:left;margin-top:5px;}
+    .conatact_info .disflex{display:flex;align-items:center;max-width:80%;}
+    /**右**/
+    .conatact_info .right .my_txt{background:rgb(230,254,218);color:#000;font-size:15px;padding:10px 15px;padding-right:70px;box-sizing: border-box;border-radius: 10px;border-top-right-radius:5px;margin-right:15px;box-shadow:0px 0px 10px 2px #efeded;position:relative;}
+    /*calc(50% - 10px)*/
+    .conatact_info .right .my_txt::after{content: '';width: 0;height: 0;border-top: 10px solid transparent;border-left: 10px solid rgb(230,254,218);border-bottom: 10px solid transparent;position: absolute;right: -8px;top: 0;}
+    .conatact_info .right .my_txt .time_info{position:absolute;bottom:0;right:6px;}
+    .conatact_info .right .my_txt .time_info .time{font-size:12px;font-weight:bold;color:#666;margin-right: 8px;}
+    /**左**/
+    .conatact_info .left .my_txt{background:#efefef;color:#000;font-size:15px;padding:10px 15px;padding-left:50px;box-sizing: border-box;border-radius: 10px;border-top-left-radius:5px;margin-left:15px;box-shadow:0px 0px 10px 2px #efeded;position: relative;}
+    .conatact_info .left .my_txt::after{width: 0;height: 0;border-top: 10px solid transparent;border-right: 10px solid #efefef;border-bottom: 10px solid transparent;content: '';position: absolute;left: -10px;top: 0;}
+    .conatact_info .left .my_txt .time_info{position:absolute;bottom:0;left:8px;}
+    .conatact_info .left .my_txt .time_info .time{font-size:12px;font-weight:bold;color:#666;margin-right: 8px;}
+    .conatact_info .my_ava img{width:30px;height:30px;}
+    /**对号样式**/
+    .check-style-unequal-width {width: 3px;height: 10px;border-color: #1790FF;border-style: solid;border-width: 0 3px 3px 0;transform: rotate(35deg);}
+    .check-style-unequal-width-1 {width: 3px;height: 10px;border-color: #666;border-style: solid;border-width: 0 3px 3px 0;transform: rotate(35deg);}
+    .check-style-unequal-width2 {width: 2px;height: 10px;border-color: #1790FF;border-style: solid;border-width: 0 3px 3px 0;transform: rotate(35deg);}
+    .check-style-unequal-width2-1 {width: 2px;height: 10px;border-color: #666;border-style: solid;border-width: 0 3px 3px 0;transform: rotate(35deg);}
+    /**聊天样式结束**/
+    #select_name,#introduce_name{width:312px;}
+    @media (max-width:992px){
+        .input31{width: 95%;}
+        .input30{width: 100%;}
+        .input20{width: 56%;}
+        .input15{width: 50%;}
+        .container_content{margin-top:15px;}
+        /**日期时间**/
+        .layui-laydate-range{left: 0 !important;width: fit-content;}
+        .layui-laydate-range .layui-laydate-main{display: block;width: 100%;}
+        .layui-laydate-range .layui-laydate-main .layui-laydate-content table{width: 100%;}
+        .date_type{display: inline-block;}
+        .common50,.date_box{width:100%;}
+        .baojia{align-items: flex-start;}
+        .country_type,.value_type{width:100%;}
+        .disf_legend{width: 90% !important;}
+        .template_remark{width: 100%;}
+        #select_name,#introduce_name{width:185px;}
+        .label_sm{width:70px;}
+    }
+    /**询报价详情样式**/
+    .table_diy{border-collapse: collapse;}
+    .table_diy td,.table_diy th{border: 1px solid #000;width: 100px;text-align: center;}
+</style>
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$data['id']}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body" style="padding:15px;">
+                        {if !empty($data['inquiry_user'])}
+                            <p style="margin-left: 35px;font-size: 20px;margin-bottom: 15px;">客户ID[{$data['inquiry_user']['custom_id']}]</p>
+                        {/if}
+                        <fieldset class="layui-elem-field template_box">
+                            <legend>询价编号[{$data['ordersn']}]</legend>
+                            <div class="layui-field-box">
+                                {if !empty($data['content'])}
+                                    {if $data['is_quote']==1}
+                                        <!--复制报价表单的，由B端创建无询价报价订单-->
+                                        {volist name="data['content']" key="key" id="vo"}
+                                        <div class="main_template">
+                                            <fieldset class="layui-elem-field quote_box">
+                                                <legend class="disf">{$vo['project_name']}</legend>
+                                                <div class="layui-field-box" style="padding:0 20px;">
+                                                    <div class="layui-form-item">
+                                                        <div class="layui-form-label label_sm" style="padding: 0;overflow: visible;">
+                                                            {if $vo['project_type']==1}收费标准{elseif($vo['project_type']==2)}收费说明{/if}
+                                                        </div>
+                                                        <div class="layui-input-block">
+                                                            {if $vo['project_type']==1}
+                                                            <div class="template_type1">
+                                                                <div class="disf">
+                                                                    <table class="table_diy">
+                                                                        <thead>
+                                                                        <tr>
+                                                                            <th>币种</th>
+                                                                            <th>金额</th>
+                                                                            <th>计价单位</th>
+                                                                            {if $vo['quote_type']==1}
+                                                                            <th>报价说明</th>
+                                                                            {elseif($vo['quote_type']==2)}
+                                                                            <th>有效期限</th>
+                                                                            {elseif($vo['quote_type']==3)}
+                                                                            {if $vo['range_type']==1}
+                                                                            <th>适用国地</th>
+                                                                            {elseif($vo['range_type']==2)}
+                                                                            <th>适用货物</th>
+                                                                            {/if}
+                                                                            {/if}
+                                                                        </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                        <tr>
+                                                                            <td>{$vo['currency']}</td>
+                                                                            <td>{$vo['money']}</td>
+                                                                            <td>{if $vo['unit_type']==1}{$vo['unit']}{elseif($vo['unit_type']==2)}{$vo['unit_name']}{/if}</td>
+                                                                            {if $vo['quote_type']==1}
+                                                                            <td>{$vo['remark']}</td>
+                                                                            {elseif($vo['quote_type']==2)}
+                                                                            <td>{$vo['date']}</td>
+                                                                            {elseif($vo['quote_type']==3)}
+                                                                            {if $vo['range_type']==1}
+                                                                            <td>{if $vo['country_type']==1}{$vo['country']}{elseif($vo['country_type']==2)}{$vo['country_name']}{/if}</td>
+                                                                            {elseif($vo['range_type']==2)}
+                                                                            <td>{if $vo['value_type']==1}{$vo['value']}{elseif($vo['value_type']==2)}{$vo['value']}{/if}</td>
+                                                                            {/if}
+                                                                            {/if}
+                                                                        </tr>
+                                                                        </tbody>
+                                                                    </table>
+
+                                                                </div>
+                                                            </div>
+                                                            {/if}
+                                                            {if $vo['project_type']==2}
+                                                            <div class="template_type2">
+                                                                <table class="table_diy">
+                                                                    <tbody>
+                                                                    {if $vo['feedesc_type']==1}
+                                                                    {volist name="vo.quote_text1" id="vo2"}
+                                                                    <tr>
+                                                                        <td>{$vo2}</td>
+                                                                    </tr>
+                                                                    {/volist}
+                                                                    {/if}
+                                                                    {if $vo['feedesc_type']==2}
+                                                                    {volist name="vo.quote_text2" id="vo2"}
+                                                                    <tr>
+                                                                        <td>{$vo2}</td>
+                                                                    </tr>
+                                                                    {/volist}
+                                                                    {/if}
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                            {/if}
+                                                            <div class="right" style="display: none;">
+                                                                <div class="layui-btn layui-btn-warm layui-btn-md" onclick="chat('{$vo[\'project_name\']}','{$vo[\'project_randname\']}')"><img src="/img/chat.png" style="width: 30px;height:30px;">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            </fieldset>
+                                        </div>
+                                        {/volist}
+                                    {elseif($data['is_quote']==0)}
+                                        <div class="inquiry_detailbox">
+                                            {volist name="data['form']" index="key" id="vo"}
+                                                {if $vo['label_value']==5}
+                                                    {if !empty($data['label5_select'])}
+                                                    {volist name="data['label5_select']" index="idx" id="vo2"}
+                                                        {if $vo2==$vo.label_name}
+                                                            <div class="layui-form-item">
+                                                                <div class="layui-form-label label_sm">{$vo2}</div>
+                                                                <div class="layui-input-block">
+                                                                    {$data['label5_content'][$key]}
+                                                                </div>
+                                                            </div>
+                                                        {/if}
+                                                    {/volist}
+                                                {/if}
+                                                {else}
+                                                    <div class="layui-form-item">
+                                                        <div class="layui-form-label label_sm">{$vo.label_name}</div>
+                                                        <div class="layui-input-block">
+                                                            {$data['content'][$key]}
+                                                        </div>
+                                                    </div>
+                                                {/if}
+                                            {/volist}
+                                        </div>
+                                    {/if}
+                                {/if}
+                                {if !empty($data['text'])}
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label label_sm">询价详情</div>
+                                    <div class="layui-input-block">
+                                        {$data['text']}
+                                    </div>
+                                </div>
+                                {/if}
+                                {if !empty($data['files'])}
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label label_sm">询价文件</label>
+                                    <div class="layui-input-block layui-select-fscon">
+                                        {volist name="data['files']" key="k" id="v"}
+                                        <a href="https://www.gogo198.net{$v['files']}" target="_blank" style="color:#000;text-decoration:underline;margin-right:2px;">{$v['filenames']}</a>
+                                        {/volist}
+                                    </div>
+                                </div>
+                                {/if}
+                            </div>
+                        </fieldset>
+                        <div class="right">
+                            <div class="layui-btn layui-btn-success layui-btn-md" onclick="add_inquiry()">添加行</div><div class="layui-btn layui-btn-warm layui-btn-md" onclick="chat('{$data[\'ordersn\']}',0)"><img src="/collect_website/public/static/img/chat.png" style="width: 30px;height:30px;"></div>
+                        </div>
+
+                        {if $quote_order['id']>0}
+                            {if !empty($data['quote_user'])}
+                                <p style="margin-left: 35px;font-size: 20px;margin-bottom: 15px;">商户ID[{$data['quote_user']['custom_id']}]</p>
+                            {/if}
+                            <fieldset class="layui-elem-field quote_box">
+                                <legend style="width:38%;border-bottom:0;padding:0;">{$data['quote_form']['template_name']}</legend>
+                                <div class="layui-field-box" style="padding:0;">
+                                    {if !empty($data['quote_content'])}
+                                    <div class="main_template">
+                                        <div class="project_box" style="margin-top:0px;">
+                                        {volist name="data['quote_content']" key="key" id="vo"}
+                                            <?php $idx = $key-1;?>
+                                                <div class="addBox">
+                                                <fieldset class="layui-elem-field template_box">
+                                                    <legend class="disf" style="padding-right: 0 !important;margin-right: 0 !important;padding-left: 0;"><input type="text" name="project_name[]" class="layui-input template_remark f15" id="project_name" placeholder="请输入收费项目或摘要" value="{$vo['project_name']}" /><input type="text" name="project_randname[]" value="{$vo['project_randname']}" style="display: none;"></legend>
+                                                        <div class="layui-field-box" style="padding-left:20px;">
+                                                            <div class="layui-form-item">
+                                                                <div class="layui-form-label label_select" style="padding: 0;overflow: visible;">
+                                                                    <select name="project_type[]" id="project_type" lay-filter="project_type">
+                                                                        <option value="1" {if $vo['project_type']==1}selected{/if}>收费标准</option>
+                                                                        <option value="2" {if $vo['project_type']==2}selected{/if}>报价说明</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="layui-input-block">
+                                                                    <div class="template_type1" {if $vo['project_type']==1}style="display:block;"{else}style="display: none;"{/if}>
+                                                                        <div class="disf">
+                                                                            <div class="input15">
+                                                                                <select name="currency[]" id="currency" lay-search>
+                                                                                    {volist name="currency" key="key2" id="vo2"}
+                                                                                    <option value="{$vo2.code_value}" {if $vo2.code_value==$vo['currency']}selected{/if}>{$vo2.code_name}</option>
+                                                                                    {/volist}
+                                                                                </select>
+                                                                            </div>
+                                                                            <input type="number" name="money[]" class="layui-input input15" id="money" placeholder="请输入金额" value="{$vo['money']}"/>
+                                                                            </div>
+                                                                            <div class="disf">
+                                                                                <div class="input15">
+                                                                                    <select name="unit_type[]" id="unit_type" lay-filter="unit_type">
+                                                                                        <option disabled selected value="1" {if $vo['unit_type']==1}selected{/if}>- 计价单位</option>
+                                                                                        <option value="1">选择表</option>
+                                                                                        <option value="2" {if $vo['unit_type']==2}selected{/if}>自定义</option>
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="unit input15" {if($vo['unit_type']==1)}style="display:block;"{elseif($vo['unit_type']==2)}style="display:none;"{/if}>
+                                                                                <select name="unit[]" id="unit" lay-search>
+                                                                                    {volist name="unit" key="key2" id="vo2"}
+                                                                                    <option value="{$vo2.code_value}" {if $vo2.code_value==$vo['unit']}selected{/if}>{$vo2.code_name}</option>
+                                                                                    {/volist}
+                                                                                </select>
+                                                                            </div>
+                                                                            <input type="text" name="unit_name[]" class="layui-input input15 unit_name" id="unit_name" {if($vo['unit_type']==1)}style="display:none;"{elseif($vo['unit_type']==2)}style="display:block;"{/if} placeholder="自定义单位" value="{$vo['unit_name']}"/>
+                                                                        </div>
+                                                                        <div class="disf baojia">
+                                                                            <div class="input15">
+                                                                                <select name="quote_type[]" id="quote_type" lay-filter="quote_type">
+                                                                                    <option disabled selected value="1" {if $vo['quote_type']==1}selected{/if}>- 报价说明</option>
+                                                                                    <option value="1">自定义</option>
+                                                                                    <option value="2" {if $vo['quote_type']==2}selected{/if}>有效期限</option>
+                                                                                    <option value="3" {if $vo['quote_type']==3}selected{/if}>适用范围</option>
+                                                                                </select>
+                                                                            </div>
+                                                                            <input type="text" name="remark[]" class="layui-input remark input15" id="remark" placeholder="请输入报价说明" value="{$vo['remark']}"  {if $vo['quote_type']==1}style="display: block;"{else}style="display:none;"{/if}/>
+                                                                            <div class="disf date_type input50" {if $vo['quote_type']==2}style="display: flex;"{else}style="display:none;"{/if}>
+                                                                                <div class="input30">
+                                                                                    <select name="date_type[]" id="date_type" lay-filter="date_type">
+                                                                                        <option disabled selected value="1">- 有效期限</option>
+                                                                                        <option value="1" {if $vo['date_type']==1}selected{/if}>固定日期</option>
+                                                                                        <option value="2" {if $vo['date_type']==2}selected{/if}>起止日期</option>
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="date_box">
+                                                                                    <input type="hidden" name="date_num[]" id="date_num" value="{$vo.date_num}">
+                                                                                    <input type="text" name="date[]" class="layui-input" id="date{$vo.date_num}" placeholder="选择日期" value="{$vo.date}" autocomplete="off" readonly/>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="range_type input15" {if $vo['quote_type']==3}style="display: inline-block;"{else}style="display:none;"{/if}>
+                                                                                <select name="range_type[]" id="range_type" lay-filter="range_type">
+                                                                                    <option disabled selected value="1">- 适用范围</option>
+                                                                                    <option value="1" {if $vo['range_type']==1}selected{/if}>适用国地</option>
+                                                                                    <option value="2" {if $vo['range_type']==2}selected{/if}>适用货物</option>
+                                                                                </select>
+                                                                            </div>
+                                                                            <div class="disf country_type input50" {if $vo['range_type']==1}style="display: flex;"{else}style="display: none;"{/if}>
+                                                                                    <div class="input30">
+                                                                                        <select name="country_type[]" id="country_type" lay-filter="country_type">
+                                                                                            <option disabled selected value="1" {if $vo['country_type']==1}selected{/if}>- 适用国地</option>
+                                                                                            <option value="1">选择表</option>
+                                                                                            <option value="2" {if $vo['country_type']==2}selected{/if}>自定义</option>
+                                                                                        </select>
+                                                                                    </div>
+                                                                                    <div class="country input30" {if $vo['country_type']==1}style="display:block;"{else}style="display:none;"{/if}>
+                                                                                    <select name="country[]" id="country" lay-search>
+                                                                                        {volist name="country" key="key2" id="vo2"}
+                                                                                        <option value="{$vo2.code_value}" {if $vo['country']==$vo2.code_value}selected{/if}>{$vo2.code_name}</option>
+                                                                                        {/volist}
+                                                                                    </select>
+                                                                                </div>
+                                                                                <input type="text" name="country_name[]" class="layui-input input30" id="country_name"  {if $vo['country_type']==2}style="display:block;"{else}style="display:none;"{/if} placeholder="自定义国地" value="{$vo['country_name']}"/>
+                                                                            </div>
+                                                                            <div class="disf value_type input50" {if $vo['range_type']==2}style="display: flex;"{else}style="display: none;"{/if}>
+                                                                                <div class="input30">
+                                                                                    <select name="value_type[]" id="value_type" lay-filter="value_type">
+                                                                                        <option disabled selected value="1" {if $vo['value_type']==1}selected{/if}>- 适用货物</option>
+                                                                                        <option value="1">选择表</option>
+                                                                                        <option value="2" {if $vo['value_type']==2}selected{/if}>自定义</option>
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="value input30" {if $vo['value_type']==1}style="display: block;"{else}style="display: none;"{/if}>
+                                                                                    <select name="value[]" id="value" lay-search>
+                                                                                        {volist name="value" key="key2" id="vo2"}
+                                                                                        <option value="{$vo2.id}" {if $vo['value']==$vo2.id}selected{/if}>{$vo2.name}</option>
+                                                                                        {/volist}
+                                                                                    </select>
+                                                                                </div>
+                                                                                <input type="text" name="value_name[]" class="layui-input input30" id="value_name" {if $vo['value_type']==2}style="display: block;"{else}style="display: none;"{/if} placeholder="自定义货物" value="{$vo['value_name']}"/>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="template_type2" {if $vo['project_type']==2}style="display:block;"{else}style="display: none;"{/if}>
+                                                                        <div class="input30">
+                                                                            <select name="feedesc_type[]" id="feedesc_type" lay-filter="feedesc_type">
+                                                                                <option value="1" {if $vo['feedesc_type']==1}selected{/if}>说明文本</option>
+                                                                                <option value="2" {if $vo['feedesc_type']==2}selected{/if}>选择文本</option>
+                                                                            </select>
+                                                                        </div>
+                                                                        <div class="quote_type1" {if $vo['feedesc_type']==1}style="display:block;"{else}style="display:none;"{/if}>
+                                                                        {if !empty($vo['quote_text1'])}
+                                                                            {volist name="vo['quote_text1']" id="vo2"}
+                                                                                <div class="marbtm10 disf">
+                                                                                    <div class="layui-btn layui-btn-md layui-btn-danger f22" onclick="del_text(this)">-</div>
+
+                                                                                    <div class="layui-input input20 fake_input" onclick="open_textarea(this)">{if !empty($vo2)}{$vo2}{else}请输入文本{/if}</div>
+                                                                                    <div class="this_textarea">
+                                                                                        <textarea name="quote_text1[{$idx}][]" id="quote_text" class="layui-textarea" style="height:500px;" placeholder="请输入文本">{$vo2}</textarea>
+                                                                                        <div class="layui-btn layui-btn-md layui-btn-normal" onclick="sure_this(this)">确认</div>
+                                                                                    </div>
+                                                                                    <div class="layui-btn layui-btn-md layui-btn-success f22" onclick="add_text({$idx},this,1)">+</div>
+                                                                                </div>
+                                                                            {/volist}
+                                                                        {else}
+                                                                            <div class="marbtm10 disf">
+                                                                                <div class="layui-btn layui-btn-md layui-btn-danger f22" style="background:#e38787;">-</div>
+                                                                                <div class="layui-input input20 fake_input" onclick="open_textarea(this)">请输入文本</div>
+                                                                                <div class="this_textarea">
+                                                                                    <textarea name="quote_text1[{$idx}][]" id="quote_text" class="layui-textarea" style="height:500px;" placeholder="请输入文本" value=""></textarea>
+                                                                                    <div class="layui-btn layui-btn-md layui-btn-normal" onclick="sure_this(this)">确认</div>
+                                                                                </div>
+                                                                                <div class="layui-btn layui-btn-md layui-btn-success f22" onclick="add_text({$idx},this,1)">+</div>
+                                                                            </div>
+                                                                        {/if}
+                                                                    </div>
+                                                                    <div class="quote_type2" {if $vo['feedesc_type']==2}style="display:block;"{else}style="display:none;"{/if}>
+                                                                    {if !empty($vo['quote_text2'])}
+                                                                        {volist name="vo['quote_text2']" key="key2" id="vo2"}
+                                                                            <div class="marbtm10 disf">
+                                                                                <div class="layui-btn layui-btn-md layui-btn-danger f22" onclick="del_text(this)">-</div>
+                                                                                <div class="input20">
+                                                                                    <select name="quote_text2[{$idx}][]" id="quote_text" class="quote_select" lay-search lay-filter="quote_text">
+                                                                                        {volist name="quote_text" key="key3" id="vo3"}
+                                                                                        <option value="{$vo3.id}" {if $vo3.id==$vo2}selected{/if}>{$vo3.text}</option>
+                                                                                        {/volist}
+                                                                                    </select>
+                                                                                    <div class="this_textarea">
+                                                                                        <textarea name="quote_text2_edit[{$idx}][]" id="quote_text" class="layui-textarea quote_text" style="height:500px;" placeholder="请输入文本"></textarea>
+                                                                                        <div class="layui-btn layui-btn-md layui-btn-normal" onclick="sure_this2(this)">无需修改</div>
+                                                                                        <div class="layui-btn layui-btn-md layui-btn-primary" onclick="sure_this3(this)">确认修改</div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="layui-btn layui-btn-md layui-btn-success f22" onclick="add_text({$idx},this,2)">+</div>
+                                                                            </div>
+                                                                        {/volist}
+                                                                    {else}
+                                                                        <div class="marbtm10 disf">
+                                                                            <div class="layui-btn layui-btn-md layui-btn-danger f22" style="background:#e38787;">-</div>
+                                                                            <div class="input20">
+                                                                                <select name="quote_text2[{$idx}][]" id="quote_text" class="quote_select" lay-search lay-filter="quote_text">
+                                                                                    {volist name="quote_text" key="key2" id="vo2"}
+                                                                                    <option value="{$vo2.id}">{$vo2.text}</option>
+                                                                                    {/volist}
+                                                                                </select>
+                                                                                <div class="this_textarea">
+                                                                                    <textarea name="quote_text2_edit[{$idx}][]" id="quote_text" class="layui-textarea quote_text" style="height:500px;" placeholder="请输入文本"></textarea>
+                                                                                    <div class="layui-btn layui-btn-md layui-btn-normal" onclick="sure_this2(this)">无需修改</div>
+                                                                                    <div class="layui-btn layui-btn-md layui-btn-primary" onclick="sure_this3(this)">确认修改</div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="layui-btn layui-btn-md layui-btn-success f22" onclick="add_text({$idx},this,2)">+</div>
+                                                                        </div>
+                                                                    {/if}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+
+                                            <div class="right">
+                                                <div class="layui-btn layui-btn-warm layui-btn-md" onclick="chat('{$vo[\'project_name\']}','{$vo[\'project_randname\']}')"><img src="/collect_website/public/static/img/chat.png" style="width: 30px;height:30px;"></div>
+                                            </div>
+
+                                            </div>
+                                        {/volist}
+                                        </div>
+                                    </div>
+                                    {/if}
+                                    {if !empty($quote_info['text'])}
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">报价信息</div>
+                                        <div class="layui-input-block word_color">
+                                            {$quote_info['text']}
+                                        </div>
+                                    </div>
+                                    {/if}
+                                </div>
+                            </fieldset>
+                        {/if}
+                    </div>
+                </div>
+                {if $data['status']==0}
+                    <div class="layui-form-item" style="text-align: center;">
+                        <div class="layui-btn layui-btn-normal layui-btn-md save_inquiry" style="display: none;"  lay-submit lay-filter="component-form-saveinquiry">保存询价</div>
+                        <div class="layui-btn layui-btn-primary layui-btn-md share_inquiry">分享询价</div>
+                    </div>
+                {/if}
+            </div>
+
+<!--            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">-->
+<!--                <div>-->
+<!--                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">分享询价</button>-->
+<!--                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+<!--                </div>-->
+<!--            </div>-->
+        </form>
+    </div>
+</div>
+
+<div class="chatBox_con" style="display: none;">
+    <div class="layui-fluid">
+        <div class="layui-card">
+<!--            <div class="layui-card-header">咨询[<span class="consult_name"></span>]</div>-->
+            <div class="layui-card-body" style="padding: 15px;">
+                <form class="layui-form" action="" lay-filter="component-form-group">
+                    <input type="hidden" name="quote_id" id="quote_id" value="">
+                    <input type="hidden" name="project_randname" id="project_randname" value="">
+                    <div class="layui-col-xs12 chat_content">
+
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-tab layui-tab-card">
+                            <ul class="layui-tab-title">
+                                <li class="layui-this" data-i='1'>普通文本</li>
+                                <li data-i='2'>富文本</li>
+                            </ul>
+                            <div class="layui-tab-content">
+                                <div class="layui-tab-item layui-show">
+                                    <textarea class="layui-textarea" name="content" placeholder="开始聊天~~"></textarea>
+                                </div>
+                                <div class="layui-tab-item">
+                                    <script id="content" type="text/plain" style="width:100%;height:100px;">
+                                    </script>
+                                   <div class="clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                       <div class="layui-col-xs12" style="text-align: center;">
+                           <button class="layui-btn" lay-submit="" lay-filter="component-form-demo1" style="margin-top:10px;">立即提交</button>
+                       </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="add_inquiryBox" style="display: none;">
+    <form class="layui-form" action="" method="post" lay-filter="component-form-inquiry">
+        <div class="layui-col-md12">
+            <div class="layui-card" style="padding:10px 0;">
+                <div class="layui-card-body">
+                    <div class="layui-form-item">
+                        <div class="layui-form-label" style="width:60px;">添加行</div>
+                        <div class="layui-input-block" style="margin-left:80px;">
+                            <div class="disf">
+                                <input type="text" name="label_name" class="layui-input" id="label_name" value="" placeholder="标签名称" style="width:100px;"/>
+                                <select name="label_value" id="label_value" style="width:50%;" lay-filter="lable_value">
+                                    <option value="1">文本输入框</option>
+                                    <option value="2">数值输入框</option>
+                                    <option value="3">日期选择框</option>
+                                    <option value="6">日期选择框(起止)</option>
+                                    <option value="4">普通选择框</option>
+                                    <option value="5">数量增减框</option>
+                                </select>
+                            </div>
+                            <div class="select_box">
+                                <input type="text" name="select_name" class="layui-input" id="select_name" value="" placeholder="选择内容用顿号‘、’隔开" style="margin-left:10px;"/>
+                            </div>
+                            <div class="introduce_box">
+                                <input type="text" name="introduce_name" class="layui-input" id="introduce_name" value="" placeholder="输入描述（可为空）" style="margin-left:10px;"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-form-label" style="width:60px;"></div>
+                        <div class="layui-input-block" style="margin-left:80px;">
+                            <div class="layui-btn layui-btn-success layui-btn-md add">添加</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload','element'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form = layui.form;
+        var element = layui.element;
+        $ = layui.jquery;
+        var upload = layui.upload;
+
+        form.render(null,'component-form-change');
+
+        $('.chat_content').scrollTop($('.chat_content').height(), -1);
+        var ue = UE.getEditor('content', {
+            initialFrameHeight: 400,
+            serverUrl: 'static/cklein/plugins/ueditor/php/controller.php'
+        });
+
+        {if $quote_order['id']>0}
+        {volist name="data['quote_content']" key="key" id="vo"}
+            {if $vo['quote_type']==2}
+                {if $vo['date_type']==1}
+                    laydate.render({
+                        elem: '#date{$vo["date_num"]}' //指定元素
+                    });
+                {elseif($vo['date_type']==2)}
+                    laydate.render({
+                        elem: '#date{$vo["date_num"]}' //指定元素
+                        ,range:true
+                        ,min: "<?php echo date('Y-m-d');?>"
+                        ,max: "<?php echo date('Y-m-d',time()+63072000)?>"
+                    });
+                {/if}
+            {/if}
+        {/volist}
+        {/if}
+        /* 监听提交聊天记录 */
+        form.on('submit(component-form-demo1)', function (data) {
+            data.field['content_type']=1;
+            data.field['pa']=2;
+            data.field['is_inquiry']=1;
+            if($('.chatBox_con').find('.layui-this').attr('data-i')==2){
+                data.field['content_type']=2;
+                data.field['content'] = data.field['editorValue'];
+            }
+
+            if(data.field['content']==''){
+                layer.msg('请输入内容！');
+                return false;
+            }
+            
+            $.ajax({
+                url: "{:Url('admin/operaweb/quote_order_chat')}",
+                method: 'post',
+                data: data.field,
+                dataType: 'JSON',
+                success: function (res) {
+                    layer.msg(res.msg, {time: 2000}, function () {
+                        if (res.code == 0) {
+                            // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                            
+                            // var index = parent.layer.getFrameIndex(window.name);
+                            // parent.layer.close(index);
+                            // window.location.reload();
+                            
+                            chat('',data.field['project_randname'],1);
+                        }
+                    });
+                },
+                error: function (data) {
+                    layer.msg('系统错误', {time: 2000});
+                }
+            });
+            return false;
+        });
+        //分享询价
+        $('.share_inquiry').click(function(){
+            layer.open({
+                type: 2,
+                title: '分享询价',
+                area:['100%','100%'],
+                content: "{:Url('admin/operaweb/share_inquiry')}&id={$data['id']}"
+            });
+        });
+
+        //询价新增行选择标签框
+        form.on('select(lable_value)',function(data){
+            let val = data.value;
+            if(val==1){
+                $('.select_box').hide();
+                $('.introduce_box').hide();
+            }else if(val==2){
+                $('.select_box').hide();
+                $('.introduce_box').hide();
+            }else if(val==3){
+                $('.select_box').hide();
+                $('.introduce_box').hide();
+            }else if(val==4){
+                $('.select_box').show();
+                $('.introduce_box').hide();
+            }else if(val==5){
+                $('.select_box').hide();
+                $('.introduce_box').show();
+            }else if(val==6){
+                $('.select_box').hide();
+                $('.introduce_box').hide();
+            }
+        });
+
+        //新增询价操作
+        $('.add').click(function(){
+            let label_name = $('#label_name').val();
+            let label_value = $('#label_value').val();
+            let select_name = $('#select_name').val();
+            let introduce_name = $('#introduce_name').val();
+            let rand = new Date().valueOf();
+            if(label_name==''){
+                layer.msg('请输入标签名称');return false;
+            }
+
+            let html = '<div class="layui-form-item">\n' +
+                '                            <div class="layui-form-label label_sm">'+label_name+'</div>\n' +
+                '                            <div class="layui-input-block">\n';
+            if(label_value==1){
+                html += '<input type="text" name="insert_content[]" class="layui-input input30" value="" placeholder=""/>\n'+
+                    '<input type="text" name="content[label_name][]" value="'+label_name+'" style="display:none;"><input type="text" name="content[label_value][]" value="'+label_value+'" style="display:none;"><input type="text" name="content[label_select][]" value="" style="display:none;"><input type="text" name="content[label_rand][]" value="" style="display:none;"><input type="text" name="content[label_introduce][]" value="" style="display:none;">\n';
+            }else if(label_value==2){
+                html += '<input type="number" name="insert_content[]" class="layui-input input30" value="" placeholder=""/>\n'+
+                    '<input type="text" name="content[label_name][]" value="'+label_name+'" style="display:none;"><input type="text" name="content[label_value][]" value="'+label_value+'" style="display:none;"><input type="text" name="content[label_select][]" value="" style="display:none;"><input type="text" name="content[label_rand][]" value="" style="display:none;"><input type="text" name="content[label_introduce][]" value="" style="display:none;">\n';
+            }else if(label_value==3){
+                html += ' <input type="text" name="insert_content[]" class="layui-input input30" id="date'+rand+'" value="" placeholder="yymmddhhii">\n'+
+                    '<input type="text" name="content[label_name][]" value="'+label_name+'" style="display:none;"><input type="text" name="content[label_value][]" value="'+label_value+'" style="display:none;"><input type="text" name="content[label_select][]" value="" style="display:none;"><input type="text" name="content[label_rand][]" value="'+rand+'" style="display:none;"><input type="text" name="content[label_introduce][]" value="" style="display:none;">\n';
+            }else if(label_value==4){
+                if(select_name==''){
+                    layer.msg('请输入选择框内容');return false;
+                }
+                let val = select_name.split('、');
+                html += '<div class="input30" style="margin-left:20px;">' +
+                    '<select name="insert_content[]" id="select_con" lay-search>\n';
+                for(let i=0;i<val.length;i++){
+                    html += '<option value="'+val[i]+'">'+val[i]+'</option>\n';
+                }
+                html += '</select>' +
+                    '</div>\n'+
+                    '<input type="text" name="content[label_name][]" value="'+label_name+'" style="display:none;"><input type="text" name="content[label_value][]" value="'+label_value+'" style="display:none;"><input type="text" name="content[label_select][]" value="'+select_name+'" style="display:none;"><input type="text" name="content[label_rand][]" value="" style="display:none;"><input type="text" name="content[label_introduce][]" value="" style="display:none;">\n';
+            }else if(label_value==5){
+                html = '   <div class="layui-form-item">        \n' +
+                    '        <label class="layui-form-label label_sm">'+label_name+'</label>\n' +
+                    '        <div class="layui-input-block">\n' +
+                    '           <input type="text" name="content[label_name][]" value="'+label_name+'" style="display: none;"><input type="text" name="content[label_value][]" value="'+label_value+'" style="display: none;"><input type="text" name="content[label_select][]" value="" style="display:none;"><input type="text" name="content[label_rand][]" value="" style="display:none;"><input type="text" name="content[label_introduce][]" value="'+introduce_name+'" style="display:none;">\n'+
+                    '           <div class="quantity">\n'+
+                    '                <button type="button" onclick="decrementValue(event)">-</button>\n'+
+                    '                <input type="number" class="layui-input input20" name="insert_content[]" value="0" oninput="if(value>1000)value=1000;if(value.length>4)value=value.slice(0,4);if(value<0)value=0" />\n'+
+                    '                <button type="button" onclick="incrementValue(event)">+</button>\n'+
+                    '           </div>';
+                if(introduce_name!=''){
+                    html += '<span style="font-size: 12px;color: #888;">'+introduce_name+'</span>';
+                }
+                html += '    </div>\n' +
+                    '     </div>\n';
+            }else if(label_value==6){
+                html += ' <input type="text" name="insert_content[]" class="layui-input input30" id="date'+rand+'" value="" placeholder="yymmddhhii">\n'+
+                    '<input type="text" name="content[label_name][]" value="'+label_name+'" style="display:none;"><input type="text" name="content[label_value][]" value="'+label_value+'" style="display:none;"><input type="text" name="content[label_select][]" value="" style="display:none;"><input type="text" name="content[label_rand][]" value="'+rand+'" style="display:none;"><input type="text" name="content[label_introduce][]" value="" style="display:none;">\n';
+            }
+            html += '                            </div>\n' +
+                '                        </div>';
+            $('.inquiry_detailbox').append(html);
+            form.render(null,'component-form-inquiry');
+            if(label_value==3){
+                laydate.render({
+                    elem: '#date'+rand //指定元素
+                    ,min: "<?php echo date('Y-m-d');?>"
+                });
+            }else if(label_value==6){
+                laydate.render({
+                    elem: '#date'+rand //指定元素
+                    ,range:true
+                    ,min: "<?php echo date('Y-m-d');?>"
+                    ,max: "<?php echo date('Y-m-d',time()+63072000)?>"
+                });
+            }
+            form.render(null,'component-form-element');
+            layer.closeAll();
+            $('.save_inquiry').show();
+        });
+
+        //保存要修改的询价表单
+        form.on('submit(component-form-saveinquiry)',function(data){
+            layer.confirm('确认修改该询价模板吗？', {
+                btn: ['确定','取消']
+            }, function(){
+                $.ajax({
+                    url: "{:Url('admin/operaweb/inquiry_order_detail')}",
+                    method: 'post',
+                    data: data.field,
+                    dataType: 'JSON',
+                    success: function (res) {
+                        layer.msg(res.msg, {time: 2000}, function () {
+                            if (res.code == 0) {
+                                // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+
+                                // var index = parent.layer.getFrameIndex(window.name);
+                                // parent.layer.close(index);
+                                window.location.reload();
+                            }
+                        });
+                    },
+                    error: function (data) {
+                        layer.msg('系统错误', {time: 2000});
+                    }
+                });
+            }, function(){
+
+            });
+            return false;
+        })
+    });
+    
+    function chat(project_name,project_randname,refresh=0){
+        var $ = layui.$
+            , layer = layui.layer
+            , form = layui.form
+            , laydate = layui.laydate;
+        let html = '';
+        $.ajax({
+            url: "{:Url('admin/operaweb/quote_order_chat')}",
+            method: 'post',
+            data: {"id":"{$data['id']}",'project_randname':project_randname,'pa':1,'is_inquiry':1},
+            dataType: 'JSON',
+            success: function (res) {
+                // $('.chatBox_con').find('.consult_name').text(project_name);
+                $('.chatBox_con').find('#quote_id').val(res.id);
+                $('.chatBox_con').find('#project_randname').val(res.project_randname);
+
+                if(res.data.length>0){
+                    for(let i=0;i<res.data.length;i++){
+                        html += '             <div class="center">'+res.data[i].time+'</div>\n';
+                        for(let i2=0;i2<res.data[i].info.length;i2++) {
+                            if (res.data[i].info[i2]['who_send'] == 1) {
+                                html += '                <div class="conatact_info layui-col-xs12">\n' +
+                                    '                            <div class="right disflex">\n' +
+                                    '                                <div class="my_txt">\n';
+                                // if(res.data[i].info[i2]['content_type']==1){
+                                html += res.data[i].info[i2]['content'];
+                                // }
+                                html += '                            <div class="disf time_info">\n' +
+                                    '                                        <div class="time">' + res.data[i].info[i2]['createtime'] + '</div>\n' +
+                                    '                                        <div class="status disf">\n';
+                                if (res.data[i].info[i2]['is_send'] == 1) {
+                                    html += '                               <div class="check-style-unequal-width" style="margin-right:3px;"></div>\n';
+                                } else if (res.data[i].info[i2]['is_send'] == 0) {
+                                    html += '                               <div class="check-style-unequal-width-1" style="margin-right:3px;"></div>\n';
+                                }
+                                if (res.data[i].info[i2]['is_read'] == 0) {
+                                    html += '                               <div class="check-style-unequal-width2-1" style="margin-right:3px;"></div>\n';
+                                } else if (res.data[i].info[i2]['is_read'] == 1) {
+                                    html += '                               <div class="check-style-unequal-width2" style="margin-right:3px;"></div>\n';
+                                }
+                                html += '                                 </div>\n' +
+                                    '                                    </div>\n' +
+                                    '                                </div>\n' +
+                                    '                            </div>\n' +
+                                    '                        </div>\n';
+                            } else if (res.data[i].info[i2]['who_send'] == 2) {
+                                html += '                       <div class="conatact_info layui-col-xs12">\n' +
+                                    '                            <div class="left disflex">\n' +
+                                    '                                <div class="my_txt">' + res.data[i].info[i2]['content'] + '\n'+
+                                    '                                    <div class="disf time_info">\n' +
+                                    '                                        <div class="time">' + res.data[i].info[i2]['createtime'] + '</div>\n' +
+                                    '                                    </div>\n' +
+                                    '                                </div>\n' +
+                                    '                            </div>\n' +
+                                    '                        </div>\n';
+                            }
+                        }
+                    }
+                }else{
+                    $('.chat_content').html('');
+                }
+                if(html != ''){
+                    $('.chat_content').html(html);
+                }
+                if(refresh==0){
+                    layer.open({
+                        type: 1,
+                        title: '咨询项目['+project_name+']',
+                        area:['100%','100%'],
+                        content: $('.chatBox_con')
+                    });    
+                }
+                
+                form.on(null,'component-form-group');
+            }
+        });
+        // console.log(idx,template_name);
+    }
+
+    function add_inquiry(){
+        var $ = layui.$
+            , layer = layui.layer
+            , form = layui.form
+            , laydate = layui.laydate;
+        layer.open({
+            type: 1,
+            title: '新增询价行',
+            area:['80%','50%'],
+            content:$('.add_inquiryBox')
+        });
+    }
+
+    function incrementValue(event) {
+        event.preventDefault();
+        var input = event.target.parentNode.querySelector('input[type="number"]');
+        var newValue = parseInt(input.value) + 1;
+        input.value = newValue > parseInt(input.max) ? input.value : newValue;
+    }
+
+    function decrementValue(event) {
+        event.preventDefault();
+        var input = event.target.parentNode.querySelector('input[type="number"]');
+        var newValue = parseInt(input.value) - 1;
+        if(newValue>=0){
+            input.value = newValue < parseInt(input.min) ? input.value : newValue;
+        }
+    }
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+
+</script>
+</body>
+</html>

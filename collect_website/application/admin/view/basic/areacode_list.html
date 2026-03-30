@@ -1,0 +1,124 @@
+{include file="common/header_new"}
+<link rel="stylesheet" href="static/agents/layui/css/layui.css">
+<script src="static/agents/layui/layui.js"></script>
+<style>
+    .disf{display:flex;align-items: center;}
+    img{ width:20px;height:20px;}
+    .nav-tabs > li > a{color:#000;}
+    .nav.nav-tabs li.active > a{border:1px solid #10b0e1;background:#10b0e1;color:#fff;}
+    #tab1 .nav.nav-tabs li.active > a,#tab4 .nav.nav-tabs li.active > a{border:1px solid #50c4e7;background:#50c4e7;}
+    #tab4 .nav-risk li.active > a{border:1px solid #7dd9f5 !important;background:#7dd9f5 !important;}
+    #tab4 .nav-person li.active > a{border:1px solid #9be0f5  !important;background:#9be0f5  !important;}
+    .layui-colla-item{border:1px solid #000;}
+    .layui-colla-title{background:#0e2e68;color:#fff;margin-top:0;}
+    .layui-form-label{width:100px;}
+
+    .expend_div{width: 140px;text-align: right;border-left: 1px solid #fff;line-height: 1px;}
+    .add_operation{font-size:30px;}
+</style>
+<body class="gray-bg">
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <h3 style="text-align: center;">行政区域</h3>
+                <div class="table_area ml">
+                    <div id="toolbar11_table_area" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;float: left;">
+                        <button type="button" href="javascript:;" onclick="openWindow('table_area');" class="btn btn-default">
+                            导入Excel
+                        </button>
+                    </div>
+                    <table id="table_area"
+                    /*默认排序项*/
+                    data-sort-name="id"
+                    data-sort-order="desc"
+                    /*工具栏相关*/
+                    data-toolbar="#toolbar"
+                    data-search="false"          /*搜索框*/
+                    data-search-on-enter-key="true"
+                    data-show-refresh="true"    /*刷新按钮*/
+                    /*分页相关*/
+                    data-side-pagination="server"
+                    data-pagination="true"      /*显示分页*/
+                    data-page-size="10"         /*每页显示条数*/
+                    /*移动端相关*/
+                    data-mobile-responsive="true"
+                    data-card-view="true"
+                    data-show-columns="true"
+                    /*radio or checkbox字段名称*/
+                    data-select-item-name="id" >
+                    <thead>
+                    <tr>
+                        <th data-field="pcode_name"
+                            data-align="center"
+                            data-sortable="true"
+                            data-visible="true">上级区域名称</th>
+                        <th data-field="code_name"
+                            data-align="center"
+                            data-sortable="true"
+                            data-visible="true">行政区域名称</th>
+                        <th data-field="manage"
+                            data-align="center"
+                            data-sortable="true"
+                            data-formatter="actionFormatter">操作</th>
+                    </tr>
+                    </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var table;
+
+    $(document).ready(function(){
+        table_area = $('#table_area').bootstrapTable({
+            url: "{:url('admin/basic/areacode_list')}&pa=table_area&country_id={$country_id}",
+            queryParams: queryParams,
+        });
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+            pid:"{$pid}"
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.id;
+        var title = row.code_name;
+
+        var result = "";
+
+        result += '<button style="margin-right: 5px;" type="button" onclick="openWindow2('+id+',\''+title+'\',1)" class="btn btn-warning btn-xs">下级区域</button>';
+
+        return result;
+    }
+
+    function openWindow(type){
+        var index = layer.open({
+            type: 2,
+            title: '上传代码',
+            area:['70%','60%'],
+            content: "{:url('admin/basic/upload_code')}&type="+type
+        });
+    }
+
+    function openWindow2(id,name,type){
+        var index = layer.open({
+            type: 2,
+            title: name,
+            area:['100%','100%'],
+            content: "{:url('admin/basic/areacode_list')}&pid="+id+"&country_id={$country_id}"
+        });
+    }
+</script>

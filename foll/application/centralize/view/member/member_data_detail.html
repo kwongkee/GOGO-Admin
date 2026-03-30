@@ -1,0 +1,147 @@
+{include file="public/header_new"}
+
+<style>
+    img{ width:20px;height:20px;}
+</style>
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <h3 style="text-align: center;">{if $type==2}积分{else}余额{/if}明细</h3>
+                <div id="toolbar" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;">
+
+                </div>
+                <table id="table"
+
+                /*默认排序项*/
+                data-sort-name="id"
+                data-sort-order="desc"
+                /*工具栏相关*/
+                data-toolbar="#toolbar"
+                data-search="false"          /*搜索框*/
+                data-search-on-enter-key="false"
+                data-show-refresh="true"    /*刷新按钮*/
+                /*分页相关*/
+                data-side-pagination="server"
+                data-pagination="true"      /*显示分页*/
+                data-page-size="10"         /*每页显示条数*/
+                /*移动端相关*/
+                data-mobile-responsive="true"
+                data-card-view="true"
+                data-show-columns="true"
+                /*radio or checkbox字段名称*/
+                data-select-item-name="id" >
+
+                <thead>
+                <tr>
+                    <th data-field="checkbox"
+                        data-align="center"
+                        data-checkbox="true"></th>
+                    <th data-field="id"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">ID</th>
+                    <th data-field="name"
+                        data-align="center"
+                        data-sortable="true">会员名称</th>
+                    <th data-field="old_money"
+                        data-align="center"
+                        data-sortable="true">原始金额</th>
+                    <th data-field="change_money"
+                        data-align="center"
+                        data-sortable="true">变更金额</th>
+                    <th data-field="new_money"
+                        data-align="center"
+                        data-sortable="true">变更后的金额</th>
+                    <th data-field="createtime"
+                        data-align="center"
+                        data-sortable="true">创建时间</th>
+                </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var table;
+
+    $(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:url('centralize/member/member_data_detail')}",
+            queryParams: queryParams,
+        });
+        $('.form-control').attr('placeholder','搜索会员名称');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+            id:"{$id}",
+            type:"{$type}",
+            name:"{$name}",
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.id;
+        var title = row.name;
+
+        var result = "";
+        return result;
+    }
+
+    function edit(id,name){
+        var index = layer.open({
+            type: 2,
+            title: '查看-'+name,
+            area:['100%','100%'],
+            content: "{:url('centralize/member/member_info')}&id="+id
+        });
+        // layer.full(index);
+    }
+
+    function del(id,title){
+        layer.confirm('确认删除该会员吗？',function(index){
+            $.ajax({
+                url: "<?php echo Url('centralize/member/member_del'); ?>",
+                data:{'id':id},
+                type:'post',
+                cache:false,
+                dataType:'json',
+                success:function(data){
+                    if(data.code==1)
+                    {
+                        layer.msg(data.msg, {
+                            icon: 1,
+                            time: 2000
+                        }, function(){
+                            window.location.reload();
+                        });
+                        return true;
+                    }else {
+                        layer.msg(data.message, {icon:2, time:2000});
+                        return false;
+                    }
+                },
+                error:function() {
+                    layer.msg('系统出错,请重试',{icon:2,time:1000});
+                }
+            });
+        });
+    }
+
+</script>
+
+</body>
+</html>

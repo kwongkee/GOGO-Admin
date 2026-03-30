@@ -1,0 +1,216 @@
+{template 'common/header'}
+<link rel="stylesheet" href="{MODULE_URL}public/css/question.css" />
+<style>
+    .duration {
+        display: inline-block;
+        line-height: 2.2rem;
+        color: #c3c3c3;
+        font-size: .8rem;
+    }
+</style>
+
+<div id="Questions" class="main" style="margin-bottom:54px;">
+    {template 'header/index_header'}
+    {if !empty($questions['list'])}
+    <ul class="questions" style="margin-bottom:0px;">
+        <!--问答列表-->
+        {loop $questions['list'] $li}
+        {php $to_member = M('member')->getInfo($li['to_openid'])}
+        {if !empty($li['isfree'])}
+        <li class="a-question">
+            <a class="AQ" href="{php echo $this->createMobileUrl('question',array('id'=>$li['id']))}">
+                <div class="question-content">
+                    <p>{$li['title']}</p>
+                </div>
+                <span class="question-respondent">
+                    {$to_member['nickname']}{if !empty($to_member['tags'])}｜{$to_member['tags']}{/if}
+                </span>
+            </a>
+            {php $answers = M('answer')->getList(1," AND question_id = :question_id",array(':question_id'=>$li['id']),3)}
+            {loop $answers['list'] $ans}
+            {php $user = M('member')->getInfo($ans['openid'])}
+            <div class="question-answer">
+                <div class="avatar" data-openid="{php echo $ans['openid']}" style="position:relative;width:1.85rem;height:1.85rem;border-radius:50%;display:inline-block;vertical-align:middle;margin-right:.675rem;">
+                    <img style="position:relative;width:1.85rem;height:1.85rem;border-radius:50%;display:inline-block;" class="avatarImg" src="{php echo tomedia($user['avatar'])}">
+                    <span></span>
+                </div>
+                <div style="display:inline-block;" class="listen"
+                     data-id="{$ans['id']}"
+                     data-question_id="{$li['id']}" data-timelong="{$ans['timelong']}">
+                        <span class="bubble bubble-red" style="float:none;">
+                            <span class="bubble-tail"></span>
+                            <span class="wave1"></span>
+                            <span class="wave2"></span>
+                            <span class="wave3"></span>
+                            <span>限时免费听</span>
+                        </span>
+                </div>
+                <div class="duration">
+                    <span>{php echo $ans['timelong']}</span>
+                    <span>秒</span>
+                </div>
+            </div>
+            {/loop}
+        </li>
+        {else}
+        <li class="a-question">
+            <a class="AQ" href="{php echo $this->createMobileUrl('question',array('id'=>$li['id']))}">
+                <div class="question-content">
+                    <div>
+                        {$li['title']}
+                        <span class="question-visitor">
+                            <span>听过</span>
+                            <span >{php echo M('listen_log')->gettotal($li['id'])}</span>
+                        </span>
+                    </div>
+                </div>
+            </a>
+            <div>
+                    <span class="question-respondent">
+                        {$to_member['nickname']}｜{$to_member['desc']}
+                    </span>
+                {php $answers = M('answer')->getList(1," AND question_id = :question_id",array(':question_id'=>$li['id']),3)}
+                {loop $answers['list'] $ans}
+                {php $user = M('member')->getInfo($ans['openid'])}
+                <div class="question-answer">
+                    <div class="avatar" data-openid="{php echo $user['openid']}" style="position:relative;width:1.85rem;height:1.85rem;border-radius:50%;display:inline-block;vertical-align:middle;margin-right:.675rem;">
+                        <img style="position:relative;width:1.85rem;height:1.85rem;border-radius:50%;display:inline-block;"
+                             class="avatarImg" src="{php echo tomedia($user['avatar'])}">
+                        <span></span>
+                    </div>
+                    <div style="display:inline-block;" class="listen" data-id="{$ans['id']}"
+                         data-question_id="{$li['id']}" data-timelong="{$ans['timelong']}">
+                        <span class="bubble" style="float:none;">
+                            <span class="bubble-tail"></span>
+                            <span class="wave3"></span>
+                            {php $listen_log = M('listen_log')->getOpenid($li['id'],$_W['openid'])}
+                            {if empty($listen_log) || $listen_log['status'] == 0}
+                                {if ($li['openid']==$_W['openid'] || $li['to_openid'] == $_W['openid'])}
+                                <span class="tip">点击播放</span>
+                                {else}
+                                <span class="tip">{php echo $this->system['listen_price']}元偷偷听</span>
+                                {/if}
+                            {else}
+                            <span>点击播放</span>
+                            {/if}
+                        </span>
+                    </div>
+                    <div class="duration">
+                        <span>{php echo $ans['timelong']}</span>
+                        <span>秒</span>
+                    </div>
+                </div>
+                {/loop}
+            </div>
+        </li>
+        {/if}
+        {/loop}
+    </ul>
+    <div class="weui-infinite-scroll" style="padding-bottom: 54px;">
+        <div class="infinite-preloader"></div>
+        正在加载...
+    </div>
+    {else}
+    <div style="text-align:center;padding:3.6rem 2.875rem;" data-reactid=".1">
+        <div data-reactid=".1.0">
+            <img src="http://hangjia.qiniudn.com/FugCrgkvyNW-neCLtifXyyKnS-07" style="display:inline-block;width:4,5rem;height:4.5rem;margin-bottom:1rem;">
+        </div>
+        <p style="font-size:.8rem;color:#999;line-height:1.1rem;margin-bottom:1.65rem;">
+            没有找到相关数据
+        </p>
+        <a style="display:inline-block;line-height:2.2rem;width:8rem;background:#F85F48;border:1px solid #F85F48;font-size:.75rem;color:#fff;text-decoration:none;text-align:center;border-radius:.3rem;" href="{php echo $_W['siteurl']}" data-reactid=".1.2">
+            刷新看看
+        </a>
+    </div>
+    {/if}
+</div>
+
+<audio controls="controls" id="player" style="display:none;" autoplay preload="auto"></audio>
+
+{template 'common/footerbar'}
+<script>
+    var player = document.getElementById('player');
+    function playData(data){
+        console.log(data);
+        $('.wave3').removeClass('voicing');
+        $(data.target).find('.wave3').addClass('voicing');
+        player.src = data.src;
+        player.play();
+        var timelong = parseInt(data.timelong) * 1000;
+        setTimeout(function(){
+            $(data.target).find('.wave3').removeClass('voicing');
+        },timelong);
+    }
+    $(document.body).on('click','.listen',function(){
+        var question_id = $(this).data('question_id');
+        var target = $(this)[0];
+        var timelong = $(this).data('timelong');
+        if(!question_id){
+            $.toast('question_id为空');
+            return '';
+        }
+        $.get("{php echo $this->createMobileUrl('question')}&id="+question_id,{answer_id:$(this).data('id'),act:'src'},function(data){
+            if(data.status == 8){
+                $.toast(data.message,2000,function(){});
+                return '';
+            }
+            if(data.status == 0){
+                var d = {};
+                d.target = target;
+                d.src = data.src;
+                d.timelong = timelong;
+                playData(d);
+                return '';
+            }
+            if(!data.listen_id){
+                $.toast('listen_id为空');
+                return '';
+            }
+            if(!data.answer_id){
+                $.toast('answer_id为空');
+                return '';
+            }
+            wx.ready(function(){
+                wx.chooseWXPay({
+                    timestamp: data.timeStamp,
+                    nonceStr: data.nonceStr,
+                    package: data.package,
+                    signType: data.signType,
+                    paySign: data.paySign,
+                    success: function (res) {
+                        if(res.errMsg == 'chooseWXPay:ok') {
+                            data.act == 'paySuccess';
+                            $.post("{php echo $this->createMobileUrl('question')}&id="+question_id,{act:'paySuccess',listen_id:data.listen_id,answer_id:data.answer_id},function(d){
+                                if(d.status == 1){
+                                    var dd = {};
+                                    dd.target = target;
+                                    dd.src = d.src;
+                                    dd.timelong = timelong;
+                                    $(target).find('tip').html('点击播放');
+                                    playData(dd);
+                                    return '';
+                                }else{
+                                    $.toast('系统错误',2000,'cancel');
+                                }
+                            },'json');
+                        }else{
+                            window.location.href = "{php echo $_W['siteurl']}";
+                        }
+                    }
+                });
+            });
+        },'json');
+    });
+</script>
+<script type="text/javascript" src="{MODULE_URL}public/libs/velocity.min.js"></script>
+<script src="{MODULE_URL}public/js/loadmore.js"></script>
+<script>
+    $(function(){
+        function callback(html){
+            $('#Questions .questions').append(html);
+        }
+        initload("{php echo $this->createMobileUrl('get_index_more')}",callback);
+        loadmore("{php echo $this->createMobileUrl('get_index_more')}",callback);
+    })
+</script>
+{template 'common/footer'}

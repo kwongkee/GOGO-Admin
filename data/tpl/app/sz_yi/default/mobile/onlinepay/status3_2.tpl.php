@@ -1,0 +1,107 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/warehouse_header', TEMPLATE_INCLUDEPATH)) : (include template('common/warehouse_header', TEMPLATE_INCLUDEPATH));?>
+<title>已提交已确认列表</title>
+<style>
+    .layui-table td, .layui-table th{ text-align: center;}
+    .layui-table th{ background-color: #ecf6fc; }
+    .required{color: red;font-size: 1.3rem;right: 3px;position: relative;top: 7px;}
+    .icon-right{font-size: 20px;line-height: 20px;padding-right: 10px;vertical-align: middle;}
+    .layui-layer-adminRight{top : 0px !important;}
+    .layui-layer-btn .layui-layer-btn0{border-color: #F7931E!important;background-color: #F7931E!important;}
+    .layui-table-cell{padding:0 2px;}
+    .laytable-cell-1-0-2{height:auto;min-height:auto;}
+    .page_head{width:100%;background:#fff;margin-bottom:5px;box-shadow:0 0 4px #ddd;padding:10px 0 10px;}
+    .page_head .left{width:20%;display:flex;align-items:center;font-size:15px;}
+    .page_head .left .back{width:13px;height:13px;border-top:2px solid #000;border-left:2px solid #000;transform:rotate(-50deg);margin-left:15px;margin-right:5px;}
+
+    .layui-layer-hui .layui-layer-content{color:#fff;}
+</style>
+<div class="page_head">
+    <div class="left" onclick="javascript:window.history.back(-1);">
+        <div class="back"></div>
+        <div style="font-size:15px;padding-top:2px;">返回</div>
+    </div>
+</div>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <p>已提交已确认列表</p>
+                </div>
+                <div class="layui-card-body">
+                    <table class="layui-hide" id="mainTable"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['layer', 'form', 'table', 'upload', 'laydate'], function () {
+        var $ = layui.$
+            , layer = layui.layer
+            , form = layui.form
+            , element = layui.element
+            , laydate = layui.laydate
+            , upload = layui.upload
+            , table = layui.table;
+
+        table.render({
+            elem: '#mainTable'
+            ,url: "./index.php?i=3&c=entry&do=onlinepay&p=index&m=sz_yi&op=status3_2&pa=1"
+            ,cellMinWidth: 200
+            ,cols: [[
+                {field:'ordersn_flow', title: '支付单号'}
+                ,{field:'totalmoney', title: '支付单金额'}
+                ,{field:'statusname', title: '支付单状态'}
+                ,{field:'createtime', title: '创建时间'}
+                ,{align:'center',  title: '操作',fixed:'right',width:120, templet: function(d){
+                        return [
+                            '<a onclick="openWindow('+"'"+ d.id +"'" +','+"1"+ ');" class="layui-btn layui-btn-success layui-btn-xs">查看详情</a>',
+                            // '<a onclick="openWindow('+"'"+ d.id +"'" +','+"3"+ ');" class="layui-btn layui-btn-danger layui-btn-xs">删除</a>',
+                        ].join('');
+                    } }
+            ]]
+            ,page: false
+        });
+    });
+
+
+    function openWindow(id,typ)
+    {
+        if(typ==1){
+            //查看详情
+            window.location.href="./index.php?i=3&c=entry&do=onlinepay&m=sz_yi&p=index&op=order_detail&oid="+id;
+        }else if(typ==2){
+            //确认
+            window.location.href="./index.php?i=3&c=entry&do=behalf&m=sz_yi&p=merchant&op=save_product&id="+id;
+        }else if(typ==3){
+            //确认
+            layer.confirm('确认该支付单吗？', {
+                btn: ['确认','取消'] //按钮
+            }, function() {
+                $.ajax({
+                    url:"./index.php?i=3&c=entry&do=onlinepay&p=index&m=sz_yi&op=status1&pa=2",
+                    method:'post',
+                    data:{'id':id},
+                    dataType:'JSON',
+                    success:function(res2){
+                        layer.closeAll('loading');
+                        layer.msg(res2.result.msg,{time:3000}, function () {
+                            if(res2.status == 0)
+                            {
+                                window.location.reload();
+                            }
+                        });
+                    },
+                    error:function (data) {
+                        layer.msg('系统错误',{time:3000});
+                    }
+                });
+            },function(){
+                layer.closeAll('loading');
+            });
+        }
+    }
+</script>

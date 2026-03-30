@@ -1,0 +1,117 @@
+{include file="common/header_new"}
+<link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+<link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+
+<body class="gray-bg">
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <h3 style="text-align: center;">{$typename}配置</h3>
+                <div class="layui-btn-group" style="margin-top: 12px;">
+                    <button class="layui-btn layui-btn-success" id="btn-add" onclick="addMenu();">添加功能菜单</button>
+                </div>
+
+                <table id="auth-table" class="layui-table" lay-filter="auth-table"></table>
+
+                <!-- 操作列 -->
+                <script type="text/html" id="auth-state">
+                    <a class="layui-btn layui-btn-success layui-btn-xs" lay-event="add" onclick="addMenu('{{d.id}}');">增加</a>
+                    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit" onclick="edit_menu('{{d.id}}');">修改</a>
+                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" onclick="del_menu('{{d.id}}')">删除</a>
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 自定义js -->
+<script src="./static/hadmin/js/content.js?v=1.0.0"></script>
+<script src="./static/hadmin/layui/layui.all.js"></script>
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<!--<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>-->
+<script>
+    layui.config({
+        base: './static/hadmin/assets/module/'
+    }).extend({
+        treetable: 'treetable-lay/treetable'
+    }).use(['table', 'treetable'], function () {
+        var $ = layui.jquery;
+        var table = layui.table;
+        var treetable = layui.treetable;
+
+        // 渲染表格
+        layer.load(2);
+        treetable.render({
+            treeColIndex: 1,
+            treeSpid: 0,
+            treeIdName: 'id',
+            treePidName: 'pid',
+            elem: '#auth-table',
+            url: '{:Url("admin/rolePermission/customer_features")}&type={$type}',
+            page: true,
+            treeDefaultClose:true,
+            cols: [[
+                {type: 'numbers'},
+                {field: 'title',width:400, title: '名称'},
+                {field: 'url', width:200,title: '菜单url'},
+                {field:'status', width:100,title:'状态'},
+                {templet: '#auth-state', align: 'center', title: '操作'}
+            ]],
+            done: function () {
+                layer.closeAll('loading');
+            }
+        });
+    });
+    function addMenu(pid=0) {
+        layer.open({
+            type: 2,
+            shadeClose:true,
+            cancel:function(){
+                //location.reload();
+            },
+            title:'添加功能菜单',
+            area:['803px','530px'],
+            content: '{:Url("admin/rolePermission/save_customer_features")}&type={$type}&pid='+pid //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+        });
+        return false;
+    }
+
+    function edit_menu(id=0) {
+        layer.open({
+            type: 2,
+            shadeClose:true,
+            cancel:function(){
+                //location.reload();
+            },
+            title:'编辑功能菜单',
+            area:['803px','530px'],
+            content: '{:Url("admin/rolePermission/save_customer_features")}&type={$type}&id='+id //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+        });
+        return false;
+    }
+
+    function del_menu(id) {
+        layer.confirm('确认删除该菜单吗？',function(index) {
+            $.ajax({
+                url: "{:Url('admin/rolePermission/del_customer_features')}",
+                type: "GET",
+                dataType: "json",
+                data: {id: id},
+                success: function (res) {
+                    layer.msg(res.msg);
+                    if (res.code == 0) {
+                        setTimeout(function () {
+                            location.reload();
+                        }, 2000);
+                    }
+                },
+                error: function (xhr) {
+                    layer.msg('连接服务器错误！');
+                }
+            });
+        });
+        // return false;
+    }
+</script>
+</html>

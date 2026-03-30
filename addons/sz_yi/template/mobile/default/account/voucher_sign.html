@@ -1,0 +1,353 @@
+{template 'common/header'}
+<!--<title>项目配置中心</title>-->
+<style type="text/css">
+    body {margin:0px; background:#efefef; font-family:'微软雅黑'; -moz-appearance:none;}
+    .info_main {height:auto;  background:#fff; margin-top:14px; border-bottom:1px solid #e8e8e8; border-top:1px solid #e8e8e8;}
+    .info_main .line {margin:0 10px; height:40px; border-bottom:1px solid #e8e8e8; line-height:40px; color:#999;}
+    .info_main .line .title {height:40px; width:80px; line-height:40px; color:#444; float:left; font-size:14px;}
+    .info_main .line .info { width:100%;float:right;margin-left:-80px; }
+    .info_main .line .inner { margin-left:80px; }
+    .info_main .line .inner input {height:40px; width:100%;display:block; padding:0px; margin:0px; border:0px; float:left; font-size:14px;}
+    .info_main .line .inner .user_sex {line-height:40px;}
+    .info_sub {height:44px; margin:14px 5px; background:#31cd00; border-radius:4px; text-align:center; font-size:16px; line-height:44px; color:#fff;}
+    .select { border:1px solid #ccc;height:25px;}
+    .table{width:100%;font-size:15px;}
+    .table tr{height:25px;}
+    .table thead td{background-color: #ecf6fc !important;}
+    .table tr td{vertical-align: middle !important;}
+
+    .table tr td:nth-of-type(2){width:20%;}
+    .see{box-sizing: border-box;padding: 4px 8px;font-size: 15px;color: #fff;background: #1E9FFF;text-align:center;}
+    .opera2{box-sizing: border-box;padding: 2px 4px;font-size: 14px;color: #fff;background: #1E9FFF;text-align:center;display:none;}
+    .cancel{font-size:14px;padding:4px 10px;background:#ff5555;border-radius:5px;width:fit-content;margin-left:20px;color:#fff;display:none;}
+    .submit{font-size:14px;padding:4px 10px;background:#1E9FFF;width:fit-content;margin-left:10px;margin-right:5px;color:#fff;}
+    .noAdd{background:#ff5555;}
+    .sign_box,.download_box{display:none;width: 80%;position: absolute;background: #ffffff;border-radius: 5px;z-index:1000;transform:translate(-50%,-50%);top: 50%;left:50%;}
+    .sign_box .confirm,.download_box .confirm{height: 50px;border-top: 1px solid #eee;display: flex;}
+    .sign_box .confirm>span,.download_box .confirm>span{flex: 1;height: 50px;line-height: 50px;font-size: 16px;text-align: center;}
+    .sign_box .confirm>span:nth-child(1),.download_box .confirm>span:nth-child(1){color: red;}
+    .sign_box .confirm>span:nth-child(2),.download_box .confirm>span:nth-child(2){border-left: 1px solid #eee;}
+    .sign_box .important,.download_box .important{color: red;}
+    .sign_box .title,.download_box .title{text-align: center;border-bottom: 1px solid #eee;margin-bottom: 10px;}
+    .sign_box .title>p,.download_box .title>p{height: 40px;line-height: 40px;text-align: center;font-size: 18px;font-weight: bold;}
+    .download_box .pic_div{height: 200px;max-height: 200px;min-height: 200px;overflow: scroll;padding:4px;width:100%;text-align:center;}
+
+    .page_head{width:100%;background:#fff;margin-bottom:5px;box-shadow:0 0 4px #ddd;padding:10px 0 10px;display:flex;align-items:center;}
+    .page_head .left{width:20%;display:flex;align-items:center;font-size:15px;}
+    .page_head .left .back{width:13px;height:13px;border-top:2px solid #000;border-left:2px solid #000;transform:rotate(-50deg);margin-left:15px;margin-right:5px;}
+    .page_head .right{width:80%;text-align:center;padding-right:80px;font-size:15px;padding-top:2px;}
+    a{text-decoration: none;text-underline: none;}
+</style>
+
+<link type="text/css" rel="stylesheet" href="../addons/sz_yi/template/pc/default/static/css/bootstrap.min.css" />
+<script type="text/javascript" src="../addons/sz_yi/static/template/pc/default/static/js/bootstrap.min.js"></script>
+<link href="../addons/sz_yi/static/css/layui.css" rel="stylesheet">
+
+<div class="page_head">
+    <div class="left">
+        <div class="back"></div>
+        <div style="font-size:15px;padding-top:2px;">返回</div>
+    </div>
+    <div class="right">
+        待签收列表
+    </div>
+</div>
+<div id="container">
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header" style="padding:0 6px;">
+                        <div id="toolbar" class="btn-group" style="display:flex;align-items:center;">
+                            <input type="text" name="ie_date" class="layui-input" id="ie_date" placeholder="请选择月份搜索" value="{$_GPC['date']}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="info_main table-responsive">
+        {if empty($list)}
+            <div class="line" style="text-align:center;">暂无信息</div>
+        {else}
+        <table class="table table-striped" style="table-layout:fixed;word-break: break-all;text-align: center;">
+            <thead>
+                <tr>
+                    <td>批次号</td>
+                    <td>商户</td>
+                    <td>日期</td>
+                    <td>操作</td>
+                </tr>
+            </thead>
+            {loop $list $val}
+            {if $val['is_show']==1}
+                <tr>
+                    <td style="white-space: pre-line;">{$val['batch_num']}</td>
+                    <td>{$val['user_name']}</td>
+                    <td>{$val['createtime']}</td>
+                    <td><a class="see" style="width:fit-content;margin:0 auto;" href="./index.php?i=3&c=entry&do=account&m=sz_yi&p=bookkeeping&op=voucher_signAll&batch_id={$val['id']}">查看</a></td>
+                </tr>
+            {/if}
+            {/loop}
+        </table>
+        {/if}
+    </div>
+</div>
+
+<!--凭证签收-->
+<div class="mask" style="position: fixed; margin: 0px; padding: 0px;background: rgba(0, 0, 0,0.6); z-index: 999; width: 100%; height: 100%; transition: all 0.2s ease 0s;display:none;left: 0;top: 0;"></div>
+<div class="sign_box">
+      <div class="title">
+        <p class="important">凭证签收</p>
+      </div>
+      <input type="text" name="sign_id" id="sign_id" value="" style="display:none;"/>
+      <input type="text" name="sign_id2" id="sign_id2" value="" style="display:none;"/>
+      <p style="font-size:15px;text-align:center;">请根据实际情况选择凭证状态</p>
+      <div class="confirm">
+        <span class="close-but" onClick="fnClose(1)">拒绝签收</span>
+        <span class="close-but" onClick="fnClose(2)">确认签收</span>
+      </div>
+</div>
+<script type="text/javascript" src="../addons/sz_yi/static/js/layui/layui.js"></script>
+
+<script language="javascript">
+    require(['tpl', 'core'], function(tpl, core) {
+        
+    });
+    
+    window.ids='';
+    window.times=0;
+    window.batch_id=0;
+
+    $(function(){
+        layui.use(['layer', 'form', 'table', 'upload', 'laydate'], function () {
+            var $ = layui.$
+                , layer = layui.layer
+                , form = layui.form
+                , element = layui.element
+                , laydate = layui.laydate
+                , upload = layui.upload;
+
+            // form.render(null, 'component-form-element1');
+
+            laydate.render({
+                elem: '#ie_date'
+                , format: 'yyyy-MM'
+                ,type:'month'
+                ,max: "new Date()"
+                ,done: function(value, date, endDate){
+                    window.location.replace('./index.php?i=3&c=entry&do=account&m=sz_yi&p=bookkeeping&op=voucher_sign&date='+value);
+                }
+            });
+        });
+        $('.page_head').find('.left').click(function(){
+          window.history.back(-1); 
+       });
+        $('.mask').click(function(){
+            $('.sign_box').hide();
+            $('.mask').hide();
+            $('#sign_id').val('');
+            $('.download_box').hide();
+        });
+    });
+
+    function opera_queren(t,id,batch_id){
+        let selected = $(t).val();
+        if(selected==1){
+            //查看
+            go(id);
+        }else if(selected==2){
+            //下载
+            let typ = $(t).children(':selected').data('typ');
+            down(id,typ);
+        }else if(selected==3){
+            //选择签收
+            add_voucher(t,id,batch_id);
+        }else if(selected==4){
+            //已签收
+            alert('该凭证已签收，无需重复签收！');return;
+        }
+    }
+
+    function go(id,typ){
+        //查看凭证信息
+        window.location.href='./index.php?i=3&c=entry&do=account&m=sz_yi&p=bookkeeping&op=voucher_info&id='+id;
+    }
+
+    function down(id,typ){
+        //下载凭证文件
+        $('.mask').show();
+        $('.download_box').show();
+        $('#down_id').val(id);
+
+        $.ajax({
+            url:"<?php echo $this->createMobileUrl('account/bookkeeping');?>",
+            type:'POST',
+            dataType:'json',
+            data:{'op':'get_voucher_info','id':id},
+            success:function(json) {
+                if(json.status==1){
+                    let data = json.result.data;
+                    var html = '';
+                    if(typ==3){
+                        if(typeof(data) != 'undefined' || data != ''){
+                            html += '<div class="title">\n' +
+                                '        <p class="important">账单下载</p>\n' +
+                                '    </div>\n'+
+                                '        <div class="pic_div">\n';
+                            for(var i=0;i<data['bill_file'].length;i++) {
+                                if ((navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i))) {
+                                    //移动端
+                                    html += '<div style="margin:0 10px 10px 0;box-shadow: 0px 0px 4px 0px #999;display:inline-block;">' +
+                                        '<a href="https://shop.gogo198.cn/attachment/'+data['bill_file'][i]+'" target="_blank"><img src="https://shop.gogo198.cn/attachment/'+data['bill_file'][i]+'" style="width:100px;height:100px;" onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png" ><p style="text-align:center;margin:0;">点击保存</p></a>\n' +
+                                        '</div>\n';
+                                }else{
+                                    //PC端
+                                    html += '<div style="margin:0 10px 10px 0;box-shadow: 0px 0px 4px 0px #999;display:inline-block;"><a href="https://shop.gogo198.cn/attachment/'+data['bill_file'][i]+'" download="'+data.voucher_typeName+formatZero(i+1,2)+'"><img src="https://shop.gogo198.cn/attachment/'+data['bill_file'][i]+'" style="width:100px;height:100px;" onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png" ><p style="text-align:center;margin:0;">点击下载</p></a></div>\n';
+                                }
+
+                            }
+                            html += '        </div>\n' +
+                                '<div class="confirm">\n' +
+                                '        <span class="close-but" onClick="fnClose2(1)">关闭</span>\n' +
+                                '    </div>';
+                            $('.download_box').html(html);
+                        }
+                    }else if(typ==1 || typ==2){
+                        if(typeof(data) != 'undefined' || data != ''){
+                            html += '<div class="title">\n' +
+                                '        <p class="important">凭证下载</p>\n' +
+                                '    </div>\n'+
+                                '        <div class="pic_div">\n';
+                            for(var i=0;i<data['express_voucher'].length;i++) {
+                                if ((navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i))) {
+                                    //移动端
+                                    html += '<div style="margin:0 10px 10px 0;box-shadow: 0px 0px 4px 0px #999;display:inline-block;">' +
+                                        '<a href="https://shop.gogo198.cn/attachment/'+data['express_voucher'][i]+'" target="_blank"><img src="https://shop.gogo198.cn/attachment/'+data['express_voucher'][i]+'" style="width:100px;height:100px;" onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png" ><p style="text-align:center;margin:0;">点击保存</p></a>\n' +
+                                        '</div>\n';
+                                }else{
+                                    //PC端
+                                    html += '<div style="margin:0 10px 10px 0;box-shadow: 0px 0px 4px 0px #999;display:inline-block;"><a href="https://shop.gogo198.cn/attachment/'+data['express_voucher'][i]+'" download="'+data.voucher_typeName+formatZero(i+1,2)+'"><img src="https://shop.gogo198.cn/attachment/'+data['express_voucher'][i]+'" style="width:100px;height:100px;" onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png" ><p style="text-align:center;margin:0;">点击下载</p></a></div>\n';
+                                }
+
+                            }
+                            html += '        </div>\n' +
+                                '<div class="confirm">\n' +
+                                '        <span class="close-but" onClick="fnClose2(1)">关闭</span>\n' +
+                                '    </div>';
+                            $('.download_box').html(html);
+                        }
+                    }
+
+                    $('.download_box').show();
+                    $('.mask').show();
+                }
+            }
+        });
+    }
+
+    function fnClose2(){
+        $('.download_box').hide();
+        $('.mask').hide();
+    }
+
+    //添加凭证
+    function add_voucher(t,id,batch_id){
+        if(window.batch_id!=0 && window.batch_id!=batch_id){
+            $(t).find('option:first').prop('selected','true');
+            alert('请先完成上个操作的凭证签收！');return;
+        }
+        if(!$(t).hasClass('noAdd')){
+            if(typeof(window.ids)=='undefined'){
+                window.ids='';
+            }
+            window.ids +=id+',';
+            if(typeof(window.times)=='undefined'){
+                window.times=1;
+            }else{
+                window.times = window.times+1;    
+            }
+            window.batch_id =batch_id;
+            
+            // $(t).addClass('noAdd').text('取消');
+        }else{
+            window.ids = window.ids.split(id+',').join('');
+            window.times -=1;
+            window.batch_id =batch_id;
+            // $(t).removeClass('noAdd').text('添加凭证');
+        }
+        $(t).parent().parent().parent().parent().siblings().find('.submit').html('凭证签收('+times+')');
+    }
+    
+    function cancel(thi){
+        $(thi).parent().parent().parent().find('.caozuo').find('.opera1').show();
+        $(thi).parent().parent().parent().find('.caozuo').find('.opera2').hide();
+        $(thi).hide();
+        $(thi).parent().find('.submit').hide();
+        $(thi).parent().find('.see').show();
+        $(thi).parent().find('.submit').html('提交(0)').hide();
+
+        window.ids='';
+        window.times=0;
+        $(thi).parent().parent().parent().find('.caozuo').find('.opera2').removeClass('noAdd').text('添加凭证');
+    }
+
+    function sign(thi) {
+        window.ids='';
+        window.times=0;
+        $(thi).parent().find('.submit').html('提交(0)').show();
+        $(thi).parent().parent().parent().find('.caozuo').find('.opera1').hide();
+        $(thi).parent().parent().parent().find('.caozuo').find('.opera2').show();
+        $(thi).parent().find('.cancel').show();
+        $(thi).parent().find('.submit').show();
+        $(thi).hide();
+        
+        $(thi).parent().parent().parent().siblings().find('.see').show();
+        $(thi).parent().parent().parent().siblings().find('.cancel').hide();
+        $(thi).parent().parent().parent().siblings().find('.submit').text('提交(0)').hide();
+        $(thi).parent().parent().parent().siblings().find('.caozuo').find('.opera1').show();
+        $(thi).parent().parent().parent().siblings().find('.caozuo').find('.opera2').removeClass('noAdd').text('添加凭证').hide();
+    }
+    
+    function submit(id2){
+        if(window.times==0 || typeof(window.times)=='undefined'){
+            alert('请添加需要汇总的凭证');return;
+        }
+        var height = 300+document.body.scrollTop;
+        $('#sign_id').val(window.ids);
+        $('#sign_id2').val(id2);
+        $('.mask').show();
+        $('.sign_box').css('top',height+'px').show();
+    }
+    
+    //取消选择物流信息
+    function fnClose(typ){
+        // hui.upToast(msg);
+        let sign_id = $('#sign_id').val();//凭证id
+        let sign_id2 = $('#sign_id2').val();//批次号id
+
+        $.ajax({
+            url:"<?php echo $this->createMobileUrl('account/bookkeeping');?>",
+            type:'POST',
+            dataType:'json',
+            data:{'op':'voucher_sign','type':typ,'id':sign_id,'reg_id':sign_id2},
+            success:function(json) {
+                if(json.status==1){
+                    alert(json.result.msg);
+                    $('.sign_box').hide();
+		            $('.mask').hide();
+		            if(typ==2){
+		                setTimeout(function(){
+                            window.location.reload();
+    		                // window.location.href='./index.php?i=3&c=entry&do=account&m=sz_yi&p=bookkeeping&op=voucher_keep';
+    		            },2000);    
+		            }else if(typ==1){
+		                window.location.reload();
+		            }
+                }
+            }
+        });
+	}
+</script>
+
+{template 'common/footer'}

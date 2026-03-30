@@ -1,0 +1,79 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/header', TEMPLATE_INCLUDEPATH)) : (include template('common/header', TEMPLATE_INCLUDEPATH));?>
+<!--<title>项目配置中心</title>-->
+<style type="text/css">
+    body {margin:0px; background:#efefef; font-family:'微软雅黑'; -moz-appearance:none;}
+    .info_main {height:auto;  background:#fff; margin-top:14px; border-bottom:1px solid #e8e8e8; border-top:1px solid #e8e8e8;}
+    .info_main .line {margin:0 10px; height:40px; border-bottom:1px solid #e8e8e8; line-height:40px; color:#999;}
+    .info_main .line .title {height:40px; width:80px; line-height:40px; color:#444; float:left; font-size:14px;}
+    .info_main .line .info { width:100%;float:right;margin-left:-80px; }
+    .info_main .line .inner { margin-left:80px; }
+    .info_main .line .inner input {height:40px; width:100%;display:block; padding:0px; margin:0px; border:0px; float:left; font-size:14px;}
+    .info_main .line .inner .user_sex {line-height:40px;}
+    .info_sub {height:44px; margin:14px 5px; background:#31cd00; border-radius:4px; text-align:center; font-size:16px; line-height:44px; color:#fff;}
+    .select { border:1px solid #ccc;height:25px;}
+    .table{width:100%;font-size:15px;}
+    .table tr{height:25px;}
+    .table tr td{vertical-align: middle !important;}
+    /*.table tr td:nth-of-type(1){width:88%;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;}*/
+    .table tr td:nth-of-type(2){width:20%;}
+    .see{box-sizing: border-box;padding: 2px 4px;font-size: 15px;color: #fff;background: #1E9FFF;text-align:center;}
+    .opera2{box-sizing: border-box;padding: 2px 4px;font-size: 14px;color: #fff;background: #1E9FFF;text-align:center;display:none;}
+    .cancel{font-size:14px;padding:4px 10px;background:#ff5555;border-radius:5px;width:fit-content;margin-left:20px;color:#fff;display:none;}
+    .submit{display:none;font-size:14px;padding:4px 10px;background:#1EA01E;border-radius:5px;width:fit-content;margin-left:10px;margin-right:5px;color:#fff;}
+    .noAdd{background:#ff5555;}
+    .sign_box{display:none;width: 80%;position: absolute;background: #ffffff;border-radius: 5px;z-index:1000;transform:translate(-50%,-50%);top: 50%;left:50%;}
+    .sign_box .confirm{height: 50px;border-top: 1px solid #eee;display: flex;}
+    .sign_box .confirm>span{flex: 1;height: 50px;line-height: 50px;font-size: 16px;text-align: center;}
+    .sign_box .confirm>span:nth-child(1){color: red;}
+    .sign_box .confirm>span:nth-child(2){border-left: 1px solid #eee;}
+    .sign_box .important{color: red;}
+    .sign_box .title{text-align: center;border-bottom: 1px solid #eee;margin-bottom: 10px;}
+    .sign_box .title>p{height: 40px;line-height: 40px;text-align: center;font-size: 18px;font-weight: bold;}
+    
+    .page_head{width:100%;background:#fff;margin-bottom:5px;box-shadow:0 0 4px #ddd;padding:10px 0 10px;display:flex;align-items:center;}
+    .page_head .left{width:20%;display:flex;align-items:center;font-size:15px;}
+    .page_head .left .back{width:13px;height:13px;border-top:2px solid #000;border-left:2px solid #000;transform:rotate(-50deg);margin-left:15px;margin-right:5px;}
+    .page_head .right{width:80%;text-align:center;padding-right:80px;font-size:15px;padding-top:2px;}
+    
+    .merch_name{font-size:15px;padding:10px 15px;background:#3388FF;border-radius:15px;margin:10px 10px;color:#fff;width:fit-content;display:inline-block;}
+    a{text-decoration: none;text-underline: none;}
+</style>
+
+<link type="text/css" rel="stylesheet" href="../addons/sz_yi/template/pc/default/static/css/bootstrap.min.css" />
+<script type="text/javascript" src="../addons/sz_yi/static/template/pc/default/static/js/bootstrap.min.js"></script>
+<div class="page_head">
+    <div class="left">
+        <div class="back"></div>
+        <div style="font-size:15px;padding-top:2px;">返回</div>
+    </div>
+    <div class="right">
+        商户列表
+    </div>
+</div>
+<div id="container">
+    <div class="info_main table-responsive">
+        <?php  if(empty($my_merchant)) { ?>
+            <div class="line" style="text-align:center;">暂无信息</div>
+        <?php  } else { ?>
+            <?php  if(is_array($my_merchant)) { foreach($my_merchant as $val) { ?>
+                <div class="merch_box">
+                    <div class="merch_name" onClick="javascript:window.location.href='./index.php?i=3&c=entry&do=account&m=sz_yi&p=bookkeeping&op=reconciliation_detail&id=<?php  echo $val['id'];?>&date=<?php  echo $date;?>';"><?php  echo $val['user_name'];?></div>
+                </div>
+            <?php  } } ?>
+        <?php  } ?>
+    </div>
+</div>
+
+<script language="javascript">
+    require(['tpl', 'core'], function(tpl, core) {
+        
+    });
+ 
+    $(function(){
+        $('.page_head').find('.left').click(function(){
+          window.history.back(-1); 
+       });
+    });
+</script>
+
+<?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/footer', TEMPLATE_INCLUDEPATH)) : (include template('common/footer', TEMPLATE_INCLUDEPATH));?>

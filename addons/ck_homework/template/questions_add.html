@@ -1,0 +1,221 @@
+{template 'common/header'}
+<ul class="nav nav-tabs">
+	<li {if $_GPC['do']=='questions'}class="active"{/if}><a href="{php echo $this->createWebUrl('questions');}">题库管理</a></li>
+	<li style="float:right;"><a href="{php echo $this->createWebUrl('questions');}" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;返回题库</a></li>
+</ul>
+<style>
+	#modeladd li,#modelal li{ padding-top:5px; padding-bottom:5px; list-style: none;}
+	.modeladd li{ padding-top:5px; padding-bottom:5px; list-style: none; width:100%; float:left;}
+	.t_input{ height:35px; border: 1px solid #cccc; line-height: 35px; border-radius: 5px;}
+</style>
+
+<script type="text/javascript" src="../addons/{$_GPC['m']}/template/style/float_ceng4.js"></script>
+<script>
+	function ShowSubInfo(szValue,titlel){
+		document.getElementById('knowledgeid').value = szValue;
+		document.getElementById('knowledgename').value = titlel;
+		document.getElementById('remindsh').style.display = "none";
+	}
+</script>
+<style>
+	.smallLay{width:900px; -webkit-box-shadow:5px 2px 6px #000;-moz-box-shadow:3px 3px 6px #555; display:none;}
+	.float_content{ border-radius:4px;box-shadow:0 5px 15px rgba(0,0,0,.4);overflow:hidden;background:#fff;}
+	.float001{ float:left; width:100%; height:40px; background-color:#0099CC;}
+	.float001 b{ float:left; width:100px;line-height:40px; color:#FFFFFF; font-size:16px; margin-left:10px;}
+	.float001 i{ float:right; width:20%; display:inline; margin-top:5px; text-align:right; margin-right: 5px;}
+	.float002 {float:left; width:100%; line-height:22px;}
+	.float002 img{ max-width:100%;}
+	.float002_1 {float:left; width:100%; height:20px;}
+	.float002_2 {float:left; width:100%; height:20px;}
+</style>
+<!--弹出start-->
+<div id="remindsh" class="smallLay">
+	<div class="float_content">
+		<div class="float001"><b>选择知识点</b><i><a id="close_remindsh" href="javascript:;" class="close"><img src="../addons/{$_GPC['m']}/template/style/close.png"></a>&nbsp;</i></div>
+		<div style="width:100%; margin-left:auto; margin-right:auto;">
+			<div class="float002">
+				<!--内容 start-->
+				<iframe src="{php echo $this->createWebUrl('knowledgesoso')}" frameborder="0" width="100%" height="500" scrolling="auto" style="padding:5px;"></iframe>
+				<!--内容 end-->
+			</div>
+		</div>
+	</div>
+</div>
+<!--弹出end-->
+<script>
+	$(document).ready(function(){
+		typeck(document.getElementById('typelx').value);       
+	});
+	//题型 
+	function typeck(idp) {
+
+		for(var i=1;i<7;i++){
+			if(i == idp){
+				document.getElementById("answer"+idp).style.display= "block";
+			}else{
+				document.getElementById("answer"+i).style.display= "none";
+			}
+			if(idp > 2){
+				document.getElementById("xuanxiang").style.display= "none";
+			}else{
+				document.getElementById("xuanxiang").style.display= "block";
+			}
+		}
+		
+	}
+</script>
+
+<div class="main">
+	<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data" onsubmit='return formcheck()'>
+	<input type="hidden" name="token" value="{$_W['token']}" />
+    	<input type="hidden" name="id" value="{$srdb['id']}" />
+        <div class="panel panel-default">
+            <div class="panel-heading">{if $op == 'add'}添加{elseif $op == 'edit'}修改{/if}题目信息 </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">选择题型<font color="#CC0000">*</font></label>
+                    <div class="col-xs-12 col-sm-9">
+						<select id="typelx" name="type" onChange="typeck(this.value)" class="form-control">
+							{loop $type_arr $i $typename}
+							<option value="{$i}" {if $srdb['type'] == $i}selected{/if}>{$typename}</option>
+							{/loop}
+						</select>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">题目难度<font color="#CC0000">*</font></label>
+                    <div class="col-xs-12 col-sm-9">
+						<select name="level" class="form-control">
+							{loop $level_arr $p $levelname} 
+							<option value="{$p}" {if $srdb['level'] == $p}selected{/if}>{$levelname}</option>
+							{/loop} 
+						</select>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">选择知识点<font color="#CC0000">*</font></label>
+                    <div class="col-xs-12 col-sm-9">
+						<input type="hidden" id="knowledgeid" name="parentid" value="{$srdb_knowle['id']}" />
+						<input type="text" class="t_input" id="knowledgename" value="{$srdb_knowle['titlename']}" placeholder='选择知识点' readonly style="background-color:#DBDBDB; padding:5px;" size="60">
+						<a href="javascript:void(0)" onClick="showid('remindsh')" class="btn btn-info">请选择</a>
+                    </div>
+                </div>
+				
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">题目<font color="#CC0000">*</font></label>
+                    <div class="col-xs-12 col-sm-9" >
+                        {php echo tpl_ueditor('titlename', $srdb['titlename']);}
+                    </div>
+                </div>
+                
+                <div class="form-group" id="xuanxiang" {if $srdb[type] > 2}style=" display:none;"{/if}>
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">选项</label>
+                    <div class="col-xs-12 col-sm-9" >
+						<ul id ="modeladd">
+							<li>A、&nbsp;<input type="text" name="answer[]" value="{$answer_arll[0]}" size="80" class="t_input"/></label>
+							<li>B、&nbsp;<input type="text" name="answer[]" value="{$answer_arll[1]}" size="80" class="t_input"/></label>
+							<li>C、&nbsp;<input type="text" name="answer[]" value="{$answer_arll[2]}" size="80" class="t_input"/></label>
+							<li>D、&nbsp;<input type="text" name="answer[]" value="{$answer_arll[3]}" size="80" class="t_input"/></label>
+							<li>E、&nbsp;<input type="text" name="answer[]" value="{$answer_arll[4]}" size="80" class="t_input"/></label>
+							<li>F、&nbsp;<input type="text" name="answer[]" value="{$answer_arll[5]}" size="80" class="t_input"/></label>
+						</ul>
+                    </div>
+                </div>
+				
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">正确答案</label>
+                    <div class="col-xs-12 col-sm-9">
+						<p class="form-control-static">
+						<span id="answer1" >
+							<b style=" padding-right:10px;"><input type="radio" name="zqanswer1" value="A" {if $srdb['zqanswer'] == 'A'}checked{/if}>&nbsp;A</b>
+							<b style=" padding-right:10px;"><input type="radio" name="zqanswer1" value="B" {if $srdb['zqanswer'] == 'B'}checked{/if}>&nbsp;B</b>
+							<b style=" padding-right:10px;"><input type="radio" name="zqanswer1" value="C" {if $srdb['zqanswer'] == 'C'}checked{/if}>&nbsp;C</b>
+							<b style=" padding-right:10px;"><input type="radio" name="zqanswer1" value="D" {if $srdb['zqanswer'] == 'D'}checked{/if}>&nbsp;D</b>
+							<b style=" padding-right:10px;"><input type="radio" name="zqanswer1" value="E" {if $srdb['zqanswer'] == 'E'}checked{/if}>&nbsp;E</b>
+							<b style=" padding-right:10px;"><input type="radio" name="zqanswer1" value="F" {if $srdb['zqanswer'] == 'F'}checked{/if}>&nbsp;F</b>
+						</span>
+						<span id="answer2" style="display:none;">
+							<b style=" padding-right:10px;"><input type="checkbox" name="zqanswer2[]" value="A" {if in_array('A', $zqanswerarr, true)}checked{/if}>&nbsp;A</b>
+							<b style=" padding-right:10px;"><input type="checkbox" name="zqanswer2[]" value="B" {if in_array('B', $zqanswerarr, true)}checked{/if}>&nbsp;B</b>
+							<b style=" padding-right:10px;"><input type="checkbox" name="zqanswer2[]" value="C" {if in_array('C', $zqanswerarr, true)}checked{/if}>&nbsp;C</b>
+							<b style=" padding-right:10px;"><input type="checkbox" name="zqanswer2[]" value="D" {if in_array('D', $zqanswerarr, true)}checked{/if}>&nbsp;D</b>
+							<b style=" padding-right:10px;"><input type="checkbox" name="zqanswer2[]" value="E" {if in_array('E', $zqanswerarr, true)}checked{/if}>&nbsp;E</b>
+							<b style=" padding-right:10px;"><input type="checkbox" name="zqanswer2[]" value="F" {if in_array('F', $zqanswerarr, true)}checked{/if}>&nbsp;F</b>
+						</span>
+						<span id="answer3" style="display:none;">
+							<textarea style="height:100px;" class="form-control" name="zqanswer3" cols="70" id="reply-add-text">{$srdb['zqanswer']}</textarea><span style="color:#666666;">注意：多个答案以中文逗号分开，如飘逸，封样，退费。</span>
+						</span>
+						<span id="answer4" style="display:none;">
+							<span style=" padding-right:10px;"><input type="radio" name="zqanswer4" value="A" {if $srdb['zqanswer'] == 'A' || $srdb[answer]==''}checked{/if}>&nbsp;正确</span>
+							<span style=" padding-right:10px;"><input type="radio" name="zqanswer4" value="B" {if $srdb['zqanswer'] == 'B'}checked{/if}>&nbsp;错误</span>
+						</span>
+						<span id="answer5" style="display:none;">
+                            {php echo tpl_ueditor('zqanswer5', $srdb['zqanswer']);}
+						</span>
+						<span id="answer6" style="display:none;">
+                            {php echo tpl_ueditor('zqanswer6', $srdb['zqanswer']);}
+						</span>
+						</p>
+                    </div>
+                </div>
+				
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">答案解析</label>
+                    <div class="col-xs-12 col-sm-9" >
+                        {php echo tpl_ueditor('content', $srdb['content']);}
+                    </div>
+                </div>
+				
+				{if $srdb['uid']}
+				<input type="hidden" name="uid" value="{$srdb['uid']}" />
+				{if $srdb['status'] > 1}
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><strong>审核状态</strong></label>
+					<div class="col-xs-12 col-sm-9" >
+						<p class="form-control-static">{if $srdb['status'] == '2'}未通过{elseif $srdb['status'] == '3'}通过{/if}</p>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><strong>审核说明</strong></label>
+					<div class="col-xs-12 col-sm-9" >
+						<p class="form-control-static">{$srdb['message']}</p>
+					</div>
+				</div>
+				{else}
+				<script type="text/javascript">
+					function ck_status(id) {
+						if(id == 2){
+							document.getElementById("statushow").style.display= "block";
+						}else{
+							document.getElementById("statushow").style.display= "none";
+						}
+					}
+				</script>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">审核状态</label>
+					<div class="col-xs-12 col-sm-9" >
+						<p class="form-control-static">
+							<input type="radio" name="status" value="2" onclick="ck_status('2')"/>&nbsp;未通过&nbsp;&nbsp;&nbsp;&nbsp;
+							<input type="radio" name="status" value="3" onclick="ck_status('3')"/>&nbsp;通过
+							{if $config['reward_money'] > 0}&nbsp;&nbsp;（<font color="#FF6600">奖励{if $config['reward_type']==1}余额：￥{else}积分：{/if}{$config['reward_money']}</font>）{/if}
+						</p>
+					</div>
+				</div>
+
+				<div id="statushow" class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">审核说明</label>
+                    <div class="col-xs-12 col-sm-9" >
+						<textarea style="height:80px;" class="form-control" name="message" cols="70" id="reply-add-text"></textarea>
+                    </div>
+                </div>
+				{/if}
+				{/if}
+            </div>
+        </div>
+        <div class="form-group col-sm-12 col-xs-12">
+			<input type="submit" name="{$op}_submit" value="提交" class="btn btn-primary col-lg-1" onclick='return formcheck()' />
+		</div>
+  </form>
+</div>
+
+{template 'common/footer'}

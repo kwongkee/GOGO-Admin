@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+</head>
+<body>
+<form class="layui-form layui-form-pane" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">开始范围：</label>
+        <div class="layui-input-block">
+            <input type="text" name="hscode_start" required  lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">结束范围</label>
+        <div class="layui-input-block">
+            <input type="text" name="hscode_end" placeholder="" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">说明</label>
+        <div class="layui-input-block">
+            <input type="text" name="hscode_remark" placeholder="" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+
+</body>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+
+<script>
+    var idlist = [];
+    layui.use(['form','jquery'], function(){
+        var form = layui.form;
+        var $ = layui.jquery;
+        form.on('submit(formDemo)', function(data) {
+            // 提交数据
+            $.ajax({
+                url: '{:Url("admin/HsCodeController/addHsCodeRisk")}',
+                type: "POST",
+                dataType: "JSON",
+                data: data.field,
+                success:function (res) {
+                    layer.msg(res.msg);
+                },error:function (xhr) {
+                    layer.msg("连接服务错误..");
+                }
+            });
+            return false;
+        });
+    });
+
+</script>
+</html>

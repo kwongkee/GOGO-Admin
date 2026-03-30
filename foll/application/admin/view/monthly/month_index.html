@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="common/meta"}
+</head>
+<body class="gray-bg">
+<div class="col-sm-12">
+    <div class="ibox float-e-margins">
+        <div class="ibox-content" style="display:block;" id="list1">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>企业</th>
+                    <th>方案</th>
+                    <th>名称</th>
+                    <th>方案期限</th>
+                    <th>发行申请期</th>
+                    <th>受理审核期</th>
+                    <th>抽签缴费期</th>
+                    <th>生效注销期</th>
+                    <th>发行数</th>
+                    <th>候补数</th>
+                    <th>购买费用</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name='list.data' id="item" empty='空数据'}
+                <tr>
+                    <td>{$item.name}</td>
+                    <td>{$item.scheme_name}</td>
+                    <td>{$item.month_name}</td>
+                    <td>{$item.total_times|date="Ymd",###}--{$item.total_timeer|date="Ymd",###}</td>
+                    <td>{$item.apply_start|date="Ymd",###}--{$item.apply_end|date="Ymd",###}</td>
+                    <td>{$item.accept_review|date="Ymd",###}--{$item.accept_review2|date="Ymd",###}</td>
+                    <td>{$item.lottery_pay|date="Ymd",###}--{$item.lottery_pay2|date="Ymd",###}</td>
+                    <td>{$item.expir_start|date="Ymd",###}--{$item.expir_end|date="Ymd",###}</td>
+                    <td>{$item.month_num}</td>
+                    <td>{$item.bup_num}</td>
+                    <td>{$item.month_money}</td>
+                    <td>
+                        <a class="btn btn-success btn-rounded" href="{:Url('admin/update_month_check')}&id={$item.id}&status=1">通过</a>
+                        <a class="btn btn-danger btn-rounded" href="{:Url('admin/update_month_check')}&id={$item.id}&status=2">拒绝</a>
+                    </td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+</body>
+</html>

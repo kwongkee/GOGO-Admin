@@ -1,0 +1,199 @@
+{include file="common/header_inner_new"}
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .cate_div{max-width:120px; }
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <input type="text" style="display:none;" name="pid" id="pid" value="{$pid}">
+            <input type="text" style="display:none;" name="type" id="type" value="{$type}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        {if $type==1}
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">选择类别</div>
+                            <div class="layui-input-block disf">
+                                <div class="cate_div">
+                                    <select name="good_category" id="good_category" lay-filter="good_category">
+                                        <option value="">请选择类别</option>
+                                        {volist name="good_category" id="vo"}
+                                        <option value="{$vo['id']}">{$vo['name']}</option>
+                                        {/volist}
+                                    </select>
+                                </div>
+                                <div class="child_cate disf">
+
+                                </div>
+                            </div>
+                        </div>
+                        {/if}
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">属性{if $type==1}名称{elseif($type==0)}描述{/if}</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" lay-verify="required" name="name" id="name" value="{$data['name']}">
+                            </div>
+                        </div>
+                        {if $type==1}
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">属性描述</div>
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input" lay-verify="required" name="desc" id="desc" value="" placeholder="多个以“、”隔开">
+                                </div>
+                            </div>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+
+        form.on('select(good_category)',function(data){
+            let val = data.value;
+
+            $.getJSON("{:Url('admin/shopping/get_catechild')}",{"type_id":val,'parent_id':0},function(res){
+                if(res.list.length>0){
+                    var idx = layer.confirm('是否选择下一级分类？', {
+                        btn: ['是','否']
+                    }, function(){
+                        var html = '<div class="cate_div">\n' +
+                            '                                    <select name="cate_id" id="cate_id" lay-filter="cate_id1">\n' +
+                            '                                        <option value="">请选择类别</option>\n';
+                        for(let i=0;i<res.list.length;i++) {
+                            html += '                                        <option value="'+res.list[i].cat_id+'">'+res.list[i].cat_name+'</option>\n';
+                        }
+                        html+='                               </select>\n' +
+                            '                                </div>';
+                        $('.child_cate').html(html);
+                        form.render(null,'component-form-element');
+                        layer.close(idx);
+                    }, function(){
+
+                    });
+                }
+            });
+        });
+
+        form.on('select(cate_id1)',function(data){
+            let val = data.value;
+
+            $.getJSON("{:Url('admin/shopping/get_catechild')}",{'parent_id':val},function(res){
+                if(res.list.length>0){
+                    var idx = layer.confirm('是否选择下一级分类？', {
+                        btn: ['是','否']
+                    }, function(){
+                        var html = '<div class="cate_div">\n' +
+                            '                                    <select name="cate_id" id="cate_id" lay-filter="cate_id1">\n' +
+                            '                                        <option value="">请选择类别</option>\n';
+                        for(let i=0;i<res.list.length;i++) {
+                            html += '                                        <option value="'+res.list[i].cat_id+'">'+res.list[i].cat_name+'</option>\n';
+                        }
+                        html+='                               </select>\n' +
+                            '                                </div>';
+
+                        if($('.child_cate #cate_id').length>0){
+                            $('.child_cate #cate_id').parent().html(html);
+                        }else{
+                            $('.child_cate').append(html);
+                        }
+                        form.render(null,'component-form-element');
+                        layer.close(idx);
+                    }, function(){
+
+                    });
+                }
+            });
+        });
+
+        form.on('select(cate_id2)',function(data){
+            let val = data.value;
+
+            $.getJSON("{:Url('admin/shopping/get_catechild')}",{'parent_id':val},function(res){
+                if(res.list.length>0){
+                    var idx = layer.confirm('是否选择下一级分类？', {
+                        btn: ['是','否']
+                    }, function(){
+                        var html = '<div class="cate_div">\n' +
+                            '                                    <select name="cate_id3" id="cate_id3" lay-filter="cate_id3">\n' +
+                            '                                        <option value="">请选择类别</option>\n';
+                        for(let i=0;i<res.list.length;i++) {
+                            html += '                                        <option value="'+res.list[i].cat_id+'">'+res.list[i].cat_name+'</option>\n';
+                        }
+                        html+='                               </select>\n' +
+                            '                                </div>';
+
+                        if($('.child_cate #cate_id3').length>0){
+                            $('.child_cate #cate_id3').parent().html(html);
+                        }else{
+                            $('.child_cate').append(html);
+                        }
+                        form.render(null,'component-form-element');
+                        layer.close(idx);
+                    }, function(){
+
+                    });
+                }
+            });
+        });
+
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+
+            $.ajax({
+                url:"{:Url('admin/shopping/save_value')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+
+</script>
+</body>
+</html>

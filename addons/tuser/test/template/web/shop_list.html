@@ -1,0 +1,141 @@
+{template 'common/header'}
+<style>
+    .l_tableWrap .l_table_tit .l_formBar {
+        border: 0;
+        float: left;
+        font-size: 0;
+    }
+    .y_sele {
+        display: inline-block;
+        padding: 5px 0 12px 12px;
+    }
+    .y_sele_tit {
+        font-size: 14px;
+        padding: 0 0 0 10px;
+    }
+    .l_table_search{
+        margin-left: 10px;
+        margin-bottom: 5px;
+    }
+</style>
+<div class="clearfix">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            商铺列表
+            &nbsp;&nbsp;
+            <a class="btn btn-success" href='{php echo $this->createWebUrl("shop_add")}' id="export">添加商铺</a>
+        </div>
+        <div class="table-responsive panel-body" style="overflow:visible;">
+            <table class="table table-hover">
+                <tr>
+                    <th>
+                        <a class="btn btn-success save_order" href="javascript:void(0)" >保存排序</a>
+                    </th>
+                    <th>ID</th>
+                    <th>Logo</th>
+                    <th>名称</th>
+                    <th>电话</th>
+                    <th>楼层</th>
+                    <th>操作</th>
+                </tr>
+                {loop $list $row}
+                <tr>
+                    <td>
+                        <p class="form-control-static">
+                            <input type="text" style="width:30px;"  value="{$row['order']}" data-id="{$row['id']}" class="row_order"/>
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['id']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            <img src="{php echo $attach_url . '/'.$row['logo']}" style="width:50px;height:50px;" />
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['name']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['tel']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['floor']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            <a href='{php echo $this->createWebUrl("shop_edit",array("id"=>$row["id"]))}'>编辑</a>
+                            <a href="javascript:void(0)" onclick="del_coupon('{$row['id']}')">删除</a>
+                        </p>
+                    </td>
+                </tr>
+                {/loop}
+            </table>
+        </div>
+        <div class="panel-body text-right">
+            {$pager}
+        </div>
+    </div>
+</div>
+<script>
+    function del_coupon(id) {
+        if (confirm("确定删除吗？")) {
+            var pars = {};
+            pars.id = id;
+            $.ajax({
+                url: "{php echo $this->createWebUrl('ajax',array('sdo'=>'del_shop'))}",
+                type: "post",
+                dataType: "html",
+                data: pars,
+                success: function (res) {
+                    $(".submit").attr("disabled", false);
+                    if (res == "ok") {
+                        alert("操作成功");
+                        window.location.reload(true);
+                    } else {
+                        alert(res);
+                    }
+                }
+            })
+        }
+    }
+
+    $(".save_order").click(function () {
+        var pars = {};
+        var id = 0;
+        var order = 0;
+        pars.ids = new Array();
+        pars.orders = new Array();
+        $(".row_order").each(function () {
+            id = $(this).attr('data-id');
+            order = $(this).val();
+            pars.ids.push(id);
+            pars.orders.push(order);
+        });
+        
+        $.ajax({
+            url: "{php echo $this->createWebUrl('ajax',array('sdo'=>'save_shop_order'))}",
+            type: "post",
+            dataType: "html",
+            data: pars,
+            success: function (res) {
+                $(".submit").attr("disabled", false);
+                if (res == "ok") {
+                    alert("操作成功");
+                    window.location.reload(true);
+                } else {
+                    alert(res);
+                }
+            }
+        })
+    })
+</script>
+{template 'common/footer'}

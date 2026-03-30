@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="telephone=no" name="format-detection" />
+    <meta http-equiv="cache-control" content="no-cache">
+    <title>智能路内停车服务评价</title>
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+	
+	<link rel="stylesheet" type="text/css" href="../addons/ewei_shopv2/static/css/newcss/basic.css">
+    <script type="text/javascript" src="../addons/ewei_shopv2/static/js/new-js/jquery-2.2.1.min.js"></script>
+    <script type="text/javascript" src="../addons/ewei_shopv2/static/js/new-js/resize.js"></script>
+    <script type="text/javascript" src="../addons/ewei_shopv2/static/js/new-js/swipe.js" ></script>
+	
+    <!--<link rel="stylesheet" href="http://res.wx.qq.com/open/libs/weui/0.4.0/weui.min.css">-->
+    <link rel="stylesheet" href="../addons/ewei_shopv2/static/msg/css/bill.css">
+    <link rel="stylesheet" href="../addons/ewei_shopv2/static/msg/css/flickerplate.css">
+    <script src="../addons/ewei_shopv2/static/msg/js/jquery.js" type="text/javascript" charset="utf-8"></script>
+    <!--<script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>-->
+    <style>
+    body {
+    	-webkit-text-size-adjust: 100% ;
+    }
+    header {/*background: #1086c8;*/background:white;width: 100%;height: 2rem;line-height: 2rem;color: #1b7ab6;text-align: center;font-size: 0.9rem;
+    position: fixed;left: 0;top: 0;z-index: 97;}
+	.board {height: 4rem;line-height: 0.22rem;font-size: 0.18rem;color: #333;background: #fff;background-size: 0.4rem;padding-top: 0;
+    overflow: hidden; margin-bottom: 0.05rem; margin-top: 0.07rem;}
+	.board h1 {padding-left: 0;line-height: 0.5rem; text-align: center; color: #fff; background: linear-gradient(90deg, #1b7ab6, #7cccff);}
+	.board button{margin-top: 0.2rem;width: 95%;height: 0.5rem;border-radius: 0.3rem;background-color: #1086c8;border: 1px solid #1086c8;
+    color: white;font-size: 0.18rem;font-weight: 100;margin-left: 0.1rem;}
+ 	#starRating .photo {padding: 0.2rem 0;text-align: center; border-bottom: 1px solid #ccc; margin: 0 auto 0.2rem; width: 95%;}
+ 	.board textarea { border: #ccc 1px solid; border-radius: 0.05rem; margin: 0 4%; width: 86%; text-overflow: ellipsis; overflow: hidden; padding: 0.1rem 3%; line-height: 0.24rem;}
+ 	#starRating .photo span{margin-right: 3px;}
+ 	
+/*头部+banner+导航*/    
+    .wx_box{ width:100%; max-width:768px; margin:0 auto; position:relative;}
+	.banner{width: 100%; position: relative;}
+	.notice_b{width: 100%;height:52px; overflow:hidden;position: absolute;bottom: 0; z-index: 99; opacity: 0.8;}
+	.notice{ padding:0.09rem 0.42rem 0.08rem 0.44rem; background:#000 url(../addons/ewei_shopv2/static/css/images/img/tips_icon.png) no-repeat 0.15rem 0.12rem; background-size:0.16rem auto; color:#fff; font-size:0.13rem; line-height:0.2rem; overflow:hidden; position:relative; height:0.4rem; }
+	.notice>div{ height:0.4rem; overflow:hidden;}
+	.notice ul{ float:left; overflow:hidden;}
+	.notice ul li{ padding-right:0.16rem; text-align:justify;}
+	.notice ul li a{ color:#fff; opacity: 1;}
+	.notice em{ display:block; width:0.42rem; position:absolute; right:0; top:0.09rem; height:0.4rem; text-align:center; line-height:0.4rem; background:url(../addons/ewei_shopv2/static/images/img/close.png) no-repeat center;
+	background-size:0.16rem auto; border-left:1px solid rgba(255,255,255,0.23);}
+	.focus{overflow:hidden;position:relative; height:1.6rem; background:#ccc;}
+	.focus img{ width:100%;height:1.6rem; vertical-align:middle;}
+	.focus ul{-webkit-padding-start:0px;}
+	.focus>ol{height:0.06rem;position:absolute;z-index:10;text-align:center; width:100%; bottom:0.1rem; font-size:0;}
+	.focus>ol>li{display:inline-block;width:0.06rem;height:0.06rem;background-color:#D5D0CC;border-radius:0.08rem; margin-right:0.06rem; border:1px solid #D5D0CC;}
+	.focus>ol>li.on{background-color:#ffffff; border:1px solid #3D8CE8;}
+	.focus>ol>li:last-child{ margin-right:0;}
+	.wx_logo{background: #fff; height: 0.5rem; width: 100%; text-align: center; line-height: 0.5rem; font-size: 0.18rem; color: #1b7ab6;}
+	.wx_logo span{position: absolute; left: 0.1rem; top: 0.05rem;}
+	.wx_logo img{width: 0.4rem; }
+	.nav{ height:0.65rem; line-height:0.5rem;overflow:hidden; background:#fff; font-size:0.14rem; padding: 2% 0 0;}
+	.nav li{ float:left; box-sizing:border-box; width:33%; background-size:0.15rem 0.15rem !important; text-indent:0rem; }
+	.nav li:nth-child(1){/* width:0.4rem; height: 0.4rem;*/ border-left:none; border-right:none; /*border-radius: 50%;*/ background: url(../addons/ewei_shopv2/static/css/images/img/lisicon_05.png) no-repeat 0.53rem 0.09rem;}
+	.nav li:nth-child(2){/* width:0.4rem; height: 0.4rem;*/ border-left:none; border-right:none; /*border-radius: 50%; */background: url(../addons/ewei_shopv2/static/css/images/img/lisicon_06.png) no-repeat 0.53rem 0.09rem;}
+	.nav li:nth-child(3){ /*width:0.4rem; height: 0.4rem;*/ border-left:none; border-right:none; /*border-radius: 50%;*/ background: url(../addons/ewei_shopv2/static/css/images/img/lisicon_07.png) no-repeat 0.53rem 0.09rem;}
+	.nav_icon01{ background:none;}
+	.nav_icon02{ background:none;}
+	.nav_icon03{ background:none;}
+	.nav_icon01 div{width:0.3rem; height: 0.3rem;border-radius: 50%; border: 1px solid #4aa8e4; margin: 0 0.45rem;}
+	.nav_icon02 div{width:0.3rem; height: 0.3rem;border-radius: 50%; border: 1px solid #e44a4a; margin: 0 0.45rem;}
+	.nav_icon03 div{width:0.3rem; height: 0.3rem;border-radius: 50%; border: 1px solid #e4c94a; margin: 0 0.45rem;}
+	.nav_p{text-align: center; line-height: 30px;}
+	.footer{ line-height:0.61rem; height:0.61rem;font-family: PingFang-SC-Bold;font-size:0.12rem;color: #333333;background:none;
+background-size:0.48rem auto;width:100%; position:absolute; bottom:0px; text-indent:1.22rem;}
+	.footer_placeholder{ height:0.61rem; width:100%;}
+	
+/*底部滚动*/	
+	.mes{ width: 100%;height:35px; /*background:#000;*/ overflow:hidden;position: absolute;bottom: 0;opacity:.8;filter:alpha(opacity=60);}
+	.t_news{ height:19px; color:#fff; padding-left:10px; margin:8px 0; overflow:hidden; position:relative;}
+	.t_news b{ line-height:19px; font-weight:bold; display:inline-block;}
+	.t_news b img{width: 20%;}
+	.news_li,.swap{ line-height:19px; display:inline-block; position:absolute; top:0; left:0;}
+	.news_li a,.swap a{color:#333;}
+	.swap{top:19px;}	
+	
+	.bot{width: 100%; text-align: center; position: absolute;bottom: 15px; font-size: 0.12rem;}
+	.bot img{width: 20%; display: initial;  vertical-align: middle;}
+  </style>
+</head>
+<body>
+	<div class="wx_logo"><span><img src="../addons/ewei_shopv2/static/css/images/img/LOGO0523.png" alt="" /></span>智能路内停车服务评价</div>
+<!--<header><i class="ui-icon-return" onclick="history.back()"></i>智能路内停车服务评价</header>-->
+	<div class="wx_box">
+    <div class="banner">
+    	    	
+    {if !empty($announcement)}
+    <div class="notice_b">
+	    <div class="notice">
+	        <div>
+	            <ul>
+	                {loop $announcement $index $item}
+	                <li><a href="#">{$item['msg']}</a></li>
+	                {/loop}
+	            </ul>
+	        </div>
+	        <em></em>
+	    </div>
+  	</div>
+    {/if}
+    <!--focus-->
+    <div class="focus" id="focus">
+        <ul>
+            {if !empty($carousel)}
+            {loop $carousel $index $item}
+            <li><a href="{$item}"><img src="../addons/ewei_shopv2/static/images/img/{$index}" style="width:100%;"/></a>
+            </li>
+            {/loop}
+            {else}
+            <li><a href="#"><img src="../addons/ewei_shopv2/static/images/img/0.jpg" style="width:100%;" /></a></li>
+            <li><a href="#"><img src="../addons/ewei_shopv2/static/images/img/002.jpeg" style="width:100%;" /></a></li>
+            <li><a href="#"><img src="../addons/ewei_shopv2/static/images/img/003.jpeg" style="width:100%;" /></a></li>
+            {/if}
+        </ul>
+        <ol>
+            <li class="on"></li>
+            <li></li>
+            <li></li>
+        </ol>
+    </div>
+    <!--focus end-->
+    
+    
+    
+	</div>
+
+    <ul class="nav">
+        <li class="nav_icon01"><a href="https://www.sobot.com/chat/pc/index.html?sysNum=0e3544a96d5e41f4919655542ba43428"><div></div><p class="nav_p">在线客服</p></a></li>
+        <li class="nav_icon02"><div></div><p class="nav_p">服务导航</p></li>
+        <li class="nav_icon03"><div></div><p class="nav_p">用户须知</p></li>
+    </ul> 
+ 
+    <div class="board">
+        <!--<h1>您的评价</h1>
+        <div id="starRating">
+	        <p class="photo">
+	        <span><i class="high"></i><i class="nohigh"></i></span>
+	        <span><i class="high"></i><i class="nohigh"></i></span>
+	        <span><i class="high"></i><i class="nohigh"></i></span>
+	        <span><i class="high"></i><i class="nohigh"></i></span>
+	        <span><i class="high"></i><i class="nohigh"></i></span>
+	        </p>
+        </div>-->
+
+        <h1>智能路内停车服务星级评价</h1>
+        <div id="starRating">
+			<p class="photo">
+				
+				<span><i class="high"></i><i class="nohigh"></i></span>
+				<span><i class="high"></i><i class="nohigh"></i></span>
+				<span><i class="high"></i><i class="nohigh"></i></span>
+				<span><i class="high"></i><i class="nohigh"></i></span>
+				<span><i class="high"></i><i class="nohigh"></i></span>
+				<label id="score" style="color:red;"></label>
+			</p>
+        </div>
+		
+        <textarea placeholder="谈谈您对使用智能路内停车服务后的感受" rows="5" id="comment"></textarea>
+        <label class="starNum" style="display: none;"></label>
+        <p id="commError" style="width: 100%;text-align: center;color: red;display: none;">谈谈您对使用智能...</p>
+        <input type="hidden" value="{php echo mobileUrl('parking/msg/Comment');}" id="pUrl"/>
+		<input type="hidden" value="{php echo mobileUrl('parking/parking_orderdetails');}" id="Rurl"/>
+        <!--<input type="hidden" name="starNum" id="starNums" value="" class="starNum"/>-->
+        <button type="submit" class="enter" id="query">提 交 评 价</button>
+		
+    </div>
+  
+  
+	<div style="margin-bottom:5px;">
+		<!--<p style="text-align:center;">
+			<label style="font-size:12px;">版权所有 © Gogo|購購網 </label>-->
+			<!--<img src="../addons/ewei_shopv2/static/images/img/logo.png" width="45px" style="margin-bottom: 5px">-->
+		<!--</p>-->
+		<div class="bot">Technology by <img src="../addons/ewei_shopv2/static/images/img/footlogo.png" alt="" /></div>
+		<div class="footer">
+		<div class="mes">
+	    	<div class="t_news">
+				<ul class="news_li">
+					<li><a href="" target="_blank">版权所有 © Gogo|購購網</a></li>
+					<li><a href="" target="_blank">版权所有 © Gogo|任我停</a></li>
+					<li><a href="" target="_blank">版权所有 © Gogo|直邮易</a></li>
+				</ul>
+				<ul class="swap"></ul>
+			</div>
+	    </div>
+	</div>
+    <!--<div class="footer">版权所有 © Gogo|購購網 </div>-->
+    <div class="footer_placeholder"></div>
+	</div>
+
+</div>
+
+<script>
+   $(function () {
+        //评分
+        var starRating = 0;
+        $('.photo span').on('mouseenter',function () {
+            var index = $(this).index()+1;
+            $(this).prevAll().find('.high').css('z-index',1)
+            $(this).find('.high').css('z-index',1)
+            $(this).nextAll().find('.high').css('z-index',0)
+            $('.starNum').html((index*2).toFixed(1))
+        })
+        
+        $('.photo').on('mouseleave',function () {
+            $(this).find('.high').css('z-index',0)
+            var count = starRating / 2
+            if(count == 5) {
+                $('.photo span').find('.high').css('z-index',1);
+            } else {
+                $('.photo span').eq(count).prevAll().find('.high').css('z-index',1);
+            }
+            $('.starNum').html(starRating.toFixed(1))
+        })
+        
+        $('.photo span').on('click',function () {
+            var index = $(this).index()+1;
+            $(this).prevAll().find('.high').css('z-index',1)
+            $(this).find('.high').css('z-index',1)
+            starRating = index*2;
+            $('.starNum').html(starRating.toFixed(1));
+            $('#score').html(starRating.toFixed(1)+'分')
+            
+        })
+		
+        //取消评分
+        $('.cancleStar').on('click',function () {
+            starRating = 0;
+            $('.photo span').find('.high').css('z-index',0);
+            $('.starNum').html(starRating.toFixed(1));
+        })
+		
+        //确定评分
+        $('.sureStar').on('click',function () {
+            if(starRating === 0) {
+                alert('最低一颗星！');
+            } else {
+				$('#score').html(starRating.toFixed(1)+'分')
+            }
+        });
+        
+        //确认提交
+        $('#query').bind('click',function() {
+        	
+        	var comm = $('#comment').val();
+        	if(comm == '') {
+        		$('#commError').html('请填写评论内容');
+        		$('#commError').css('display','block');
+        		return false;
+        	}else {
+        		$('#commError').css('display','none');
+        	}
+        	
+			var Rurl = $('#Rurl').val();
+        	$.ajax({
+        		url:$('#pUrl').val(),
+        		async:false,
+        		type:'post',
+        		dataType:'json',
+        		data:'comm='+comm+'&starNum='+$('.starNum').html(),
+        		success:function(res) {
+        			//console.dir(res);        			
+        			if(res.status >=1){
+        				$('#comment').val('');
+        				$('.starNum').html('');
+        				alert(res.result.message);
+						//setInterval(function(){
+							window.location.href = Rurl;
+						//},150);
+						
+						//window.location.reload();
+						
+        			}else {
+        				alert(res.result.message);
+						window.location.reload();
+        			}
+        		}
+        	});
+        	
+        });
+    })
+   
+   $(function () {
+        new Swipe(document.getElementById('focus'), {
+            speed: 1000,
+            auto: 1000,
+            callback: function () {
+                var lis = $(this.element).next("ol").children();
+                lis.removeClass("on").eq(this.index).addClass("on");
+            }
+        });
+    });
+    
+/*底部滚动*/    
+    function b(){	
+		t = parseInt(x.css('top'));
+		y.css('top','19px');	
+		x.animate({top: t - 19 + 'px'},'slow');	//19为每个li的高度
+		if(Math.abs(t) == h-19){ //19为每个li的高度
+			y.animate({top:'0px'},'slow');
+			z=x;
+			x=y;
+			y=z;
+		}
+		setTimeout(b,3000);//滚动间隔时间 现在是3秒
+	}
+	$(document).ready(function(){
+		$('.swap').html($('.news_li').html());
+		x = $('.news_li');
+		y = $('.swap');
+		h = $('.news_li li').length * 19; //19为每个li的高度
+		setTimeout(b,3000);//滚动间隔时间 现在是3秒
+		
+	})
+</script>
+</body>
+</html>

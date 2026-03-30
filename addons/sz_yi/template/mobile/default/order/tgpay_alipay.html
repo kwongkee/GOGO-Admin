@@ -1,0 +1,88 @@
+{template 'common/header'}
+
+<title>{if !empty($orderid)}支付宝支付{else}支付宝充值{/if}</title>
+
+<style type="text/css">
+ body {margin:0px; background:skyblue; font-family:'微软雅黑'; -moz-appearance:none;}
+</style>
+
+<style>
+    .fui-content {background-color: #019fe8; background-image: url("../addons/ewei_shopv2/template/mobile/default/static/images/alipay.png"); background-repeat: no-repeat; background-size: 80%; background-position: center 8rem;}
+    .layer {position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-image: url("../addons/ewei_shopv2/template/mobile/default/static/images/guide.png"); background-repeat: no-repeat; background-position: top right; background-size: 28%; color: #fff;}
+    .layer .text{height: 10rem; width: 13rem; color: #fff; position: absolute; top: 2.5rem; left: 50%; margin-left: -5.5rem; font-size: 1.1rem;}
+    .layer .tip {height: 1rem; left: 0; right: 0; bottom: 3rem; position: absolute; font-size: 0.8rem; text-align: center;}
+</style>
+
+<div class='fui-page  fui-page-current order-create-page'>
+    <div class='fui-content'>
+        <div class="layer">
+            <div class="text">
+                <p>① 请点击右上角</p>
+                <p>② 通过【浏览器打开】</p>
+                <p>③ 完成支付</p>
+                <p>④ 返回此页面</p>
+            </div>
+            <div class="tip">TIP: 支付完成后自动跳转</div>
+        </div>
+    </div>
+</div>
+
+<script language="javascript" src="../addons/sz_yi/static/js/ap.js"></script>
+<script language="javascript">
+	
+	
+		var url = "{$tgalipay['url']}";
+//		 location.href = url;
+        
+        var settime = setInterval(function () {
+//          $.getJSON(url, data, function (ret) {
+//              if (ret.status >=1) {
+                    clearInterval(settime);
+                    location.href = url;
+//              }else{
+//                  //FoxUI.toast.show(JSON.stringify(ret));
+//              }
+//          })
+        }, 3000);
+        
+        
+
+function showIframe(url,w,h){
+    //添加iframe
+    var if_w = w; 
+    var if_h = h; 
+    //allowTransparency='true' 设置背景透明 virutal
+    $("<iframe width='" + if_w + "' height='" + if_h + "' id='alipayFrame' name='alipayFrame' style='position:absolute;z-index:4;'  frameborder='no' marginheight='0' marginwidth='0' ></iframe>").prependTo('body');    
+    var st=document.documentElement.scrollTop|| document.body.scrollTop;//滚动条距顶部的距离
+    var sl=document.documentElement.scrollLeft|| document.body.scrollLeft;//滚动条距左边的距离
+    var ch=document.documentElement.clientHeight;//屏幕的高度
+    var cw=document.documentElement.clientWidth;//屏幕的宽度
+    
+    var objH=$("#alipayFrame").height();//浮动对象的高度
+    var objW=$("#alipayFrame").width();//浮动对象的宽度
+    
+    var objT=Number(st)+(Number(ch)-Number(objH))/2;
+    var objL=Number(sl)+(Number(cw)-Number(objW))/2;
+    
+    $("#alipayFrame").css('left',objL);
+    $("#alipayFrame").css('top',objT);
+    $("#alipayFrame").attr("src", url);
+    //添加背景遮罩
+    $("<div id='alipayFrameBg' style='background-color: #fff;display:block;z-index:3;position:absolute;left:0px;top:0px;'/>").prependTo('body');
+    
+//  $("<iframe id='alipayFrameBg' style='background-color: #fff;display:block;z-index:3;position:absolute;left:0px;top:0px;'></iframe>").prependTo('body'); 
+    
+    var bgWidth = Math.max($("body").width(),cw);
+    var bgHeight = Math.max($("body").height(),ch);
+    
+    $("#alipayFrameBg").css({width:bgWidth,height:bgHeight});
+ 
+    //点击背景遮罩移除iframe和背景
+    $("#alipayFrameBg").click(function() {
+        $("#alipayFrame").remove();
+        $("#alipayFrameBg").remove();
+    });
+}
+
+</script>
+{template 'common/footer'}

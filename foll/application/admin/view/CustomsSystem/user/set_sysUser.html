@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>配置商户应用权限</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+</head>
+<body>
+<form class="layui-form" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">管理员人数</label>
+        <div class="layui-input-block">
+            <input type="number" class="layui-input" name="num1" value="{$user['sys_user'][0][0]}">
+        </div>
+        <label class="layui-form-label">是否通知</label>
+        <div class="layui-input-block">
+            <select name="msg1" id="msg1">
+                <option value="1" {if $user['sys_user'][0][1]==1}selected{/if}>通知</option>
+                <option value="2" {if $user['sys_user'][0][1]==2}selected{/if}>不通知</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">操作员人数</label>
+        <div class="layui-input-block">
+            <input type="number" class="layui-input" name="num2" value="{$user['sys_user'][1][0]}">
+        </div>
+        <label class="layui-form-label">是否通知</label>
+        <div class="layui-input-block">
+            <select name="msg2" id="msg2">
+                <option value="1" {if $user['sys_user'][1][1]==1}selected{/if}>通知</option>
+                <option value="2" {if $user['sys_user'][1][1]==2}selected{/if}>不通知</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">财政员人数</label>
+        <div class="layui-input-block">
+            <input type="number" class="layui-input" name="num3" value="{$user['sys_user'][2][0]}">
+        </div>
+        <label class="layui-form-label">是否通知</label>
+        <div class="layui-input-block">
+            <select name="msg3" id="msg3">
+                <option value="1" {if $user['sys_user'][2][0]==1}selected{/if}>通知</option>
+                <option value="2" {if $user['sys_user'][2][1]==2}selected{/if}>不通知</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+
+</body>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/layui/xm-select.js"></script>
+<script>
+    layui.use(['form','jquery'], function(){
+        var form = layui.form;
+        var $ = layui.jquery;
+
+        form.on('submit(formDemo)', function(data) {
+            $.ajax({
+                url: '{:Url("admin/customssystem/setUser")}',
+                type: "POST",
+                dataType: "JSON",
+                data: {"uid":{$user['id']},"data":data.field},
+                success:function (res) {
+                    layer.msg(res.message);
+                    // if (res.code==0){
+                    //     setTimeout(function () {
+                    //         location.reload();
+                    //     },2000);
+                    // }
+                },error:function (xhr) {
+                    layer.msg("连接服务错误..");
+                }
+            });
+            return false;
+        });
+    });
+
+
+</script>
+</html>

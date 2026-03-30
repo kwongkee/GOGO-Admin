@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>赞赏设置</title>
+
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<meta name="format-detection" content="address=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="{TEMPLATE_PATH}/wtCommon.css?v={php echo time();}">
+<script src="http://cdn.bootcss.com/zepto/1.1.6/zepto.min.js"></script>
+<script src="//cdn.bootcss.com/json2/20150503/json2.min.js"></script>
+<link rel="stylesheet" href="{TEMPLATE_PATH}/live.css?v={php echo time();}">
+<script type="text/javascript">
+  $(function(){
+	  $(".percent_li").click(function(){
+		  var text=$(this).children('var').text();
+		  $(".rewardpercent var").eq(0).text(text+"%");
+		  $(".rewardpercent_list").hide(100);
+		  
+		  $(".reward_open").addClass('on');
+		  $(".reward_close").removeClass('on');
+	  });
+	  
+	  /*分成比例设置*/	  
+	  $(".rewardpercent").click(function(){
+		  $(".rewardpercent_list").show(100);
+	  });
+	  
+	  /*打开赞赏功能*/
+	  $(".reward_open").click(function(){
+		  var percent=$(".rewardpercent").children('var').text().replace('%','');
+		  $.post(location.href,{submit:true,percent:percent},function(result){
+			  alert(result.data);
+		  });
+	  });
+	  
+	  /*关闭赞赏功能*/
+	  $(".reward_close").click(function(){
+		  var conf=confirm("确认关闭赞赏吗?");
+		  if(!conf){
+			  return false;
+		  }
+		  $.post(location.href,{shut:true},function(result){
+			  alert(result.data);
+			  $(".reward_open").addClass('on');
+			  $(".reward_close").removeClass('on');
+		  });
+	  }); 
+  });
+</script>
+</head>
+<body>
+	
+<div class="main_box_4">
+	<div>
+		<span class="rewardtitle">设置本直播间的分成比例</span>
+		<span class="rewardpercent"><var>{$reward_percent}%</var></span>
+	</div>
+	
+	<ul class="rewardtips">
+		<li>使用说明</li>
+		<li class="reward_question">平台方、直播间和被打赏人怎么分配赏金？</li>
+		<li class="reward_answer">微信官方会扣除2%手续费，剩下部分由直播间创建者和被打赏人按照上方设置的比例进行分成。</li>
+		<li class="reward_question">赏金如何提现？</li>
+		<li class="reward_answer">属于个人的赏金可以自助提现<br>属于直播间的赏金，直播间创建者可在直播间设置页面提现到自己钱包</li>
+	</ul>
+	
+	<a href="javascript:;" class="reward_open {if $chat_room['reward_status']==0 }on{/if}">确认</a>
+	
+	<a href="javascript:;" class="reward_close {if $chat_room['reward_status']==1 }on{/if}">关闭赞赏</a>
+	
+</div>
+<!-- 赞赏分成下拉列表 -->
+<div class="rewardpercent_list">
+	<div>
+		<ul>
+			<li class="percent_li"><var>0</var>%</li>
+			<li class="percent_li"><var>5</var>%</li>
+			<li class="percent_li"><var>10</var>%</li>
+			<li class="percent_li"><var>15</var>%</li>
+			<li class="percent_li"><var>20</var>%</li>
+			<li class="percent_li"><var>25</var>%</li>
+			<li class="percent_li"><var>30</var>%</li>
+			<li class="percent_li"><var>35</var>%</li>
+			<li class="percent_li"><var>40</var>%</li>
+			<li class="percent_li"><var>45</var>%</li>
+			<li class="percent_li"><var>50</var>%</li>
+			<li class="percent_li"><var>60</var>%</li>
+			<li class="percent_li"><var>70</var>%</li>
+			<li class="percent_li"><var>98</var>%</li>
+		</ul>
+	</div>
+</div>
+
+<div class="loadingBox"><span></span></div>
+
+</body></html>

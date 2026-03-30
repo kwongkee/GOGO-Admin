@@ -1,0 +1,160 @@
+{include file="common/header"}
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<script src="http://apps.bdimg.com/libs/jquery-qrcode/1.0.0/jquery.qrcode.min.js"></script>
+<body>
+<style>
+	*{font-size:16px;}
+</style>
+
+<div class="x-body">
+
+<blockquote class="layui-elem-quote layui-text">
+	开票者详细信息
+</blockquote>
+
+<form class="layui-form" action="">
+
+	<div class="layui-form-item">
+		<label class="layui-form-label">开票状态</label>
+		<div class="layui-input-block">
+			{if condition="$order['state'] == 1"}
+				<span class="layui-btn layui-btn-xs layui-btn-radius">开票成功</span>
+			{else /}
+				<span class="layui-btn layui-btn-xs layui-btn-radius layui-btn-danger">开票失败</span>
+			{/if}
+		</div>
+	</div>
+	
+	<div class="layui-form-item">
+		<label class="layui-form-label">订单流水号</label>
+		<div class="layui-input-block">
+			<input type="text" name="title" lay-verify="title" class="layui-input" value="{$order['FPQQLSH']}">
+		</div>
+	</div>
+  
+	<div class="layui-form-item">
+		<label class="layui-form-label">订单编号</label>
+		<div class="layui-input-block">
+			<input type="text" name="username" lay-verify="required" class="layui-input" value="{$order['DDH']}">
+		</div>
+	</div>
+	
+	<div class="layui-form-item">
+		<label class="layui-form-label">开票人</label>
+		<div class="layui-input-block">
+			<input type="text" name="username" lay-verify="required" class="layui-input" value="{$order['GHF_MC']}">
+		</div>
+	</div>
+	
+	<div class="layui-form-item">
+		<label class="layui-form-label">手机号码</label>
+		<div class="layui-input-block">
+			<input type="text" name="username" lay-verify="required" class="layui-input" value="{$order['GHF_SJ']}">
+		</div>
+	</div>
+	
+	<div class="layui-form-item">
+		<label class="layui-form-label">纳税人识别号</label>
+		<div class="layui-input-block">
+			<input type="text" name="username" lay-verify="required" class="layui-input" value="{$order['GHF_NSRSBH']}">
+		</div>
+	</div>
+	
+	<div class="layui-form-item">
+		<label class="layui-form-label">开票名称</label>
+		<div class="layui-input-block">
+			<input type="text" name="username" lay-verify="required" class="layui-input" value="{$order['XMMC']}">
+		</div>
+	</div>
+	
+	<div class="layui-form-item">
+		<label class="layui-form-label">开票金额</label>
+		<div class="layui-input-block">
+			<input type="text" name="username" lay-verify="required" class="layui-input" value="{$order['XMDJ']} 元">
+		</div>
+	</div>
+	
+	<div class="layui-form-item">
+		<label class="layui-form-label">发票号码</label>
+		<div class="layui-input-block">
+			<input type="text" name="username" lay-verify="required" class="layui-input" value="{$order['FP_HM']}">
+		</div>
+	</div>
+	
+	<div class="layui-form-item">
+		<label class="layui-form-label">发票链接</label>
+		<div class="layui-input-block">
+			<input type="text" name="username" lay-verify="required" class="layui-input" value="{$order['PDF_URL']}">
+		</div>
+	</div>
+	
+	
+	<div class="layui-form-item">
+		<label class="layui-form-label">接收邮箱</label>
+		<div class="layui-input-block">
+			<input type="text" name="username" lay-verify="required" class="layui-input" value="{$order['GHF_EMAIL']}">
+		</div>
+	</div>
+	
+	<div class="layui-form-item">
+		<label class="layui-form-label">发票时间</label>
+		<div class="layui-input-block">
+			<input type="text" name="username" lay-verify="required" class="layui-input" value="{$order['create_date']|date='Y-m-d H:i:s',###}">
+		</div>
+	</div>
+	
+	<div class="layui-form-item">
+		<label class="layui-form-label">发票下载</label>
+		<div class="layui-input-block">
+			<a href="{$order['PDF_URL']}" target="_blank" class="layui-btn layui-btn-sm">下载查看发票</a>
+		</div>
+	</div>
+
+ <!--div class="layui-form-item layui-form-text">
+    <label class="layui-form-label">编辑器</label>
+    <div class="layui-input-block">
+      <textarea class="layui-textarea layui-hide" name="content" lay-verify="content" id="LAY_demo_editor"></textarea>
+    </div>
+  </div-->
+  
+</form>
+
+
+<script>
+layui.use(['form', 'layedit', 'laydate'], function(){
+  var form = layui.form
+  ,layer = layui.layer
+  ,layedit = layui.layedit
+  ,laydate = layui.laydate;
+  
+  //日期
+  laydate.render({
+    elem: '#date'
+  });
+  laydate.render({
+    elem: '#date1'
+  });
+  
+  //创建一个编辑器
+  var editIndex = layedit.build('LAY_demo_editor');
+
+ 
+  //表单初始赋值
+  form.val('example', {
+    "username": "贤心" // "name": "value"
+    ,"password": "123456"
+    ,"interest": 1
+    ,"like[write]": true //复选框选中状态
+    ,"close": true //开关状态
+    ,"sex": "女"
+    ,"desc": "我爱 layui"
+  })
+});
+</script>
+
+
+
+</div>
+</body>
+</html>

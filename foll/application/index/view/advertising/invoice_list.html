@@ -1,0 +1,51 @@
+{include file="common/header"}
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<body>
+<div class="x-nav">
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<div class="x-body">
+    <table class="layui-table">
+        <thead>
+        <tr>
+        	<th>序号</th>
+            <th>订单号</th>
+            <th>抬头类型</th>
+            <th>基本费用</th>
+            <th>状态</th>
+            <th>时间</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        	{volist name="data" id="vo"}
+        	<tr>
+   			<td>{$vo.id}</td>
+   			<td>{$vo.DDH}</td>
+   			<td>{if $vo.type eq 1 }个人{else}企业{/if}</td>
+   			<td>{$vo.price}￥</td>
+   			<td>{$Status['status'][$vo.status]}</td>
+   			<td>{$vo.create_time|date="Y-m-d",###}</td>
+            <td>
+				<a href="">下载</a>
+            </td>
+            {/volist}
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+<script>
+	function invoice(id,status){
+		if(status !='2'){
+			layer.msg('此订单未完成支付!');
+			return false;
+		}else{
+			window.location.href='{:Url('Advertising/invoice')}&o_id='+id;
+		}
+	}
+	
+</script>
+</html>

@@ -1,0 +1,213 @@
+{template 'header'}
+<link href="//cdn.bootcss.com/weui/0.4.0/style/weui.min.css" rel="stylesheet">
+<header>
+{template 'sider'}
+</header> 
+<div class="main " style="margin:auto;">
+{if $userdata['prize']==''}
+<div class="weui_msg">
+    <div class="weui_icon_area"><i class="weui_icon_msg weui_icon_waiting"></i></div>
+    <div class="weui_text_area">
+        <h2 class="weui_msg_title">即将登上领奖台</h2>
+        <p class="weui_msg_desc">继续努力，你终有登上领奖台的那一天，加油！</p>
+    </div>
+
+
+</div>
+{/if}
+{if $userdata['prize']!=""}
+<div class="weui_msg">
+    <div class="weui_icon_area"><img src="{MODULE_URL}/template/static/img/prize.png" style="background:url({$awardmsg[$userdata['prize']]['prizeicon']});
+    background-size:100% 100%;"> 
+	
+	<h2 class="prizetitle">{$awardmsg[$userdata['prize']]['prizetitle']}</h2>
+	
+	</div>
+    <div class="weui_text_area">
+        <h2 class="weui_msg_title">获得领奖机会</h2>
+        <p class="weui_msg_desc">
+		{if $inputdata['mobile']!=""}{$configdata['accept']}{else}提交信息领奖成功后，才能真正获得奖品，先到先得！赶紧提交领奖信息吧！{/if}
+		</p>
+    </div>
+	</div>
+</div>
+{if $userdata['cash']==1}
+<div class="cashinfo" style="background: rgba(245, 232, 167, 0.8);border: 1px solid #EF3315;padding: 10px 0;text-align: center;color: #FF0E00;    font-size: 18px;margin-bottom: 20px;">已成功兑奖！</div>
+{/if}
+
+<div class="cashinfo">
+<div class="bd">
+<div class="weui_cells_title">{if $inputdata!=""}领奖信息{else}提交领奖信息{/if} </div>
+<div class="weui_cells weui_cells_form">
+{if $configdata['inpcon']['inp_1']==1 }
+        <div class="weui_cell">
+            <div class="weui_cell_hd"><label class="weui_label">领奖人</label></div>
+            <div class="weui_cell_bd weui_cell_primary">
+                <input class="weui_input" name="name" value="{$inputdata['name']}" {if $inputdata['mobile']!=""} disabled="true"{/if}  type="text" placeholder="请输入领奖人姓名">
+            </div>
+        </div>
+{/if}
+{if $configdata['inpcon']['inp_2']==1 }
+        <div class="weui_cell">
+            <div class="weui_cell_hd"><label class="weui_label">手机号</label></div>
+            <div class="weui_cell_bd weui_cell_primary">
+                <input class="weui_input" name="mobile" value="{$inputdata['mobile']}" {if $inputdata['mobile']!=""} disabled="true"{/if} type="number" pattern="[0-9]*" placeholder="请输入手机号码">
+            </div>
+        </div>
+{/if}
+{if $configdata['inpcon']['inp_3']==1 }
+		<div class="weui_cell">
+            <div class="weui_cell_hd"><label class="weui_label">微信号</label></div>
+            <div class="weui_cell_bd weui_cell_primary">
+                <input class="weui_input" name="wechat" value="{$inputdata['wechat']}" {if $inputdata['wechat']!=""} disabled="true"{/if} type="text" placeholder="请输入微信号">
+            </div>
+        </div>
+{/if}
+{if $configdata['inpcon']['inp_4']==1 }
+		<div class="weui_cell">
+            <div class="weui_cell_hd"><label class="weui_label">QQ号</label></div>
+            <div class="weui_cell_bd weui_cell_primary">
+                <input class="weui_input" name="qq" value="{$inputdata['qq']}" {if $inputdata['qq']!=""} disabled="true"{/if} type="number" pattern="[0-9]*" placeholder="请输入QQ号码">
+            </div>
+        </div>
+{/if}
+{if $configdata['inpcon']['inp_5']==1 }
+        <div class="weui_cell">
+            <div class="weui_cell_bd weui_cell_primary">
+                <textarea class="weui_textarea" id="address" name="address"  {if $inputdata['mobile']!=""}  readonly="true"{/if} placeholder="请输入收货地址" rows="3">{$inputdata['address']}</textarea>
+            </div>
+        </div>
+{/if}      
+
+    </div>
+
+</div>
+
+</div>
+{/if}
+	<div class="bd spacing">
+	{if $inputdata=="" && $userdata['prize']!=""}
+    <a href="javascript:;" id="in_bth" class="weui_btn weui_btn_primary">提交信息</a>
+	{/if}
+    </div>
+{if $inputdata!="" && $userdata['prize']!="" && $userdata['cash']==0}
+<div class="cashinfo">
+<div class="bd">
+<div class="weui_cells_title">*领奖时，请出示手机！</div>
+<div class="weui_cells weui_cells_form">
+<div class="weui_cell">
+    <div class="weui_cell_hd"><label class="weui_label">密码</label></div>
+	<div class="weui_cell_bd weui_cell_primary">
+		<input class="weui_input" name="password" value=""  type="number" pattern="[0-9]*" placeholder="请输入核销密码">
+	</div>
+</div>
+</div>
+
+</div>
+</div>
+<div class="bd spacing">
+<a href="javascript:;" id="in_bth" class="weui_btn weui_btn_primary">核销</a>
+</div>
+{/if}
+	<div class="bd spacing">
+	 <a href="{php echo $this->createMobileUrl('index', array('rid' => $_GPC['rid']))}" class="weui_btn weui_btn_default">返回桌面</a>
+	</div>
+ <div style="padding:10px 0 0 0;">&nbsp;</div>
+
+<style>
+.weui_msg .weui_icon_area{margin-bottom: 0px;}
+.weui_icon_waiting:before {color: #B6BBBD;
+}
+.weui_cell:before{left: 0px;}
+.prizetitle{
+    position: relative;
+    text-align: center;
+    width: 100%;
+    bottom: 43px;color: #F00;
+
+}
+.cashinfo{width: 90%;
+    margin: auto;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    background-color: #fbf9fe;
+}
+.spacing{
+width: 90%;
+    margin: auto;
+	margin-bottom:20px;
+	margin-top:20px;
+}
+</style>
+<script>
+$(document).ready(function(){
+
+    $("#in_bth").click(function(){
+	{if $userdata['prize']!="" && $inputdata==""}
+		var name=$("input[name='name']").val();
+		var mobile=$("input[name='mobile']").val();
+		var wechat=$("input[name='wechat']").val();
+		var qq=$("input[name='qq']").val();
+		var address=$("textarea[name='address']").val();
+		{if $configdata['inpcon']['inp_1']==1 }
+		if(name==''){dialog2("请输入领奖人姓名");return false;}
+		{/if}
+		{if $configdata['inpcon']['inp_2']==1 }
+		if(mobile==''){dialog2("请输入手机号码");return false;}
+		if(!(/^1[3|4|5|6|7|8|9][0-9]\d{8}$/.test(mobile))){dialog2("请输入正确的手机号码！");return false; } 
+		{/if}
+		{if $configdata['inpcon']['inp_3']==1 }
+		if(wechat==''){dialog2("请输入微信号码");return false;}
+		{/if}
+		{if $configdata['inpcon']['inp_4']==1 }
+		if(qq==''){dialog2("请输入QQ号码");return false;}
+		{/if}
+
+		{if $configdata['inpcon']['inp_5']==1 }
+		if(address==''){dialog2("请输入收货地址");return false;}
+		{/if}
+	{/if}
+	{if $inputdata!="" && $userdata['prize']!="" && $userdata['cash']==0}
+	    var password=$("input[name='password']").val();
+	    if(password==''){dialog2("请输入核销密码");return false;}
+	{/if}
+	
+	
+		loadingToast("提交中...");
+		$.ajax({
+			type: "POST",
+			url: "{php echo $this->createMobileUrl('prize', array('rid' => $reply['rid']))}",
+			{if $userdata['prize']!="" && $inputdata==""}
+			data: {name:name,mobile:mobile,wechat:wechat,qq:qq,address:address,type:1},
+			{/if}
+			{if $inputdata!="" && $userdata['prize']!="" && $userdata['cash']==0}
+            data: {password:password,type:2},    
+	        {/if}
+			
+			dataType: "json",
+			success: function(str) {
+				hidemod("loadingToast");
+				if(str!=null && str!=''){
+					if(str.status == 1){
+						dialog2(str.msg);
+						window.setTimeout("window.location.reload()",1000);
+					}else if(str.status == 0){
+						dialog2(str.msg);
+					}else{
+						dialog2(str.msg);
+					}
+				}
+			},
+			error: function(err) {
+				hidemod("loadingToast");
+				dialog2("发生错误，请刷新后重试！");
+			}
+		});
+	});
+});
+
+wx.ready(function () {
+	    wx.hideAllNonBaseMenuItem();
+});  
+</script>
+{template 'footer'}

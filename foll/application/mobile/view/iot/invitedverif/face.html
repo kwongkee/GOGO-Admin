@@ -1,0 +1,103 @@
+{include file='iot/header'}
+<body>
+<style>
+    .tip {
+        display: none;
+        font-size: 14px;
+        position: absolute;
+        top: 50%;
+        left: 5%;
+        background: #000;
+        opacity: .5;
+        width: 90%;
+        color: #fff;
+        text-align: center;
+        padding: 5% 0;
+        z-index: 11;
+    }
+</style>
+<div class="whole">
+    <div class="header">
+        <div class="toplogo"><img src="./static/iot/images/top-logo.png" alt=""></div>
+        <h2 class="title">来访人脸识别验证</h2>
+    </div>
+    <form action="">
+        <input type="hidden" name="code" id="code" value="{$code}">
+        <div class="content top">
+            <div class="face">
+                <img src="./static/iot/images/face.jpg" alt="">
+            </div>
+            <div class="face_text">
+                <p>平面平视手机、保证光线充足,请勿遮挡面部</p>
+            </div>
+            <div class="face_step">
+                <div class="face_left"><img src="./static/iot/images/face02.jpg" alt=""></div>
+                <div class="face_right">
+                    <!--<p>左摇头</p>-->
+                    <!--<p>右摇头</p>-->
+                    <p>点头</p>
+                </div>
+            </div>
+            <div class="btn" style="margin:0% 25% 5%">
+                <input type="file" accept="video/*" capture="user" class="camera-input video" id="video"  style="visibility: hidden; position: absolute;">
+                <a href="#" onclick="video.click()">认 证</a>
+            </div>
+        </div>
+    </form>
+    <div class="tip" id="tip"></div>
+</div>
+<script src="./static/iot/js/jquery-1.11.0.min.js"></script>
+<!--<script src="http://wechatfe.github.io/vconsole/lib/vconsole.min.js?v=3.2.2"></script>-->
+<script>
+    // window.vConsole = new window.VConsole();
+    //活体视频上传
+    $("#video").change(function(){
+        var file = $("#video").get(0).files[0];
+        var fileSize =(this.files[0].size) / (1024*1024);//转换成M
+        fileSize = fileSize.toFixed(0);//保留小数点后一位
+        if(fileSize > 11){
+            showMsg('视频时间，建议在1～15秒');
+            // $(".modal-layer").hide();
+            return;
+        }else{
+            $("#tip").html('验证中...');
+            $("#tip").show();
+            var parameter={};
+            parameter["code"]=$("#code").val();
+
+            var formData = new FormData();
+            formData.append("data", JSON.stringify(parameter));
+            formData.append("video", file);
+            $.ajax({
+                type: "POST",
+                url: "{:Url('iot/verface')}",
+                data: formData,
+                processData: false,
+                contentType: false,
+                xhr: function() {
+                    myXhr = $.ajaxSettings.xhr();
+                    return myXhr
+                },
+                success: function(data) {
+                    $("#tip").hide();
+                    showMsg(data.message);
+                    if (data.code<0){
+                        setTimeout(function () {
+                            window.location.reload();
+                        },2000);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    $("#tip").hide();
+                    showMsg("服务器异常:"+jqXHR.status+":"+jqXHR.statusText);
+                    setTimeout(function () {
+                        window.location.reload();
+                    },2000);
+                    //HJSJ.prompts("error",jqXHR.status+":"+jqXHR.statusText);
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

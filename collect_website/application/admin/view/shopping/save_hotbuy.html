@@ -1,0 +1,105 @@
+{include file="common/header_inner_new"}
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">热卖搜索</div>
+                            <div class="layui-input-block">
+                                <div class="disf">
+                                    <div class="type">
+                                        <select name="type" id="type" lay-filter="type">
+                                            <option value="1">按关键词</option>
+                                            <option value="2">按商品链接</option>
+                                        </select>
+                                    </div>
+                                    <input type="text" class="layui-input" lay-verify="required" name="word" id="word" value="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item link_word" style="display: none;">
+                            <div class="layui-form-label">商品关键词</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" lay-verify="" placeholder="商品关键词" name="keyword" id="keyword" value="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">立即获取商品</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload'],function(){
+        var laydate = layui.laydate
+            ,layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery
+            ,upload = layui.upload;
+
+        form.on('select(type)',function(data){
+            let val = data.value;
+
+            if(val==1){
+                $('.link_word').hide();
+            }else if(val==2){
+                $('.link_word').show();
+            }
+        });
+
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+
+            $.ajax({
+                url:"{:Url('admin/shopping/save_hotbuy')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+
+</script>
+</body>
+</html>

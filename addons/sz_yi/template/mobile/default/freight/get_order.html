@@ -1,0 +1,306 @@
+{template 'common/header'}
+<title>出口下单</title>
+<link href="../addons/sz_yi/static/css/layui.css" rel="stylesheet">
+<style>
+    .layui-table td, .layui-table th{ text-align: center;}
+    .layui-table th{ background-color: #1E9FFF;color:#fff; }
+    .required{color: red;font-size: 1.3rem;right: 3px;position: relative;top: 7px;}
+    .icon-right{font-size: 20px;line-height: 20px;padding-right: 10px;vertical-align: middle;}
+    .layui-layer-adminRight{top : 0px !important;}
+    .layui-layer-btn .layui-layer-btn0{border-color: #F7931E!important;background-color: #F7931E!important;}
+    .disf{display:flex;align-items: center;justify-content: space-evenly;}
+    .layui-tab-title li{min-width:50px;}
+    .layui-table img{max-width:50px;}
+    .layui-upload-list img{max-width:50px;}
+    .layui-form-radio i {top: 0;width: 16px;height: 16px;line-height: 16px;border: 1px solid #d2d2d2;font-size: 12px;border-radius: 2px;background-color: #fff;color: #fff !important;}
+    .layui-form-radioed i {position: relative;width: 18px;height: 18px;border-style: solid;background-color: #5FB878;color: #5FB878 !important;}
+    /* 使用伪类画选中的对号 */
+    .layui-form-radioed i::after, .layui-form-radioed i::before {content: "";position: absolute;top: 8px;left: 5px;display: block;width: 12px;height: 2px;border-radius: 4px;background-color: #fff;-webkit-transform: rotate(-45deg);transform: rotate(-45deg);}
+    .layui-form-radioed i::before {position: absolute;top: 10px;left: 2px;width: 7px;transform: rotate(-135deg);}
+    .element_display{display:none;}
+    .search_box{position:relative;width: 100%;}
+    .search_refuse{position: absolute;background: #fff;box-shadow: 0px 0px 15px 2px #bdbcbc;width: 100%;font-size: 14px;padding: 5px 0px;overflow: scroll;height: 120px;z-index: 9;}
+    .license input{display:inline-block;}
+
+    .page_head{width:100%;background:#fff;margin-bottom:5px;box-shadow:0 0 4px #ddd;padding:10px 0 10px;}
+    .page_head .left{width:20%;display:flex;align-items:center;font-size:15px;}
+    .page_head .left .back{width:13px;height:13px;border-top:2px solid #000;border-left:2px solid #000;transform:rotate(-50deg);margin-left:15px;margin-right:5px;}
+
+    /**进度条**/
+    .layui-progress{display:none;position: fixed;background: #ffffff;border-radius: 5px;z-index:9999999;transform:translate(-50%,-50%);top: 50%;left:50%;width:80%;}
+</style>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" lay-filter="component-form-element1">
+            <div class="layui-col-md12">
+                <div class="layui-card ladInfo">
+                    <div class="layui-card-header">提单信息</div>
+                    <div class="layui-card-body">
+                        <div class="layui-card-header" style="color:#fff;background:#F7931E;">主体信息</div>
+                        <table class="layui-table">
+                            <thead>
+                            <tr>
+                                <th>电商平台</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <div class="disf">
+                                        <input type="radio" name="ebp_default" value="1" title="系统默认" lay-filter="ebp_default" checked>
+                                        <input type="radio" name="ebp_default" value="2" title="商户指定" lay-filter="ebp_default">
+                                    </div>
+                                    <div class="disf default">
+                                        <div class="search_box">
+                                            <input type="text" lay-verify="required" name="ebpName" placeholder="电商平台名称" value="佛山市钜铭商务资讯服务有限公司" autocomplete="off" class="layui-input element_display">
+                                        </div>
+                                        <div class="layui-btn element_display ebpSearch">查询</div>
+                                    </div>
+                                    <input type="text" lay-verify="required" name="ebpCode" placeholder="电商平台代码" value="44289609SL" autocomplete="off" class="layui-input element_display">
+                                </td>
+                            </tr>
+                            </tbody>
+
+                            <thead>
+                            <tr><th>电商企业</th></tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <div class="disf">
+                                        <input type="radio" name="ebc_default" value="1" title="系统默认" lay-filter="ebc_default" checked>
+                                        <input type="radio" name="ebc_default" value="2" title="商户指定" lay-filter="ebc_default">
+                                    </div>
+                                    <div class="disf default">
+                                        <div class="search_box">
+                                            <input type="text" lay-verify="required" name="ebcName" placeholder="电商企业名称" value="佛山市钜铭商务资讯服务有限公司" autocomplete="off" class="layui-input element_display">
+                                        </div>
+                                        <div class="layui-btn element_display ebcSearch">查询</div>
+                                    </div>
+                                    <input type="text" lay-verify="required" name="ebcCode" placeholder="电商企业代码" value="44289609SL" autocomplete="off" class="layui-input element_display">
+                                    <input type="text" lay-verify="required" name="ebc_tele_phone" placeholder="电商企业电话" value="0757-86329911" autocomplete="off" class="layui-input element_display">
+                                </td>
+                            </tr>
+                            </tbody>
+
+                            <thead>
+                            <tr><th>支付企业</th></tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <div class="disf">
+                                        <input type="radio" name="pay_default" value="1" title="系统默认" lay-filter="pay_default" checked>
+                                        <input type="radio" name="pay_default" value="2" title="商户指定" lay-filter="pay_default">
+                                    </div>
+                                    <input type="text" name="isDefault" id="isDefault" value="1" style="display:none;">
+                                    <div class="disf default">
+                                        <div class="search_box">
+                                            <input type="text" lay-verify="required" name="payName" placeholder="支付企业名称" value="现金支付" autocomplete="off" class="layui-input element_display">
+                                        </div>
+                                        <div class="layui-btn element_display paySearch">查询</div>
+                                    </div>
+                                    <input type="text" name="payCode" placeholder="支付企业代码" value="" autocomplete="off" class="layui-input element_display">
+                                </td>
+                            </tr>
+                            </tbody>
+                            <thead>
+                            <tr><th>物流企业</th></tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <div class="disf">
+                                        <input type="radio" name="logi_default" value="1" title="系统默认" lay-filter="logi_default" checked>
+                                        <input type="radio" name="logi_default" value="2" title="商户指定" lay-filter="logi_default">
+                                    </div>
+                                    <div class="disf default">
+                                        <div class="search_box">
+                                            <input type="text" lay-verify="required" name="logisticsName" placeholder="物流企业名称" value="荣通国际货运有限公司" autocomplete="off" class="layui-input element_display">
+                                        </div>
+                                        <div class="layui-btn element_display logiSearch">查询</div>
+                                    </div>
+                                    <input type="text" lay-verify="required" name="logisticsCode" placeholder="物流企业代码" value="4401983074" autocomplete="off" class="layui-input element_display">
+                                </td>
+                            </tr>
+                            </tbody>
+                            <thead>
+                            <tr><th>监管场所</th></tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <!--<div class="disf">-->
+                                    <!--<input type="radio" name="loctNo_default" class="layui-input" value="1" title="系统默认" lay-filter="loctNo_default" checked>-->
+                                    <!--<input type="radio" name="loctNo_default" class="layui-input" value="2" title="商户指定" lay-filter="loctNo_default">-->
+                                    <!--</div>-->
+                                    <div class="disf default">
+                                        <select name="loctNo" id="loctNo" lay-search>
+                                            {loop $loctcode $v}
+                                            <option value="{$v['code_value']}">{$v['code_value']}:{$v['code_name']}</option>
+                                            {/loop}
+                                        </select>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+
+
+                        </table>
+                    </div>
+
+                    <div class="layui-card-body">
+                        <div class="layui-card-header" style="color:#fff;background:#F7931E;">报关信息</div>
+                        <table class="layui-table">
+                            <thead>
+                            <tr>
+                                <th>申报海关</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <div class="disf">
+                                        <select name="customs_code" id="customs_code" lay-verify="required" lay-search>
+                                            <option value="">申报地海关</option>
+                                            {loop $customs_codes $val}
+                                            <option value="{$val['AreaCode']}">{$val['AreaCode']}</option>
+                                            {/loop}
+                                        </select>
+                                        <select name="port_code" id="port_code" lay-verify="required" lay-search>
+                                            <option value="">通关海关</option>
+                                            {loop $customs_codes $val}
+                                            <option value="{$val['AreaCode']}">{$val['AreaCode']}</option>
+                                            {/loop}
+                                        </select>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+
+                            <thead>
+                            <tr><th>出口日期</th></tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <input type="text" lay-verify="required" name="ie_date" class="layui-input" id="ie_date" placeholder="yyyyMMdd">
+                                </td>
+                            </tr>
+                            </tbody>
+
+                            <thead>
+                            <tr><th>起止国地</th></tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <div class="disf default">
+                                        <select name="pod" id="pod" lay-verify="required" lay-search>
+                                            <option value="">启运港口</option>
+                                            {loop $port_code $val}
+                                            <option value="{$val['code_value']}">{$val['code_name']}</option>
+                                            {/loop}
+                                        </select>
+                                        <select name="country_code" lay-verify="required" id="country_code" lay-search>
+                                            <option value="">运抵国别</option>
+                                            {loop $country_code $val}
+                                            <option value="{$val['code_value']}">{$val['code_name']}</option>
+                                            {/loop}
+                                        </select>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                            <thead>
+                            <tr><th>境内运抵</th></tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td class="license">
+                                    <!--<input type="text" lay-verify="required" name="voyage_no" placeholder="请输入货物运抵通关海关的车辆号牌" value="" autocomplete="off" class="layui-input">-->
+                                    <input type="text" lay-verify="required" name="license_place" placeholder="粤"  value="" autocomplete="off" class="layui-input" style="width:30px;" onchange="if(value.length > 1)value = value.slice(0, 1);">
+                                    <input type="text" lay-verify="required" name="license_place2" placeholder="Y"  value="" autocomplete="off" class="layui-input"style="width:30px;" oninput="if(value.length > 1)value = value.slice(0, 1)">
+                                    ▪
+                                    <input type="text" lay-verify="required" name="license_num1" placeholder="A"  value="" autocomplete="off" class="layui-input"style="width:30px;" oninput="if(value.length > 1)value = value.slice(0, 1)">
+                                    <input type="text" lay-verify="required" name="license_num2" placeholder="A"  value="" autocomplete="off" class="layui-input"style="width:30px;" oninput="if(value.length > 1)value = value.slice(0, 1)">
+                                    <input type="text" lay-verify="required" name="license_num3" placeholder="A"  value="" autocomplete="off" class="layui-input"style="width:30px;" oninput="if(value.length > 1)value = value.slice(0, 1)">
+                                    <input type="text" lay-verify="required" name="license_num4" placeholder="A"  value="" autocomplete="off" class="layui-input"style="width:30px;" oninput="if(value.length > 1)value = value.slice(0, 1)">
+                                    <input type="text" lay-verify="required" name="license_num5" placeholder="A"  value="" autocomplete="off" class="layui-input"style="width:30px;" oninput="if(value.length > 1)value = value.slice(0, 1)">
+                                    <input type="text" name="license_num6" placeholder="x" value="" autocomplete="off" class="layui-input" style="width:30px;border:2px solid #009688;" oninput="if(value.length > 1)value = value.slice(0, 1)">
+                                </td>
+                            </tr>
+                            </tbody>
+                            <thead>
+                            <tr><th>跨境运输</th></tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <select name="transport_code" id="transport_code" lay-filter="transport_select"  lay-verify="required" lay-search>
+                                        {loop $transport $val}
+                                        <option value="{$val['code_value']}">{$val['code_name']}</option>
+                                        {/loop}
+                                    </select>
+                                    <div class="sepcial_box" style="display:none;">
+                                        <div class="search_box">
+                                            <input type="text" name="iac_name" placeholder="区内企业名称" value="" autocomplete="off" class="layui-input" style="margin-top:7px;display:inline-block;width:78%;">
+                                            <div class="layui-btn iacSearch" style="display:inline-block;">查询</div>
+                                        </div>
+                                        <input type="text" name="iac_code" placeholder="区内企业代码" value="" autocomplete="off" class="layui-input" style="margin-top:7px;">
+                                        <input type="text" name="ems_no" placeholder="账册编号" value="" autocomplete="off" class="layui-input" style="margin-top:7px;">
+                                    </div>
+                                    <div class="normarl_box">
+                                        <input type="text" name="traf_name" placeholder="运输工具编号" value="" autocomplete="off" class="layui-input" style="margin-top:7px;">
+                                        <input type="text" name="oceanLad" placeholder="提单编号" value="" autocomplete="off" class="layui-input" style="margin-top:7px;">
+
+                                        <div class="layui-input-block" style="margin-left:0;margin-top:10px;">
+                                            <div class="layui-upload" style="text-align:left;">
+                                                <button type="button" class="layui-btn" id="transport_file-upload">上传文件</button>
+                                                <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                                                    预览图：
+                                                    <div class="layui-upload-list" id="transport_file-upload-list"></div>
+                                                </blockquote>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+
+
+                        </table>
+                    </div>
+                </div>
+
+                <div class="layui-card listInfo" style="display:none;">
+                    <div class="layui-card-header">清单信息</div>
+                    <div class="layui-input-block" style="margin-left:0;margin-top:10px;">
+                        <div class="layui-upload" style="text-align:left;">
+                            <button type="button" class="layui-btn list_file_active" id="list_file-upload">上传清单</button>
+                            <div type="button" class="layui-btn list_file_blur" style="background:#999;display:none;">上传清单</div>
+                            <a href="https://shop.gogo198.cn/addons/sz_yi/static/images/商品导入.xlsx" style="text-decoration: none;color:#ff2222;font-size:14px;margin-left:10px;">下载模板</a>
+                            <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                                预览图：
+                                <div class="layui-upload-list" id="list_file-upload-list"></div>
+                            </blockquote>
+                        </div>
+                    </div>
+                    <input type="text" style="display:none;" id="pre_batch_num" name="pre_batch_num" value="">
+                </div>
+
+                <div class="layui-form-item" style="margin-top: 15px;text-align: center;">
+                    <div>
+                        <div class="layui-btn layui-btn-normal up" style="display:none;">上一页</div>
+                        <button class="layui-btn layui-btn-normal submit" lay-submit="" lay-filter="component-form-element" style="display:none;background:#F7931E !important;">立即提交</button>
+                        <div class="layui-btn layui-btn-normal down">下一页</div>
+                    </div>
+                </div>
+
+
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript" src="../addons/sz_yi/static/js/layui/layui.js"></script>

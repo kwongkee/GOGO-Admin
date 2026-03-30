@@ -1,0 +1,818 @@
+{include file="public/header"}
+
+<body style="padding: 10px;">
+
+<script src="static/index/admin/js/jquery-1.8.0.min.js"></script>
+
+<form action="" class="layui-form" id="form1">
+
+    <input type="hidden" name="id" value="{$data['id']}">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">分配商户</label>
+        <div class="layui-input-inline" style="width: 200px;">
+            <select name="public" lay-verify="" lay-filter="public"  id="public" xm-select="public" xm-select-radio>
+                <option value="">公众号</option>
+                {volist name="account" id="vo"}
+                <option value="{$vo['uniacid']}" <?php if($vo['uniacid'] == $data['publicId']){ echo 'selected'; }?> >{$vo['name']}</option>
+                {/volist}
+            </select>
+        </div>
+        <div class="layui-input-inline" id="showUid" style="width: 200px;">
+            <select name="merchat" lay-verify="" lay-filter="merchat"  id="merchat" xm-select="merchat" xm-select-radio>
+                <option value="{$data['merchatId']}">{$data['merchatId']|merchatId}</option>
+            </select>
+        </div>
+    </div>
+    <hr>
+
+    <!-- 服务商户 -->
+    <div class="layui-form-item">
+        <label class="layui-form-label">服务商户</label>
+        <div class="layui-input-block">
+            <select name="serviceProvider" xm-select="serviceProvider">
+            {volist name="charging" id="vc"}
+                <option value="{$vc.uid}" {if !empty($data['merid'])}{if array_key_exists($vc['uid'],$data['merid'])}selected{/if}{/if}>{$vc.username}</option>
+            {/volist}
+            </select>
+        </div>
+    </div>
+    <hr>
+
+    <!-- 物流计费 -->
+<!--    <div class="layui-form-item">-->
+<!--        <label class="layui-form-label">物流计费</label>-->
+<!--        <div class="layui-input-block">-->
+<!--            <input type="radio" name="isLogisFee" value="1" title="收费"   lay-filter="isLogisFee" {if	condition="$data['isLogisFee']==1"} checked {/if} >-->
+<!--            <input type="radio" name="isLogisFee" value="0" title="不收费" lay-filter="isLogisFee" {if	condition="$data['isLogisFee']==0"} checked {/if}>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    <div class="isLogis" style="display:{if	condition='$data["isLogisFee"]==1'}  block {else /} none  {/if};">-->
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label">物流付费</label>-->
+<!--            <div class="layui-input-block">-->
+<!--                <input type="radio" name="logisPayer" value="1" title="平台付费" {if	condition="$data['logisPayer']==1"} checked {/if} >-->
+<!--                <input type="radio" name="logisPayer" value="2" title="卖家付费" {if	condition="$data['logisPayer']==2"} checked {/if} >-->
+<!--                <input type="radio" name="logisPayer" value="3" title="买家付费" {if	condition="$data['logisPayer']==3"} checked {/if} >-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label">承运企业</label>-->
+<!--            <div class="layui-input-inline" style="width: 100px;">-->
+<!--                <select name="logisId" lay-verify="" lay-filter="logisId"  id="logisId">-->
+<!--                    <option value="">物流企业</option>-->
+<!--                    {volist name="logics" id="vo"}-->
+<!--                    <option value="{$vo['id']}" {if	condition="$data['logisId']==$vo['pid']"} selected {/if} >{$vo['logisticName']}</option>-->
+<!--                    {/volist}-->
+<!--                </select>-->
+<!--            </div>-->
+<!--            <div class="layui-input-inline" style="width: 100px;">-->
+<!--                <select name="logisIds" lay-verify="" lay-filter="logisIds"  id="logisIds">-->
+<!--                    <option value="{$data['logisId']}">{$data['logisId']|logistics}</option>-->
+<!--                </select>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+    <!-- 物流计费 -->
+<!--    <hr>-->
+
+    <!-- 快递计费 -->
+<!--    <div class="layui-form-item">-->
+<!--        <label class="layui-form-label">快递计费</label>-->
+<!--        <div class="layui-input-block">-->
+<!--            <input type="radio" name="isExpressFee" value="1" title="收费"   lay-filter="isExpressFee" {if	condition="$data['isExpressFee']==1"} checked {/if} >-->
+<!--            <input type="radio" name="isExpressFee" value="0" title="不收费" lay-filter="isExpressFee" {if	condition="$data['isExpressFee']==0"} checked {/if} >-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    <div class="isExpress" style="display: {if	condition='$data["isExpressFee"]==1'}  block {else /} none  {/if};">-->
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label">快递付费</label>-->
+<!--            <div class="layui-input-block">-->
+<!--                <input type="radio" name="expressPayer" value="1" title="平台付费" {if	condition="$data['expressPayer']==1"} checked {/if} >-->
+<!--                <input type="radio" name="expressPayer" value="2" title="卖家付费" {if	condition="$data['expressPayer']==2"} checked {/if} >-->
+<!--                <input type="radio" name="expressPayer" value="3" title="买家付费" {if	condition="$data['expressPayer']==3"} checked {/if} >-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label">快递企业</label>-->
+<!--            <div class="layui-input-inline" style="width: 100px;">-->
+<!--                <select name="expressId" lay-verify="" lay-filter="expressId"  id="expressId">-->
+<!--                    <option value="">选择快递</option>-->
+<!--                    {volist name="express" id="vo"}-->
+<!--                    <option value="{$vo['id']}" {if	condition="$data['expressId']==$vo['id']"} selected {/if} >{$vo['expName']}</option>-->
+<!--                    {/volist}-->
+<!--                </select>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <hr>-->
+    <!-- 快递计费 -->
+
+
+
+    <!-- 包材计费 -->
+<!--    <div class="layui-form-item">-->
+<!--        <label class="layui-form-label">包材计费</label>-->
+<!--        <div class="layui-input-block">-->
+<!--            <input type="radio" name="isPackageFee" value="1" title="收费"   lay-filter="isPackageFee" {if	condition="$data['isPackageFee']==1"} checked {/if} >-->
+<!--            <input type="radio" name="isPackageFee" value="0" title="不收费" lay-filter="isPackageFee" {if	condition="$data['isPackageFee']==0"} checked {/if} >-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    <div class="isPackage" style="display: {if	condition='$data["isPackageFee"]==1'}  block {else /} none  {/if};">-->
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label">包材计费</label>-->
+<!--            <div class="layui-input-block">-->
+<!--                <input type="radio" name="packagePayer" value="1" title="平台付费" {if	condition="$data['packagePayer']==1"} checked {/if} >-->
+<!--                <input type="radio" name="packagePayer" value="2" title="卖家付费" {if	condition="$data['packagePayer']==2"} checked {/if} >-->
+<!--                <input type="radio" name="packagePayer" value="3" title="买家付费" {if	condition="$data['packagePayer']==3"} checked {/if} >-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label">包材费用</label>-->
+<!--            <div class="layui-input-inline" style="width: 100px;">-->
+<!--                <input type="text" name="packageMoney" value="{$data['packageMoney']}" class="layui-input">-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <hr>-->
+    <!-- 包材计费 -->
+
+
+    <!-- 快递保费 -->
+<!--    <div class="layui-form-item">-->
+<!--        <label class="layui-form-label">快递保费</label>-->
+<!--        <div class="layui-input-block">-->
+<!--            <input type="radio" name="isPremium" value="0" title="无需投保"   lay-filter="isPremium" {if condition="$data['isPremium']==0"} checked {/if} >-->
+<!--            <input type="radio" name="isPremium" value="1" title="自愿投保"   lay-filter="isPremium" {if condition="$data['isPremium']==1"} checked {/if} >-->
+<!--            <input type="radio" name="isPremium" value="2" title="强制投保"   lay-filter="isPremium" {if condition="$data['isPremium']==2"} checked {/if} >-->
+<!--        </div>-->
+<!--    </div>-->
+
+    <!-- 保费设置 -->
+<!--    <div class="isPrem" style="display: {if	condition='$data["isPremium"]==1 || $data["isPremium"]==2'}  block {else /} none  {/if};">-->
+
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label">保费设置</label>-->
+<!--            <div class="layui-input-block">-->
+<!--                <input type="radio" name="isRatio" value="1" title="定额保费" lay-filter="isRatio" {if condition="$data['isRatio']==1"} checked {/if} >-->
+<!--                <input type="radio" name="isRatio" value="2" title="比例保费" lay-filter="isRatio" {if condition="$data['isRatio']==2"} checked {/if} >-->
+<!--            </div>-->
+<!--        </div>-->
+
+        <!-- 定额保费 -->
+<!--        <div class="layui-form-item ratio" style="display: {if	condition='$data["isRatio"]==1'}  block {else /} none  {/if};">-->
+<!--            <label class="layui-form-label">定额保费</label>-->
+<!--            <div class="layui-input-inline" style="width: 100px;">-->
+<!--                <input type="text" name="ratioMoney" value="{$data['ratioMoney']}" class="layui-input">-->
+<!--            </div>-->
+<!--            <div class="layui-form-mid layui-word-aux">元/运单</div>-->
+<!--        </div>-->
+        <!-- 定额保费 -->
+
+        <!-- 比例保费 -->
+<!--        <div class="bili" style="display: {if condition='$data["isRatio"]==2'}  block {else /} none  {/if};">-->
+
+<!--            <div class="layui-form-item">-->
+<!--                <label class="layui-form-label">比例保费</label>-->
+<!--                <div class="layui-input-block">-->
+<!--                    <input type="radio" name="bili" value="1" title="快递费用" lay-filter="bili" {if condition="$data['bili']==1"} checked {/if} >-->
+<!--                    <input type="radio" name="bili" value="2" title="订单金额" lay-filter="bili" {if condition="$data['bili']==2"} checked {/if} >-->
+<!--                </div>-->
+<!--            </div>-->
+            <!-- 快递费用百分比 -->
+<!--            <div class="layui-form-item kd" style="display: {if condition='$data["bili"]==1'}  block {else /} none  {/if};">-->
+<!--                <label class="layui-form-label">快递费用</label>-->
+<!--                <div class="layui-input-inline">-->
+<!--                    <input type="text" name="expMoney" value="{$data['expMoney']*100}" placeholder="1-99"  class="layui-input"  min="1" max="100"  maxlength="3">-->
+<!--                </div>-->
+<!--                <div class="layui-form-mid layui-word-aux">百分比</div>-->
+<!--            </div>-->
+            <!-- 快递费用百分比 -->
+
+            <!-- 订单金额百分比 -->
+<!--            <div class="layui-form-item dd" style="display: {if condition='$data["bili"]==2'}  block {else /} none  {/if};">-->
+<!--                <label class="layui-form-label">订单金额</label>-->
+<!--                <div class="layui-input-inline">-->
+<!--                    <input type="text" name="shopMoney" value="{$data['shopMoney']*100}" placeholder="1-99" class="layui-input" min="1" max="100" maxlength="3">-->
+<!--                </div>-->
+<!--                <div class="layui-form-mid layui-word-aux">百分比</div>-->
+<!--            </div>-->
+            <!-- 订单金额百分比 -->
+<!--        </div>-->
+        <!-- 比例保费 -->
+<!--    </div>-->
+<!--    <hr>-->
+    <!-- 保费设置 -->
+
+
+
+    <!-- 清关计费 -->
+<!--    <div class="layui-form-item">-->
+<!--        <label class="layui-form-label">清关计费</label>-->
+<!--        <div class="layui-input-block">-->
+<!--            <input type="radio" name="isShut" value="1" title="收费"   lay-filter="isShut" {if condition="$data['isShut']==1"} checked {/if} >-->
+<!--            <input type="radio" name="isShut" value="0" title="不收费" lay-filter="isShut" {if condition="$data['isShut']==0"} checked {/if} >-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    <div class="isShuts" style="display: {if condition='$data["isShut"]==1'}  block {else /} none  {/if};">-->
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label">清关付费者</label>-->
+<!--            <div class="layui-input-block">-->
+<!--                <input type="radio" name="payers" value="1" title="平台付费" {if condition="$data['payers']==1"} checked {/if} >-->
+<!--                <input type="radio" name="payers" value="2" title="卖家付费" {if condition="$data['payers']==2"} checked {/if} >-->
+<!--                <input type="radio" name="payers" value="3" title="买家付费" {if condition="$data['payers']==3"} checked {/if} >-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label">计费方式</label>-->
+<!--            <div class="layui-input-block">-->
+<!--                <input type="radio" name="payersFee" value="1" title="商品价款比例" lay-filter="payersFee" {if condition="$data['payersFee']==1"} checked {/if} >-->
+<!--                <input type="radio" name="payersFee" value="2" title="包裹订单定额" lay-filter="payersFee" {if condition="$data['payersFee']==2"} checked {/if} >-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="layui-form-item payFee" style="display: {if condition='$data["payersFee"]==1'}  block {else /} none  {/if};">-->
+<!--            <label class="layui-form-label">比例设置</label>-->
+<!--            <div class="layui-input-inline" style="width: 100px;">-->
+<!--                <input type="text" name="payFee" value="{$data['payFee']*100}" class="layui-input" min="1" max="100" maxlength="3" placeholder="请输入1-100之间的数字">-->
+<!--            </div>-->
+<!--            <div class="layui-form-mid layui-word-aux">商品价款的百分比</div>-->
+<!--        </div>-->
+
+<!--        <div class="layui-form-item payFees" style="display: {if condition='$data["payersFee"]==2'}  block {else /} none  {/if};">-->
+<!--            <label class="layui-form-label">定额设置</label>-->
+<!--            <div class="layui-input-inline" style="width: 100px;">-->
+<!--                <input type="text" name="payFees" value="{$data['payFee']}" class="layui-input" placeholder="请输入金额">-->
+<!--            </div>-->
+<!--            <div class="layui-form-mid layui-word-aux">包裹订单定额</div>-->
+<!--        </div>-->
+
+<!--    </div>-->
+<!--    <hr>-->
+    <!-- 清关计费 -->
+
+
+    <!-- 税费计收 -->
+<!--    <div class="layui-form-item">-->
+<!--        <label class="layui-form-label">税费计收</label>-->
+<!--        <div class="layui-input-block">-->
+<!--            <input type="radio" name="isTax" value="1" title="收费"   lay-filter="isTax" {if condition="$data['isTax']==1"} checked {/if} >-->
+<!--            <input type="radio" name="isTax" value="0" title="不收费" lay-filter="isTax" {if condition="$data['isTax']==0"} checked {/if} >-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    <div class="isTaxs" style="display: {if condition='$data["isTax"]==1'}  block {else /} none  {/if};">-->
+
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label">税费付费</label>-->
+<!--            <div class="layui-input-block">-->
+<!--                <input type="radio" name="taxPay" value="1" title="平台付费" {if condition="$data['taxPay']==1"} checked {/if} >-->
+<!--                <input type="radio" name="taxPay" value="2" title="卖家付费" {if condition="$data['taxPay']==2"} checked {/if} >-->
+<!--                <input type="radio" name="taxPay" value="3" title="买家付费" {if condition="$data['taxPay']==3"} checked {/if} >-->
+<!--            </div>-->
+<!--        </div>-->
+
+
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label">跨境电商综合税</label>-->
+<!--            <div class="layui-input-block">-->
+<!--                <input type="radio" name="taxCross" value="1" title="收费" {if condition="$data['taxCross']==1"} checked {/if} >-->
+<!--                <input type="radio" name="taxCross" value="0" title="不收费" {if condition="$data['taxCross']==0"} checked {/if} >-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label">个人物品行邮税</label>-->
+<!--            <div class="layui-input-block">-->
+<!--                <input type="radio" name="taxPerson" value="1" title="收费" lay-filter="taxPerson" {if condition="$data['taxPerson']==1"} checked {/if} >-->
+<!--                <input type="radio" name="taxPerson" value="0" title="不收费" lay-filter="taxPerson" {if condition="$data['taxPerson']==0"} checked {/if} >-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="layui-form-item taxPer" style="display: {if condition='$data["taxPerson"]==1'}  block {else /} none  {/if};">-->
+<!--            <label class="layui-form-label">身份验真</label>-->
+<!--            <div class="layui-input-inline" style="width: 100px;">-->
+<!--                <input type="text" name="carMoney" value="{$data['carMoney']}" class="layui-input" placeholder="请输入金额">-->
+<!--            </div>-->
+<!--            <div class="layui-form-mid layui-word-aux">x元/订单</div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <hr>-->
+    <!-- 税费计收 -->
+
+
+    <!-- 商品计费 -->
+<!--    <div class="layui-form-item">-->
+<!--        <label class="layui-form-label">商品计费</label>-->
+<!--        <div class="layui-input-block">-->
+<!--            <input type="radio" name="isShop" value="1" title="收费"   lay-filter="isShop" {if condition="$data['isShop']==1"} checked {/if} >-->
+<!--            <input type="radio" name="isShop" value="0" title="不收费" lay-filter="isShop" {if condition="$data['isShop']==0"} checked {/if} >-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    <div class="isShops" style="display: {if condition='$data["isShop"]==1'}  block {else /} none  {/if};">-->
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label">计费方式</label>-->
+<!--            <div class="layui-input-block">-->
+<!--                <input type="radio" name="ifFull" value="0" title="全额支付" lay-filter="ifFull" {if condition="$data['ifFull']==0"} checked {/if} >-->
+<!--                <input type="radio" name="ifFull" value="1" title="比例支付" lay-filter="ifFull" {if condition="$data['ifFull']==1"} checked {/if} >-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="layui-form-item ifFulls" style="display: {if condition='$data["ifFull"]==1'} block {else /} none {/if};">-->
+<!--            <label class="layui-form-label">比例设置</label>-->
+<!--            <div class="layui-input-inline" style="width: 100px;">-->
+<!--                <input type="text" name="fullFee" value="{$data['fullFee']*100}" class="layui-input" placeholder="输入1-100的数字" min="1" max="100" maxlength="3">-->
+<!--            </div>-->
+<!--            <div class="layui-form-mid layui-word-aux">商品金额百分比</div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <hr>-->
+    <!-- 商品计费 -->
+
+<!--    <div class="layui-form-item">-->
+<!--        <label class="layui-form-label">支付方式</label>-->
+<!--        <div class="layui-input-block">-->
+<!--            <input type="radio" name="payType" value="1" title="在线支付" {if condition="$data['payType']==1"} checked {/if} >-->
+<!--            <input type="radio" name="payType" value="2" title="线下支付" {if condition="$data['payType']==2"} checked {/if} >-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <hr>-->
+    <!-- 支付方式 -->
+
+</form>
+
+<div class="layui-form-item">
+    <div class="layui-input-block">
+        <button class="layui-btn" onclick="save()">确认商户配置</button>
+    </div>
+</div>
+<link rel="stylesheet" type="text/css" href="//raw.githack.com/hnzzmsf/layui-formSelects/master/dist/formSelects-v4.css" />
+<script src="//raw.githack.com/hnzzmsf/layui-formSelects/master/dist/formSelects-v4.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var servicePayTpe='<?php echo json_decode($service_func,true)==""?"":$service_func?>';
+    layui.use(['layer','form','laydate'],function() {
+        laydate = layui.laydate;
+        layer = layui.layer;
+        form = layui.form;
+        $ = layui.jquery;
+
+        laydate.render({
+            elem: '#Times' //指定元素
+        });
+
+        // form.on('select(public)', function (data) {
+        //
+        //     $.post("{:Url('admin/transport/getMerchat')}", {uniacid: data.value}, function (red) {
+        //
+        //         var res = JSON.parse(red);
+        //         var str = '';
+        //         if (res.code == 1) {
+        //             str += '<option value="">选择商户</option>';
+        //
+        //             $.each(res.data, function (i, item) {
+        //                 str += '<option value="' + item.uid + '">' + item.username + '</option>';
+        //             })
+        //
+        //         } else {
+        //             str += '<option value="">' + res.data + '</option>';
+        //         }
+        //
+        //         $('#merchat').html(str);
+        //         form.render('select'); //刷新select选择框渲染
+        //
+        //     });
+        // });
+
+        // 物流计费  是否收费
+        form.on('radio(isLogisFee)', function(data) {
+            // 显示，
+            if(data.value == 1) {
+                $('.isLogis').css('display','block');
+            } else {
+                // 隐藏
+                $('.isLogis').css('display','none');
+            }
+        });
+
+        //  获取物流线路
+        form.on('select(logisId)', function (data) {
+
+            $.post("{:Url('admin/charging/getWaybill')}", {id: data.value}, function (red) {
+
+                var res = JSON.parse(red);
+                var str = '';
+                if (res.code == 1) {
+                    str += '<option value="">选择物流路线</option>';
+
+                    $.each(res.data, function (i, item) {
+                        str += '<option value="' + item.id + '">' + item.routeName + '</option>';
+                    })
+
+                } else {
+                    str += '<option value="">' + res.data + '</option>';
+                }
+
+                $('#logisIds').html(str);
+                form.render('select'); //刷新select选择框渲染
+
+            });
+        });
+
+        // 快递计费  是否收费
+        form.on('radio(isExpressFee)', function(data) {
+            // 显示，
+            if(data.value == 1) {
+                $('.isExpress').css('display','block');
+            } else {
+                // 隐藏
+                $('.isExpress').css('display','none');
+            }
+        });
+
+        // 包材计费  是否收费
+        form.on('radio(isPackageFee)', function(data) {
+            // 显示，
+            if(data.value == 1) {
+                $('.isPackage').css('display','block');
+            } else {
+                // 隐藏
+                $('.isPackage').css('display','none');
+            }
+        });
+
+        // 快递保费  是否收费
+        form.on('radio(isPremium)', function(data) {
+            // 显示，
+            if(data.value >=1) {
+                $('.isPrem').css('display','block');
+            } else {
+                // 隐藏
+                $('.isPrem').css('display','none');
+            }
+        });
+
+        // 保费设置  是否收费
+        form.on('radio(isRatio)', function(data) {
+            // 显示，
+            if(data.value == 1) {
+                $('.ratio').css('display','block');
+                $('.bili').css('display','none');
+            } else {
+                // 隐藏
+                $('.ratio').css('display','none');
+                $('.bili').css('display','block');
+            }
+        });
+
+        // 比例保费  是否收费
+        form.on('radio(bili)', function(data) {
+            // 显示，
+            if(data.value == 1) {
+                $('.kd').css('display','block');
+                $('.dd').css('display','none');
+            } else {
+                // 隐藏
+                $('.kd').css('display','none');
+                $('.dd').css('display','block');
+            }
+        });
+
+        // 清关计费  是否收费
+        form.on('radio(isShut)', function(data) {
+            // 显示，
+            if(data.value == 1) {
+                $('.isShuts').css('display','block');
+            } else {
+                // 隐藏
+                $('.isShuts').css('display','none');
+            }
+        });
+
+        // 清关计费  按商品或包裹
+        form.on('radio(payersFee)', function(data) {
+            // 显示，
+            if(data.value == 1) {
+                $('.payFee').css('display','block');
+                $('.payFees').css('display','none');
+            } else {
+                // 隐藏
+                $('.payFee').css('display','none');
+                $('.payFees').css('display','block');
+            }
+        });
+
+        // 税费计收  按商品或包裹
+        form.on('radio(isTax)', function(data) {
+            // 显示，
+            if(data.value == 1) {
+                $('.isTaxs').css('display','block');
+            } else {
+                // 隐藏
+                $('.isTaxs').css('display','none');
+            }
+        });
+
+        // 身份验证是否收费
+        form.on('radio(taxPerson)', function(data) {
+            // 显示，
+            if(data.value == 1) {
+                $('.taxPer').css('display','block');
+            } else {
+                // 隐藏
+                $('.taxPer').css('display','none');
+            }
+        });
+
+        // 商品计算
+        form.on('radio(isShop)', function(data) {
+            // 显示，
+            if(data.value == 1) {
+                $('.isShops').css('display','block');
+            } else {
+                // 隐藏
+                $('.isShops').css('display','none');
+            }
+        });
+
+        // 商品计费，计费方式
+        form.on('radio(ifFull)', function(data) {
+            // 显示，
+            if(data.value == 1) {
+                $('.ifFulls').css('display','block');
+            } else {
+                // 隐藏
+                $('.ifFulls').css('display','none');
+            }
+        });
+
+        var m_id ='';
+        servicePayTpe = JSON.parse(servicePayTpe);
+        console.dir(servicePayTpe);
+        $.each( layui.formSelects.value('serviceProvider', 'all'),function (i,item) {
+            m_id+=item.value+',';
+        });
+
+        $.ajax({
+            url: "{:Url('admin/charging/getServiceProviderService')}",
+            type: "GET",
+            dataType: "json",
+            data: {m_id: m_id},
+            success: function (ret) {
+                var h = '';
+                var n =0;
+                $.each(ret.data, function (i, item) {
+                    if (n>servicePayTpe[item.m_id].length-1){
+                        n =0;
+                    }
+                    h += '<div class="layui-form-item ' + item.m_id + '" >\n' +
+                        '        <label class="layui-form-label">' + item.service_name + '</label>\n' +
+                        '        <div class="layui-input-block serv">\n' +
+                        '           <input type="hidden" name="id" id="id" value="' + item.id + '">\n' +
+                        '           <input type="hidden" name="mid" id="mid" value="' + item.m_id + '">\n' +
+                        '            <input type="radio" name="payType' + item.id + '" value="11" title="平台支付" '+(servicePayTpe[item.m_id][n][item.id]=="11"?"checked=true":"")+'>\n' +
+                        '            <input type="radio" name="payType' + item.id + '" value="12" title="买家支付" '+(servicePayTpe[item.m_id][n][item.id]=="12"?"checked=true":"")+'>\n' +
+                        '            <input type="radio" name="payType' + item.id + '" value="13" title="卖家支付" '+(servicePayTpe[item.m_id][n][item.id]=="13"?"checked=true":"")+'>\n' +
+                        '        </div>\n' +
+                        '    </div>';
+                    n++;
+                });
+                $('form').append(h);
+                form.render('radio');
+            }, error: function () {
+                layer.msg('获取数据失败');
+            }
+        });
+
+    });
+
+
+    layui.formSelects.on('public',function (id, vals, val, isAdd, isDisabled) {
+        $.post("{:Url('admin/transport/getMerchat')}", {uniacid: val.value}, function (red) {
+            var res = JSON.parse(red);
+            var str = '';
+            if (res.code == 1) {
+                str += '<option value="">选择商户</option>';
+
+                $.each(res.data, function (i, item) {
+                    str += '<option value="' + item.uid + '">' + item.username + '</option>';
+                })
+
+            } else {
+                str += '<option value="">' + res.data + '</option>';
+            }
+
+            $('#merchat').html(str);
+            layui.formSelects.render('merchat');
+
+        });
+    });
+    layui.formSelects.on('serviceProvider',function (id,vals,val,isAdd,isDisabled) {
+        if (isAdd){
+            $.ajax({
+                url:"{:Url('admin/charging/getServiceProviderService')}",
+                type:"GET",
+                dataType:"json",
+                data:{m_id:val.value},
+                success:function (ret) {
+                    var h='';
+                    $.each(ret.data,function (i,item) {
+                        h+='<div class="layui-form-item '+val.value+'" >\n' +
+                            '        <label class="layui-form-label">'+item.service_name+'</label>\n' +
+                            '        <div class="layui-input-block serv">\n' +
+                            '           <input type="hidden" name="id" id="id" value="'+item.id+'">\n' +
+                            '           <input type="hidden" name="mid" id="mid" value="'+item.m_id+'">\n' +
+                            '            <input type="radio" name="payType'+item.id+'" value="11" title="平台支付">\n' +
+                            '            <input type="radio" name="payType'+item.id+'" value="12" title="买家支付">\n' +
+                            '            <input type="radio" name="payType'+item.id+'" value="13" title="卖家支付">\n' +
+                            '        </div>\n' +
+                            '    </div>'
+                    });
+                    $('form').append(h);
+                    form.render('radio');
+                },error:function () {
+                    layer.msg('获取数据失败');
+                }
+            });
+        }else{
+            $(('.'+val.value)).remove();
+        }
+    });
+    // 分配确认
+    function save()
+    {
+        // var merchatIds = '';
+        // $.each($("input[name='ischeckbox']:checked"),function(inx,obj){
+        //     merchatIds += $(obj).val()+',';
+        // });
+        // // 公众号ID
+        // var publicId           = $("#public option:selected").val();
+        // // 商户ID
+        // var merchatId          = $("#merchat option:selected").val();
+        // // 物流计费
+        // var isLogisFee          = $("input[name='isLogisFee']:checked").val();
+        // // 物流付费者
+        // var logisPayer          = $("input[name='logisPayer']:checked").val();
+        // //  承运线路
+        // var logisId             = $("#logisIds option:selected").val();
+        //
+        //
+        // // 快递计费
+        // var isExpressFee          = $("input[name='isExpressFee']:checked").val();
+        // // 快递付费者
+        // var expressPayer          = $("input[name='expressPayer']:checked").val();
+        // // 快递企业
+        // var expressId           = $("#expressId option:selected").val();
+        //
+        //
+        // // 包材计费
+        // var isPackageFee          = $("input[name='isPackageFee']:checked").val();
+        // // 包材付费者
+        // var packagePayer          = $("input[name='packagePayer']:checked").val();
+        // // 包材金额
+        // var packageMoney          = $("input[name='packageMoney']").val();
+        //
+        //
+        // // 快递保费
+        // var isPremium           = $("input[name='isPremium']:checked").val();
+        // // 保费设置
+        // var isRatio               = $("input[name='isRatio']:checked").val();
+        // // 定额保费
+        // var ratioMoney               = $("input[name='ratioMoney']").val();
+        // //  比例保费
+        // var bili                    = $("input[name='bili']:checked").val();
+        //
+        // // 快递费用百分比
+        // var expMoney               = $("input[name='expMoney']").val();
+        // //  订单金额百分比
+        // var shopMoney               = $("input[name='shopMoney']").val();
+        //
+        //
+        // // 清关计费
+        // var isShut                = $("input[name='isShut']:checked").val();
+        // // 清关付费者
+        // var payers                = $("input[name='payers']:checked").val();
+        // // 计费设置
+        // var payersFee                = $("input[name='payersFee']:checked").val();
+        // //  比例设置
+        // var payFee               = $("input[name='payFee']").val();
+        // //  定额设置
+        // var payFees               = $("input[name='payFees']").val();
+        //
+        //
+        // //  税费计收
+        // var isTax                = $("input[name='isTax']:checked").val();
+        // //  税费付费者
+        // var taxPay                = $("input[name='taxPay']:checked").val();
+        // //  跨境综合税
+        // var taxCross                = $("input[name='taxCross']:checked").val();
+        // //  个人物品行邮税
+        // var taxPerson                = $("input[name='taxPerson']:checked").val();
+        // //  比例金额
+        // var carMoney               = $("input[name='carMoney']").val();
+        //
+        //
+        // // 商品计费
+        // var isShop                = $("input[name='isShop']:checked").val();
+        // // 计费方式
+        // var ifFull                = $("input[name='ifFull']:checked").val();
+        // // 比例金额
+        // var fullFee               = $("input[name='fullFee']").val();
+        //
+        // // 支付方式
+        // var payType                = $("input[name='payType']:checked").val();
+
+        // // Id
+        var id                = $("input[name='id']").val();
+        // 公众号ID
+        var publicId = layui.formSelects.value('public');
+        // 商户ID
+        var merchatId = layui.formSelects.value('merchat');
+        publicId=publicId.length>=1?publicId[0].value:"";
+        merchatId = merchatId.length>=1?merchatId[0].value:"";
+        var serviceConf = new Array();
+        $.each($('.serv'),function (index,obj) {
+            var mid = $(obj).find('#mid').val();
+            var keys =  $(obj).find('#id').val();
+            var val = $(obj).find("input[type='radio']:checked").val();
+            serviceConf.push({mid,keys,val});
+        });
+        serviceConf=JSON.stringify(serviceConf);
+        if(publicId == '') {layer.msg('请选择公众号',{icon:2});return false;}
+        if(merchatId == '') {layer.msg('请选择商户',{icon:2});return false;}
+        // if(logisId == '') {layer.msg('请选择承运路线',{icon:2});return false;}
+        // if(expressId == '') {layer.msg('请选择快递企业',{icon:2});return false;}
+        // if(packageMoney == '') {layer.msg('请输入包材费用',{icon:2});return false;}
+        // if( isPremium >0 && isRatio == '' ) {layer.msg('请选择保费设置',{icon:2});return false;}
+        // if( isRatio == 1 && ratioMoney == '' ) {layer.msg('请输入定额金额',{icon:2});return false;}
+        // if( bili == 1 && expMoney == '' ) {layer.msg('请输入快递费用百分比',{icon:2});return false;}
+        // if( bili == 2 && shopMoney == '' ) {layer.msg('请输入订单金额百分比',{icon:2});return false;}
+        // if( payersFee == 1 && payFee == '' ) {layer.msg('请输入商品价款的百分比',{icon:2});return false;}
+        // if( payersFee == 2 && payFees == '' ) {layer.msg('请输入包裹订单定额',{icon:2});return false;}
+        // if( taxPerson == 1 && carMoney == '' ) {layer.msg('请输入身份验真金额',{icon:2});return false;}
+        // if( ifFull == 1 && fullFee == '' ) {layer.msg('请输入商品比例百分比',{icon:2});return false;}
+
+
+        // 请求处理数据
+        $.post("{:Url('admin/charging/doAdd')}",{
+            id:id,
+            publicId:publicId,
+            merchatId:merchatId,
+            serviceConf:serviceConf,
+            // merchatIds:merchatIds,
+            // expressId:expressId,
+            // isLogisFee:isLogisFee,
+            // logisPayer:logisPayer,
+            // logisId:logisId,
+            // isExpressFee:isExpressFee,
+            // expressPayer:expressPayer,
+            // isPackageFee:isPackageFee,
+            // packagePayer:packagePayer,
+            // packageMoney:packageMoney,
+            // isPremium:isPremium,
+            // isRatio:isRatio,
+            // ratioMoney:ratioMoney,
+            // bili:bili,
+            // expMoney:expMoney,
+            // shopMoney:shopMoney,
+            // isShut:isShut,
+            // payers:payers,
+            // payersFee:payersFee,
+            // payFee:payFee,
+            // payFees:payFees,
+            // isTax:isTax,
+            // taxPay:taxPay,
+            // taxCross:taxCross,
+            // taxPerson:taxPerson,
+            // carMoney:carMoney,
+            // isShop:isShop,
+            // ifFull:ifFull,
+            // fullFee:fullFee,
+            // payType:payType,
+            Method:'edit',
+        },function(resd){
+
+            var res = JSON.parse(resd);
+            if(res.code == 1) {
+                layer.msg(res.msg,{icon:1});
+                setTimeout(function(){
+                    layer.closeAll();
+                    parent.window.location.reload();
+                },1000);
+            } else {
+                layer.msg(res.msg,{icon:2});
+            }
+
+        });
+    }
+</script>
+</body>
+</html>

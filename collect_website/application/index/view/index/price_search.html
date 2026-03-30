@@ -1,0 +1,563 @@
+{include file="common/header"}
+<link rel="stylesheet" href="static/hadmin/css/zTreeStyle/zTreeStyle.css"/>
+
+<style>
+    /**价格查询&包裹追踪**/
+    .index_query{width: 100%;height: 360px;border-radius: 30px;margin-top:180px;}
+    .index_query .hd{height:84px;}
+    .index_query .hd ul{padding:0 18px;}
+    .index_query .hd ul li{width: 50%;float:left;height:84px;line-height: 50px;padding-left: 12px;padding-top:20px;font-size: 18px;cursor: pointer;}
+    .index_query .hd ul li.on{border-bottom:rgb(186,33,38) solid 2px;}
+    .index_query .bd{margin-left:9px;margin-right: 9px;}
+
+    .index_query tr,td{padding:13px 5px;font-weight:500;color:#000;font-size: 13px;}
+    .index_query a{color:#F60;}
+    .index_query input{line-height:26px;border:#999 solid 1px;color:#666;padding:1px 3px;width:100%;}
+    .index_query .gusuan{font-size: 16px;padding: 8px 35px;display: inline-block;line-height: 20px;transition: all 1s cubic-bezier(0.175,0.885,0.32,1) 0s;cursor: pointer;color:#FFF;}
+    .index_query .gusuan:hover{background:#FFF;color:#000;}
+    .index_query .btn2{font-size: 14px;width:200px;padding: 5px 8px;display: inline-block;line-height: 20px;transition: all 1s cubic-bezier(0.175,0.885,0.32,1) 0s;cursor: pointer;color:#444;border:1px solid #d1d1d1;border-radius: 5px;}
+    .index_query .bd{margin-left:9px;margin-right: 9px;}
+    .index_query .bd .box{border-top:#333 solid 1px;}
+    .index_query .padding{display:none;}
+    .index_query .gusuan.bg-blue{background:rgb(1,142,215);border-radius:30px;border:1px solid rgb(1,142,215);}
+
+    .dept_select{max-width:200px;}
+    .disf{display:flex;align-items: center;}
+    .line_content{width:100%;max-width:1200px;padding:20px;box-sizing: border-box;margin:0 auto;}
+    .example-popover{display: none;position: fixed;width:70%;height:70%;left:50%;top:50%;transform:translate(-50%,-50%);background:#eee;overflow:scroll;padding:10px 15px;box-sizing: border-box;}
+    @media screen and (max-width: 768px){
+        .index_query{margin-top:100px;}
+        .line_content{max-width: 100%;}
+        .boxx{float: left;}
+    }
+    .modal-backdrop{background:rgba(0,0,0,0.5);}
+    td{white-space: nowrap;}
+    #table2 tbody tr td{padding:4px;}
+
+    /**打开菜单按钮**/
+    .ztree li span.button.roots_open,.ztree li span.button.bottom_open,.ztree li span.button.center_open{background-position: -180px -7px;background-size: 300px;}
+    .ztree li span.button.switch {width: 23px;height: 23px;}
+    .ztree li span.button.roots_close,.ztree li span.button.center_close,.ztree li span.button.bottom_close{background-position: -146px -7px;background-size: 300px;}
+
+    /**选中checkbox**/
+    .ztree li span.button.chk.checkbox_false_full,.ztree li span.button.chk.checkbox_false_full_focus,.ztree li span.button.chk.checkbox_true_full,.ztree li span.button.chk.checkbox_true_full_focus,.ztree li span.button.chk.checkbox_true_part,.ztree li span.button.chk.checkbox_true_part_focus{background-size: 300px;}
+    .ztree li span.button.chk {width: 26px;height: 26px;}
+    .ztree li span.button.chk.checkbox_true_full,.ztree li span.button.chk.checkbox_false_full_focus{background-position: -26px 0;}
+    .ztree li span.button.chk.checkbox_true_full_focus,.ztree li span.button.chk.checkbox_true_part,.ztree li span.button.chk.checkbox_true_part_focus{background-position: -26px -26px;}
+    .ztree *{font-size:16px !important;}
+    .ztree .ico_close,.ztree .ico_open,.ztree li span.button.ico_docu{display: none !important;}
+
+    #other{width: 25px;height: 25px;margin-left: 28px;margin-right: 6px;}
+</style>
+
+<div class="index_query">
+    <div class="bd">
+        <div class="boxx padding-top">
+            <table width="100%" style="float:left;max-width: 600px;margin: 0 auto;margin-left: 50%;transform: translate(-50%,0%);">
+                <tbody>
+                    <tr>
+                        <td align="right">目的国地：</td>
+                        <td>
+                            <select name="country" style="width: 100%;" id="dept" class="dept_select">
+                                <option value="">请选择目的国地</option>
+                                {volist name="country" id="vo"}
+<!--                                $vo['ShortName']:-->
+                                    <option value="{$vo['Cnname']}">{$vo['Cnname']}</option>
+                                {/volist}
+                            </select>
+                        </td>
+                    </tr>
+<!--                    <tr>-->
+<!--                        <td align="right">货物类型：</td>-->
+<!--                        <td>-->
+<!--                            <select name="shape_type" style="width: 100%;" id="shape_type" class="dept_select">-->
+<!--                                <option value="1">非圆筒货物</option>-->
+<!--                                <option value="2">圆筒形货物</option>-->
+<!--                            </select>-->
+<!--                        </td>-->
+<!--                    </tr>-->
+                    <tr>
+                        <td align="right">货物属性：</td>
+                        <td>
+                            <div class="disf">
+                                <select name="goods_item" style="width: 100%;" id="goods_item" class="dept_select">
+                                    {volist name="value" id="vo"}
+                                    <option value="{$vo.id}">{$vo.name}</option>
+                                    {/volist}
+                                    <option value="999">其它，以上都不是</option>
+                                </select>
+                                <div style="margin-left:5px;text-decoration:underline;cursor:pointer;" onclick="javascript:introduce();">属性详情</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">选择物品：</td>
+                        <td>
+                            <div class="select_product btn2">点击选择</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">货件信息：</td>
+                        <td>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <table class="table table-hover col-xs-12 table-bordered" style="white-space: nowrap;" id="table2">
+
+                                <thead>
+<!--                                <th style="text-align:center;">品名</th>-->
+                                <th>长度<br/>cm</th>
+                                <th>宽度<br/>cm</th>
+                                <th>高度<br/>cm</th>
+                                <th>重量<br/>kg</th>
+<!--                                <th>件数</th>-->
+<!--                                <th>操作</th>-->
+                                </thead>
+                                <tbody>
+                                <tr>
+<!--                                    <td>-->
+<!--                                        <input name="product_name" id="product_name" type="text">-->
+<!--                                    </td>-->
+                                    <td>
+                                        <input name="long" type="text" id="long" size="3" oninput="value=value.replace(/^\D*(\d*(?:\.\d{0,1})?).*$/g, '$1')" placeholder="长">
+                                    </td>
+                                    <td>
+                                        <input name="width" type="text" id="width" size="3" oninput="value=value.replace(/^\D*(\d*(?:\.\d{0,1})?).*$/g, '$1')" placeholder="宽">
+                                    </td>
+                                    <td>
+                                        <input name="Height" type="text" id="height" size="3" oninput="value=value.replace(/^\D*(\d*(?:\.\d{0,1})?).*$/g, '$1')" placeholder="高">
+                                    </td>
+                                    <td>
+                                        <input name="sStages" oninput="value=value.replace(/^\D*(\d*(?:\.\d{0,2})?).*$/g, '$1')" id="sStages" type="text">
+                                    </td>
+<!--                                    <td>-->
+<!--                                        <input name="num" oninput="value=value.replace(/^\D*(\d*(?:\.\d{0,2})?).*$/g, '$1')" id="num" type="text">-->
+<!--                                    </td>-->
+<!--                                    <td></td>-->
+                                </tr>
+                                </tbody>
+<!--                                <tfoot>-->
+<!--                                    <tr>-->
+<!--                                        <td colspan="7" align="center">-->
+<!--                                            <div class="btn btn-primary addline" style="background:rgb(198,0,11);border:1px solid rgb(198,0,11);">+添加包裹</div>-->
+<!--                                        </td>-->
+<!--                                    </tr>-->
+<!--                                </tfoot>-->
+                            </table>
+                        </td>
+                    </tr>
+<!--                    <tr>-->
+<!--                        <td align="right">实际重量：</td>-->
+<!--                        <td><input name="sStages" oninput="value=value.replace(/^\D*(\d*(?:\.\d{0,2})?).*$/g, '$1')" id="sStages" type="text">（KG）</td>-->
+<!--                    </tr>-->
+<!--                    <tr>-->
+<!--                        <td align="right">体积：</td>-->
+<!--                        <td>-->
+<!--                            <input name="long" type="text" id="long" size="3" oninput="value=value.replace(/^\D*(\d*(?:\.\d{0,1})?).*$/g, '$1')" placeholder="长">-->
+<!--                            <input name="width" type="text" id="width" size="3" oninput="value=value.replace(/^\D*(\d*(?:\.\d{0,1})?).*$/g, '$1')" placeholder="宽">-->
+<!--                            <input name="Height" type="text" id="height" size="3" oninput="value=value.replace(/^\D*(\d*(?:\.\d{0,1})?).*$/g, '$1')" placeholder="高">-->
+<!--                            （CM）-->
+<!--                        </td>-->
+<!--                    </tr>-->
+                    <tr>
+                        <td colspan="2" align="center"><input type="submit" class="button gusuan radius-rounded bg-blue" value="运费估算" onclick="CheckForm();"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="line_content" style="display: none;margin-top:15px;">
+
+</div>
+<!--选择物品-->
+<div class="modal" id="exampleModal2">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel2">选择物品</h5>
+                <!--                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+            </div>
+            <div class="modal-body" style="height:450px;overflow: scroll;">
+                <ul id="treeDemo" class="ztree"></ul>
+
+                <div class="disf">
+                    <input type="checkbox" value="999" id="other" onclick="change_attr()">
+                    <div style="ling-height:15px;">其它，以上都不是</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary2" data-bs-dismiss="modal">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--属性描述-->
+<div class="modal" id="exampleModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">title</h5>
+                <!--                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+            </div>
+            <div class="modal-body modal_body1" style="height:450px;overflow: scroll;">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--留下电邮或电话-->
+<div class="modal" id="exampleModal3">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel3">请留下您的联系方式（二选一）</h5>
+                <!--                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+            </div>
+            <div class="modal-body modal_body1" style="height:450px;overflow: scroll;">
+                <div class="form-group">
+                    <label class="control-label">您的称呼：</label>
+                    <input type="text" class="form-control" name="contact_name" placeholder="请填写您的称呼">
+                </div>
+                <div class="form-group">
+                    <label class="control-label">手机号码：</label>
+                    <input type="text" class="form-control" name="tel" placeholder="请填写有效的手机号码">
+                </div>
+                <div class="form-group">
+                    <label class="control-label">电子邮箱：</label>
+                    <input type="text" class="form-control" name="email" placeholder="请填写有效的邮箱号码">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary4" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-secondary3" data-bs-dismiss="modal" style="background:#1790FF;color:#fff;">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    //其它，以上都不是
+    function change_attr(){
+        if($(this).attr('checked') == true){
+            $(this).attr('checked',false);
+            $('#exampleModal3').hide();
+        }else{
+            $(this).attr('checked',true);
+            $('#exampleModal3').show();
+        }
+    }
+    //提交联系方式
+    $('.btn-secondary3').click(function(){
+        var reg = /^1[3456789]\d{9}$/;
+        let tel = $('input[name="tel"]').val();
+        var reg2 = /^([a-zA-Z0-9_]-*\.*)+@([a-zA-Z0-9_]-?)+(\.[a-zA-Z]{2,3}){1,2}$/;
+        let email = $('input[name="email"]').val();
+        let name = $('input[name="contact_name"]').val();
+        if(name==''){
+            alert('请填写您的称呼');return false;
+        }
+        //验证手机号码
+        if(!reg.test(tel) && tel != ''){
+            alert('请填写有效的手机号码');return false;
+        }
+        //验证邮箱号码
+        if(!reg2.test(email) && email != ''){
+            alert('请填写有效的邮箱号码');return false;
+        }
+        $.ajax({
+            url: "/collect_website/public/?s=index/leave_contact",
+            data: {'tel': tel,'email':email,'name':name,'wid':"<?php echo session('wid');?>"},
+            type: 'post',
+            cache: false,
+            dataType: 'json',
+            success: function (data) {
+                if(data.code==0){
+                    alert(data.msg);
+                    $('#exampleModal3').hide();
+                }else{
+                    alert(data.msg);return false;
+                }
+            }
+        });
+    });
+
+
+    $('.dept_select').chosen();
+    // $('.shape_select').chosen();
+    $('.btn-secondary').click(function(){
+        $('#exampleModal').hide();
+    });
+    $('.select_product').click(function(){
+        $('#exampleModal2').show();
+    });
+    $('.btn-secondary2').click(function(){
+        $('#exampleModal2').hide();
+    });
+    $('.btn-secondary4').click(function(){
+        $('#exampleModal3').hide();
+    });
+
+    //切换属性
+    $('#goods_item').change(function(){
+       let val = $(this).val();
+       if(val==999){
+           $('#exampleModal3').show();
+       }else{
+           var setting = {
+               view: {
+                   selectedMulti: true, //设置是否能够同时选中多个节点
+                   showIcon: true, //设置是否显示节点图标
+                   showLine: true, //设置是否显示节点与节点之间的连线
+                   showTitle: true, //设置是否显示节点的title提示信息
+               },
+               data: {
+                   simpleData: {
+                       enable: true, //设置是否启用简单数据格式（zTree支持标准数据格式跟简单数据格式，上面例子中是标准数据格式）
+                       idKey: "id", //设置启用简单数据格式时id对应的属性名称
+                       pidKey: "pId", //设置启用简单数据格式时parentId对应的属性名称,ztree根据id及pid层级关系构建树结构
+                       rootPId:0
+                   },
+                   key:{
+                       name:"title"
+                   }
+               },
+               check:{
+                   enable: true, //设置是否显示checkbox复选框
+                   chkStyle:"checkbox"
+               },
+           };
+
+           $.ajax({
+               url: "/collect_website/public/?s=index/hscode", //ajax请求地址
+               type: "POST",
+               dataType: "JSON",
+               data: {'wid': "<?php echo session('wid');?>",'val_id':val},
+               success: function (data) {
+                   $.fn.zTree.init($("#treeDemo"), setting, data.data.menuList);
+                   // $.fn.zTree.getZTreeObj("treeDemo").expandAll(true);
+               },
+           });
+       }
+    });
+
+    //提交预估
+    function CheckForm(){
+        let country_id = $('select[name="country"]').val();
+        // let shape_type = $('select[name="shape_type"]').val();
+        let goods_item = $('select[name="goods_item"]').val();
+
+        if(goods_item==13){
+            alert('违禁品不能进行运费估算！');return false;
+        }
+        if(goods_item==999){
+            alert('请选择其它货物属性！');return false;
+        }
+        
+        // let product_name2 = document.getElementsByName('product_name');
+        // let product_name = '';
+        // for(let i=0;i<product_name2.length;i++){
+        //     product_name += product_name2[i].value+',';
+        // }
+
+        let sStages2 = document.getElementsByName('sStages');
+        let sStages = '';
+        for(let i=0;i<sStages2.length;i++){
+            sStages += sStages2[i].value+',';
+        }
+        
+        let long2 = document.getElementsByName('long');
+        let long = '';
+        for(let i=0;i<long2.length;i++){
+            long += long2[i].value+',';
+        }
+        
+        let width2 = document.getElementsByName('width');
+        let width = '';
+        for(let i=0;i<width2.length;i++){
+            width += width2[i].value+',';
+        }
+        
+        let height2 = document.getElementsByName('Height');
+        let height = '';
+        for(let i=0;i<height2.length;i++){
+            height += height2[i].value+',';
+        }
+        
+        // let num2 = document.getElementsByName('num');
+        // let num = '';
+        // for(let i=0;i<num2.length;i++){
+        //     num += num2[i].value+',';
+        // }
+
+        var treeObj = $.fn.zTree.getZTreeObj("treeDemo"),
+            nodes = treeObj.getCheckedNodes(true);
+
+        var menus = "";
+        for (i = 0; i < nodes.length; i++) {
+            menus += nodes[i].id + ","; //获取选中节点的TID
+        }
+        if(nodes.length=='' || nodes.length==0 || typeof(nodes.length) == 'undefined'){
+            alert('请选择物品');return false;
+        }
+        // 'product_name':product_name,'shape_type':shape_type,,'num':num
+        $.ajax({
+            url: "/collect_website/public/?s=index/price_search",
+            data: {'country_id': country_id,'sStages':sStages,'long':long,'width':width,'height':height,'goods_item':goods_item,'menus':menus,'wid':"<?php echo session('wid');?>"},
+            type: 'post',
+            cache: false,
+            dataType: 'json',
+            success: function (data) {
+                if(data.code==0){
+                    window.location.href='/collect_website/public/?s=index/line_list&insid='+data.data+'&wid='+"<?php echo session('wid');?>";
+                }else{
+                    alert(data.msg);
+                }
+            }
+        });
+    }
+
+    function know(code) {
+        if(code!=''){
+            $.ajax({
+                url: "/collect_website/public/?s=index/price_detail",
+                data: {
+                    'code': code,
+                    'wid': "<?php echo session('wid');?>"
+                },
+                type: 'post',
+                cache: false,
+                dataType: 'json',
+                success: function (data) {
+                    if (data.code == 0) {
+                        $('.modal_body1').html(data.data.detail_content);
+                        $('#exampleModalLabel').html(data.data.name);
+                        // $('.modal').popover('show');
+                        // $('.example-popover').show();
+                        // $('.example-popover').popover('show');
+                        // $('[data-toggle="popover"]').popover();
+                    }
+                }
+            });
+        }
+    }
+
+    function introduce(){
+        let goods_item = $('select[name="goods_item"]').val();
+        $.ajax({
+            url: "/collect_website/public/?s=index/introduce",
+            data: {
+                'code': goods_item,
+                'wid': "<?php echo session('wid');?>"
+            },
+            type: 'post',
+            cache: false,
+            dataType: 'json',
+            success: function (data) {
+                if (data.code == 0) {
+                    let html = '<div>' +
+                        '    <h4>-属性说明</h4>'+
+                        '    <div style="margin-top:7px;padding:0 10px;box-sizing: border-box;">'+data.data.desc+'</div>'+
+                        '</div>';
+                        // '<div style="margin-top:10px;">' +
+                        // '    <h4>-常见品名</h4>'+
+                        // '    <div style="margin-top:7px;padding:0 10px;box-sizing: border-box;">'+data.data.names+'</div>'+
+                        // '</div>';
+                    $('.modal_body1').html(html);
+                    $('#exampleModalLabel').html(data.data.name);
+                    $('#exampleModal').show();
+                    // $('.example-popover').show();
+                    // $('.example-popover').popover('show');
+                    // $('[data-toggle="popover"]').popover();
+                }
+            }
+        });
+    }
+    
+    $('.addline').click(function(){
+        // +"'"+$1+"'"+
+        let html = '<tr>'+
+                        // '<td>'+
+                        //     '<input name="product_name" id="product_name" type="text">'+
+                        // '</td>'+
+                        '<td>'+
+                            '<input name="long" type="text" id="long" size="3" oninput="value=value.replace(/^\D*(\d*(?:\.\d{0,1})?).*$/g,$1)" placeholder="长">'+
+                        '</td>'+
+                        '<td>'+
+                            '<input name="width" type="text" id="width" size="3" oninput="value=value.replace(/^\D*(\d*(?:\.\d{0,1})?).*$/g, $1)" placeholder="宽">'+
+                        '</td>'+
+                        '<td>'+
+                            '<input name="Height" type="text" id="height" size="3" oninput="value=value.replace(/^\D*(\d*(?:\.\d{0,1})?).*$/g, $1)" placeholder="高">'+
+                        '</td>'+
+                        '<td>'+
+                            '<input name="sStages" oninput="value=value.replace(/^\D*(\d*(?:\.\d{0,2})?).*$/g, $1)" id="sStages" type="text">'+
+                        '</td>'+
+                        '<td>'+
+                            '<input name="num" oninput="value=value.replace(/^\D*(\d*(?:\.\d{0,2})?).*$/g, $1)" id="num" type="text">'+
+                        '</td>'+
+                        '<td><div class="dell" onclick="javascript:dell(this);" style="cursor:pointer;">删除</div></td>'+
+                    '</tr>';
+        $('#table2').find('tbody').append(html);
+    });
+
+    function dell(t){
+        $(t).parent().parent().remove();
+    }
+</script>
+<!--<script src="https://www.bootstrap.cn/static/bootstrap5/js/bootstrap.bundle.min.js"></script>-->
+<!--<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>-->
+<script src="static/hadmin/js/jquery.ztree.core.js"></script>
+<script src="static/hadmin/js/jquery.ztree.excheck.min.js"></script>
+<script  type="text/javascript">
+    var setting = {
+        view: {
+            selectedMulti: true, //设置是否能够同时选中多个节点
+            showIcon: true, //设置是否显示节点图标
+            showLine: true, //设置是否显示节点与节点之间的连线
+            showTitle: true, //设置是否显示节点的title提示信息
+        },
+        data: {
+            simpleData: {
+                enable: true, //设置是否启用简单数据格式（zTree支持标准数据格式跟简单数据格式，上面例子中是标准数据格式）
+                idKey: "id", //设置启用简单数据格式时id对应的属性名称
+                pidKey: "pId", //设置启用简单数据格式时parentId对应的属性名称,ztree根据id及pid层级关系构建树结构
+                rootPId:0
+            },
+            key:{
+                name:"title"
+            }
+        },
+        check:{
+            enable: true, //设置是否显示checkbox复选框
+            chkStyle:"checkbox"
+        },
+    };
+
+    $(function () {
+        //ZTREE
+        $.ajax({
+            url: "/collect_website/public/?s=index/hscode", //ajax请求地址
+            type: "POST",
+            dataType: "JSON",
+            data: {'wid': "<?php echo session('wid');?>",'val_id':3},
+            success: function (data) {
+                $.fn.zTree.init($("#treeDemo"), setting, data.data.menuList);
+                // $.fn.zTree.getZTreeObj("treeDemo").expandAll(true);
+            },
+        });
+
+        // 模拟点击（兼容手机）
+        $('#treeDemo').click(function(){
+            var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+            treeObj.refresh();
+        });
+    });
+</script>
+{include file="common/footer"}

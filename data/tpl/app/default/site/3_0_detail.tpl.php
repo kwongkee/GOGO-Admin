@@ -1,0 +1,168 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/header', TEMPLATE_INCLUDEPATH)) : (include template('common/header', TEMPLATE_INCLUDEPATH));?>
+<div id="activity-detail">
+<style type="text/css">
+@charset "utf-8";
+html{background:#FFF;color:#000;}
+body, div, dl, dt, dd, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, textarea, p, blockquote, th, td{margin:0;padding:0;}
+table{border-collapse:collapse;border-spacing:0;}
+fieldset, img{border:0;}
+address, caption, cite, code, dfn,  th, var{font-style:normal;font-weight:normal;}
+ol, ul{list-style:none;}
+caption, th{text-align:left;}
+h1, h2, h3, h4, h5, h6{font-size:100%;font-weight:normal;}
+q:before, q:after{content:'';}
+abbr, acronym{border:0;font-variant:normal;}
+sup{vertical-align:text-top;}
+sub{vertical-align:text-bottom;}
+input, textarea, select{font-family:inherit;font-size:inherit;font-weight:inherit;}
+input, textarea, select{font-size:100%;}
+legend{color:#000;}
+body{color:#222;font-family:Helvetica, STHeiti STXihei, Microsoft JhengHei, Microsoft YaHei, Tohoma, Arial;height:100%;position:relative;}
+body > .tips{display:none;left:50%;padding:20px;position:fixed;text-align:center;top:50%;width:200px;z-index:100;}
+.page{padding:15px;}
+.page .page-error, .page .page-loading{line-height:30px;position:relative;text-align:center;}
+#activity-detail .page-bizinfo{border-bottom:1px dotted #CCC;}
+#activity-detail .page-bizinfo .header{padding:10px 10px 10px;}
+#activity-detail .page-bizinfo .header #activity-name{color:#000;font-size:20px;margin-bottom:5px;font-weight:bold;word-break:normal;word-wrap:break-word;}
+#activity-detail .page-bizinfo .header #post-date{color:#8c8c8c;font-size:11px;margin:0;}
+#activity-detail .page-content{padding:10px;}
+#activity-detail .page-content .media{margin-bottom:18px;}
+#activity-detail .page-content .media img{width:100%;}
+#activity-detail .page-content .text{color:#3e3e3e;font-size:1.5;line-height:1.5;width: 100%;overflow: hidden;zoom:1;}
+#activity-detail .page-content .text p{min-height:1.5em;min-height: 1.5em;word-wrap: break-word;word-break:break-all;}
+#activity-list .header{font-size:20px;}
+#activity-list .page-list{border:1px solid #ccc;border-radius:5px;margin:18px 0;overflow:hidden;}
+#activity-list .page-list .line.btn{border-radius:0;margin:0;text-align:left;}
+#activity-list .page-list .line.btn .checkbox{height:25px;line-height:25px;padding-left:35px;position:relative;}
+#activity-list .page-list .line.btn .checkbox .icons{background-color:#ccc;left:0;position:absolute;top:0;}
+#activity-list .page-list .line.btn.off .icons{background-image:none;}
+#activity-list #save.btn{background-image:linear-gradient(#22dd22, #009900);background-image:-moz-linear-gradient(#22dd22, #009900);background-image:-ms-linear-gradient(#22dd22, #009900);background-image:-o-linear-gradient(#22dd22, #009900);background-image:-webkit-gradient(linear, left top, left bottom, from(#22dd22), to(#009900));background-image:-webkit-linear-gradient(#22dd22, #009900);}
+.vm{vertical-align:middle;}
+.tc{text-align:center;}
+.db{display:block;}
+.dib{display:inline-block;}
+.b{font-weight:700;}
+.clr{clear:both;}
+.text img{max-width:100%;}
+.page-url{padding-top:18px;}
+.page-url-link{color:#607FA6;font-size:14px;text-decoration:none;text-shadow:0 1px #ffffff;-webkit-text-shadow:0 1px #ffffff;-moz-text-shadow:0 1px #ffffff;}
+#mbutton{padding:15px 10px 15px 10px; overflow:hidden; border-bottom:1px #DDD solid;}
+#mbutton > span{float:right; display:inline-block; background:#666; border:1px #DDD solid; color:#FFF; height:30px; line-height:30px; padding:0 10px; margin-left:10px;}
+#mcover{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0, 0, 0, 0.7);display:none;z-index:20000;}
+#mcover img{position:fixed;right: 18px;top:5px;width:260px;height:180px;z-index:20001;}
+</style>
+<div class="page-bizinfo">
+	<div class="header">
+		<h1 id="activity-name"><?php  echo $detail['title'];?></h1>
+		<span id="post-date">
+			<span><?php  echo date("Y-m-d", $detail['createtime']);?></span>
+			<span><?php  echo $detail['author'];?></span>
+			<?php  if(!empty($detail['source'])) { ?><a href="<?php  echo $detail['source'];?>">文章来源</a><?php  } ?>
+			<?php  if(!empty($subscribeurl)) { ?><a href="<?php  echo $subscribeurl;?>"><?php  echo $_W['account']['name'];?></a><?php  } ?>
+			<span>阅读:<?php  echo $detail['click'];?>次</span>
+			<span>已阅读:<span id="view_time">00:00</span></span>
+		</span>
+	</div>
+</div>
+<input type="hidden" id="item_id" value="<?php  echo $item_id;?>"/>
+<input type="hidden" id="state" value="2"/>
+<input type="hidden" id="times" value="" name="times"/>
+<div class="page-content">
+	<div class="text">
+		<?php  echo $detail['content'];?>
+	</div>
+</div
+<?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/footer', TEMPLATE_INCLUDEPATH)) : (include template('common/footer', TEMPLATE_INCLUDEPATH));?>
+<script>
+$(function(){
+	var m=0;
+	var s=0;
+	var view_time = setInterval(function(){
+	s++;
+	if(s>10){
+		$('#view_time').html(m+':'+s);
+	}else{
+		$('#view_time').html(m+':0'+s);
+	}
+	if(s>59){
+	//如果秒数少于0就变成59秒
+        s=00;
+        m++;
+	    }
+	},1000)
+	
+})
+</script>
+<script>
+	var timesRun = 0;
+	var calculate_time = setInterval(function(){
+	timesRun += 1;
+	$('#times').val(timesRun)
+	if(timesRun == <?php  echo $adv_content['min_times']?>){
+		$('#state').val('1')
+	}
+//	alert(timesRun)
+	//do whatever here..
+//	console.log(timesRun)
+	}, 1000);
+	
+window.onbeforeunload=function (){
+	var times=$('#times').val();
+	var item_id=$('#item_id').val();
+	if(times >= <?php  echo $adv_content['min_times']?>){ //计时大于广告限制时间,新增记录
+		$.post("<?php  echo url('site/site/adv_content');?>", {'times':times,'item_id':item_id}, function(data) {
+			
+		});
+	}else{//小于广告限制时间,提示是否退出广告页
+		return "您确定要退出页面吗？"; 
+	}
+//	
+	if(event.clientX>document.body.clientWidth && event.clientY < 0 || event.altKey){
+//		return ('close')
+//		if(times >= <?php  echo $adv_content['min_times']?>){ //计时大于广告限制时间,新增记录
+//			$.post("<?php  echo url('site/site/adv_content');?>", {'times':times,'item_id':item_id}, function(data) {
+//				
+//			});
+//		}else{//小于广告限制时间,提示是否退出广告页
+//			return "你关闭了浏览器"; 
+//		}
+	}else{//刷新
+
+	}
+}
+
+</script>
+<script>
+$(function(){
+    pushHistory();  
+    window.addEventListener("popstate", function(e) {  
+    	var item_id=$('#item_id').val();
+    	var times=$('#times').val();
+    	var state=$('#state').val();
+	    if(times >= <?php  echo $adv_content['min_times']?>){
+    		$('#state').val('1')
+	    }else{
+    		$('#state').val('2')
+	    }
+//  	alert(state)
+      if(state=='1'){   //计时大于广告限制时间,新增记录
+//          alert('请勿返回，如有需要请直接关闭网页');
+           $.post("<?php  echo url('site/site/adv_content');?>", {'times':times,'item_id':item_id}, function(data) {
+				
+			});
+        }else{ //计时小于广告限制时间,提示是否退出广告页
+        	alert('请勿返回，如有需要请直接关闭网页')
+        }
+        pushHistory();  
+
+        }, false);  
+});
+
+ function pushHistory() {
+    var state = { 
+            title: "title", 
+            url: "#"
+        }; 
+        window.history.pushState(state, "title", "#"); 
+}
+</script>

@@ -1,0 +1,116 @@
+{include file="public/header"}
+
+<body style="padding: 10px;">
+
+<form action="" class="layui-form" id="form1">
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">快递公司</label>
+        <div class="layui-input-inline">
+            <select name="logistics" lay-verify="" lay-search>
+                <option value="">请选择快递公司</option>
+                {volist name="logistics" id="vo"}
+                <option value="{$vo['id']}">{$vo['name']}-{$vo['code']}</option>
+                {/volist}
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-content">
+                        <div class="page-container">
+                            <p>上传快递公司运单号文件(<a style="color: red;" href="/foll/public/static/xx快递公司运单号.xlsx">下载上传模板</a>)</p>
+                            <button type="button" class="layui-btn" id="file1">
+                                <i class="layui-icon">&#xe67c;</i>上传并导入Excel
+                            </button>
+                            <input type="text" name="filename" value="" class="layui-input" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="layui-form-item">
+    <div class="layui-input-block">
+        <button class="layui-btn" onclick="save()">确认导入</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    layui.use(['upload','layer','form','laydate'],function(){
+        uploads = layui.upload;
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+
+        laydate.render({
+            elem: '#Times' //指定元素
+        });
+
+        uploads.render({
+            elem: '#file1' //绑定元素
+            ,accept:"file"
+            , url: '{:Url("admin/waybill/number_upload")}' //上传接口
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            , done: function (res) {
+                layer.closeAll('loading');
+                if (res.code==0){
+                    $('input[name="filename"]').val(res.filename);
+                    layer.msg(res.message, {icon: 6});
+                } else{
+                    layer.msg(res.message, {icon: 5});
+                }
+            }
+            , error: function () {
+                //请求异常回调
+                // parent.layer.msg('请求异常', {icon: 6});
+            }
+        });
+    });
+
+
+    // 添加管理员
+    function save()
+    {
+        var logistics = $("select[name='logistics'] option:selected").val();
+        var filename  = $('input[name="filename"]').val();
+
+        if(logistics == '') {
+            layer.msg('请选择快递公司',{icon:2});
+            return false;
+        }
+        if(filename == '') {
+            layer.msg('请上传文件',{icon:2});
+            return false;
+        }
+
+        // 请求处理数据
+        $.post("{:Url('admin/waybill/numberassign_insert')}",{
+            logistics:logistics,
+            filename:filename,
+        },function(res){
+
+            // var res = JSON.parse(resd);
+            if(res.code == 1) {
+                layer.msg(res.message,{icon:1});
+                setTimeout(function(){
+                    layer.closeAll();
+                    parent.window.location.reload();
+                },1000);
+            } else {
+                layer.msg(res.message,{icon:2,time:5000});
+            }
+
+        });
+    }
+</script>
+</body>
+</html>

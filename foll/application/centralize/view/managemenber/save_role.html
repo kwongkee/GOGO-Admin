@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>配置角色信息</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <link href="static/cklein/css/style.css" rel="stylesheet">
+    <link href="static/cklein/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./static/hadmin/css/zTreeStyle/zTreeStyle.css" rel="stylesheet">
+    <style>
+        form{
+            margin-top: 47px;
+            margin-right: 32px;
+        }
+        .layui-form-label{
+            width:110px;
+        }
+        .connect_info,.view_info{display:none;}
+    </style>
+</head>
+<body class="gray-bg">
+<form class="layui-form" action="">
+    <input type="text" name="id" value="{$id}" style="display:none;">
+    <div class="layui-form-item">
+        <label class="layui-form-label">角色名称</label>
+        <div class="layui-input-inline">
+            <input type="text" name="name" lay-verify="required" value="{$data['name']}" placeholder="请输入角色名称" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">角色描述</label>
+        <div class="layui-input-inline">
+            <input type="text" name="desc" lay-verify="required" value="{$data['desc']}" placeholder="请输入角色描述" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">状态</label>
+        <div class="layui-input-inline layui-select-fscon">
+            <select name="status" lay-filter="status">
+                <option value="">请选择状态</option>
+                <option value="1" {if $data['status']==1}selected{/if}>启用</option>
+                <option value="-1" {if $data['status']==-1}selected{/if}>禁用</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">权限配置</label>
+        <div class="layui-col-xs8">
+            <ul id="treeDemo" class="ztree"></ul>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">下级分销权限</label>
+        <div class="layui-input-inline layui-select-fscon">
+            <select name="distribution_auth">
+                <option value="0" {if $data['distribution_auth']==0}
+                selected
+                {/if}>禁止</option>
+                <option value="1" {if $data['distribution_auth']==1}
+                selected
+                {/if}>允许</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-col-xs12" style="display:flex;">
+        <div class="layui-form-item">
+            <label class="layui-form-label">数据查阅管理</label>
+            <div class="layui-col-xs3">
+                <select name="data[data_auth]" lay-filter="data_auth">
+                    <option value="0" {if $data['data']['data_auth']==0}
+                        selected
+                    {/if}>禁止</option>
+                    <option value="1" {if $data['data']['data_auth']==1}
+                    selected
+                    {/if}>允许</option>
+                </select>
+            </div>
+        </div>
+        <div class="view_info" {if $data['data']['data_auth']==1}
+        style="display:flex;"
+        {/if}>
+        <div class="layui-form-item layui-input-inline">
+            <label class="layui-form-label" style="margin-left:0 !important;padding-left:0;width:90px;">查阅上级数据</label>
+            <div class="layui-col-xs4">
+                <select name="data[view_up]">
+                    <option value="0" {if $data['data']['view_up']==0}
+                    selected
+                    {/if}>禁止</option>
+                    <option value="1" {if $data['data']['view_up']==1}
+                    selected
+                    {/if}>允许</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-input-inline">
+            <label class="layui-form-label" style="margin-left:0 !important;padding-left:0;width:90px;">查阅下级数据</label>
+            <div class="layui-col-xs4">
+                <select name="data[view_down]">
+                    <option value="0" {if $data['data']['view_down']==0}
+                    selected
+                    {/if}>禁止</option>
+                    <option value="1" {if $data['data']['view_down']==1}
+                    selected
+                    {/if}>允许</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div class="layui-col-xs12" style="display:flex;">
+        <div class="layui-form-item">
+            <label class="layui-form-label">数据关联管理</label>
+            <div class="layui-col-xs3">
+                <select name="connect[connect_auth]" lay-filter="connect_auth">
+                    <option value="0" {if $data['connect']['connect_auth']==0}
+                    selected
+                    {/if}>禁止</option>
+                    <option value="1" {if $data['connect']['connect_auth']==1}
+                    selected
+                    {/if}>允许</option>
+                </select>
+            </div>
+        </div>
+        <div class="connect_info" {if $data['connect']['connect_auth']==1}
+        style="display:block;"
+        {/if}>
+        <div class="layui-form-item layui-input-inline">
+            <label class="layui-form-label" style="margin-left:0 !important;padding-left:0;width:90px;">关联上级数据</label>
+            <div class="layui-col-xs4">
+                <select name="connect[connect_up]">
+                    <option value="0" {if $data['connect']['connect_up']==0}
+                    selected
+                    {/if}>禁止</option>
+                    <option value="1" {if $data['connect']['connect_up']==1}
+                    selected
+                    {/if}>允许</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-input-inline">
+            <label class="layui-form-label" style="margin-left:0 !important;padding-left:0;width:90px;">关联下级数据</label>
+            <div class="layui-col-xs4">
+                <select name="connect[connect_down]">
+                    <option value="0" {if $data['connect']['connect_down']==0}
+                    selected
+                    {/if}>禁止</option>
+                    <option value="1" {if $data['connect']['connect_down']==1}
+                    selected
+                    {/if}>允许</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">分销权限</label>
+        <div class="layui-input-inline layui-select-fscon">
+            <select name="commission_type">
+                <option value="0" {if $data['commission_type']==0}
+                selected
+                {/if}>禁止</option>
+                <option value="1" {if $data['commission_type']==1}
+                selected
+                {/if}>允许</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <div class="layui-footer" style="left: 0;">
+                <button class="layui-btn" lay-submit="" lay-filter="component-form-demo1">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </div>
+</form>
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+<script src="./static/hadmin/assets/layui/xm-select.js"></script>
+<script src="./static/hadmin/js/jquery.ztree.core.js"></script>
+<script src="./static/hadmin/js/jquery.ztree.excheck.min.js"></script>
+<script>
+    layui.use(['form','upload'], function(){
+        var form = layui.form,upload = layui.upload;
+
+        //数据权限
+        form.on('select(data_auth)',function(data){
+            let val = data.value;
+            if(val==0){
+                $('.view_info').hide();
+            }else if(val==1){
+                $('.view_info').css('display','flex');
+            }
+        });
+
+        //关联权限
+        form.on('select(connect_auth)',function(data){
+            let val = data.value;
+            if(val==0){
+                $('.connect_info').hide();
+            }else if(val==1){
+                $('.connect_info').css('display','flex');
+            }
+        });
+
+        //监听提交
+        form.on('submit(component-form-demo1)', function(data){
+            // if(data.field['isCustomsDeclUnit']==1 && data.field['enterprise_id']==''){
+            //     layer.msg('请选择报关单位！');
+            //     return false;
+            // }
+            data.field['pa'] = 1;
+
+            var treeObj = $.fn.zTree.getZTreeObj("treeDemo"),
+                nodes = treeObj.getCheckedNodes(true);
+            var menus = "";
+            for (i = 0; i < nodes.length; i++) {
+                menus += nodes[i].id + ","; //获取选中节点的TID
+            }
+            if(nodes.length=='' || nodes.length==0 || typeof(nodes.length) == 'undefined'){
+                layer.msg('请选择功能权限');return false;
+            }
+            data.field['authList'] = menus;
+
+            $.ajax({
+                url:"{:Url('centralize/managemenber/save_role')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 1)
+                        {
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                            parent.window.location.reload();
+                        }else{
+                            layer.msg(res.msg,{time:2000});
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+
+    $(function () {
+        //ZTREE
+        var setting = {
+            view: {
+                selectedMulti: true, //设置是否能够同时选中多个节点
+                showIcon: true, //设置是否显示节点图标
+                showLine: true, //设置是否显示节点与节点之间的连线
+                showTitle: true, //设置是否显示节点的title提示信息
+            },
+            data: {
+                simpleData: {
+                    enable: true, //设置是否启用简单数据格式（zTree支持标准数据格式跟简单数据格式，上面例子中是标准数据格式）
+                    idKey: "id", //设置启用简单数据格式时id对应的属性名称
+                    pidKey: "pid", //设置启用简单数据格式时parentId对应的属性名称,ztree根据id及pid层级关系构建树结构
+                    rootPId:0
+                },
+                key:{
+                    name:"title"
+                }
+            },
+            check:{
+                enable: true, //设置是否显示checkbox复选框
+                chkStyle:"checkbox"
+            },
+        };
+        $.ajax({
+            url: "{:Url('centralize/managemenber/get_menus')}", //ajax请求地址
+            type: "POST",
+            dataType: "JSON",
+            data: {'level_id':"{$id}"},
+            success: function (data) {
+                $.fn.zTree.init($("#treeDemo"), setting, data.data.menuList);
+                $.fn.zTree.getZTreeObj("treeDemo").expandAll(true);
+            },
+        });
+    });
+
+</script>
+</html>

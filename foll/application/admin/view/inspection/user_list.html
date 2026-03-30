@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="common/meta"}
+    <link rel="stylesheet" type="text/css" href="//raw.githack.com/hnzzmsf/layui-formSelects/master/dist/formSelects-v4.css"/>
+    <script src="//raw.githack.com/hnzzmsf/layui-formSelects/master/dist/formSelects-v4.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body class="gray-bg">
+<div class="col-sm-12">
+    <div class="ibox float-e-margins">
+        <div class="ibox-content" style="display:block;" id="list1">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <td>操作员名称</td>
+                    <th>企业名称</th>
+                    <th>所需文件</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name='data' id='vo'}
+                <tr>
+                    <td>{$vo['user_name']}</td>
+                    <td>{$vo['company_name']}</td>
+                    <td>
+                        <select name="file_type" xm-select="file_type{$vo['id']}" xm-select-skin="normal" xm-select-show-count="2">
+<!--                            <option value="1" {if in_array(1,$vo["isSelect"])}selected="selected"{/if}>总运提单</option>-->
+<!--                            <option value="2" {if in_array(2,$vo["isSelect"])}selected="selected"{/if}>装载清单</option>-->
+<!--                            <option value="3" {if in_array(3,$vo["isSelect"])}selected="selected"{/if}>物流申报清单</option>-->
+<!--                            <option value="4" {if in_array(4,$vo["isSelect"])}selected="selected"{/if}>现场理货文件</option>-->
+<!--                            <option value="5" {if in_array(5,$vo["isSelect"])}selected="selected"{/if}>包裹交接文件</option>-->
+                            <option value="6" {if in_array(6,$vo["isSelect"])}selected="selected"{/if}>查验反馈表</option>
+                        </select>
+                        <script>
+                            formSelects.render('file_type'+{$vo['id']});
+                        </script>
+                    </td>
+                    <td> <a  href="#" onclick="change({$vo['id']})" class="btn btn-info">变更</a></td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+</body>
+
+<!--<link href="./static/hadmin/layui/css/layui.css" rel="stylesheet">-->
+<!--<script src="./static/hadmin/layui/layui.all.js"></script>-->
+<script>
+    // layui.use('laydate', function(){
+    // });
+    function change(id) {
+        id = Number(id);
+        var val= formSelects.value('file_type'+id);
+        $.ajax({
+            url:"{:Url('admin/uploadBillCheckFileCondition')}",
+            type:"POST",
+            dataType:"json",
+            data:{id:id,type:JSON.stringify(val)},
+            success:function (res) {
+                parent.layer.msg(res.message,{icon: 1});
+                if (res.code==0){
+                    setTimeout(function () {
+                        window.location.reload();
+                    },1200);
+                }
+            },
+            error:function (xhr) {
+                parent.layer.msg('系统错误',{icon: 5});
+            }
+        });
+        console.dir(val);
+    }
+</script>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+</head>
+<style>
+    .form-group{display:flex;align-items:center;}
+    .userSelect{display:none;}
+    .send_news{display:none;}
+    .layui-input{width:30%;}
+    .layui-input-block{display:flex;align-items: center;}
+</style>
+<body class="gray-bg">
+<form class="layui-form" lay-filter="component-form-element1">
+
+    <div class="layui-card">
+        <div class="layui-card-header">店铺销量配置</div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">日销量</label>
+            <div class="layui-input-block">
+                ≧&nbsp;<input type="text" name="daily_sales" id="daily_sales" value="{$data['daily_sales']}" lay-verify="required" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">月销量</label>
+            <div class="layui-input-block">
+                ≧&nbsp;<input type="text" name="month_sales" id="month_sales" value="{$data['month_sales']}" lay-verify="required" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">已销量</label>
+            <div class="layui-input-block">
+                ≧&nbsp;<input type="text" name="sold" id="sold" value="{$data['sold']}" lay-verify="required" class="layui-input">
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="component-form-element">立即提交</button>
+        </div>
+    </div>
+</form>
+</body>
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script type="text/javascript">
+    $(function(){
+        layui.use(['layer','form','laydate'],function(){
+            var laydate = layui.laydate,
+                layer = layui.layer,
+                form  = layui.form,
+                $ = layui.jquery;
+            form.render(null, 'component-form-element1');
+
+            form.on('submit(component-form-element)', function(data){
+                data.field['id'] = "{$data['id']}";
+
+                $.ajax({
+                    url:"{:Url('admin/exportRisk/store_sales')}",
+                    type:'POST',
+                    data:data.field,
+                    dataType:'JSON',
+                    success:function(res){
+                        layer.msg(res.msg,{time:3000}, function () {
+                            if(res.code == 1)
+                            {
+                                layer.closeAll();
+                                window.location.reload();
+                            }
+                        });
+                    },
+                    error:function (data) {
+                        layer.msg('系统错误',{time:2000});
+                    }
+                });
+                return false;
+            });
+        });
+    });
+</script>
+</html>

@@ -1,0 +1,873 @@
+{include file="common/header_inner_new"}
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .input15{width:46.5%;}
+    .input30{width:30%;}
+    .input40{width:50%;}
+    .input50{width:50%;}
+    .layui-input, .layui-select, .layui-textarea{border:1px solid #000;}
+    .layui-colla-title{background:#0e2e68;color:#fff;padding:10px 10px 10px 30px;overflow: visible;}
+    .layui-colla-icon{left: 10px;top: 8px;}
+    .layui-colla-title .layui-form-select{display:none;}
+    .layui-colla-title .layui-btn{margin-left:5px;}
+    .layui-colla-title .parag_num{width:80px;}
+    .layui-colla-content{border:1px solid #000;}
+    /*#edui1_toolbarbox*/
+    .ctitle .title{display:block !important;}
+    .edui-editor-toolbarbox{position: unset !important;}
+    .collapse{transition:transform 250ms linear;}
+    .goup{width:12px;height:12px;border:1px solid #fff;border-bottom:0;border-left:0;transform:rotate(45deg);margin-top:12px;}
+    .godown{width:12px;height:12px;border:1px solid #fff;border-bottom:0;border-left:0;transform:rotate(135deg);margin-top:10px;}
+    .regular_box{max-height:400px;width:100%;overflow:scroll;}
+    .layui-field-box{margin-bottom:100px;}
+    .cat_div{max-width:150px;}
+    @media (max-width: 992px){
+        .input15{width:100%;}
+        .input30{width:100%;}
+        .input40{width:100%;}
+        .input50{width:100%;}
+        .layui-fluid,.layui-form,.layui-card-body{padding:0;}
+        .layui-form-label{width:60px;}
+        .layui-input-block{margin-left:90px;}
+        .no_label{margin-left:15px;}
+        .no_label1{padding:0;}
+        .layui-field-box{padding:10px 0;}
+        .layui-field-box .layui-input-block{width:70%;}
+        .layui-field-box .layui-btn{padding:0 5px;height: 30px;line-height: 30px;}
+        .layui-btn+.layui-btn {margin-left: 7px;}
+    }
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">销售分类</div>
+                            <div class="layui-input-block disf">
+                                {if empty($data['cat_id'])}
+                                    <div class="cat_div">
+                                        <select name="cat_id" lay-search lay-verify="required" lay-filter="cat_id1">
+                                            <option value="">请选择一级分类</option>
+                                            {volist name="sale_cate" id="vo"}
+                                            <option value="{$vo['cat_id']}" {if $vo['cat_id']==$data['cat_id']}selected{/if}>{$vo['cat_name']}</option>
+                                            {/volist}
+                                        </select>
+                                    </div>
+                                    <div class="nextcate_div cat_div"></div>
+                                {else}
+                                    <div class="cat_div">
+                                        <select name="cat_id" lay-search lay-verify="required" lay-filter="cat_id1">
+                                            <option value="">请选择一级分类</option>
+                                            {volist name="sale_cate" id="vo"}
+                                            <option value="{$vo['cat_id']}" {if $vo['cat_id']==$data['cat_id']}selected{/if}>{$vo['cat_name']}</option>
+                                            {/volist}
+                                        </select>
+                                    </div>
+                            
+                                    <div class="nextcate_div cat_div">
+                                        {if $data['cat_id']!=$data['cat_id1']}
+                                        <select name="cat_id1" lay-search lay-verify="required" lay-filter="cat_id1">
+                                            <option value="">请选择分类</option>
+                                            {volist name="sale_cates[0]" id="vo"}
+                                            <option value="{$vo['cat_id']}" {if $vo['cat_id']==$data['cat_id1']}selected{/if}>{$vo['cat_name']}</option>
+                                            {/volist}
+                                        </select>
+                                        {/if}
+                                    </div>
+                                    
+                                {/if}
+                                <!--<div class="nextcate_div2 cat_div">-->
+                                <!--    {if !empty($data['cat_id3'])}-->
+                                <!--        <select name="cat_id3" lay-search lay-verify="required" lay-filter="cat_id3">-->
+                                <!--            <option value="">请选择三级分类</option>-->
+                                <!--            {volist name="sale_cates[1]" id="vo"}-->
+                                <!--            <option value="{$vo['cat_id']}" {if $vo['cat_id']==$data['cat_id3']}selected{/if}>{$vo['cat_name']}</option>-->
+                                <!--            {/volist}-->
+                                <!--        </select>-->
+                                <!--    {/if}-->
+                                <!--</div>-->
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">物流分类</div>
+                            <div class="layui-input-block disf">
+                                {if empty($data['cross_catId'])}
+                                    <div class="cat_div">
+                                        <select name="cross_catId" lay-search lay-verify="required" lay-filter="cross_catId1">
+                                            <option value="">请选择一级分类</option>
+                                            {volist name="logi_cate" id="vo"}
+                                            <option value="{$vo['cat_id']}" {if $vo['cat_id']==$data['cross_catId']}selected{/if}>{$vo['cat_name']}</option>
+                                            {/volist}
+                                        </select>
+                                    </div>
+                                    <div class="nextcross_div cat_div"></div>
+                                {else}
+                                    <div class="cat_div">
+                                        <select name="cross_catId" lay-search lay-verify="required" lay-filter="cross_catId1">
+                                            <option value="">请选择一级分类</option>
+                                            {volist name="logi_cate" id="vo"}
+                                            <option value="{$vo['cat_id']}" {if $vo['cat_id']==$data['cross_catId']}selected{/if}>{$vo['cat_name']}</option>
+                                            {/volist}
+                                        </select>
+                                    </div>
+                                    <div class="nextcross_div cat_div">
+                                        {if $data['cross_catId']!=$data['cross_catId1']}
+                                            <select name="cross_catId1" lay-search lay-verify="required" lay-filter="cross_catId1">
+                                                <option value="">请选择分类</option>
+                                                {volist name="logi_cates[0]" id="vo"}
+                                                <option value="{$vo['cat_id']}" {if $vo['cat_id']==$data['cross_catId1']}selected{/if}>{$vo['cat_name']}</option>
+                                                {/volist}
+                                            </select>
+                                        {/if}
+                                    </div>
+                                {/if}
+                                <!--<div class="nextcross_div2 cat_div">-->
+                                <!--    {if !empty($data['cross_catId3'])}-->
+                                <!--        <select name="cross_catId3" lay-search lay-verify="required">-->
+                                <!--            <option value="">请选择三级分类</option>-->
+                                <!--            {volist name="logi_cates[1]" id="vo"}-->
+                                <!--            <option value="{$vo['cat_id']}" {if $vo['cat_id']==$data['cross_catId3']}selected{/if}>{$vo['cat_name']}</option>-->
+                                <!--            {/volist}-->
+                                <!--        </select>-->
+                                <!--    {/if}-->
+                                <!--</div>-->
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">属性说明</div>
+                            <div class="layui-input-block">
+                                <fieldset class="layui-elem-field type1">
+                                    <legend>分段内容</legend>
+                                    <div class="layui-field-box">
+                                        <div class="input40">
+                                            {if $data['id']==0}
+                                                <input type="hidden" id="big_parag_num" value="1">
+                                                <div class="regular_box" style="display:none;"></div>
+                                                <div class="layui-form-item type1_box">
+                                                    <div class="layui-form-label"><input type="text" name="parag_num[]" class="layui-input parag_num" value="1." readonly></div>
+                                                    <div class="layui-input-block">
+                                                        <div class="disf">
+                                                            <div class="disf">
+                                                                <input type="hidden" class="layui-input" name="pnum[]" value="0">
+                                                                <input type="hidden" class="layui-input" name="is_title[]" value="1">
+                                                                <input type="text" class="layui-input" name="title[]" placeholder="输入标题" value="" onkeyup="keyup(this)">
+                                                            </div>
+                                                            <div class="disf">
+                                                                <div class="layui-btn layui-btn-success" onclick="add_common_grade(this)">新增同级</div>
+                                                                <div class="layui-btn layui-btn-success" onclick="add_next_grade(this)">新增下级</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="textarea_div">
+                                                            <textarea name="content[]" class="layui-textarea" placeholder="输入内容" value="" onkeyup="keyup2(this)"></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            {elseif(!empty($data['id']))}
+                                            <input type="hidden" id="big_parag_num" value="<?php echo $data['big_parag_num'];?>">
+                                            <div class="regular_box">
+                                                {volist name="data.content" key="key" id="vo"}
+                                                <!--手风琴-->
+                                                <div class="layui-form-item type1_box">
+                                                    <div class="layui-collapse" lay-accordion="">
+                                                        <div class="layui-colla-item">
+                                                            <h2 class="layui-colla-title">
+                                                                <div class="disf">
+                                                                    <input type="text" name="parag_num[]" class="layui-input parag_num" value="{$vo['parag_num']}" readonly>
+                                                                    <input type="hidden" class="layui-input" name="pnum[]" value="{$vo['pnum']}">
+                                                                    {if $vo['is_title']==1}
+                                                                        <input type="hidden" class="layui-input" name="is_title[]" value="1">
+                                                                        <input type="text" class="layui-input" name="title[]" placeholder="输入标题" value="{$vo['title']}">
+                                                                    {elseif($vo['is_title']==-1)}
+                                                                        <select name="is_title[]" lay-filter="is_title">
+                                                                            <option value="-1" selected>不需要标题</option>
+                                                                            <option value="1">需要标题</option>
+                                                                        </select>
+                                                                        <input type="text" class="layui-input title" name="title[]" placeholder="输入标题" value="{$vo['title']}">
+                                                                    {/if}
+                                                                    <div class="layui-btn layui-btn-success" onclick="add_common_grade(this)">新增同级</div>
+                                                                    <div class="layui-btn layui-btn-success" onclick="add_next_grade(this)">新增下级</div>
+                                                                    <div class="layui-btn layui-btn-normal" onclick="save_new_rule(this)">保存</div>
+                                                                    <div class="layui-btn layui-btn-danger" onclick="del_parag(this)">删除</div>
+                                                                </div>
+                                                            </h2>
+                                                            <div class="layui-colla-content">
+                                                                <textarea name="content[]" class="layui-textarea" placeholder="输入内容" onkeyup="keyup2(this)">{$vo['content']}</textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {/volist}
+                                            </div>
+                                            {/if}
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">监管对象</div>
+                            <div class="layui-input-block">
+                                <div class="input30">
+                                <select name="supervision_object" lay-search lay-verify="required">
+                                    <option value="1" {if 1==$data['supervision_object']}selected{/if}>买家</option>
+                                    <option value="2" {if 2==$data['supervision_object']}selected{/if}>卖家</option>
+                                </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">履行方式</div>
+                            <div class="layui-input-block">
+                                <div class="input30">
+                                <select name="perform_type" lay-search lay-verify="required" lay-filter="perform_type">
+                                    <option value="1" {if 1==$data['perform_type']}selected{/if}>文件上传</option>
+                                    <option value="2" {if 2==$data['perform_type']}selected{/if}>在线申请</option>
+                                </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item apply_link" style="display: {if 2==$data['perform_type']}block{else}none{/if};">
+                            <div class="layui-form-label">申请链接</div>
+                            <div class="layui-input-block">
+                                <div class="input30">
+                                <input type="text" class="layui-input" lay-verify="" name="apply_link" id="apply_link" placeholder="申请链接" value="{$data['apply_link']}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">平台监管</div>
+                            <div class="layui-input-block">
+                                <div class="input30">
+                                <input type="text" class="layui-input" lay-verify="" name="platform_supervision" id="platform_supervision" placeholder="系统规则链接" value="{$data['platform_supervision']}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">注意事项</div>
+                            <div class="layui-input-block">
+                                <div class="input30">
+                                    <textarea name="msg" class="layui-textarea" placeholder="请输入注意事项">{$data['msg']}</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <style>
+                            .num_input{width: 80px;}
+                            .sel_input{width: 120px;}
+                            .sel_input2{width: 150px;}
+                            .sel_input3{width: 300px;}
+                            .span1{width: 20px;text-align: center;font-size: 20px;}
+                        </style>
+                        <fieldset class="layui-elem-field type1">
+                            <legend>药物属性</legend>
+                            <div class="layui-field-box" style="margin-bottom:0;">
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">属性</div>
+                                    <div class="layui-input-block disf">
+                                        <div class="sel_input3 value_box disf">
+                                            {if $id>0}
+                                                {$data['drug']['value']['value_name']}，{$data['drug']['value']['value2_name']}
+                                                <input type="hidden" name="value" value="{$data['drug']['value']['value']}">
+                                                <input type="hidden" name="value2" value="{$data['drug']['value']['value2']}">
+                                            {/if}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">规格</div>
+                                    <div class="layui-input-block disf">
+                                        <div class="input100 disf">
+                                            <input type="text" class="layui-input num_input" name="opt[0]" value="{$data['drug']['option']['opt'][0]}">
+                                            <div class="sel_input">
+                                                <select name="opt_unit[0]" lay-search>
+                                                    <option value=""></option>
+                                                    {volist name="unit['unit']" id="vo"}
+                                                    <option value="{$vo['code_value']}" {if($data['drug']['option']['opt_unit'][0]==$vo['code_value'])}
+                                                        selected
+                                                    {/if}>{$vo['code_name']}</option>
+                                                    {/volist}
+                                                </select>
+                                            </div>
+                                            <span class="span1">×</span>
+                                            <input type="text" class="layui-input num_input" name="opt[1]" value="{$data['drug']['option']['opt'][1]}">
+                                            <div class="sel_input">
+                                                <select name="opt_unit[1]" lay-search>
+                                                    <option value=""></option>
+                                                    {volist name="unit['num_unit']" id="vo"}
+                                                    <option value="{$vo['id']}" {if($data['drug']['option']['opt_unit'][1]==$vo['id'])}
+                                                        selected
+                                                    {/if}>{$vo['name']}</option>
+                                                    {/volist}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">用法</div>
+                                    <div class="layui-input-block">
+                                        <div class="input100 disf">
+                                            <div class="sel_input2">
+                                                <select name="used_unit[0]" lay-search>
+                                                    <option value=""></option>
+                                                    {volist name="unit['interval_unit']" id="vo"}
+                                                    <option value="{$vo['id']}" {if($data['drug']['used']['used_unit'][0]==$vo['id'])}
+                                                        selected
+                                                    {/if}>{$vo['name']}</option>
+                                                    {/volist}
+                                                </select>
+                                            </div>
+                                            ，每次&nbsp;
+                                            <input type="text" class="layui-input num_input" name="used[0]" value="{$data['drug']['used']['used'][0]}">
+                                            <div class="sel_input">
+                                                <select name="used_unit[1]" lay-search>
+                                                    <option value=""></option>
+                                                    {volist name="unit['num_unit']" id="vo"}
+                                                    <option value="{$vo['id']}" {if($data['drug']['used']['used_unit'][1]==$vo['id'])}
+                                                        selected
+                                                    {/if}>{$vo['name']}</option>
+                                                    {/volist}
+                                                </select>
+                                            </div>
+                                            ，
+                                            <div class="sel_input">
+                                                <select name="used_unit[2]" lay-search>
+                                                    <option value=""></option>
+                                                    {volist name="unit['eat_unit']" id="vo"}
+                                                    <option value="{$vo['id']}" {if($data['drug']['used']['used_unit'][2]==$vo['id'])}
+                                                        selected
+                                                    {/if}>{$vo['name']}</option>
+                                                    {/volist}
+                                                </select>
+                                            </div>
+                                            ，
+                                            <div class="sel_input">
+                                                <select name="used_unit[3]" lay-search>
+                                                    <option value=""></option>
+                                                    {volist name="unit['road_unit']" id="vo"}
+                                                    <option value="{$vo['id']}" {if($data['drug']['used']['used_unit'][3]==$vo['id'])}
+                                                        selected
+                                                    {/if}>{$vo['name']}</option>
+                                                    {/volist}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">禁忌</div>
+                                    <div class="layui-input-block">
+                                        <div class="input30">
+                                            <textarea name="drug_taboo" class="layui-textarea" placeholder="请输入禁忌">{$data['drug']['taboo']}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload','element'],function(){
+        var laydate = layui.laydate,
+            layer = layui.layer,
+            form  = layui.form,
+            $ = layui.jquery,
+            element = layui.element,
+            upload = layui.upload;
+
+        form.on('select(is_title)',function(data){
+            let val = data.value;
+            let t = $(this);
+            $(this).parent().parent().parent().find('select').val(val);
+            for(let i=0;i<$(this).parent().parent().parent().find('select').find('option').length;i++){
+                // console.log($(this).parent().parent().parent().find('select').find('option').eq(i)[0].attributes[0].nodeValue);
+                if($(this).parent().parent().parent().find('select').find('option').eq(i)[0].attributes[0].nodeValue==val){
+                    $(this).parent().parent().parent().find('select').find('option').eq(i).attr('selected',true);
+                }
+            }
+            if(val==-1){
+                $(t).parent().parent().parent().find('.title').hide();
+            }else if(val==1){
+                $(t).parent().parent().parent().find('.title').show();
+            }
+            form.render(null,'component-form-element');
+        });
+
+        form.on('select(perform_type)',function(data){
+            let val = data.value;
+            let t = $(this);
+            if(val==1){
+                $('.apply_link').hide();
+            }else{
+                $('.apply_link').show();
+            }
+        });
+
+        //处方药
+        form.on('select(value_sel)',function(data){
+            let val = data.value;
+            let t = $(this);
+
+            $.getJSON("{:Url('admin/shopping/get_medicine')}",{'id':val},function(res){
+                if(res.data.length>0){
+                    let html = '<div class="value2_box">' +
+                        '     <select name="value2" lay-search>\n' +
+                        '          <option value="">请选择</option>';
+                    for(let i=0;i<res.data.length;i++){
+                        html += '<option value="'+res.data[i].id+'">'+res.data[i].name+'</option>\n';
+                    }
+                    html += '</select>\n'+
+                        '   </div>';
+                    if($('.value_box').find('.value2_box').length==0){
+                        $('.value_box').append(html);
+                    }else{
+                        $('.value_box').find('.value2_box').html(html);
+                    }
+                    form.render(null,'component-form-element');
+                }
+            });
+        });
+
+        form.on('select(cat_id1)',function(data){
+            let val = data.value;
+            let t = $(this);
+            var html = '';
+            $.getJSON("{:Url('admin/shopping/get_nextcate')}",{'id':val},function(res){
+                if(res.data.length>0){
+                    var idx = layer.confirm('是否选择下一级分类？', {
+                        btn: ['是','否']
+                    }, function(){
+                        html = '                                    <select name="cat_id1" lay-search lay-verify="required" lay-filter="cat_id1">\n' +
+                            '                                        <option value="">请选择分类</option>\n';
+                            for(let i=0;i<res.data.length;i++){
+                            html+='                                        <option value="'+res.data[i].cat_id+'">'+res.data[i].cat_name+'</option>\n';
+                            }
+
+                        html+='                                    </select>\n';
+                        $('.nextcate_div').html(html);
+                        // $('.nextcate_div2').html('');
+                        form.render(null,'component-form-element');
+                        layer.close(idx);
+                    }, function(){
+
+                    });
+                }
+            });
+
+            if(val==4602 || val==5532){
+                //国家基本药物&特殊管理药物
+                $.getJSON("{:Url('admin/shopping/get_medicine')}",{'id':val},function(res){
+                    let html = '<select name="value" lay-search lay-filter="value_sel">\n' +
+                        '          <option value="">请选择</option>';
+                        for(let i=0;i<res.data.length;i++){
+                            html += '<option value="'+res.data[i].id+'">'+res.data[i].name+'</option>\n';
+                        }
+                        html += '</select>';
+                    $('.value_box').html(html);
+                    form.render(null,'component-form-element');
+                });
+            }
+
+        });
+
+        form.on('select(cat_id2)',function(data) {
+            let val = data.value;
+            let t = $(this);
+
+            $.getJSON("{:Url('admin/shopping/get_nextcate')}", {'id': val}, function (res) {
+                if(res.data.length>0){
+                    var idx = layer.confirm('是否选择下一级分类？', {
+                        btn: ['是','否']
+                    }, function(){
+                        let html = '                                    <select name="cat_id3" lay-search lay-verify="required">\n' +
+                            '                                        <option value="">请选择三级分类</option>\n';
+                        for(let i=0;i<res.data.length;i++){
+                            html+='                                        <option value="'+res.data[i].cat_id+'">'+res.data[i].cat_name+'</option>\n';
+                        }
+
+                        html+='                                    </select>\n';
+
+                        $('.nextcate_div2').html(html);
+                        form.render(null,'component-form-element');
+                        layer.close(idx);
+                    }, function(){
+
+                    });
+                }
+            });
+        });
+
+        form.on('select(cross_catId1)',function(data){
+            let val = data.value;
+            let t = $(this);
+            var html = '';
+            $.getJSON("{:Url('admin/shopping/get_nextcate')}",{'id':val},function(res){
+                if(res.data.length>0){
+                    var idx = layer.confirm('是否选择下一级分类？', {
+                        btn: ['是','否']
+                    }, function(){
+                        html = '                                    <select name="cross_catId1" lay-search lay-verify="required" lay-filter="cross_catId1">\n' +
+                            '                                        <option value="">请选择分类</option>\n';
+                            for(let i=0;i<res.data.length;i++){
+                            html+='                                        <option value="'+res.data[i].cat_id+'">'+res.data[i].cat_name+'</option>\n';
+                            }
+
+                        html+='                                    </select>\n';
+                        $('.nextcross_div').html(html);
+                        // $('.nextcross_div2').html('');
+                        form.render(null,'component-form-element');
+                        layer.close(idx);
+                    }, function(){
+
+                    });
+                }
+            });
+        });
+        
+        form.on('select(cross_catId2)',function(data){
+            let val = data.value;
+            let t = $(this);
+            var html = '';
+            $.getJSON("{:Url('admin/shopping/get_nextcate')}",{'id':val},function(res){
+                if(res.data.length>0){
+                    var idx = layer.confirm('是否选择下一级分类？', {
+                        btn: ['是','否']
+                    }, function(){
+                        html = '                                    <select name="cross_catId3" lay-search lay-verify="required" lay-filter="cross_catId3">\n' +
+                            '                                        <option value="">请选择三级分类</option>\n';
+                            for(let i=0;i<res.data.length;i++){
+                            html+='                                        <option value="'+res.data[i].cat_id+'">'+res.data[i].cat_name+'</option>\n';
+                            }
+
+                        html+='                                    </select>\n';
+                        $('.nextcross_div2').html(html);
+                        form.render(null,'component-form-element');
+                        layer.close(idx);
+                    }, function(){
+
+                    });
+                }
+            });
+        });
+
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+
+            $.ajax({
+                url:"{:Url('admin/shopping/save_platform_value')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+
+    //新增同级
+    function add_common_grade(t) {
+        let $ = layui.jquery
+            ,form = layui.form
+            ,element = layui.element;
+
+        var param_num = $(t).parent().parent().parent().parent().find('.layui-form-label').find('.layui-input').val();
+        var origin_param_num = param_num;
+        if(typeof(param_num)=='undefined') {
+            param_num = $(t).parent().find('.parag_num').val();
+        }
+        // param_num = param_num.trim('.', 'right');
+        param_num = param_num.replace(/\.$/, "");
+        let true_param_num = param_num;//1.1
+        param_num = param_num.split('.');
+        let big_parag_num = 0;
+        let typ = 1;
+        let tpn = '';
+        if (param_num.length > 1) {
+            true_param_num = true_param_num.split('.');//1.10.10
+            true_param_num.pop();
+            for (let i = 0; i < true_param_num.length; i++) {
+                tpn += true_param_num[i] + '.';
+            }
+            let num = parseInt(param_num[param_num.length - 1]) + 1;
+            big_parag_num = tpn + '' + num;
+        } else {
+            big_parag_num = parseInt($('#big_parag_num').val()) + 1;
+            $('#big_parag_num').val(big_parag_num);
+            typ = 2;
+        }
+        //判断有无重复
+        let parag_num = $('.parag_num');
+        for(let i=0;i<parag_num.length;i++){
+            if(parag_num[i].value==big_parag_num+'.'){
+                if(typ==2){
+                    //撤回
+                    big_parag_num = parseInt($('#big_parag_num').val())-1;
+                    $('#big_parag_num').val(big_parag_num);
+                    form.render(null,'component-form-element');
+                }
+                layer.alert('已有重复段落：'+parag_num[i].value);
+                return false;
+            }
+        }
+
+        if(typeof(origin_param_num)!='undefined') {
+            //改变当前的样式
+            let parag_num_div = $(t).parent().parent().parent().parent().find('.layui-form-label').clone();
+            let parag_title = $(t).parent().parent().find('.disf').eq(0).clone();
+            let parag_btn = $(t).parent().clone();
+            let parag_textarea = $(t).parent().parent().parent().find('.textarea_div').clone();
+            let this_html = '<div class="layui-collapse type1_box" lay-accordion>\n' +
+                '  <div class="layui-colla-item">\n' +
+                '    <h2 class="layui-colla-title ctitle"><div class="disf">' + parag_num_div[0].innerHTML + parag_title[0].innerHTML + parag_btn[0].innerHTML + '</div></h2>\n' +
+                '    <div class="layui-colla-content">' + parag_textarea[0].innerHTML + '</div>\n' +
+                '  </div>\n' +
+                '</div>';
+            $(t).parent().parent().parent().parent().parent().find('.regular_box').append(this_html);
+            $(t).parent().parent().parent().parent().remove();
+            $('.regular_box').show();
+            // let isa = parseInt($('.regular_box').find('.type1_box').length)*62;
+            // document.getElementsByClassName('.regular_box')[0].scrollTop=60;
+        }
+        //获取当前有多少个type1_box
+        let len = $('.type1').find('.layui-field-box').find('.input40').find('.type1_box').length;
+        //添加同级
+        let html = '<div class="layui-form-item type1_box">\n' +
+            '                                    <div class="layui-form-label"><input type="text" name="parag_num['+len+']" class="layui-input parag_num" value="'+big_parag_num+'." readonly></div>\n' +
+            '                                    <div class="layui-input-block">\n'+
+            '                                        <div class="disf">\n';
+        if(typ==1){
+            html += '                                <div class="disf">\n'+
+                '                                             <input type="hidden" class="layui-input" name="pnum['+len+']" value="'+tpn+'">\n'+
+                '                                             <select name="is_title['+len+']" lay-filter="is_title">\n'+
+                '                                                <option value="-1">不需要标题</option>\n'+
+                '                                                <option value="1">需要标题</option>\n'+
+                '                                             </select>\n'+
+                '                                             <input type="text" class="layui-input title" name="title['+len+']" placeholder="输入标题" style="display:none;" value="" onkeyup="keyup(this)">\n' +
+                '                                        </div>\n';
+        }else if(typ==2){
+            html += '                                <div class="disf">\n'+
+                '                                   <input type="hidden" class="layui-input" name="pnum['+len+']" value="0">\n'+
+                '                                   <input type="text" class="layui-input" name="title['+len+']" placeholder="输入标题" value="" onkeyup="keyup(this)">\n'+
+                '                                   <input type="hidden" class="layui-input" name="is_title['+len+']" value="1">\n'+
+                '                                </div>';
+        }
+        html += '                                    <div class="disf">\n' +
+            '                                            <div class="layui-btn layui-btn-success" onclick="add_common_grade(this)">新增同级</div>\n' +
+            '                                            <div class="layui-btn layui-btn-success" onclick="add_next_grade(this)">新增下级</div>\n' +
+            '                                            <div class="layui-btn layui-btn-normal" onclick="queren(this)"><div class="goup collapse"></div></div>\n' +
+            '                                            <div class="layui-btn layui-btn-danger" onclick="del_parag(this)">删除</div>\n' +
+            '                                        </div>\n' +
+            '                                    </div>\n'+
+            '                                    <div class="textarea_div"><textarea name="content['+len+']" class="layui-textarea" placeholder="输入内容" onkeyup="keyup2(this)"></textarea></div>\n' +
+            '                                 </div>\n' +
+            '                             </div>';
+        $('.type1').find('.layui-field-box').find('.input40').append(html);
+        form.render(null,'component-form-element');
+        element.render('collapse');
+
+        //隐藏折叠框
+        if(typeof(origin_param_num)=='undefined') {
+            $(t).parent().parent().click();
+        }
+    }
+
+    //新增下级
+    function add_next_grade(t) {
+        let $ = layui.jquery
+            ,form = layui.form
+            ,element = layui.element;
+        var param_num = $(t).parent().parent().parent().parent().find('.layui-form-label').find('.layui-input').val();
+        var origin_param_num = param_num;
+        if(typeof(param_num)=='undefined'){
+            param_num = $(t).parent().find('.parag_num').val();
+        }
+        let param_num2 = param_num + '1.';
+
+        //判断有无重复
+        let parag_num = $('.parag_num');
+        for(let i=0;i<parag_num.length;i++){
+            if(parag_num[i].value==param_num2){
+                layer.alert('已有重复段落：'+parag_num[i].value);
+                return false;
+            }
+        }
+
+        //改变当前的样式
+        if(typeof(origin_param_num)!='undefined') {
+            let parag_num_div = $(t).parent().parent().parent().parent().find('.layui-form-label').clone();
+            let parag_title = $(t).parent().parent().find('.disf').eq(0).clone();
+            let parag_btn = $(t).parent().clone();
+            let parag_textarea = $(t).parent().parent().parent().find('.textarea_div').clone();
+            let this_html = '<div class="layui-collapse type1_box" lay-accordion>\n' +
+                '  <div class="layui-colla-item">\n' +
+                '    <h2 class="layui-colla-title ctitle"><div class="disf">' + parag_num_div[0].innerHTML + parag_title[0].innerHTML + parag_btn[0].innerHTML + '</div></h2>\n' +
+                '    <div class="layui-colla-content">' + parag_textarea[0].innerHTML + '</div>\n' +
+                '  </div>\n' +
+                '</div>';
+            // $(t).parent().parent().parent().parent().html(this_html);
+            $(t).parent().parent().parent().parent().parent().find('.regular_box').append(this_html);
+            $(t).parent().parent().parent().parent().remove();
+            $('.regular_box').show();
+        }
+        //获取当前有多少个type1_box
+        let len = $('.type1').find('.layui-field-box').find('.input40').find('.type1_box').length;
+        // console.log(len);
+        let html = '<div class="layui-form-item type1_box">\n' +
+            '                                    <div class="layui-form-label"><input type="text" name="parag_num['+len+']" class="layui-input parag_num" value="'+param_num2+'" readonly></div>\n' +
+            '                                    <div class="layui-input-block">\n' +
+            '                                       <div class="disf">\n'+
+            '                                        <div class="disf">\n'+
+            '                                             <input type="hidden" class="layui-input" name="pnum['+len+']" value="'+param_num+'">\n'+
+            '                                             <select name="is_title['+len+']" lay-filter="is_title">\n'+
+            '                                                <option value="-1">不需要标题</option>\n'+
+            '                                                <option value="1">需要标题</option>\n'+
+            '                                             </select>\n'+
+            '                                             <input type="text" class="layui-input title" name="title['+len+']" placeholder="输入标题" style="display:none;" onkeyup="keyup(this)">\n' +
+            '                                        </div>\n'+
+            '                                        <div class="disf">\n' +
+            '                                            <div class="layui-btn layui-btn-success" onclick="add_common_grade(this)">新增同级</div>\n' +
+            '                                            <div class="layui-btn layui-btn-success" onclick="add_next_grade(this)">新增下级</div>\n' +
+            '                                            <div class="layui-btn layui-btn-normal" onclick="queren(this)"><div class="goup collapse"></div></div>\n' +
+            '                                            <div class="layui-btn layui-btn-danger" onclick="del_parag(this)">删除</div>\n' +
+            '                                        </div>\n' +
+            '                                       </div>\n'+
+            '                                        <div class="textarea_div"><textarea name="content['+len+']" class="layui-textarea" placeholder="输入内容" onkeyup="keyup2(this)"></textarea></div>\n' +
+            '                                    </div>\n' +
+            '                                </div>';
+        $('.type1').find('.layui-field-box').find('.input40').append(html);
+        form.render(null,'component-form-element');
+        element.render('collapse');
+        //隐藏折叠框
+        if(typeof(origin_param_num)=='undefined') {
+            $(t).parent().parent().click();
+        }
+    }
+
+    //复制input框
+    function keyup(obj){
+        let $ = layui.jquery
+            ,form  = layui.form;
+        $(obj).attr('value',$(obj).val());
+    }
+
+    //复制textarea框
+    function keyup2(obj){
+        let $ = layui.jquery
+            ,form  = layui.form;
+        $(obj).text($(obj).val());
+    }
+
+    //确认生成
+    function queren(t){
+        let $ = layui.jquery
+            ,form = layui.form
+            ,element = layui.element;
+
+        if($(t).parent().parent().parent().parent().find('.layui-colla-title').length>0){
+            if($(t).find('.goup').length>0){
+                $(t).find('.goup').removeClass('goup').addClass('godown');
+            }else{
+                $(t).find('.godown').removeClass('godown').addClass('goup');
+            }
+        }
+
+        let parag_num_div = $(t).parent().parent().parent().parent().find('.layui-form-label').clone();
+        // if(typeof(parag_num_div[0].innerHTML) != 'undefined'){
+        //
+        // }
+        let parag_title = $(t).parent().parent().find('.disf').eq(0).clone();
+        let parag_btn = $(t).parent().clone();
+        let parag_textarea = $(t).parent().parent().parent().find('.textarea_div').clone();
+        let this_html = '<div class="layui-collapse type1_box" lay-accordion>\n' +
+            '  <div class="layui-colla-item">\n' +
+            '    <h2 class="layui-colla-title ctitle"><div class="disf">' + parag_num_div[0].innerHTML + parag_title[0].innerHTML + parag_btn[0].innerHTML + '</div></h2>\n' +
+            '    <div class="layui-colla-content">' + parag_textarea[0].innerHTML + '</div>\n' +
+            '  </div>\n' +
+            '</div>';
+        $(t).parent().parent().parent().parent().parent().find('.regular_box').append(this_html);
+        $(t).parent().parent().parent().parent().remove();
+        // $('.type1').find('.layui-field-box').find('.input40').append(html);
+        form.render(null,'component-form-element');
+        element.render('collapse');
+    }
+
+    //删除当前段落
+    function del_parag(t){
+        let $ = layui.jquery
+            ,form  = layui.form
+            ,layer = layui.layer;
+        let is_big = $(t).parent().parent().parent().parent().find('.layui-form-label').find('.parag_num').val();
+        console.log(is_big);
+        layer.confirm('确认要删除该段落？', {
+            btn: ['确认','取消']
+        }, function(){
+            if(typeof(is_big)=='undefined'){
+                let is_big = $(t).parent().find('.parag_num').val();
+                is_big = is_big.split('.');
+                if (is_big.length == 2) {
+                    let big_parag_num = parseInt($('#big_parag_num').val()) - 1;
+                    $('#big_parag_num').val(big_parag_num);
+                }
+                $(t).parent().parent().parent().parent().remove();
+                form.render(null,'component-form-element');
+            }else {
+                is_big = is_big.split('.');
+                if (is_big.length == 2) {
+                    let big_parag_num = parseInt($('#big_parag_num').val()) - 1;
+                    $('#big_parag_num').val(big_parag_num);
+                }
+
+                $(t).parent().parent().parent().parent().remove();
+                form.render(null, 'component-form-element');
+            }
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+
+</script>
+</body>
+</html>

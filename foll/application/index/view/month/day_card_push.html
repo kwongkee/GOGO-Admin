@@ -1,0 +1,141 @@
+{include file="common/header"}
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<body>
+<div class="x-body">
+    <div class="layui-card-body">
+        <form class="layui-form layui-form-pane"  lay-filter="component-form-element">
+            <input type="hidden" name="type_id" value="{$id}">
+            <div class="layui-row layui-col-space10 layui-form-item">
+                <div class="layui-col-lg6">
+                    <label class="layui-form-label">泊位开始段：</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="park_start" placeholder="000000，不限位留空" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-col-lg6">
+                    <label class="layui-form-label">泊位结束段：</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="park_end" placeholder="999999，不限位留空" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-row layui-col-space10 layui-form-item">
+            <div class="layui-col-lg6">
+                <label class="layui-form-label">优惠时间开始段：</label>
+                <div class="layui-input-block"> <!-- 注意：这一层元素并不是必须的 -->
+                    <input type="text" class="layui-input" name="period_start" id="date1" placeholder="请选择"  lay-verify="required">
+                </div>
+            </div>
+            <div class="layui-col-lg6">
+                <label class="layui-form-label">优惠时间结束段：</label>
+                <div class="layui-input-block"> <!-- 注意：这一层元素并不是必须的 -->
+                    <input type="text" class="layui-input" name="period_end" id="date2" placeholder="请选择" lay-verify="required">
+                </div>
+            </div>
+            </div>
+            <div class="layui-row layui-col-space10 layui-form-item">
+                <div class="layui-col-lg6">
+                    <label class="layui-form-label">使用期开始段：</label>
+                    <div class="layui-input-block"> <!-- 注意：这一层元素并不是必须的 -->
+                        <input type="text" class="layui-input" name="lowest_start" id="date3" placeholder="请选择"  lay-verify="required">
+                    </div>
+                </div>
+                <div class="layui-col-lg6">
+                    <label class="layui-form-label">使用期结束段：</label>
+                    <div class="layui-input-block"> <!-- 注意：这一层元素并不是必须的 -->
+                        <input type="text" class="layui-input" name="lowest_end" id="date4" placeholder="请选择" lay-verify="required">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-row layui-col-space10 layui-form-item">
+                <div class="layui-col-lg6">
+                    <label class="layui-form-label">打折开始段：</label>
+                    <div class="layui-input-block"> <!-- 注意：这一层元素并不是必须的 -->
+                        <input type="text" class="layui-input" name="discount_start" id="date5" placeholder="请选择" >
+                    </div>
+                </div>
+                <div class="layui-col-lg6">
+                    <label class="layui-form-label">打折结束段：</label>
+                    <div class="layui-input-block"> <!-- 注意：这一层元素并不是必须的 -->
+                        <input type="text" class="layui-input" name="discount_end" id="date6" placeholder="请选择">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-lg6">
+                <label class="layui-form-label">打折：</label>
+                <div class="layui-input-block">
+                    <input type="number" name="c_discount" placeholder="不打折可留空" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-col-lg6">
+                <label class="layui-form-label">说明：</label>
+                <div class="layui-input-block">
+                    <input type="text" name="c_note" placeholder="请输入" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button style="width: 100%;" class="layui-btn layui-btn-fluid" lay-submit="" lay-filter="component-form-element">推送</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script type="text/javascript">
+    layui.use(['layer','form','jquery','laydate'],function(){
+        $ = layui.jquery;
+        layer = layui.layer;
+        var form = layui.form;
+        var laydate = layui.laydate;
+        laydate.render({
+            elem: '#date1'
+            ,type:'time'
+            ,format: 'HH:mm'
+            ,value:'00:00'
+        });
+        laydate.render({
+            elem: '#date2'
+            ,type:'time'
+            ,format: 'HH:mm'
+            ,value:'23:00'
+        });
+        laydate.render({
+            elem: '#date3'
+            ,type:'date'
+        });
+        laydate.render({
+            elem: '#date4'
+            ,type:'date'
+        });
+        laydate.render({
+            elem: '#date5'
+            ,type:'date'
+        });
+        laydate.render({
+            elem: '#date6'
+            ,type:'date'
+        });
+        form.on('submit(component-form-element)', function(data){
+            submit_data(data.field);
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+    function submit_data(filed) {
+        axios.post('{:Url("index/push__month_card")}',filed).then(function (repose) {
+            console.log(repose.data);
+            if(repose.data.code == 0){
+                layer.msg(repose.data.message, {icon: 1});
+                // location.reload();
+            }else{
+                layer.msg(repose.data.message, {icon: 5});
+            }
+        }).catch(function (error) {
+            layer.msg(error, {icon: 5});
+        });
+
+    }
+</script>
+</body>
+</html>

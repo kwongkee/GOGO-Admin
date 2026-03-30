@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>新增接口</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {template 'web/link'}
+    <style>
+        hr{
+            margin: 9px 0;
+        }
+        .layui-input{
+            width:85%;
+        }
+        .layui-form select{
+            display:block;
+            border-color: #e6e6e6;
+            padding-left: 10px;
+            height: 38px;
+            line-height: 1.3;
+            line-height: 38px\9;
+            border-radius: 2px;
+        }
+        .layui-form-label{
+            width: 120px;
+        }
+        .layui-elem-field{
+            border-color: #1E9FFF;
+        }
+        .layui-elem-field legend{
+            font-size: 16px;
+            color: #1E9FFF;
+        }
+        .layui-form-item{
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<form class="layui-form" action="" id="forms">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">平台选择：</label>
+        <div class="layui-input-inline">
+            <select name="platform" style="width: 100%;">
+                <option value="cross" selected>跨境购</option>
+                <option value="direct">直邮易</option>
+            </select>
+        </div>
+    </div>
+
+    <input type="hidden" name="uniacid" value="{$uniacid}">
+    <input type="hidden" name="method" value="add">
+
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>商户接口</legend>
+    </fieldset>
+    <div class="addcon">
+        <div class="layui-form-item">
+            <label class="layui-form-label">Token：</label>
+            <div class="layui-input-block">
+                <input type="text" name="Token" lay-verify="title" autocomplete="off" placeholder="请输入Token" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">接口地址：</label>
+            <div class="layui-input-block">
+                <input type="text" name="interfaceUrl" lay-verify="title" autocomplete="off" placeholder="请输入接口地址" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">EncodingAESKey：</label>
+            <div class="layui-input-block">
+                <input type="text" name="encodingKey" lay-verify="title" autocomplete="off" placeholder="请输入EncodingAESKey" class="layui-input">
+            </div>
+        </div>
+    </div>
+
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>支付账户</legend>
+    </fieldset>
+    <div class="addcon">
+        <div class="layui-form-item">
+            <label class="layui-form-label">支付通道：</label>
+            <div class="layui-input-block">
+                <input type="text" name="payChannel" lay-verify="title" autocomplete="off" placeholder="请输入支付通道" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">商户号：</label>
+            <div class="layui-input-block">
+                <input type="text" name="merchatNum" lay-verify="title" autocomplete="off" placeholder="请输入商户号" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">商户密钥：</label>
+            <div class="layui-input-block">
+                <input type="text" name="merchatKey" lay-verify="title" autocomplete="off" placeholder="请输入商户密钥" class="layui-input">
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<div class="layui-form-item">
+    <div class="layui-input-block" style="margin-left: 45%;">
+        <button class="layui-btn" onclick="submit();">确认提交</button>
+    </div>
+</div>
+
+
+<script>
+
+    layui.use('layer',function(){
+       var layer = layui.layer;
+    });
+
+    function submit(){
+        var formData = $('#forms').serialize();
+        var platform = $('select option:selected').val();
+        var Token = $('input[name="Token"]').val();
+        var interfaceUrl = $('input[name="interfaceUrl"]').val();
+        var encodingKey = $('input[name="encodingKey"]').val();
+        var payChannel = $('input[name="payChannel"]').val();
+        var merchatNum = $('input[name="merchatNum"]').val();
+        var merchatKey = $('input[name="merchatKey"]').val();
+
+        if(Token=='' || interfaceUrl == '' || encodingKey=='' || payChannel=='' || merchatNum=='' || merchatKey=='') {
+            layer.msg('请填写所有的空格');return false;
+        }
+
+        var urls = "{php echo WebUrl('mer_chats',array('m' => 'mer_chats','do'=>'index', 'p'=>'addpus'))}";
+        $.ajax({
+            url:urls,
+            type:'POST',
+            data:formData,
+            success:function(red){
+                var res = JSON.parse(red);
+                if(res.code!=1) {
+                    layer.msg(res.msg);
+                    return false;
+                }
+                layer.msg(res.msg);
+                setTimeout(function(){
+                    parent.layer.closeAll();
+                    window.location.reload();
+                },1500);
+            }
+        })
+    }
+</script>
+
+</body>
+</html>

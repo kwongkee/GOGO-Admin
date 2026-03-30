@@ -1,0 +1,136 @@
+{include file="common/header"}
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<script src="./static/index/admin/js/jquery.min.js"></script>
+<script src="./static/index/admin/js/bootstrap.min.js"></script>
+<script src="./static/index/admin/js/jquery-1.8.0.min.js"></script>
+<script src="./static/index/admin/js/index.js"></script>
+
+<body>
+	
+{if condition="$flag eq true"}
+	
+<table class="layui-table">
+  <colgroup>
+    <col width="60">
+    <col width="200">
+  </colgroup>
+  
+  <thead>
+  	<tr>
+    	<th colspan="2" style="text-align: center;">【{$title}】订单清算确认</th>
+   	</tr>
+  </thead>
+  
+  <tbody>
+    <tr>
+      <td class="titles">交易时间</td>
+      <td>{$info.date}</td>
+    </tr>
+    <tr>
+      <td class="titles">交易数据</td>
+      <td>共 {$info.count} 条</td>
+    </tr>
+    <tr>
+      <td class="titles">平账数据</td>
+      <td>共 {$info.count} 条</td>
+    </tr>
+    <tr>
+      <td class="titles">长款数据</td>
+      <td>共 {$info.long_num} 条</td>
+    </tr>
+    <tr>
+      <td class="titles">短款数据</td>
+      <td>共 {$info.short_num} 条</td>
+    </tr>
+    <tr>
+      <td class="titles">交易总额</td>
+      <td>{$info.pay_account} 元</td>
+    </tr>
+    <tr>
+      <td class="titles">交易费率</td>
+      <td>{$info.fee} 元</td>
+    </tr>
+    <tr>
+      <td class="titles">交易费用</td>
+      <td>{$info.pay_fee} 元</td>
+    </tr>
+    <tr>
+      <td class="titles">清算金额</td>
+      <td>{$info.pay_money} 元</td>
+    </tr>
+  </tbody>
+  
+</table>
+
+	<form class="layui-form" action="">
+			
+			<div class="layui-form-item">
+			    <label class="layui-form-label">电子邮箱</label>
+			    <div class="layui-input-inline">
+			      <input type="email" name="email" required  lay-verify="required" placeholder="请输入您的电子邮箱" autocomplete="off" class="layui-input">
+			      <input type="hidden" name="sid" value="{$info.sid}"/>
+			      <input type="hidden" name="types" value="{$info.pay_type}" />
+				  <input type="hidden" name="dates" value="{$info.date}" />
+			    </div>
+			</div>
+			
+	  		<div class="layui-form-item">
+	    		<div class="layui-input-block">
+	      			<button class="layui-btn" id="btns" lay-submit lay-filter="formDemo">提交清算</button>
+	      			<button type="reset" class="layui-btn layui-btn-primary">重置邮箱</button>
+					<label id="shows" style="display:none;color:red;font-size:16px;font-weight:both;margin-left:10px;text-align:center;">已提交</label>
+				</div>
+	  		</div>
+			
+	</form>
+	<script>
+//Demo
+layui.use('form', function(){
+  var form = layui.form;
+  
+  //监听提交
+  form.on('submit(formDemo)', function(data) {
+	$("#btns").attr('disabled',true);//禁止按钮
+	$("#shows").show();
+  	var email = data.field.email;
+  	var sid	  = data.field.sid;
+  	var types = data.field.types;
+	var dates = data.field.dates;
+  	var reg = new RegExp("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$"); //正则
+  	if(reg.test(email)) {
+  		$.post("{:Url('Reconcils/emailok')}", {
+            "email": email,
+            "sid":sid,
+            "types":types,
+			"dates":dates,
+        }, function (rest) {
+        	var res = JSON.parse(rest);
+            if (res.code == 1) {
+                layer.msg(res.msg, {icon: 1});
+                //alert(res.msg)
+                location.reload();
+            } else {
+                alert(res.msg)
+                location.reload();
+            }
+        })
+  		
+  		return false;
+  	} else {
+  		alert('电子邮箱验证不通过，请检查！');
+//		layer.msg(JSON.stringify(data.field.email));
+  		return false;
+  	}
+   
+    
+  });
+});
+</script>
+{/if}
+
+{if condition="$flag eq false"}
+	<div style="font-size: 38px;font-weight: bold;width: 100%;padding-top: 10%; text-align: center;color: silver;">暂无数据</div>
+{/if}
+	
+</body>

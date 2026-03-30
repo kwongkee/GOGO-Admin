@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="Cache-Control" content="no-cache"/>
+<title>答案结果查看 - {$config['webtitle']}</title>
+<meta http-equiv="description" content="" />
+<meta name="renderer" content="webkit"/>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+<meta name="description" content="" id="description"/>
+<meta name="keywords" content=""/>
+<link rel="stylesheet" href="{$templateurl}css/wap_css.css" type="text/css"/>
+<script src="{$templateurl}js/jquery-1.8.0.min.js" language="javascript"></script>
+<style type="text/css">
+.cuotidiankai .a2 h4{ margin-top:15px;}
+.cuotidiankai .a2 h4 .teletnt{ font-size:16px; font-weight:bold; margin:0; margin-top:8px;}
+.cuotidiankai .a2 font{ font-size:13px; color:#f30; line-height:20px; margin:0; font-weight:normal;}
+.cuotidiankai .a2 h4 .wujinput{ font-weight:normal; color:#999; font-size:12px;}
+.cuotidiankai .a2 h4 .gx1{ margin-top:10px; width:266px; padding-left:4px; height:auto; position:absolute; left:50%; margin-left:-135px; overflow:hidden; text-align:center;}
+.cuotidiankai .a2 h4 a.g1{ width:auto; float:left; margin-left:8px; padding:0 11px;}
+.cuotidiankai .a2 h4 a{ font-size:12px; background:#9EEA6A; width:150px; text-align:center; line-height:28px; margin:15px auto 10px auto; display:block; color:#fff; font-weight: normal; border-radius:3px; float:left;}
+.cuotidiankai .a2 h4 a.s{ background: none; width:auto; float:left; color:#9EEA6A; border-radius:0px; transform:rotate(180deg); margin-top:10px;}
+.cuotidiankai .a2 h4 a.x{ background: none; width:auto; float:right; color:#9EEA6A; border-radius:0px; margin-top:15px;}
+.cuotidiankai .a2 h4 a i{ font-size:22px;}
+</style>
+</head>
+
+<body>
+<div class="cuotidiankai">
+	<div class="a1">
+    <p>本题来源：<a href="{$urlt}">{$rsdb['titlename']}</a></p> 
+    </div>
+    <div class="a2">
+    	<h1>{php echo html_entity_decode($answer_show['0']['titlename']);}</h1>
+        <h2>
+			{if $answer_show['0']['type'] < 3}<!--选择题-->
+				{loop $arraytp $i $row}
+				{if $answer_arll[$i]}
+				<label>
+				{if $answer_show['0']['type'] == 1}
+				<input type="radio" {if $hdanswer == $row}checked{/if}>
+				{else}
+				<input type="checkbox" {if @in_array($row, $hdanswer)}checked{/if}>
+				{/if}
+				{$row}、{$answer_arll[$i]}</label>
+				{/if}
+				{/loop}
+			{elseif $answer_show['0']['type'] == '3'}<!--填空题-->{$hdanswer}
+			{elseif $answer_show['0']['type'] == '4'}<!--判断题-->
+			<label><input type="radio" {if $hdanswer == 'A'}checked{/if}> 正确</label>
+			<label><input type="radio" {if $hdanswer == 'B'}checked{/if}> 错误</label>
+			{else}<!--主观题/作文题-->
+        		{loop $hdanswer $i $rowpl}
+                <label><img src="{php echo tomedia($rowpl);}" style="max-width:100%;"/></label>
+                {/loop}
+			{/if}
+        </h2>
+        <h4>
+			{if $total_answer_pg > 0}
+			<a href="{$urlt}&tab=notationt&qid={$qid}" style="margin:0; padding:0 8px; margin-top:-5px;"> 点击查看大图/查看老师批注 </a>
+			{/if}   
+        	<div class="clear"></div>
+			
+			{if $answer_show['0']['type'] < 5}
+			<p>本题您做{if $answer_show['0']['stateh']==1}错了{else}对了{/if}</p>
+			{/if}
+			{if $answer_show['0']['type'] == 5}
+				{if $answer_show['0']['pgstast'] == 1}
+				<p>本题您做{if $answer_show['0']['stateh']==1}错了{else}对了{/if}</p>
+				{else} 
+				<p>等待老师批改中...</p>
+				{/if}
+			{/if}
+			
+			{if $answer_show['0']['type'] == 6}
+				{if $answer_show['0']['pgstast'] == 1}
+				<p>作文得分:{$answer_show['0']['scorepf']}分</p>
+				{else} 
+				<p>等待老师批改中...</p>
+				{/if}
+			{else}         	
+        	<div class="teletnt">正确答案：
+				{if $answer_show['0']['type'] == 4}
+				{if $answer_show['0']['q_zqanswer'] == 'A'}正确{elseif $answer_show['0']['q_zqanswer'] == 'B'}错误{/if}
+				{elseif $answer_show['0']['type'] > 4}
+				<div style="font-weight:normal; font-size:12px; color:#333333;">{php echo html_entity_decode($answer_show['0']['q_zqanswer']);}</div>
+				{else}{$answer_show['0']['q_zqanswer']}{/if}
+			</div>
+			{/if}
+			<div class="wujinput"><span style="color:#333333; font-size:14px;">解析：</span>{php echo html_entity_decode($answer_show['0']['content']);}</div>
+			
+			{if $answer_on['0']['qid']}
+			<a class="s" href="{$urlt}&tab=show&qid={$answer_on['0']['qid']}"><i class="iconfont">&#xe60b;</i></a>
+			{/if}
+			{if $answer_up['0']['qid']}
+			<a class="x" href="{$urlt}&tab=show&qid={$answer_up['0']['qid']}"><i class="iconfont">&#xe60b;</i></a>
+			{/if}
+        </h4>
+    </div>
+</div>
+<div class="clear"></div>
+
+<!--footer strat-->
+{template 'footer'}
+
+</body>
+</html>

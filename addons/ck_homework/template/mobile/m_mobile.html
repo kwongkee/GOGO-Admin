@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="Cache-Control" content="no-cache"/>
+<title>手机号修改  - {$config['webtitle']}</title>
+<meta content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport" />
+<meta name="MobileOptimized" content="240" />
+<meta http-equiv="Expires" content="0" />
+<meta http-equiv="Cache-Control" content="no-cache" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta content="yes" name="apple-mobile-web-app-capable" />
+<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+<link rel="stylesheet" href="{$templateurl}css/yun_wap_member.css" type="text/css"/>
+<link rel="stylesheet" href="{$templateurl}css/wap_css.css" type="text/css"/>
+
+<script src="{$templateurl}js/jquery-1.8.0.min.js" language="javascript"></script>
+<script>
+	function phone_ckd(){					
+		var phone = document.p_register.phone.value;
+		if(!(/^1[34578]\d{9}$/.test(phone))){ 
+			alert("请输入有效的手机号码!");
+			document.p_register.phone.focus();
+			return false; 
+		}
+		var sms_open = document.p_register.sms_open.value;
+		if(sms_open === 1){
+			var mobile_code = document.p_register.mobile_code.value;
+			if (mobile_code == ""){
+				alert("手机验证码不能为空!");
+				document.p_register.mobile_code.focus();
+				return false; 
+			}
+		}
+	}
+	
+	//获取手机验证码
+	function get_mobile_code(pcode){
+		$.post('{$url_sms}', {mobile:jQuery.trim($('#mobile').val()),send_code:pcode}, function(msg) {
+			alert(jQuery.trim(unescape(msg)));
+			if(msg=='请求成功'){
+				RemainTime();
+			}
+		});
+	};
+	var iTime = 59;
+	var Account;
+	function RemainTime(){
+		document.getElementById('zphone').disabled = true;
+		var iSecond,sSecond="",sTime="";
+		if (iTime >= 0){
+			iSecond = parseInt(iTime%60);
+			iMinute = parseInt(iTime/60)
+			if (iSecond >= 0){
+				if(iMinute>0){
+					sSecond = iMinute + "分" + iSecond + "秒";
+				}else{
+					sSecond = iSecond + "秒";
+				}
+			}
+			sTime=sSecond;
+			if(iTime==0){
+				clearTimeout(Account);
+				sTime='获取验证码';
+				iTime = 59;
+				document.getElementById('zphone').disabled = false;
+			}else{
+				Account = setTimeout("RemainTime()",1000);
+				iTime=iTime-1;
+			}
+		}else{
+			sTime='没有倒计时';
+		}
+		document.getElementById('zphone').value = sTime;
+	}
+</script>
+</head>
+
+<body>
+<div class="body_wap">
+<header>
+  <div class="header_bg"> <a class="hd-lbtn" href="{php echo $this->createMobileUrl('m_index');}"><i class="header_top_l iconfont"></i></a>
+    <div class="header_h1">手机号修改</div>
+  </div>
+</header>
+
+
+
+
+<div class="yunwapreg_box">
+  <section class="list">
+  <article>
+    <div class="regform">
+
+      <form name="p_register" action="{$urltk}" method="post" onSubmit="return phone_ckd();">
+   		<input name="token" type="hidden" value="{$_W['token']}" />
+		<input name="sms_open" type="hidden" value="{$config['sms_open']}" />
+        <dl class="forminputitem">
+          <dd >
+            <div class="c ico_name inputitem_w"> <i class="reg_icon_font login_icon_n1 "></i>
+              <input class="inputitemtxt" placeholder="填写手机号" id="mobile" name="phone" type="text" >
+            </div>
+          </dd>
+		  {if $config['sms_open']}
+          <dd>
+            <div class="c ico_pwd2 inputitem_w"> <i class="reg_icon_font login_icon_n2_1 "></i>
+              <input class="inputitemtxt" placeholder="手机验证码" name="mobile_code" type="text">
+              <em class="viewpwd"></em>
+			  <input id="zphone" type="button" value="获取 " onClick="get_mobile_code({$_SESSION['send_code']});" style="float:right; position:relative; margin-top:-30px; border:1px solid #F63; background:#F93; color:#fff; line-height:24px; margin-right:5px;">
+			</div>
+          </dd>
+          {/if}
+          <dd>
+            <input type="submit" name="save_submit" value="提  交" class="inputSubmit">
+          </dd>
+        </dl>
+      </form>
+    </div>
+  </article>
+</div>
+</div>
+
+</body>
+</html>

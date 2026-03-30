@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>船运提单</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="Content-Language" content="zh-CN" />
+        <link rel="stylesheet" href="./static/home/css/ship.css" />
+        <style type="text/css">
+            /*#printId{font-size: 12pt !important;}*/
+            body{font-size: 12pt !important;}
+            .diyform input{border:1px solid #333 !important;padding:5px 5px;box-sizing:border-box;}
+            .layui-form-label{width:100px;}
+            .goodsinfo input{
+                font-size: 12pt;
+                color: #78afd8;
+                font-family: "arial, helvetica, sans-serif";
+                text-align: center;
+                background:none;
+                width:100px;
+            }
+            .ship-total input{
+                font-size: 12pt;
+                color: #78afd8;
+                font-family: "arial, helvetica, sans-serif";
+                text-align: center;
+                background:none;
+                width:38px;
+            }
+            .layui-upload-file{display:none;}
+            .layui-btn{
+                background-color: #009688;
+                color: #fff;
+                white-space: nowrap;
+                text-align: center;
+                font-size: 14px;
+                border: none;
+                border-radius: 2px;
+                cursor: pointer;
+                padding:4px 6px;
+                box-sizing:border-box;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="page root">
+            <div class="page_box">
+                <div id="printId">
+                    <div class="content">
+                        <div>
+                            <div class="shipbg">
+                
+                                <div class="ship-border flex-grow-1">
+                                    <div class="ship-top">
+                                        <div class="ship-left ship-right-border">
+                                            <table class="ship-table">
+                                                <tr class="ship-top-border ship-display">
+                                                    <td colspan="4">
+                                                        <p class="ship-txt1">托運人或發貨人</p>
+                                                        <p class="ship-txt1">Shipper</p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="4">
+                                                        <p class="ship-txt2 shipper" style="height: 8mm;">{$order['info']['username']}</p>
+                                                    </td>
+                                                </tr>
+                                                <tr class="ship-top-border ship-display">
+                                                    <td colspan="4">
+                                                        <p class="ship-txt1">收 貨 人 或 指 示</p>
+                                                        <p class="ship-txt1">Consignee or order</p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="4">
+                                                        <p class="ship-txt2 consigner" style="height: 8mm;">{$order['info']['realname']}</p>
+                                                    </td>
+                                                </tr>
+                                                <tr class="ship-top-border ship-display">
+                                                    <td colspan="4">
+                                                        <p class="ship-txt1">通 知 地 址</p>
+                                                        <p class="ship-txt1">Notify address</p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="4">
+                                                        <p class="ship-txt2 address" style="height: 15mm;">{$order['info']['province']}{$order['info']['city']}{$order['info']['area']}{$order['info']['address']}</p>
+                                                    </td>
+                                                </tr>
+                                                <tr class="ship-top-border ship-display">
+                                                    <td>
+                                                        <p class="ship-txt1">船 名</p>
+                                                        <p class="ship-txt1">Vessel</p>
+                                                    </td>
+                                                    <td class="ship-right-border">
+                                                        <p class="ship-txt2 voyage">{$order['info']['voyage_no']}</p>
+                                                        <p class="ship-txt2">&nbsp;</p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="ship-txt1">裝 貨 港</p>
+                                                        <p class="ship-txt1">Port of loading</p>
+                                                    </td>
+                                                    <td><p class="ship-txt2" style="white-space: nowrap"><span class="traf_name">{$order['info']['traf_name']}</span><br/><span class="loct_no">{$order['info']['loct_no']}</span></p></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div class="ship-right">
+                                            <table class="ship-table">
+                                                <tr class="ship-num">
+                                                    <td class="ship-txt1">B/L No.</td>
+                                                    <td class="ship-txt2 logistics_no" style="padding-left: 22px;">{$order['info']['logistics_no']}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="2" style="text-align:right;" class="ship-txt2">船舶代码：<span class="license_no">{$order['info']['license_no']}</span></td>
+                                                </tr>
+                                                <tr style="text-align: center; margin: 35px auto 10px; display: table;">
+                                                    <td colspan="2">
+                                                        <p class="ship-txt3 Freight_company">廣州市番禺蓮花山番港貨運有限公司</p>
+                                                        <p class="ship-txt4 Freight_company_en">GUANGZHOU PANYU LIANHUASHAN PANGANG TRANSPORTATION CO.,LTD.</p>
+                                                    </td>
+                                                </tr>
+                                                <tr style="text-align: center; margin: 20px auto 10px; display: table;">
+                                                    <td colspan="2">
+                                                        <p class="ship-txt5">落貨紙</p>
+                                                        <p class="ship-txt6">SHIPPING ORDER</p>
+                                                    </td>
+                                                </tr>
+                                                <tr class="ship-jj">
+                                                    <td colspan="2" style="color: #5f8780;">檢 驗 檢 疫 局</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="ship-mid ship-display">
+                                        <table class="ship-table ship-bottom-border">
+                                            <tr>
+                                                <td style="width: 28mm;">
+                                                    <p class="ship-txt1">卸 貨 港</p>
+                                                    <p class="ship-txt1">Port of discharge</p>
+                                                </td>
+                                                <td class="ship-right-border ship-txt2 code_name" style="width: 14mm;">{$order['info']['code_name']}</td>
+                                                <td style="width: 28mm;">
+                                                    <p class="ship-txt1">最 後 目 的 地</p>
+                                                    <p class="ship-txt1">Final destination</p>
+                                                </td>
+                                                <td class="ship-right-border ship-txt2 pod" style="width: 18.5mm;">{$order['info']['pod']}</td>
+                                                <td style="width: 30mm;">
+                                                    <p class="ship-txt1">運 費 支 付 地</p>
+                                                    <p class="ship-txt1">Freight payable at</p>
+                                                </td>
+                                                <td class="ship-right-border" style="width: 17mm;">&nbsp;</td>
+                                                <td style="width: 38mm;">
+                                                    <p class="ship-txt1">正 本 提 單 份 數</p>
+                                                    <p class="ship-txt1">Number of original Bs/L</p>
+                                                </td>
+                                                <td class="ship-txt2" style="width: 12mm;">壹</td>
+                                            </tr>
+                                        </table>
+                                        <table class="ship-table">
+                                            <tr>
+                                                <th>
+                                                    <p class="ship-txt1">標 誌 和 號 碼</p>
+                                                    <p class="ship-txt1">Marks and Nos.</p>
+                                                </th>
+                                                <th>
+                                                    <p class="ship-txt1">件 數 和 包 裝 種 類</p>
+                                                    <p class="ship-txt1">Number and kind of packages</p>
+                                                </th>
+                                                <th>
+                                                    <p class="ship-txt1">貨 &nbsp;&nbsp;&nbsp;&nbsp;名</p>
+                                                    <p class="ship-txt1">Description of goods</p>
+                                                </th>
+                                                <th>
+                                                    <p class="ship-txt1">毛 &nbsp;&nbsp;重(公斤)</p>
+                                                    <p class="ship-txt1">Gross weight(kgs.)</p>
+                                                </th>
+                                                <th>
+                                                    <p class="ship-txt1">尺 &nbsp;&nbsp;碼(立方米)</p>
+                                                    <p class="ship-txt1">Mcasurement(m3)</p>
+                                                </th>
+                                            </tr>
+                                            {foreach $order['goods_info2'] as $k2=>$val}
+                                            <tr style="height: 9mm;" class="goodsinfo">
+                                                <td class="ship-txt2"><input type="text" name="" id="" value="N/M" /></td>
+                                                <td class="ship-txt2"><input type="text" name="" id="" value="{$val['gmodel']}" /></td>
+                                                <td class="ship-txt2 gname{$val['id']}" onclick="changeGName('gname{$val['id']}')" style="width:135px;">{$val['gname']}</td>
+                                                <td class="ship-txt2"><input type="text" name="" id="" value="{$val['gross_weight']}" /></td>
+                                                <td class="ship-txt2"><input type="text" name="" id="" value="<?php echo ($val['length']*$val['width']*$val['height'])*$val['total'] ;?>" /></td>
+                                            </tr>
+                                            {/foreach}
+                                        </table>
+                                        <div class="ship-total ship-txt2" style="margin-bottom: 4mm;">合计：<input type="text" name="" id="" value="{$order['info']['total']}" />件</div>
+                                        <div class="ship-total ship-bottom-border" style="padding-bottom: 1.3mm;">
+                                            <p class="ship-txt1">以 上 細 目 由 托 運 人 提 供</p>
+                                            <p class="ship-txt1">ABOVE PARTICULARS FURNISHED BY SHIPPER</p>
+                                        </div>
+                                    </div>
+                                    <div class="ship-footer">
+                                        <div class="ship-right ship-right-border ship-display">
+                                            <table class="ship-table">
+                                                <tr style="width: 100%;">
+                                                    <td>
+                                                        <p class="ship-txt1">運 費 和 費 用</p>
+                                                        <p class="ship-txt1">Freight and charges</p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="ship-txt2">&nbsp;</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div class="ship-left">
+                                            <div class="ship-bottom-border">
+                                                <p class="jx ship-txt1">Received by the carrier the total number of container or other packages or units stated above to be transported subject to the terms and conditions of the carrier’s regular form of (combined transport) Bill of Loading. Which shall be deemed to be Incorporated herein.</p>
+                                            </div>
+                                            <div class="ship-bottom-border">
+                                                <table class="ship-table">
+                                                    <tr>
+                                                        <td style="width: 38mm;">
+                                                            <p class="ship-txt1">簽 單 地 點 和 日 期</p>
+                                                            <p class="ship-txt1">Place and date of issue</p>
+                                                        </td>
+                                                        <td class="ship-txt2 place">莲花山港</td>
+                                                        <td class="ship-txt2 create_at">{$order['info']['create_at']}</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                            <div class="ship-seal"><img class="shipSeal" src="./static/doc/images/ship-logo.jpg" alt="" width="56%" /></div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                <div class="ship-bottom ship-txt1"><strong>此 聯 交 檢 驗 檢 疫 局 存</strong></div>
+                                
+                            </div>
+                        </div>
+                       
+                    </div>
+                </div>
+            </div>
+            
+            <div class="diyform" style='background: #fff;margin-bottom: 10px;padding: 10px;width: 300px;position: fixed;top: 150px;right: 50px;'>
+                <div class="layui-form-item" style="width: auto;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;">发货人</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请输入发货人" name="shipper" id="shipper" value="" />
+                            <select name="shipper" id="shipper" style="width:150px;display:none;">
+                                <option value="">请选择</option>
+                                {foreach $common_seller as $k => $v}
+                                    <option value="{$v['id']}-{$v['type']}" name="{$v['name']}">{$v['name']}-{$v['email']}-{$v['tel']}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    </div>
+                </div> 
+                <div class="layui-form-item" style="width: auto;margin-top:10px;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;">收货人</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请输入收货人" name="consigner" id="consigner" value="" />
+                            <select name="consigner" id="consigner" style="width:150px;display:none;">
+                                <option value="">请选择</option>
+                                {foreach $common_buyer as $k => $v}
+                                    <option value="{$v['id']}-{$v['type']}" name="{$v['name']}" address="{$v['address']}">{$v['name']}-{$v['email']}-{$v['tel']}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    </div>
+                </div> 
+                <div class="layui-form-item" style="width: auto;margin-top:10px;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;">通知地址</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请输入收货人地址" name="consigner_address" id="consigner_address" value="" />
+                        </div>
+                    </div>
+                </div> 
+                <div class="layui-form-item" style="width: auto;margin-top:10px;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;">运单编号</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请输入运单编号" name="logistics_no" id="logistics_no" value="" />
+                        </div>
+                    </div>
+                </div> 
+                <div class="layui-form-item" style="width: auto;margin-top:10px;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;">船舶代码</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请输入船舶代码" name="license_no" id="license_no" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;">货运公司</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请输入货运公司名称" name="Freight_company" id="Freight_company" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;">货运公司(en)</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请输入货运公司名称(英文)" name="Freight_company_en" id="Freight_company_en" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;">船名</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请输入船名" name="voyage" id="voyage" value="" />
+                        </div>
+                    </div>
+                </div> 
+                <div class="layui-form-item" style="width: auto;margin-top:10px;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;">装货港</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请输入装货港" name="traf_name" id="traf_name" value="" />
+                        </div>
+                    </div>
+                </div> 
+                <div class="layui-form-item" style="width: auto;margin-top:10px;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;">装货港编码</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请输入装货港编码" name="loct_no" id="loct_no" value="" />
+                        </div>
+                    </div>
+                </div> 
+                <div class="layui-form-item" style="width: auto;margin-top:10px;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;">卸货港</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请输入卸货港" name="code_name" id="code_name" value="" />
+                        </div>
+                    </div>
+                </div> 
+                <div class="layui-form-item" style="width: auto;margin-top:10px;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;">目的地编码</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请输入目的地编码" name="pod" id="pod" value="" />
+                        </div>
+                    </div>
+                </div> 
+                <div class="layui-form-item" style="width: auto;margin-top:10px;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;">签单地点</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请输入签单地点" name="place" id="place" value="" />
+                        </div>
+                    </div>
+                </div> 
+                <div class="layui-form-item" style="width: auto;margin-top:10px;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;">签单日期</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="2021-08-02" name="create_at" id="create_at" value="" />
+                        </div>
+                    </div>
+                </div> 
+                <div class="layui-form-item gnameInput" style="width: auto;margin-top:10px;display:none;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;">商品名</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" name="gname" id="gname" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;">盖章</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <button type="button" class="layui-btn" id="seal_file-upload">上传专用章</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="padding: 30px 0;text-align: center;">
+                <button type="button"  class="btn" onclick="createPDF()">生成</button>    
+            </div>
+        </div>
+        
+        
+        <!--<script src="https://www.jq22.com/jquery/jquery-1.10.2.js"></script>-->
+        <script src="./static/doc/jquery.min.js"></script>
+        <script src="./static/doc/html2canvas.min.js"></script>
+        <script src="./static/doc/jspdf.min.js"></script>
+        <script src="./static/hadmin/assets/layui/layui.js"></script>
+        <script>
+            layui.use(['upload'],function(){
+                var upload = layui.upload;
+                // 盖章
+                upload.render({
+                    elem: '#seal_file-upload'
+                    ,url: '{:Url("admin/entrymanage/upload_seal_file")}'
+                    ,accept: 'image'
+                    ,data: { folder: 'ocean_manifest', type: 'seal_file'}
+                    ,multiple: false
+                    ,before: function(obj){
+                        layer.load(); //上传loading
+                    }
+                    ,done: function(res){
+                        layer.closeAll('loading'); //关闭loading
+                        if(res.code == 1)
+                        {
+                            $('.shipSeal').attr('src','/'+res.file_path);
+                            // .css('width','190px').css('height','135px')
+                        }
+                    }
+                });
+            });
+
+            // 随机数
+            function randomNum(minNum,maxNum){
+                switch(arguments.length){
+                    case 1:
+                        return parseInt(Math.random()*minNum+1,10);
+                        break;
+                    case 2:
+                        return parseInt(Math.random()*(maxNum-minNum+1)+minNum,10);
+                        break;
+                    default:
+                        return 0;
+                        break;
+                }
+            }
+            //点击当前的商品名
+            function changeGName(classname){
+                $('.gnameInput').show();
+                $('.gnameInput #gname').val($('.'+classname).text()).attr('data-classname',classname);
+            }
+            $(function(){
+                let random = randomNum(0,40);
+                $('.ship-seal').css('left',random+'mm');
+                
+                // 发货人
+                $('#shipper').bind('input propertychange',function() {
+                    $('.shipper').text($(this).val());
+                });
+                // $('#shipper').change(function(){  
+                //     $(".shipper").text( $(this).find("option:selected").attr('name') );
+                // });
+                // 收货人
+                $('#consigner').bind('input propertychange',function() {
+                    $('.consigner').text($(this).val());
+                });
+                // $('#consigner').change(function(){  
+                //     $(".consigner").text( $(this).find("option:selected").attr('name') );
+                //     $(".address").text( $(this).find("option:selected").attr('address') );
+                // });
+                //收货人地址
+                $('#consigner_address').bind('input propertychange',function() {
+                    $('.address').text($(this).val());
+                });
+                //运单编号
+                $('#logistics_no').bind('input propertychange',function() {
+                    $('.logistics_no').text($(this).val());
+                });
+                //船舶代码
+                $('#license_no').bind('input propertychange',function() {
+                    $('.license_no').text($(this).val());
+                });
+                //货运公司
+                $('#Freight_company').bind('input propertychange',function() {
+                    $('.Freight_company').text($(this).val());
+                });
+                //货运公司英文
+                $('#Freight_company_en').bind('input propertychange',function() {
+                    $('.Freight_company_en').text($(this).val());
+                });
+                //船名
+                $('#voyage').bind('input propertychange',function() {
+                    $('.voyage').text($(this).val());
+                });
+                //装货港
+                $('#traf_name').bind('input propertychange',function() {
+                    $('.traf_name').text($(this).val());
+                });
+                //装货港编码
+                $('#loct_no').bind('input propertychange',function() {
+                    $('.loct_no').text($(this).val());
+                });
+                //卸货港
+                $('#code_name').bind('input propertychange',function() {
+                    $('.code_name').text($(this).val());
+                });
+                //目的地编码
+                $('#pod').bind('input propertychange',function() {
+                    $('.pod').text($(this).val());
+                });
+                //签单地点
+                $('#place').bind('input propertychange',function() {
+                    $('.place').text($(this).val());
+                });
+                //签单日期
+                $('#create_at').bind('input propertychange',function() {
+                    $('.create_at').text($(this).val());
+                });
+
+                //更换商品名
+                $('#gname').bind('input propertychange',function() {
+                    let classname = $(this).attr('data-classname');
+                    $('.'+classname).text($(this).val());
+                });
+            })
+        </script>
+        <script>
+
+            var whiteImg="data:image/jpeg;base64,/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAAA8AAD/4QMraHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjMtYzAxMSA2Ni4xNDU2NjEsIDIwMTIvMDIvMDYtMTQ6NTY6MjcgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDUzYgKFdpbmRvd3MpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjk2QjIxRjMxMDY4RDExRUE5NEYyRUI4OUU5NEFDQzE5IiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjk2QjIxRjMyMDY4RDExRUE5NEYyRUI4OUU5NEFDQzE5Ij4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6OTZCMjFGMkYwNjhEMTFFQTk0RjJFQjg5RTk0QUNDMTkiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6OTZCMjFGMzAwNjhEMTFFQTk0RjJFQjg5RTk0QUNDMTkiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7/7gAOQWRvYmUAZMAAAAAB/9sAhAAGBAQEBQQGBQUGCQYFBgkLCAYGCAsMCgoLCgoMEAwMDAwMDBAMDg8QDw4MExMUFBMTHBsbGxwfHx8fHx8fHx8fAQcHBw0MDRgQEBgaFREVGh8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx//wAARCAAIAxUDAREAAhEBAxEB/8QASwABAQAAAAAAAAAAAAAAAAAAAAgBAQAAAAAAAAAAAAAAAAAAAAAQAQAAAAAAAAAAAAAAAAAAAAARAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AKpAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//2Q==";
+            // 生成pdf
+            function createPDF() {
+                html2canvas(document.querySelector("#printId"), {
+                    allowTaint: !0,
+                    scale: 2
+                }).then((function(canvas) {
+                    var contentWidth = canvas.width,
+                        contentHeight = canvas.height,
+                        pageData = canvas.toDataURL("image/jpeg", 1),
+                        pdfX, pdfY = contentHeight / 2 * .75,
+                        whiteHeight = 60,
+                        pdfW = 595.32,
+                        pdfH = 841.89,
+                        imgX = contentWidth / 2 * .75,
+                        imgY = contentHeight / 2 * .75,
+                        imgH = 721.89,
+                        position = 60,
+                        pageTempHeight = contentHeight / 2 * .75,
+                        PDF = new jsPDF("", "pt", "a4");
+                    if (imgY < imgH) PDF.addImage(whiteImg, "jpeg", 0, 0, pdfW, 60), PDF.addImage(pageData, "jpeg", 0, 0, imgX, imgH), PDF.addImage(whiteImg, "jpeg", 0, 781.89, pdfW, 60);
+                    else for (; pageTempHeight > 0;) PDF.addImage(pageData, "jpeg", 0, position, imgX, imgY), PDF.addImage(whiteImg, "jpeg", 0, 0, pdfW, 60), PDF.addImage(whiteImg, "jpeg", 0, 782.89, pdfW, 60), position -= imgH, (pageTempHeight -= imgH) > 0 && PDF.addPage();
+
+                    var pdfName = "{$doc_data['pdf_sn']}.pdf";
+                    // 将pdf输入为base格式的字符串
+                    var buffer = PDF.output("datauristring");
+                    // 将base64格式的字符串转换为file文件
+                    var myfile = dataURLtoFile(buffer, pdfName);
+                    var formdata = new FormData();
+                    formdata.append('file', myfile);
+                    formdata.append('folder', 'payer_pay');
+                    formdata.append('type', 'ocean_manifest');
+                    // 之后ajax传递数据
+                    // 判断是否已经生成
+
+                    $.ajax({
+                        url:'{:Url("admin/entryManage/check_pdf")}',
+                        method:'get',
+                        data:{ trade_id: {$doc_data['trade_id']}, 'trade_type': 1, type: 'ocean_manifest' },
+                        dataType:'JSON',
+                        success:function(res){
+                            if(res.code == 1)
+                            {
+                                alert(res.msg);
+                            }else{
+                                $.ajax({
+                                    url:'{:Url("admin/entryManage/upload_file")}',
+                                    method:'post',
+                                    data:formdata,
+                                    processData: false,
+                                    contentType : false,
+                                    dataType:'JSON',
+                                    success:function(res){
+                                        if(res.code == 1)
+                                        {
+                                            $.ajax({
+                                                url:'{:Url("admin/entryManage/save_pdf")}',
+                                                method:'post',
+                                                data:{ trade_id: {$doc_data['trade_id']}, 'trade_type': 1, type: 'ocean_manifest', pdf_sn: "{$doc_data['pdf_sn']}", file_path: res.file_path},
+                                                dataType:'JSON',
+                                                success:function(res){
+                                                    if(res.code == 1)
+                                                    {
+                                                        alert('变更成功');
+                                                        PDF.save('Ocean_manifest_'+pdfName);
+                                                        setTimeout(function(){
+                                                            parent.window.location.reload();
+                                                            var index = parent.layer.getFrameIndex(window.name);
+                                                            parent.layer.close(index);
+                                                        }, 1000);
+                                                    }else{
+                                                        alert(res.msg);
+                                                    }
+                                                },
+                                                error:function (data) {
+                                                    layer.msg('系统错误',{time:2000});
+                                                }
+                                            });
+
+                                        }
+                                    },
+                                    error:function (data) {
+                                        layer.msg('系统错误',{time:2000});
+                                    }
+                                });
+                            }
+                        },
+                        error:function (data) {
+                            layer.msg('系统错误',{time:2000});
+                        }
+                    });
+                }))
+            }
+
+            //将base64转换为文件对象
+            function dataURLtoFile(dataurl, filename) {
+                var arr = dataurl.split(',');
+                var mime = arr[0].match(/:(.*?);/)[1];
+                var bstr = atob(arr[1]);
+                var n = bstr.length;
+                var u8arr = new Uint8Array(n);
+                while(n--){
+                    u8arr[n] = bstr.charCodeAt(n);
+                }
+                //转换成file对象
+                return new File([u8arr], filename, {type:mime});
+                //转换成成blob对象
+                //return new Blob([u8arr],{type:mime});
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加打印设备</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+</head>
+<body>
+<form class="layui-form" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">月结账号：</label>
+        <div class="layui-input-block">
+            <input type="text" name="partnerId" value="<?php echo empty($data['partner_id'])?'2206509768409':$data['partner_id'];?>"   autocomplete="off" class="layui-input">
+            <p style="color: red;">京东或宅急送不需要<a href="https://poll.kuaidi100.com/manager/page/debugtools/eprint">（前往授权获取）</a></p>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">电子面单密码：</label>
+        <div class="layui-input-block">
+            <input type="text" name="partnerKey" value="<?php echo empty($data['partner_key'])?'b3o2Tk0vUkFTMkNvd0NPT05QK01QWU94TE5IYlJyV1lWYU5iMGZTT09GUy9VZTNuY24veldrZXg2MllmdTVraQ==':$data['partner_key'];?>"  autocomplete="off" class="layui-input">
+            <p style="color: red;">京东或宅急送不需要<a href="https://poll.kuaidi100.com/manager/page/debugtools/eprint">（前往授权获取）</a></p>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">打印设备ID：</label>
+        <div class="layui-input-block">
+            <input type="text" name="deviceId" value="{$data['device_id']}" required  lay-verify="required" placeholder="打印设备ID" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    
+    <div class="layui-form-item">
+        <label class="layui-form-label">快递公司</label>
+        <div class="layui-input-block">
+            <select name="express_code" lay-verify="required" lay-search>
+                <option value=""></option>
+                {volist name='express' id='vo'}
+                <option value="{$vo.code}" {if $data["express_code"]==$vo.code}selected="selected"{/if}>{$vo.name}</option>
+                {/volist}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">面单模板ID</label>
+        <div class="layui-input-block">
+            <input type="text" name="tempid" value="{$data['temp_id']}" placeholder="" required autocomplete="off" class="layui-input">
+            <p>说明:通过管理后台的打印摸版配置信息获取,选择100*180<a href="https://poll.kuaidi100.com/manager/page/template/eletemplate" style="color: red;">（点击获取）</a></p>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+
+</body>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script>
+    layui.use(['form','jquery'], function(){
+        var form = layui.form;
+        var $ = layui.jquery;
+        form.on('submit(formDemo)', function(data) {
+            $.ajax({
+                url: '{:Url("admin/add_printdevice/saveConfig")}',
+                type: "POST",
+                dataType: "JSON",
+                data: {"uid":{$uid},"data":data.field},
+                success:function (res) {
+                    layer.msg(res.message);
+                    // if (res.code==0){
+                    //     setTimeout(function () {
+                    //         location.reload();
+                    //     },2000);
+                    // }
+                },error:function (xhr) {
+                    layer.msg("连接服务错误..");
+                }
+            });
+            return false;
+        });
+    });
+
+
+</script>
+</html>

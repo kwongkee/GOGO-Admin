@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {include file="common/meta"}
+    <link rel="stylesheet" href="./static/hadmin/layui/css/layui.css"></link>
+</head>
+<body class="gray-bg">
+    <div class="demoTable" style="margin-top: 8px;margin-bottom: -6px;margin-left: 12px;">
+        <button class="layui-btn" onclick="add();return false;">添加</button>
+    </div>
+    <table class="layui-hide" id="list" lay-filter="list_filter"></table>
+</body>
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/layui/layui.all.js"></script>
+<script>
+    layui.use(['upload','form','table','layer'], function () {
+        layer = layui.layer;
+        upload = layui.upload;
+        form = layui.form;
+        table = layui.table;
+
+        //第一个实例
+        table.render({
+            elem: '#list'
+            ,id: 'listReload'
+            ,height: 512
+            ,url: "{:url('admin/WaybillDeclaredsEnterprisesManagement/add_license')}" //数据接口
+            ,page: true //开启分页
+            // ,toolbar: '#toolbar' //开启头部工具栏，并为其绑定左侧模板
+            ,defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示'
+                ,layEvent: 'LAYTABLE_TIPS'
+                ,icon: 'layui-icon-tips'
+            }]
+            ,loading:true
+            ,cols: [[ //表头
+                {field: 'id', title: 'id'},
+                {field: 'mainland_license', title: '内地车牌',}
+                ,{field: 'hongkong_license', title: '香港车牌'}
+                ,{field: 'driver_name', title: '司机姓名'}
+                ,{field: 'create_time', title: '时间'}
+                ,{fixed: 'right',title:'操作' ,width: 165, align:'center', toolbar: '#list_filter'}
+            ]]
+        });
+        form.render();
+    });
+
+    function add() {
+        layer.open({
+            type: 1,
+            title:"新增",
+            area: ['789px','480px'],
+            content: '<form class="layui-form layui-form-pane" method="post">\n' +
+                    '<input type="text" style="display: none;" value="{$enterprise_id}" name="enterprise_id">'+
+                '  <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label" style="width:123px">*内地车牌</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="text" name="mainland_license" style="width: 86%;margin-left: 13px;" required  lay-verify="required" placeholder=""  class="layui-input">\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                '  <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label"  style="width:123px">*香港车牌</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="text" name="hongkong_license"  style="width: 86%;margin-left: 13px;" required  lay-verify="required" placeholder=""  class="layui-input">\n' +
+                '    </div>\n' +
+                '  </div>' +
+                ' <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label"  style="width:123px">*司机名称</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="text" name="driver_name"  style="width: 86%;margin-left: 13px;" required  lay-verify="required"   class="layui-input">\n' +
+                '    </div>\n' +
+                '  </div>' +
+                '                <div class="layui-form-item">\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <button class="layui-btn" lay-submit lay-filter="form">立即提交</button>\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                '</form>',
+        });
+        form.render();
+        //监听提交
+        form.on('submit(form)', function(data){
+            var formData = new FormData(data.form);
+            req('POST',formData,"{:url('admin/WaybillDeclaredsEnterprisesManagement/add_license')}");
+            return false;
+        });
+    }
+</script>

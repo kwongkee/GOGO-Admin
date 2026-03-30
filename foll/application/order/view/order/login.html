@@ -1,0 +1,107 @@
+{include file="public/header" /}
+
+<body>
+    <div class="login-logo"><h1>商户管理后台登录</h1></div>
+    <div class="login-box">
+        <form class="layui-form layui-form-pane" method="post" id="form1" >
+              
+            <h3>登录你的帐号</h3>
+            <label class="login-title" for="username">帐号</label>
+            <div class="layui-form-item">
+                <label class="layui-form-label login-form"><i class="iconfont">&#xe6b8;</i></label>
+                <div class="layui-input-inline login-inline">
+                  <input type="text" name="username" id="username" placeholder="请输入你的帐号" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <label class="login-title" for="password">密码</label>
+            <div class="layui-form-item">
+                <label class="layui-form-label login-form"><i class="iconfont">&#xe82b;</i></label>
+                <div class="layui-input-inline login-inline">
+                  <input type="text" name="password" id="password" lay-verify="required" placeholder="请输入你的密码" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-warning pull-right" id="submit" type="button">登 录</button> 
+                <div class="forgot"><a href="#" class="forgot">忘记帐号或者密码</a></div>     
+            </div>
+        </form>
+    </div>
+
+    <script type="text/javascript">
+    	$(function(){ 
+    		
+    		$('#submit').bind('click',function() {
+    			var urls = "{:url('order/isLogin')}";
+	    		var uname = $('#username').val();
+	    		var passw = $('#password').val();
+	    		
+				if(uname == '' || passw == '') {
+					layer.msg('必填选项不能为空');
+					return false;
+				} else {
+					$.ajax({
+						type:"POST",
+						url:urls,
+						dataType:'json',
+						data:$('#form1').serialize(),
+						success:function(res)
+						{
+							if(res.status <= 0){
+								layer.msg(res.msg);								
+								return false;
+							}else {
+								layer.msg(res.msg);
+								location.href = "http://shop.gogo198.cn/foll/public/index.php?s=order/index";
+							}
+							
+						},error:function(error)
+						{
+							console.dir('错误信息： '+error);
+						}
+					});
+				}				
+    		});
+    		
+    	});
+    </script>
+    
+	<!--<div class="bg-changer">
+        <div class="swiper-container changer-list">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide"><img class="item" src="./static/home/images/a1.jpg" alt=""></div>
+                <div class="swiper-slide"><img class="item" src="./static/home/images/b1.jpg" alt=""></div>
+                <div class="swiper-slide"><img class="item" src="./static/home/images/c1.jpg" alt=""></div>
+                <div class="swiper-slide"><img class="item" src="./static/home/images/d1.jpg" alt=""></div>
+                <div class="swiper-slide"><img class="item" src="./static/home/images/e1.jpg" alt=""></div>
+                <div class="swiper-slide"><img class="item" src="./static/home/images/f1.jpg" alt=""></div>
+                <div class="swiper-slide"><img class="item" src="./static/home/images/g1.jpg" alt=""></div>
+                <div class="swiper-slide"><img class="item" src="./static/home/images/h1.jpg" alt=""></div>
+                <div class="swiper-slide"><img class="item" src="./static/home/images/i1.jpg" alt=""></div>
+                <div class="swiper-slide"><img class="item" src="./static/home/images/j1.jpg" alt=""></div>
+                <!--<div class="swiper-slide"><img class="item" src="./static/home/images/k1.jpg" alt=""></div>-->
+                <!--<div class="swiper-slide"><span class="reset">初始化</span></div>
+            </div>
+        </div>
+        <div class="bg-out"></div>
+        <div id="changer-set"><i class="iconfont">&#xe696;</i></div>   
+    </div>-->
+    
+   
+    
+	<script>
+        $(function  () {
+            layui.use('form', function(){
+              var form = layui.form();
+              //监听提交
+              form.on('submit(login)', function(data){
+                layer.msg(JSON.stringify(data.field),function(){
+                    location.href="{:url('home/logincheck')}"
+                });
+                return false;
+              });
+            });
+        })
+        
+    </script>
+</body>
+</html>

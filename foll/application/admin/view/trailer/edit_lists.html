@@ -1,0 +1,474 @@
+{include file="public/header"}
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .approach_idea,.is_beian,.data_service3,.is_wait2,.is_tax2,.exchange_rate{display:none;}
+    .is_tax2{margin-top:10px;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element1">
+            <input type="text" name="id" value="{$order['id']}" style="display: none;">
+
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header">提单信息（一）</div>
+                    <div class="layui-card-body">
+                        <table class="layui-table">
+                            <thead>
+                            <tr>
+                                <th>港口</th>
+                                <th>主提单号</th>
+                                <th>船名</th>
+                                <th>航次</th>
+                                <th>目的港</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td class="disf">
+                                    <select name="fPort" lay-search lay-verify="required" lay-filter="fPort">
+                                        <option value="">请选择港口</option>
+                                        {volist name="fPort" id="vo"}
+                                        <option value="{$vo.code}" {if $order['fPort']==$vo.code}selected{/if}>{$vo.name}</option>
+                                        {/volist}
+                                    </select>
+                                    <div class="sPort">
+                                        {if !empty($order['sPort'])}
+                                            <select name="sPort" lay-search lay-verify="required">
+<!--                                                <option value="">请选择子港口</option>-->
+                                                <option value="{$sPort.code}">{$sPort.name}</option>
+                                            </select>
+                                        {/if}
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="text" lay-verify="required" name="lading_no" id="lading_no" value="{$order['lading_no']}" placeholder="" autocomplete="off" class="layui-input">
+                                </td>
+                                <td>
+                                    <input type="text" lay-verify="required" name="ship_name" value="{$order['ship_name']}" placeholder="" autocomplete="off" class="layui-input">
+                                </td>
+                                <td>
+                                    <input type="text" lay-verify="required" name="voyage" value="{$order['voyage']}" placeholder="" autocomplete="off" class="layui-input">
+                                </td>
+                                <td>
+                                    <input type="text" lay-verify="required" name="destination_port" value="{$order['destination_port']}" placeholder="" autocomplete="off" class="layui-input">
+                                </td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header">工厂信息（二）</div>
+                    <div class="layui-card-body">
+                        <table class="layui-table">
+                            <thead>
+                            <tr>
+                                <th>装柜地点</th>
+                                <th>工厂联系人</th>
+                                <th>联系人电话</th>
+                                <th>工厂是否禁区</th>
+                                <th>是否位于保税区内</th>
+                                <th>件毛体数据提供方式</th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" lay-verify="required" name="factory_address" value="{$order['factory_address']}" placeholder="" autocomplete="off" class="layui-input">
+                                </td>
+                                <td>
+                                    <input type="text" lay-verify="required" name="factory_contacter" value="{$order['factory_contacter']}" placeholder="" autocomplete="off" class="layui-input">
+                                </td>
+                                <td>
+                                    <input type="text" lay-verify="required" name="factory_mobile" value="{$order['factory_mobile']}" placeholder="" autocomplete="off" class="layui-input">
+                                </td>
+                                <td>
+                                    <select name="is_penalty" id="is_penalty" lay-filter="is_penalty" lay-verify="required">
+                                        <option value="">请选择</option>
+                                        <option value="1" {if $order['is_penalty']==1}selected{/if}>否</option>
+                                        <option value="2" {if $order['is_penalty']==2}selected{/if}>是</option>
+                                    </select>
+
+                                    <div class="approach_idea" {if $order['is_penalty']==2}style="display:block;"{/if}>
+                                        <input type="text" class="layui-input" name="approach_idea" placeholder="请输入通行办法" value="{$order['approach_idea']}">
+                                    </div>
+                                </td>
+                                <td>
+                                    <select name="is_baoshui" id="is_baoshui" lay-filter="is_baoshui">
+                                        <option value="">请选择</option>
+                                        <option value="1" {if $order['is_baoshui']==1}selected{/if}>否</option>
+                                        <option value="2" {if $order['is_baoshui']==2}selected{/if}>是</option>
+                                    </select>
+                                    <div class="is_beian" {if $order['is_baoshui']==2}style="display:block;"{/if}>
+                                        <select name="is_beian" id="is_beian">
+                                            <option value="">是否要备案</option>
+                                            <option value="1" {if $order['is_beian']==1}selected{/if}>否</option>
+                                            <option value="2" {if $order['is_beian']==2}selected{/if}>是</option>
+                                        </select>
+                                    </div>
+                                </td>
+                                <td>
+                                    <select name="data_service" id="data_service" lay-filter="data_service" lay-verify="required">
+                                        <option value="">请选择提供方式</option>
+                                        <option value="1" {if $order['data_service']==1}selected{/if}>装柜地点提供</option>
+                                        <option value="2" {if $order['data_service']==2}selected{/if}>固定我们提供</option>
+                                        <option value="3" {if $order['data_service']==3}selected{/if}>不固定，我们或者装柜地点提供</option>
+                                    </select>
+                                    <div class="data_service3" {if $order['data_service']==3}style="display:block;"{/if}>
+                                        <select name="data_service3" id="data_service3">
+                                            <option value="">请选择提供方式</option>
+                                            <option value="1" {if $order['data_service3']==1}selected{/if}>装柜地点提供</option>
+                                            <option value="2" {if $order['data_service3']==2}selected{/if}>我们提供</option>
+                                        </select>
+                                    </div>
+                                </td>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header">做箱计划（三）</div>
+                    <div class="layui-card-body">
+                        <table class="layui-table goods_info">
+                            <thead>
+                            <tr>
+                                <th>做箱时间</th>
+                                <th>提单号</th>
+                                <th>预计货重(吨)</th>
+                                <th>箱型</th>
+                                <th>箱量</th>
+                                <th>做箱要求</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <input type="text" class="layui-input" name="making_date" id="making_date" value="{$order['making_date']}" placeholder="yymmddhhii" lay-verify="required">
+                                </td>
+                                <td>
+                                    <input type="text" class="layui-input" name="lading_no2" value="{$order['lading_no']}" placeholder="请输入提单号" lay-verify="required" id="lading_no2" readonly="readonly">
+                                </td>
+                                <td>
+                                    <input type="text" class="layui-input" name="estimate_weight" value="{$order['estimate_weight']}" placeholder="请输入预计货重(吨)" lay-verify="required">
+                                </td>
+                                <td>
+                                    <select name="box_type" id="box_type" lay-filter="box_type" lay-search lay-verify="required">
+                                        <option value="">请选择箱型</option>
+                                        <option value="20尺普柜" {if $order['box_type']=='20尺普柜'}selected{/if}>20尺普柜</option>
+                                        <option value="40尺普柜" {if $order['box_type']=='40尺普柜'}selected{/if}>40尺普柜</option>
+                                        <option value="45尺柜" {if $order['box_type']=='45尺柜'}selected{/if}>45尺柜</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" class="layui-input" name="box_num" value="{$order['box_num']}" lay-verify="required" placeholder="请填写箱量">
+                                </td>
+                                <td>
+                                    <textarea name="making_requrest" class="layui-textarea" placeholder="做箱要求（选填）"  value="{$order['making_requrest']}"></textarea>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header">下单信息（四）</div>
+                    <div class="layui-card-body">
+                        <table class="layui-table goods_info">
+                            <thead>
+                            <tr>
+                                <th>做箱时间是否等开港/通知</th>
+                                <th>截单时间</th>
+                                <th>委托报关</th>
+                                <th>付款期限（天）</th>
+                                <th>期限费率（0.01=1%）</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <select name="is_wait" id="is_wait" lay-filter="is_wait" lay-verify="required">
+                                        <option value="">请选择</option>
+                                        <option value="1" {if $order['is_wait']==1}selected{/if}>否(按约定时间做箱)</option>
+                                        <option value="2" {if $order['is_wait']==2}selected{/if}>是</option>
+                                    </select>
+                                    <div class="is_wait2" {if $order['is_wait']==2}style="display:block;"{/if}>
+                                        <select name="is_wait2" id="is_wait2">
+                                            <option value="">请选择做箱方式</option>
+                                            <option value="1" {if $order['is_wait2']==1}selected{/if}>等通知做箱</option>
+                                            <option value="2" {if $order['is_wait2']==2}selected{/if}>等开港做箱</option>
+                                        </select>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="text" class="layui-input" name="end_date" id="end_date" value="{$order['end_date']}" placeholder="yymmddhhii" lay-verify="required">
+                                </td>
+                                <td>
+                                    <select name="is_entrust" id="is_entrust" lay-filter="is_entrust" lay-verify="required">
+                                        <option value="">请选择</option>
+                                        <option value="1" {if $order['is_entrust']==1}selected{/if}>否</option>
+                                        <option value="2" {if $order['is_entrust']==2}selected{/if}>是</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" class="layui-input" name="pay_term" value="{$order['pay_term']}" placeholder="请输入付款期限" lay-verify="required">
+                                </td>
+                                <td>
+                                    <input type="number" class="layui-input" name="pay_fee" value="{$order['pay_fee']}" placeholder="请输入逾期费率（0.01=1%）" lay-verify="required">
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header">订单信息（五）</div>
+                    <div class="layui-card-body">
+                        <table class="layui-table">
+                            <thead>
+                            <tr>
+                                <th>应付金额</th>
+                                <th>开票税费</th>
+                                <th>实付金额</th>
+                                <th>付款客户</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <select name="currency" lay-search lay-filter="currency" lay-verify="required">
+                                        <option value="">请选择币种</option>
+                                        {volist name="currency" id="vo"}
+                                            <option value="{$vo['code_value']}" {if $order['currency']==$vo['code_value']}selected{/if}>{$vo['code_name']}</option>
+                                        {/volist}
+                                    </select>
+
+                                    <input type="number" lay-verify="required" name="price" id="price" value="{$order['price']}" placeholder="请输入应付金额" autocomplete="off" class="layui-input" style="margin:10px 0;">
+                                    <div class="disf exchange_rate" {if $order['exchange_rate']>0}style="display:none;"{/if} >
+                                        <input type="number" name="exchange_rate" class="layui-input" value="{$order['exchange_rate']}" placeholder="请输入汇率">
+                                    </div>
+                                </td>
+                                <td>
+                                    <select name="is_tax" id="is_tax" lay-filter="is_tax" style="margin-bottom:10px;">
+                                        <option value="">请选择包含方式</option>
+                                        <option value="1" {if $order['is_tax']==1}selected{/if}>应付金额包含税费</option>
+                                        <option value="2" {if $order['is_tax']==2}selected{/if}>应付金额不包含税费</option>
+                                    </select>
+
+                                    <div class="is_tax2" {if $order['is_tax']==2}style="display:block;"{/if}>
+                                        <select name="tax_type" id="tax_type">
+                                            <option value="1" {if $order['tax_type']==1}selected{/if}>销售税（Gat）</option>
+                                            <option value="2" {if $order['tax_type']==2}selected{/if}>增值税（Vat）</option>
+                                        </select>
+
+                                        <input type="number" name="tax_num" id="tax_num" value="{$order['tax_num']}" placeholder="请输入税率(例如：0.01)" autocomplete="off" class="layui-input" style="margin-top:10px;">
+                                    </div>
+
+                                    <input type="number" lay-verify="required" name="invoicing_tax" value="{$order['invoicing_tax']}" placeholder="请输入开票税费" autocomplete="off" class="layui-input" style="margin-top:10px;" readonly>
+                                </td>
+                                <td>
+                                    <input type="number" lay-verify="required" name="real_price" value="{$order['real_price']}" placeholder="" autocomplete="off" class="layui-input">
+                                </td>
+                                <td>
+                                    <input type="text" lay-verify="required" name="payer_name" value="{$order['payer_name']}" placeholder="" autocomplete="off" class="layui-input">
+                                </td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            {if empty($order['id'])}
+                <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                    <div>
+                        <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            {/if}
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+
+    layui.use(['layer','form','laydate'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+
+        form.on('select(fPort)',function(data){
+            let val = data.value;
+            $.ajax({
+                url:"{:Url('admin/trailer/get_sport')}",
+                method:'post',
+                data:{val:val},
+                dataType:'JSON',
+                success:function(res){
+                    // layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            let html = '';
+                            if(res.data.length>0){
+                                html += '<select name="sPort" lay-search lay-verify="required">\n' +
+                                    '           <option value="">请选择子港口</option>';
+
+                                for(let i=0;i<res.data.length;i++){
+                                    html += '           <option value="'+res.data[i].code+'">'+res.data[i].name+'</option>';
+                                }
+
+                                html += '</select>';
+                            }
+
+                            $('.sPort').html(html);
+                            form.render(null,'component-form-element1');
+                        }
+                    // });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+        });
+
+        form.on('select(currency)',function(data){
+            let val = data.value;
+            if(val!=''){
+                if(val!='142'){
+                    $('.exchange_rate').show();
+                }else{
+                    $('.exchange_rate').hide();
+                }
+            }
+        });
+
+        form.on('select(is_tax)',function(data){
+            let val = data.value;
+
+            if(val==2){
+                $('.is_tax2').show();
+            }else{
+                $('input[name="invoicing_tax"]').val('0');
+                $('input[name="real_price"]').val($('input[name="price"]').val());
+                $('.is_tax2').hide();
+            }
+        });
+
+        laydate.render({
+            elem: '#etd_date'
+            ,format: 'yyyy-MM-dd'
+        });
+
+        laydate.render({
+            elem: '#making_date'
+            ,type: 'datetime'
+            ,format: 'yyyy-MM-dd HH:mm'
+        });
+
+        laydate.render({
+            elem: '#end_date'
+            ,type: 'datetime'
+            ,format: 'yyyy-MM-dd HH:mm'
+        });
+
+        form.render(null,'component-form-element1');
+
+        form.on('select(is_penalty)',function(data){
+            var val = data.value;
+
+            if(val==1){
+                $('.approach_idea').hide();
+            }else if(val==2){
+                $('.approach_idea').show();
+            }
+        });
+
+        form.on('select(is_baoshui)',function(data){
+            var val = data.value;
+
+            if(val==1){
+                $('.is_beian').hide();
+            }else if(val==2){
+                $('.is_beian').show();
+            }
+        });
+
+        form.on('select(data_service)',function(data){
+            var val = data.value;
+
+            if(val==1 || val==2){
+                $('.data_service3').hide();
+            }else if(val==3){
+                $('.data_service3').show();
+            }
+        });
+
+        form.on('select(is_wait)',function(data){
+            var val = data.value;
+
+            if(val==1){
+                $('.is_wait2').hide();
+            }else if(val==2){
+                $('.is_wait2').show();
+            }
+        });
+
+        form.on('submit(component-form-element)', function(data){
+            //layer.msg(JSON.stringify(data.field));
+            $.ajax({
+                url:"{:Url('admin/trailer/edit_lists')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+        $('#lading_no').bind('input propertychange', function() {
+            $('#lading_no2').val($(this).val());
+        });
+
+        $('#tax_num').bind('input propertychange',function(){
+            var tax = parseFloat($(this).val());//税率
+            var price = parseFloat($('#price').val());//应付金额
+            var val = tax*price;
+            val = val.toFixed(2);
+            $('input[name="invoicing_tax"]').val(val);
+            var totalprice = parseFloat(val) + price;
+            $('input[name="real_price"]').val(totalprice.toFixed(2));
+        });
+    });
+</script>
+</body>
+</html>

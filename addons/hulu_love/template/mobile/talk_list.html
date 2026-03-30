@@ -1,0 +1,43 @@
+<script type="text/javascript" src="{MODULE_URL}template/mobile/style/jquery.js"></script>
+<script type="text/javascript" src="{MODULE_URL}template/mobile/style/layer/layer.js"></script>
+
+<div id="talk_list_style">
+
+<div class="talk_list_a">
+<div class="talk_list_a_1"><a href="{php echo $this->createMobileUrl('view',array('uid'=>getuid($talk['openid'],$_W['uniacid'])));}"><img src="<?php echo getavatar($talk['openid'],$_W['uniacid']);?>"/></a></div>
+<div class="talk_list_a_2">
+<a href="{php echo $this->createMobileUrl('view',array('uid'=>getuid($talk['openid'],$_W['uniacid'])));}"><p class="talk_list_a_2_1"><?php echo getnickname($talk['openid'],$_W['uniacid']);?></p></a>
+<p class="talk_list_a_2_2"><?php echo getuserinfo($talk['openid'],$_W['uniacid']);?></p>
+</div>
+</div>
+
+<div class="talk_list_b">
+
+{$talk['talk_content']}
+</div>
+
+{if $talk['talk_pic1']==null&&$talk['talk_pic2']==null&&$talk['talk_pic3']==null}
+{else}
+<div id="talk_list_c_c_{$talk['talk_id']}" class="talk_list_c c_{$talk['talk_id']}">
+{if $talk['talk_pic1']!=null}<img layer-src="{$_W['attachurl']}{$talk['talk_pic1']}" src="{$_W['attachurl']}{$talk['talk_pic1']}"/>{else}{/if}
+{if $talk['talk_pic2']!=null}<img layer-src="{$_W['attachurl']}{$talk['talk_pic2']}" src="{$_W['attachurl']}{$talk['talk_pic2']}"/>{else}{/if}
+{if $talk['talk_pic3']!=null}<img layer-src="{$_W['attachurl']}{$talk['talk_pic3']}" src="{$_W['attachurl']}{$talk['talk_pic3']}"/>{else}{/if}
+</div>
+{/if}
+
+<div class="talk_list_d">
+<div class="talk_list_d_1"><?php echo gettimegap($talk['talk_time']);?></div>
+<div class="talk_list_d_2"><!--<img src="http://so.hulongtv.com/attachment/images/2/2016/08/vUkRUTFK33TTfLutUE3MP7fpK4U3cM.png"/>--></div>
+</div>
+
+</div>
+<!---->
+<script>
+layer.ready(function(){ //为了layer.ext.js加载完毕再执行
+  layer.photos({
+    photos: "#talk_list_c_c_{$talk['talk_id']}"
+  });
+});   
+</script>
+
+

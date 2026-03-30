@@ -1,0 +1,64 @@
+{include file="public/header"}
+<body style="padding: 10px;">
+<form action="" class="layui-form">
+
+    <input type="hidden" name="gid" value="{$group.gid}">
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">角色名称</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" name="title" placeholder="请输入角色名称" value="{$group.title}">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">权限菜单</label>
+
+        {volist name="$menus_list" id="vv"}
+        <hr>
+        <div class="layui-input-block">
+            <input type="checkbox" name="menu[{$vv['mid']}]" lay-skin="primary" title="{$vv['title']}" {:isset($group['rights']) && in_array($vv.mid,$group['rights']) ? 'checked':''; }>
+            <hr>
+            {volist name="$vv['children']" id="chi"}
+            <input type="checkbox" name="menu[{$chi['mid']}]" lay-skin="primary" title="{$chi['title']}"  {:isset($group['rights']) && in_array($chi.mid,$group['rights']) ? 'checked':''; }>
+            {/volist}
+        </div>
+        {/volist}
+    </div>
+</form>
+
+<div class="layui-form-item" style="margin-top: 10px;">
+    <div class="layui-input-block">
+        <button class="layui-btn" onclick="save()">保 存</button>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['form','layer'],function(){
+        var form = layui.form;
+        $        = layui.jquery;
+        layer    = layui.layer;
+    })
+
+    // 保存角色
+    function save()
+    {
+        var title = $.trim($('input[name="title"]').val())
+        if(title == '') {
+            layer.msg('请填写角色名称',{icon:2});
+            return false;
+        }
+
+        $.post('{:Url("agents/role/save")}',$('form').serialize(),function(res){
+            if(res.code == 1) {
+                layer.msg(res.msg,{icon:1});
+                setTimeout(function(){
+                    parent.window.location.reload();
+                },1300);
+            } else {
+                layer.msg(res.msg,{icon:2});
+            }
+        })
+    }
+</script>
+</html>

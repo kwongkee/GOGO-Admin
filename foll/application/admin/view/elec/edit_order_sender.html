@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.all.js"></script>
+</head>
+<body>
+<table class="layui-table">
+    <thead>
+    <tr class="ths">
+        <th>订单编号</th>
+        <th>运单</th>
+        <th>选择发件人</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {volist name="list" id="vo""}
+    <tr class="boys">
+        <td>{$vo.EntOrderNo}</td>
+        <td>{$vo.WaybillNo}</td>
+        <td>{$senderSel}</td>
+        <td>
+            <button class="layui-btn layui-btn-sm layui-btn-normal" onclick="save(this,'{$vo.EntOrderNo}');">修改</button>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+<script type="text/javascript">
+    layui.use(['layer','jquery','form'],function(){
+        layer = layui.layer;
+        var form = layui.form;
+        $ = layui.jquery;
+        form.render(); //刷新select选择框渲染
+    });
+
+    function save(obj,id) {
+        var sel=$(obj).parents('tr').children('td').eq(2).find('select').val();
+        $.ajax({
+            url:"{:Url('admin/elec/saveeditordersender')}",
+            type:"POST",
+            dataType:"json",
+            data:{sid:sel,oid:id},
+            success:function (ret) {
+                layer.msg(ret.msg);
+            }
+        });
+    }
+</script>
+</body>
+</html>

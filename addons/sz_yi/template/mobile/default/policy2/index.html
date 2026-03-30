@@ -1,0 +1,70 @@
+{template 'common/header'}
+<link href="../addons/sz_yi/static/css/layui.css" rel="stylesheet">
+<style>
+    .layui-table td, .layui-table th{ text-align: center;}
+    .layui-table th{ background-color: #ecf6fc; }
+    .required{color: red;font-size: 1.3rem;right: 3px;position: relative;top: 7px;}
+    .icon-right{font-size: 20px;line-height: 20px;padding-right: 10px;vertical-align: middle;}
+    .layui-layer-adminRight{top : 0px !important;}
+    .layui-layer-btn .layui-layer-btn0{border-color: #F7931E!important;background-color: #F7931E!important;}
+    .layui-table-cell{padding:0 2px;}
+    .laytable-cell-1-0-2{height:auto;min-height:auto;}
+    .page_head{width:100%;background:#fff;margin-bottom:5px;box-shadow:0 0 4px #ddd;padding:10px 0 10px;}
+    .page_head .left{width:20%;display:flex;align-items:center;font-size:15px;}
+    .page_head .left .back{width:13px;height:13px;border-top:2px solid #000;border-left:2px solid #000;transform:rotate(-50deg);margin-left:15px;margin-right:5px;}
+
+    .box{display:inline-block;width: 49%;text-align: center;margin-bottom:20px;}
+    .box .box2{font-size: 15px;width: 80%;margin: 0 auto;box-shadow: 0px 0px 2px #a7a5a5;border-radius: 5px;box-sizing: border-box;padding:15px 20px;}
+</style>
+<div class="page_head">
+    <div class="left" onclick="javascript:window.history.back(-1);">
+        <div class="back"></div>
+        <div style="font-size:15px;padding-top:2px;">返回</div>
+    </div>
+</div>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                {if $manage==1}
+                <div class="layui-card-header">
+                    <div class="layui-btn layui-btn-normal layui-btn-sm" onclick="openWindow()">分类列表</div>
+                </div>
+                {/if}
+                <div class="layui-card-body" style="padding:20px 0 0;">
+                    {loop $list $val}
+                        <a href="./index.php?i=3&c=entry&do=policy&p=column&m=sz_yi&cate_id={$val['id']}">
+                            <div class="box">
+                                <div class="box2">
+                                    {$val['category_name']}
+                                </div>
+                            </div>
+                        </a>
+                    {/loop}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="../addons/sz_yi/static/js/layui/layui.js"></script>
+<script>
+    $(function() {
+        layui.use(['layer', 'form', 'table', 'upload', 'laydate'], function () {
+            var $ = layui.$
+                , layer = layui.layer
+                , form = layui.form
+                , element = layui.element
+                , laydate = layui.laydate
+                , upload = layui.upload
+                , table = layui.table;
+        });
+    });
+
+    function openWindow()
+    {
+        //分类列表
+        window.location.href="<?php echo $this->createMobileUrl('policy/index');?>&op=category_list";
+    }
+</script>
+{template 'common/footer'}

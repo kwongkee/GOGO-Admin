@@ -1,0 +1,68 @@
+<style>
+    .footerbar .fb-item{
+        margin-left:-3px;
+        margin-right:-3px;
+    }
+    .weui_tab{
+        position: fixed;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+        z-index: 9;
+        height:52px;
+        width: 100%;
+    }
+</style>
+<div class="weui_tab">
+    <div class="weui_tabbar">
+        {php $footerbars = M('quickmenu')->getall();}
+        {loop $footerbars $footer}
+        {php $menus = $this->getMenus()}
+        {php $menu = $menus[$footer['ido']]}
+        <a href="{php echo $footer['link']}" class="weui_tabbar_item {if $_GPC['do']==$footer['ido']}weui_bar_item_on{/if}">
+            <div class="weui_tabbar_icon" style="text-align: center;">
+                <i class="{php echo $footer['icon']}"></i>
+            </div>
+            <p class="weui_tabbar_label" style="margin-bottom: 5px;">{$footer['title']}</p>
+        </a>
+        {/loop}
+    </div>
+</div>
+<script>
+    var meepo = {};
+    meepo.handelError = function(e){
+        console.log(e);
+    }
+    var es = new EventSource("{php echo $this->createMobileUrl('realtime')}");
+    es.onopen = function(e){
+        //console.log(e);
+    }
+    es.onerror = function(e){
+        //console.log(e);
+    }
+    es.onmessage = function(e){
+        var d = JSON.parse(e.data);
+        console.log(d);
+        if(d.status == 0){
+            if(d.image){
+                var img = '<img src="'+d.image+'"/>';
+            }else{
+                var img = '';
+            }
+            $.notification({
+                title: d.title,
+                text: d.content,
+                media: img,
+                data: "123",
+                onClick: function(data) {
+                    console.log(d);
+                    window.location.href = d.href;
+                },
+                onClose: function(data) {
+                    //console.log(data);
+                }
+            });
+            $.toptip(d.title, 'warning');
+        }
+    }
+</script>

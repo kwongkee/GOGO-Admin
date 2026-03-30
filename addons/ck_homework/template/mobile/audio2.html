@@ -1,0 +1,199 @@
+<div class="tc_b audio_html" style=" width:100%;position:fixed;left:0px; right:0px; bottom:0px; z-index:100000;display:none;">
+
+    <div id="div_b"></div>
+    <div class="box_b">
+        <div class="row box_b1" style="margin:10px 2%;width: 96%">
+            <ul>
+                <li class="hide_audio" onclick="ck_audio_close()">
+                    <span style="color: #999">关闭界面</span>
+                </li>
+                <li  style="text-align: center;font-size: 12px" class="second">
+                    <span>点击开始录音</span>
+                </li>
+                <li style="text-align: right" class="audio_ok" onclick="audio_ok()">
+                    <span>上传试听</span>
+                </li>
+            </ul>
+        </div>
+        <div class="row box_b2" style="margin-left: 0">
+            <a href="javascript:void(0)" class="start_btn" id="start_btn" external onclick="start_audio(this);">
+                <img src="{MOBILE_ASSETS}img/yuyin-a.png" width="15px" height="15px" alt="">
+            </a>
+        </div>
+        <div style="width: 100%;height: auto;display: none" class="report_audio">
+            <div style="width: 50%;margin: auto;text-align: center">
+                <button class="button button-success" style="display: initial" onclick="restart_audio($('.start_btn'))">重录</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var color_int;
+    var time_int;
+    var audio_id;
+    var audio_time = 0;
+    var isStart =true;
+    var rec=Recorder();//使用默认配置，mp3格式
+    var blobs;
+
+    /**
+     * 开始录音
+     * @param obg
+     */
+    function start_audio(obg) {
+        audio_time = 0;
+        clearInterval(time_int);
+        clearInterval(color_int);
+        rec.open(function(){
+            //开始录音
+            rec.start();
+            $(obg).find("img").attr('src','../addons/ck_homework/Assets/mobile/img/zanting.png');
+            var color = ['#e8f3eb', '#cdecd6', '#a6efbb', '#60b177', '#90DBA6'];
+            var index = 0;
+            color_int = setInterval(function () {
+                if (index >= 4) {
+                    index = 0;
+                }
+                $(obg).css('border-color', color[index]);
+                index++;
+            }, 500);
+            time_int = setInterval(function () {
+                $(".second").find("span").html("00:" + audio_time + " S");
+                audio_time++;
+                if(audio_time >= 3600){
+                    stop_audio(obg);
+                }
+            }, 1000);
+            $(obg).attr('onclick', 'stop_audio($(this))');
+        },function(msg,isUserNotAllow){
+            //用户拒绝未授权或不支持
+            alert((isUserNotAllow?"UserNotAllow，":"")+"无法录音:"+msg);
+        });
+    }
+
+
+    function restart_audio(obg) {
+        audio_time = 0;
+        $(".second").find("span").html('');
+        start_audio(obg);
+    }
+
+    /**
+     * 暂停录音
+     * @param obg
+     */
+    function stop_audio(obg) {
+        close_open_audio(obg);
+        $(obg).find("img").attr('src', "../addons/ck_homework/Assets/mobile/img/sap-zanting.png");
+        clearInterval(time_int);
+        clearInterval(color_int);
+        $(obg).css('border-color', '#90DBA6');
+        $(".report_audio").show();
+        $(obg).attr('onclick', 'start_audio($(this))');
+    }
+
+    /**
+     * 播放语言
+     */
+    function open_audio(obg) {
+        $(".second").find("span").html("播放中...");
+        $(obg).find("img").attr('src', "../addons/ck_homework/Assets/mobile/img/stop_audio.png");
+        $(obg).attr('onclick', 'close_open_audio($(this))');
+        $(".report_audio").hide();
+        //使用Blob对象
+        // var blob = new Blob(buffer, { type: 'audio/ogg' });
+        // //获取资源
+        // audioPlay.src = window.URL.createObjectURL(blob);
+        // //控制标签
+        // audioPlay.controls = true;
+        //开始播放
+        var audioPlay = $('audio');
+        audioPlay.play();
+    }
+
+    /**
+     * 停止播放
+     */
+    function close_open_audio(obg) {
+        rec.stop(function(blob,duration){
+            blobs = blob;
+            //到达指定条件停止录音
+            console.log(URL.createObjectURL(blob),"时长:"+duration+"ms");
+            rec.close();//释放录音资源
+            //已经拿到blob文件对象想干嘛就干嘛：立即播放、上传
+            /*立即播放例子*/
+            $('#lu').remove();
+            var audio=document.createElement("audio");
+            audio.controls=true;
+            document.body.appendChild(audio);
+            //简单的一哔
+            audio.src=URL.createObjectURL(blob);
+            audio.setAttribute("id",'lu');
+            audio.play();
+            $(".second").find("span").html("00:"+audio_time+" S");
+            $(obg).find("img").attr('src', "../addons/ck_homework/Assets/mobile/img/sap-zanting.png");
+            $(obg).attr('onclick', 'open_audio($(this))');
+            $(".report_audio").show();
+        },function(msg){
+            console.log("录音失败:"+msg);
+        });
+
+    }
+
+    /**
+     * 点击完成
+     */
+    function audio_ok() {
+        stop_audio($('#start_btn'));
+        setTimeout(function () {
+            /***方式一：将blob文件转成base64纯文本编码，使用普通application/x-www-form-urlencoded表单上传***/
+            $(".tc_b").hide();
+            $(".second").find("span").html('点击开始录音');
+            $(".start_btn").attr('onclick',"start_audio($(this))");
+            $(".start_btn").find("img").attr('src',"../addons/ck_homework/Assets/mobile/img/yuyin-a.png")
+            $(".report_audio").hide();
+            $('#footerjob1').show();
+            var reader=new FileReader();
+            $(".show_audio1").show();
+            reader.onloadend=function(){
+                $.ajax({
+                    url:"{php echo $this->createMobileUrl('audio2')}" //上传接口地址
+                    ,type:"POST"
+                    ,data:{
+                        mime:blobs.type //告诉后端，这个录音是什么格式的，可能前后端都固定的mp3可以不用写
+                        ,upfile_b64:(/.+;\s*base64\s*,\s*(.+)$/i.exec(reader.result)||[])[1] //录音文件内容，后端进行base64解码成二进制
+                    }
+                    ,success:function(v){
+                        v = JSON.parse(v);
+                        if (v.status==1){
+                            $(".show_audio1").hide();
+                            $(".show_audio2").show();
+                        }else{
+                            $(".show_audio1").hide();
+                            $(".show_audio3").show();
+                            $('#baseUrl').val(v.result);
+                            setTimeout(function () {
+                                $(".show_audio3").hide();
+                            },3000);
+                        }
+                        console.log("上传成功",v);
+                    }
+                    ,error:function(s){
+                        $(".show_audio1").hide();
+                        $(".show_audio2").show();
+                    }
+                });
+            };
+            reader.readAsDataURL(blobs);
+        },2000);
+    }
+
+    //显示
+    function set_audio(local,time) {
+        $(".show_audio1").show();
+        $(".audio_boder").attr('local',local);
+        $(".audio_boder").find('em').html(time+"s'");
+    }
+</script>

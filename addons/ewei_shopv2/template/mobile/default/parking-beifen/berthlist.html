@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+
+    <title>泊位查询</title>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        .main {
+            width: 274px;
+            margin-left: 49px;
+        }
+
+        .main li {
+            list-style-type: none;
+            padding-bottom: 3px;
+        }
+
+        .num {
+            /*color: rgb(162, 162, 162);*/
+            color: black;
+            font-size: 14px;
+            font-weight: bold
+        }
+
+        .num2 {
+            color: blue;
+        }
+
+        .img {
+            width: 79px;
+            height: 1px;
+            margin-left: 11px;
+        }
+
+        .img img {
+            width: 68px;
+            height: 65px;
+            margin-top: 12px;
+        }
+
+        .road {
+            font-size: 17px;
+            /*color: rgb(53, 53, 53);*/
+            color: black;
+            font-weight: bold;
+
+        }
+
+        .addr {
+            /*color: rgb(180, 180, 180);*/
+            color: black;
+            font-weight: normal;
+            font-size: 13px;
+        }
+
+        .imap {
+            display: block;
+            margin: 0.21rem 0.15rem;
+            height: 0.53rem;
+            line-height: 0.53rem;
+            text-align: center;
+            font-size: 0.16rem;
+            background: #00A5FF;
+            color: #fff;
+        }
+
+        a {
+            text-decoration: none;
+        }
+        .ico{
+            float: left;
+            border-right: 2px solid rgb(180,180,180);
+            height: 14px;
+            margin-top: 1px;
+            padding-right: 3px;
+            font-size: 12px;
+        }
+        .sel{
+            text-align: center;
+            line-height: 40px;
+            color: black;
+            font-weight: normal;
+            font-size: 16px;
+            border-bottom: 1px solid #e9e7e8;
+            background: #fcfcfc;
+            padding-bottom:2px;
+            margin-top: 1px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="input-card" style="width: 100%;position:relative;margin-left: 10px;margin-top: 13px;font-size: 15px;">
+    <div class="input-item">
+        <div class="input-item-prepend"><span class="input-item-text">城市</span></div>
+        <select id='city' style="width:100px" onchange='city(this)' name="city">
+            {loop $data['city'] $index $item}
+            <option value="{$item['CityId']}">{$item['CityName']}</option>
+            {/loop}
+        </select>
+    </div>
+    <div class="input-item">
+        <div class="input-item-prepend"><span class="input-item-text">区域</span></div>
+        <select id='province' style="width:100px" onchange='province(this)'>
+            {loop $data['area'] $index $item}
+            <option value="{$item['AreaId']}">{$item['AreaName']}</option>
+            {/loop}
+        </select>
+    </div>
+    <div class="input-item">
+        <div class="input-item-prepend"><span class="input-item-text">街道</span></div>
+        <select id='district' style="width:100px" onchange='district(this)'>
+            {loop $data['street'] $index $item}
+            <option value="{$item['StreetId']}">{$item['StreetName']}</option>
+            {/loop}
+        </select>
+    </div>
+    <!--<a class="imap">地图形式</a>-->
+    <!--<div class="input-item">-->
+    <!--<div class="input-item-prepend"><span class="input-item-text" >路段</span></div>-->
+    <!--<select id='street' style="width:100px" onchange='setCenter(this)'></select>-->
+    <!--</div>-->
+</div>
+
+<div id="conten">
+
+    {loop $data['coor']['roads'] $index $item}
+    <div style="border-bottom:2px solid #d4dde4;">
+        <a href="#" onclick="openMapApp(this);">
+            <div class="img"><img src="../addons/ewei_shopv2/static/images/img/addr_icon.png"></div>
+            <ul class="main">
+                <li><span class="road">{$item['roadName']}</span><div style="margin-right: 75px;color: black; font-weight: normal;margin-top:4px;float: right; color: blue;"><span > (点击进入导航)</span></div></li>
+                <li>
+                    <span class="addr">
+                    <!--<div class="ico">12m</div>-->
+                    {$data['addr']}{$item['roadName']}</span>
+                </li>
+                <li class="">
+                    <span class="num">总车位:<span class="num2">{php echo $item['parkSum']+$item['emptySum']}</span></span>
+                    <span class="num" style="margin-left: 15px;">空闲车位:<span class="num2">{$item['emptySum']}</span></span></li>
+            </ul>
+        </a>
+    </div>
+    {/loop}
+</div>
+
+<div id="mapApp">
+    
+</div>
+</body>
+<script type="text/javascript" src="../addons/ewei_shopv2/static/js/new-js/jquery-2.2.1.min.js"></script>
+<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+
+<!--<script src="http://wechatfe.github.io/vconsole/lib/vconsole.min.js?v=3.2.0"></script>-->
+<!--<script>-->
+<!--var vsConsole = new VConsole();-->
+<!--</script>-->
+<script>
+    var latitude;
+    var longitude;
+    var speed;
+    var accuracy;
+    wx.config({
+        debug: false,
+        appId: '{$signPackage["appId"]}',
+        timestamp: '{$signPackage["timestamp"]}',
+        nonceStr: '{$signPackage["nonceStr"]}',
+        signature: '{$signPackage["signature"]}',
+        jsApiList: [
+            'checkJsApi',
+            'openLocation',
+            'getLocation'
+        ]
+    });
+    // wx.ready(function () {
+    //
+    // });
+
+    wx.checkJsApi({
+        jsApiList: [
+            'getLocation'
+        ],
+        success: function (res) {
+            // alert(JSON.stringify(res));
+            if (res.checkResult.getLocation == false) {
+                alert('你的微信版本太低，不支持微信JS接口，请升级到最新的微信版本！');
+                return;
+            }
+        }
+    });
+
+
+    //设备接口暂时只有一个城市，待完善
+    function city(obj) {
+        var city = $('#city').val();
+        console.dir(city);
+        return false;
+    }
+
+
+    function province(obj) {
+        var street = $('#province').val();
+        console.dir(street);
+        $.ajax({
+            type:'GET',
+            url:'{php echo mobileUrl("parking/imap/getStreet")}',
+            data:{'key':street},
+            dataType:'json',
+            success:function(res){
+              console.dir(res);
+              console.log(res.result.list[0]['StreetName']);
+              var h = '<option>请选择</option>';
+              for (var i=0;i<res.result.list.length;i++){
+                  h+='<option value="'+res.result.list[i]['StreetId']+'">'+res.result.list[i]['StreetName']+'</option>';
+              }
+              $('#district').html(h);
+            },
+            error:function (xhr,status,error) {
+                alert('抱歉,服务器开小差!');
+            }
+        });
+        return false;
+    }
+
+    function district(obj) {
+        var road = $('#district').val();
+        console.dir(road);
+        $.ajax({
+            type:'GET',
+            url:'{php echo mobileUrl("parking/imap/getRoad")}',
+            data:{'key':road},
+            dataType:'json',
+            success:function(res){
+                var h = '';
+                var city = $("#city").find("option:selected").text();
+                var area = $("#province").find("option:selected").text();
+                for (var i=0;i<res.result.list.length;i++){
+                    h += ' <div style="border-bottom:2px solid #d4dde4;">\n' +
+                        '        <a href="#" onclick="openMapApp(this);">\n' +
+                        '            <div class="img"><img src="../addons/ewei_shopv2/static/images/img/addr_icon.png"></div>\n' +
+                        '            <ul class="main">\n' +
+                        '                <li><span class="road">'+res.result.list[i]['roadName']+'</span><div style="margin-right: 75px;color: black; font-weight: normal;margin-top:4px;float: right; color: blue;"><span > (点击进入导航)</span></div></li>\n' +
+                        '                <li>\n' +
+                        '                    <span class="addr">\n' +
+                        '                    <!--<div class="ico">12m</div>-->\n' +
+                        '                    '+city+area+res.result.list[i]['roadName']+'</span>\n' +
+                        '                </li>\n' +
+                        '                <li class="">\n' +
+                        '                    <span class="num">总车位:<span class="num2">'+(parseInt(res.result.list[i]['emptySum'])+parseInt(res.result.list[i]['parkSum']))+'</span></span>\n' +
+                        '                    <span class="num" style="margin-left: 15px;">空闲车位:<span class="num2">'+res.result.list[i]['emptySum']+'</span></span></li>\n' +
+                        '            </ul>\n' +
+                        '        </a>\n' +
+                        '    </div>';
+                }
+
+                $('#conten').html(h);
+            },
+            error:function (xhr,status,error) {
+                alert('抱歉,服务器开小差!');
+            }
+        });
+        return false;
+    }
+
+    function openMapApp(type) {
+        wx.getLocation({
+            success: function (res) {
+                latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
+                longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
+                speed = res.speed; // 速度，以米/每秒计
+                accuracy = res.accuracy; // 位置精度
+                wx.openLocation({
+                    latitude: latitude, // 纬度，浮点数，范围为90 ~ -90
+                    longitude: longitude, // 经度，浮点数，范围为180 ~ -180。
+                    name: '佛山市', // 位置名
+                    address: '佛山市顺德区伦教镇南苑路片区南苑中路', // 地址详情说明
+                    scale: 1, // 地图缩放级别,整形值,范围从1~28。默认为最大
+                    infoUrl: '' // 在查看位置界面底部显示的超链接,可点击跳转
+                });
+            },
+            cancel: function (res) {
+                // alert('用户拒绝授权获取地理位置');
+            }
+        });
+        // switch (type) {
+        //     case 'gaode':
+        //         $.getScript('https://webapi.amap.com/maps?v=1.4.10&key=b3542a0a7dacb8ab759e65d0621db859',function(){
+        //             var gaodeLoc = [113.221866,22.870052];
+        //             var marker = new AMap.Marker({
+        //                 position: gaodeLoc
+        //             });
+        //             marker.markOnAMAP({
+        //                 position: marker.getPosition(),
+        //                 name: '广东省佛山市顺德区滨江中路'
+        //             });
+        //         });
+        //         break;
+        //     case 'tengxun':
+        //         //腾讯地图开发者key待申请，属于公司的开发key
+        //         window.location.href='https://apis.map.qq.com/uri/v1/routeplan?type=drive&from=佛山顺德区伦新路&fromcoord=113.229493,22.868241&to=滨江中路&tocoord=22.8664935825,113.2108629448&policy=1&referer=DX6BZ-JUBL6-OYMS2-MGT3D-WXLP2-2CFSJ'
+        //         break;
+        //     case 'baidu':
+        //         window.location.href='http://api.map.baidu.com/direction?origin=latlng:34.264642646862,108.95108518068|name:我家&destination=name:佛山|22.872168,113.217424&mode=driving&region=佛山&output=html&src=GogoPrak'
+        //         break;
+        //     case 'iPhone':
+        //
+        //
+        //         // window.location.href="http://maps.apple.com/?sll=116.401112,39.832036&address='佛山市顺德区伦教镇南苑路片区南苑中路'";
+        //         break;
+        //     case 'clear':
+        //         clearSelMapApp();
+        //         break;
+        // }
+        return false;
+    }
+
+    // function onClickNav(obj) {
+    //     var h  = '<div style="font:normal normal normal 18px/50px \'Microsoft Yahei\';width: 100%;height: 100%;z-index: 9999;opacity: 0.7; left: 0;top: 0;background-color: black;position: fixed;">\n' +
+    //         '    <div style="width: 100%;height:42%;background: #ededef;position: relative;top:58%;padding-bottom: 2px;">\n' +
+    //         '        <div class="sel" onclick=openMapApp("gaode");><span>高德地图</span></div>\n' +
+    //         '        <div class="sel" onclick=openMapApp("tengxun");><span>腾讯地图</span></div>\n' +
+    //         '        <div class="sel" onclick=openMapApp("baidu");><span>百度地图</span></div>\n' +
+    //         '        <div class="sel" onclick=openMapApp("iPhone");><span>苹果地图</span></div>\n' +
+    //         '        <div class="sel" style="margin-top:1px;" onclick=clearSelMapApp();><span>取消</span></div>\n' +
+    //         '    </div>\n' +
+    //         '</div>';
+    //     $('#mapApp').html(h);
+    //     return false;
+    // }
+    // function clearSelMapApp() {
+    //     $('#mapApp').html('');
+    // }
+
+
+</script>
+</html>

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.baidu.com" versionCode="0.6">
+	<application setting="true">
+		<name><![CDATA[GO众筹]]></name>
+		<identifie><![CDATA[water_xfzc]]></identifie>
+		<version><![CDATA[4.3]]></version>
+		<type><![CDATA[other]]></type>
+		<ability><![CDATA[GO众筹]]></ability>
+		<description><![CDATA[GO众筹]]></description>
+		<author><![CDATA[微赞]]></author>
+		<url><![CDATA[http://www.baidu.com]]></url>
+	</application>
+	<platform>
+		<subscribes>
+		</subscribes>
+		<handles>
+			<message type="text" />
+		</handles>
+		<rule embed="true" />
+		<card embed="false" />
+	</platform>
+	<bindings>
+		<cover>
+			<entry title="众筹列表" do="zclist" state="" direct="false" />
+			<entry title="我的众筹" do="myzc" state="" direct="false" />
+		</cover>
+		<menu>
+			<entry title="领奖管理" do="gain" state="" direct="false" />
+			<entry title="活动设置" do="theme" state="" direct="false" />
+		</menu>
+	</bindings>
+
+	<install><![CDATA[CREATE TABLE IF NOT EXISTS `ims_water_xfzc_fans` (
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`uniacid` int(11) NOT NULL,
+`themeid` int(11) NOT NULL,
+`openid` varchar(300) NOT NULL,
+`nickname` varchar(100) NOT NULL,
+`headimg` varchar(300) NOT NULL,
+`tel` varchar(20) NOT NULL,
+`type` varchar(10) NOT NULL,
+`state` varchar(10) NOT NULL,
+`addtime` datetime,
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `ims_water_xfzc_goods` (
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`uniacid` int(11),
+`themeid` int(11),
+`gname` varchar(100),
+`gprice` float,
+`djdz` varchar(200),
+`djdh` varchar(200),
+`jpurl` varchar(200),
+`jpimg` varchar(100),
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `ims_water_xfzc_helper` (
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`uniacid` int(11) NOT NULL,
+`themeid` int(11) NOT NULL,
+`memberid` int(11) NOT NULL,
+`openid` varchar(300) NOT NULL,
+`helpid` varchar(300) NOT NULL,
+`zcje` decimal(10,2) NOT NULL,
+`zfy` varchar(300) NOT NULL,
+`tid` varchar(100) NOT NULL,
+`addtime` datetime,
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `ims_water_xfzc_member` (
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`uniacid` int(11) NOT NULL,
+`themeid` int(11) NOT NULL,
+`openid` varchar(300) NOT NULL,
+`nickname` varchar(100) NOT NULL,
+`headlogo` varchar(300) NOT NULL,
+`name1` varchar(100) NOT NULL,
+`name2` varchar(100) NOT NULL,
+`zcgy` varchar(300) NOT NULL,
+`zcsum` decimal(10,2) NOT NULL,
+`tel` varchar(20) NOT NULL,
+`zctime` varchar(100) NOT NULL,
+`type` varchar(10) NOT NULL,
+`state` varchar(10) NOT NULL,
+`scannum` int(11) NOT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `ims_water_xfzc_order` (
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`uniacid` int(11),
+`themeid` int(11),
+`memberid` int(11),
+`orderno` varchar(50),
+`goodsid` int(11),
+`openid` varchar(100),
+`mopenid` varchar(100),
+`fee` float,
+`comments` varchar(200),
+`state` int(2),
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `ims_water_xfzc_rule` (
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`uniacid` int(11) NOT NULL,
+`themeid` int(11) NOT NULL,
+`img1` varchar(300) NOT NULL,
+`img2` varchar(300) NOT NULL,
+`img3` varchar(300) NOT NULL,
+`img4` varchar(300) NOT NULL,
+`img5` varchar(300) NOT NULL,
+`img6` varchar(300) NOT NULL,
+`content` varchar(5000) NOT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `ims_water_xfzc_setting` (
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`uniacid` int(11) NOT NULL,
+`toppic1` varchar(300) NOT NULL,
+`toppic2` varchar(300) NOT NULL,
+`admindo` int(2) NOT NULL,
+`fansfb` int(2) NOT NULL,
+`fanszf` int(2) NOT NULL,
+`fanszczj` int(2) NOT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `ims_water_xfzc_system` (
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`uniacid` int(11) NOT NULL,
+`themeid` int(11) NOT NULL,
+`leftimg` varchar(300) NOT NULL,
+`rightimg` varchar(300) NOT NULL,
+`img1` varchar(300) NOT NULL,
+`name1` varchar(50) NOT NULL,
+`name2` varchar(50) NOT NULL,
+`img2` varchar(300) NOT NULL,
+`img3` varchar(300) NOT NULL,
+`img4` varchar(300) NOT NULL,
+`img5` varchar(300) NOT NULL,
+`img6` varchar(300) NOT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `ims_water_xfzc_theme` (
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`uniacid` int(11) NOT NULL,
+`tname` varchar(100) NOT NULL,
+`keyword` varchar(100) NOT NULL,
+`kftel` varchar(100) NOT NULL,
+`hlogo` varchar(300) NOT NULL,
+`zcxcy` varchar(500) NOT NULL,
+`flogo` varchar(300) NOT NULL,
+`jszc` varchar(100) NOT NULL,
+`jszcurl` varchar(300) NOT NULL,
+`tdays` int(11) NOT NULL,
+`zcjefw` varchar(100) NOT NULL,
+`jetype` varchar(100) NOT NULL,
+`xieyi` varchar(5000) NOT NULL,
+`sharedesc` varchar(300) NOT NULL,
+`sharetitle` varchar(100) NOT NULL,
+`fansdo` int(2) NOT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;]]></install>
+	<uninstall><![CDATA[DROP TABLE IF EXISTS `water_xfzc_fans`;
+DROP TABLE IF EXISTS `water_xfzc_goods`;
+DROP TABLE IF EXISTS `water_xfzc_helper`;
+DROP TABLE IF EXISTS `water_xfzc_member`;
+DROP TABLE IF EXISTS `water_xfzc_order`;
+DROP TABLE IF EXISTS `water_xfzc_rule`;
+DROP TABLE IF EXISTS `water_xfzc_setting`;
+DROP TABLE IF EXISTS `water_xfzc_system`;
+DROP TABLE IF EXISTS `water_xfzc_theme`;
+]]></uninstall>
+	<upgrade><![CDATA[upgrade.php]]></upgrade>
+</manifest>

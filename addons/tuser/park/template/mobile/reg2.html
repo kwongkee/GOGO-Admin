@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8"> 
+    <title>完善资料</title>
+    <meta name="keywords" content=""> 
+    <meta name="description" content="" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"  content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta content="telephone=no" name="format-detection">
+    <link rel="stylesheet" type="text/css" href="{$modulePublic}skin2016/css/frozen.css" />
+    <link rel="stylesheet" type="text/css" href="{$modulePublic}skin2016/css/register.css" />
+    <link rel="stylesheet" type="text/css" href="{$modulePublic}skin2016/css/base.css" />
+
+    <script src="{$modulePublic}js/mobiledate/js/jquery.1.7.2.min.js"></script>
+    <script src="{$modulePublic}js/mobiledate/js/mobiscroll_002.js" type="text/javascript"></script>
+    <script src="{$modulePublic}js/mobiledate/js/mobiscroll_004.js" type="text/javascript"></script>
+    <link href="{$modulePublic}js/mobiledate/css/mobiscroll_002.css" rel="stylesheet" type="text/css">
+    <link href="{$modulePublic}js/mobiledate/css/mobiscroll.css" rel="stylesheet" type="text/css">
+    <script src="{$modulePublic}js/mobiledate/js/mobiscroll.js" type="text/javascript"></script>
+    <script src="{$modulePublic}js/mobiledate/js/mobiscroll_003.js" type="text/javascript"></script>
+    <script src="{$modulePublic}js/mobiledate/js/mobiscroll_005.js" type="text/javascript"></script>
+    <link href="{$modulePublic}js/mobiledate/css/mobiscroll_003.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <header>
+        {if $pageContents[8]['img']}
+        <img src="{php echo $attach_url . '/'.$pageContents[8]['img']}" />
+        {else}
+        <img src="{$modulePublic}skin2016/img/top.png" />
+        {/if}
+    </header> 
+    <section>
+        <p class="ui-font-purple ui-font-form-t">完善资料</p>
+        <div class="ui-form ui-border-t">
+            <form action="" method="post" id="form" >
+                <div class="ui-form-item ui-border-b">
+                    <label>
+                        生日
+                    </label>
+                    <input type="text"  name="birthday" value="{if $user['birthday']!='0000-00-00'}{$user['birthday']}{/if}" id="appDate"  placeholder="请选择生日" >
+                    <a href="#" class="ui-icon-close"></a>
+                </div><div class="hint"></div>
+                <div class="ui-form-item ui-border-b">
+                    <label>
+                        性别
+                    </label>
+                    <select name="sex" style="width: 20%;margin-left: 110px;padding-left: 5px;">
+                        <option value="m" {if $user['sex'] == 'm'}selected="selected"{/if}>男</option>
+                        <option value="f" {if $user['sex'] == 'f'}selected="selected"{/if}>女</option>
+                    </select>
+                </div><div class="hint"></div>
+                <div class="ui-form-item ui-border-b">
+                    <label>
+                        车牌号
+                    </label>
+                    <select name="plate_number0" style="width: 10%;padding-left: 5px;margin-left:110px;">
+                        <option value="">选择</option>
+                        {loop $plateNumbers $row}
+                        <option value="{$row}" {if $userPlateNumbers[0] == $row}selected="selected"{/if}>{$row}</option>
+                        {/loop}
+                    </select>
+                    <select name="plate_number1" style="width: 10%;padding-left: 5px;margin-left:5px;">
+                        <option value="">选择</option>
+                        {loop $alphabets $row}
+                        <option value="{$row}" {if $userPlateNumbers[1] == $row}selected="selected"{/if}>{$row}</option>
+                        {/loop}
+                    </select>
+                    <input type="text"  style="width: 30%;padding-left:5px;" name="plate_number2" value="{$userPlateNumbers['2']}"  placeholder="请输入车牌号" >
+                </div><div class="hint"></div>
+                <div class="ui-btn-wrap">
+                    <button type="button" id="but" onclick="return checkfrom()" class="ui-btn-lg ui-btn-primary ui-bgcolor-purple">
+                        确定
+                    </button>
+                </div>
+                <div class="ui-btn-wrap">
+                    <button type="button" id="but" onclick="location.href = '{php echo $this->createMobileUrl('index')}';" class="ui-btn-lg ui-btn-primary ui-bgcolor-purple">
+                        以后完善
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+    <!--<script type="text/javascript" src="{$modulePublic}skin2016/lib/zepto.min.js"></script>
+    <script type="text/javascript" src="{$modulePublic}skin2016/js/frozen.js"></script>-->
+    <script src="{$modulePublic}skin2016/js/layer.m.js"></script>
+    <script>
+                        $(function () {
+                            var currYear = (new Date()).getFullYear();
+                            var opt = {};
+                            opt.date = {preset: 'date'};
+                            opt.datetime = {preset: 'datetime'};
+                            opt.time = {preset: 'time'};
+                            opt.default = {
+                                theme: 'android-ics light', //皮肤样式
+                                display: 'modal', //显示方式 
+                                mode: 'scroller', //日期选择模式
+                                dateFormat: 'yyyy-mm-dd',
+                                lang: 'zh',
+                                //startYear: currYear - 10, 开始年份
+                                endYear: currYear  //结束年份
+                            };
+
+                            $("#appDate").mobiscroll($.extend(opt['date'], opt['default']));
+                            var optDateTime = $.extend(opt['datetime'], opt['default']);
+                            var optTime = $.extend(opt['time'], opt['default']);
+                            $("#appDateTime").mobiscroll(optDateTime).datetime(optDateTime);
+                            $("#appTime").mobiscroll(optTime).time(optTime);
+                        });
+
+                        function loading() {
+                            layer.open({
+                                type: 2,
+                                content: '加载中...',
+                                shadeClose: false
+                            });
+                        }
+                        function alert(msg) {
+                            layer.open({
+                                content: msg,
+                                style: 'background-color:#09C1FF; color:#fff; border:none;text-align:center',
+                                time: 2
+                            });
+                        }
+
+                        //表单验证
+                        function checkfrom() {
+                            var birthday = $('input[name="birthday"]').val();
+                            var sex = $('select[name="sex"]').val();
+                            var plate_number0 = $('select[name="plate_number0"]').val();
+                            var plate_number1 = $('select[name="plate_number1"]').val();
+                            var plate_number2 = $('input[name="plate_number2"]').val();
+
+                            if (birthday == '') {
+                                layer.open({
+                                    content: '请选择生日',
+                                    btn: ['确定']
+                                });
+                                return false;
+                            }
+
+//                            if (!plate_number0 || !plate_number1 || !plate_number2) {
+//                                layer.open({
+//                                    content: '请填写车牌号',
+//                                    btn: ['确定']
+//                                });
+//                                return false;
+//                            }
+
+
+                            loading();
+                            $.post("{php echo $this->createMobileUrl('ajax',array('sdo'=>'regmsg2'))}", {"birthday": birthday, "sex": sex, "plate_number0": plate_number0, "plate_number1": plate_number1, "plate_number2": plate_number2}, function (msg) {
+                                layer.closeAll();
+                                alert(msg.error_msg);
+                                var status = msg.error_code;
+                                var url = "{php echo $this->createMobileUrl('index')}";
+                                switch (status) {
+                                    case 1: // 新会员注册
+                                        window.location.href = url;
+                                        break;
+                                    case 0:
+                                        layer.open({
+                                            content: msg.error_msg,
+                                            btn: ['确定']
+                                        });
+                                        break;
+                                }
+                            }, 'json');
+                        }
+    </script>
+    {template 'share'}
+</body>
+</html>

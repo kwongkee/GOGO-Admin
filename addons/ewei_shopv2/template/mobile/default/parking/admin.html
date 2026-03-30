@@ -1,0 +1,84 @@
+{template "parking/_header"}
+<style>
+    .layui-upload-drag{
+        position:relative;
+        padding: 35px;
+        border: 1px dashed #e2e2e2;
+        background-color: #fff;
+        text-align: center;
+        cursor: pointer;
+        color: #999;
+    }
+    li{
+        border: 1px solid #999;
+        float: left;
+        width: 36px;
+        height: 32px;
+        line-height: 30px;
+        list-style: none;
+        text-align: center;
+        margin-left: 4px;
+    }
+    #n{
+        margin-left:6%;  
+        padding: 2px;
+        margin-top:10px; 
+        margin-bottom:60px;
+    }
+</style>
+<body>
+    <form>
+    <label name="file">
+        <div class="layui-upload-drag" id="test10">
+                <i class="layui-icon" style="background-image('../addons/ewei_shopv2/static/images/upload.png')"><img style="width:70px;" src="../addons/ewei_shopv2/static/images/upload.png"></i>
+                <p>点击上传</p>
+                <input type="file" name='file'  id="file" style="display:none;" onchange="preview(this)" accept="image/*">    
+                <label></label>
+        </div>
+    </label>
+    <div id="n">
+            <ul>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+            </ul>
+        </div>
+</form>
+<a style="clear:both;background-color:#0099ff" javascript:void; class="weui_btn weui_btn_primary">确认</a>
+<script>
+    function ImageView(obj){
+        if(obj.files && obj.files[0]){
+            var reader=new FileReader();
+            reader.onload=function(evt){
+                $("#test10").html('<img style="width:270px;" src="'+evt.target.result+'">');
+            }
+            reader.readAsDataURL(obj.files[0]);
+        }
+   }
+   function preview(file){
+            var formData=new FormData();
+            var file1=document.getElementById("file");
+            formData.append("file", file1.files[0]);
+            setTimeout(function(){
+                ImageView(file);
+            },500);
+            $.ajax({
+                url:"{php echo mobileUrl('parking/admin/imagePost')}",
+                type:"post",
+                data:formData,
+                processData:false,
+                contentType:false,
+                success:function(msg){
+                    console.dir(msg);
+                },
+                error:function(){
+                    alert('服务错误');
+                }
+            })
+   }
+</script>
+{template "parking/_footer"}

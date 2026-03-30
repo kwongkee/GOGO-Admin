@@ -1,0 +1,123 @@
+{include file="public/header"}
+<style>
+    .disf{display:flex;align-items: center;}
+
+    .process_div{width:100%;overflow-x:auto;padding-bottom:10px;border-bottom:1px solid #fff;cursor:pointer;}
+    .process_child{margin-left:5px;width:60px;text-align: center;margin-right:20px;padding:5px 10px;}
+    .process_child .process_img{width:100%;}
+    .process_child:last-child .process_arrow_box{display:none;}
+    .process_child:first-child{margin-left:10px;}
+    .process_child .process_text{color:#fff;}
+    .process_child .process_arrow{width:25px;height:25px;}
+    .process_active{color:#603160;border-radius: 5px;background:#603160;}
+    .no_active{background: #a0a0a0;border-radius: 5px;}
+
+    .f18{font-size: 18px !important;}
+    .f15{font-size: 15px !important;}
+    .f13{font-size: 13px !important;}
+    .layui-table-cell{height:38px !important;line-height: 38px !important;}
+    thead .layui-table-cell{height:28px;line-height: 28px}
+</style>
+
+<body style="padding: 10px;background-color: #e0d7d7;">
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="main-container">
+                <div class="disf process_div">
+                    {volist name="process" id="vo"}
+                    <div onclick="show_process(this,{$vo['id']},'{$vo['link']}','{$vo['id']}',1)" class="f18 process_child {if $process_ids['process1']==$vo['id']}process_active{/if}" style="position: relative;">
+                        <div class="f13 process_text">{$vo['step']}</div>
+                        <div class="f13 process_text">{$vo['content']}</div>
+                        <div class="process_arrow_box" style="position: absolute;top: 10px;right: -25px;">
+                            <img src="https://www.gogo198.com/img/white_arrow.png" alt="" class="process_arrow">
+                        </div>
+                    </div>
+                    {/volist}
+                </div>
+            </div>
+            <div style="padding-top:0px;">
+                <table id="table" class="layui-table" lay-filter="table"></table>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script type="text/javascript">
+    layui.config({
+        base: './static/agents/layui/'
+    }).extend({
+        treetable: 'treetable-lay/treetable'
+    }).use(['layer','form','laydate','upload','element','treetable'],function() {
+        var laydate = layui.laydate
+            ,layer = layui.layer
+            ,form = layui.form
+            ,element = element
+            ,$ = layui.jquery
+            ,treetable = layui.treetable
+            ,upload = layui.upload;
+
+        // 渲染表格
+        layer.load(2);
+        treetable.render({
+            treeColIndex: 2,
+            treeSpid: 0,
+            treeIdName: 'id',
+            treePidName: 'orderid',
+            elem: '#table',
+            url: "/collect_website/public/?s=centralize/index/package_manage&manage={$manage}&process1={$process_ids['process1']}&pa=1",
+            page: true,
+            treeDefaultClose:true,
+            cols: [[
+                {type: 'numbers'},
+                {field: 'process_name', align: 'left', width:200, title: '业务名称'},
+                {field: 'ordersn', align: 'left', width:200, title: '编号'},
+                {field: 'createtime', align: 'left', width:200, title: '创建日期'},
+                {align: 'center', title: '业务操作', templet:function (d) {
+                    {if $process_ids['process1']==16}
+                        return '<a class="layui-btn layui-btn-normal layui-btn-md" lay-event="add" onclick="openWindow(\'修改\',\'{:Url(\'centralize/index/edit_booking\')}&id='+d.oid+'\',3,{$process_ids[\'process1\']},{$process_ids[\'process1\']});">订仓修改</a>';
+                    {else}
+                        if(d.oid==0){
+                            return '';
+                        }else{
+                            return '<a class="layui-btn layui-btn-success layui-btn-md" lay-event="del" onclick="openWindow(\'确认信息\',\'{:Url(\'centralize/index/package_info\')}&id='+d.oid+'\',3,{$process_ids['process1']},{$process_ids['process1']},{$process_ids['process1']})">查看包裹</a>'
+                        }
+                    {/if}
+                }}
+            ]],
+            done: function (data) {
+                {if $process_ids['process1']!=16}
+                    for (let i = 0; i < data.data.length; i++) {
+                        if (data.data[i].orderid == 0) {
+                            $('.layui-table').find('tr').eq(i + 1).find('td').eq(4).find('div').html('<a class="layui-btn layui-btn-normal layui-btn-md" lay-event="add" onclick="openWindow(\'修改\',\'{:Url(\'centralize/index/edit_booking\')}&id='+data.data[i].oid+'\',3,{$process_ids[\'process1\']},{$process_ids[\'process1\']});">订仓修改</a>');
+                        }
+                    }
+                {elseif($process_ids['process1']==16)}
+                    <!--仓库预订-->
+                    for (let i = 0; i < data.data.length; i++) {
+                        if (data.data[i].sure_prediction == 1) {
+                            // $('.layui-table').find('tr').eq(i + 1).find('td').eq(4).find('div a').eq(0).hide();
+                            // $('.layui-table').find('tr').eq(i + 1).find('td').eq(4).find('div a').eq(1).css('margin', 0);
+                            // $('.layui-table').find('tr').eq(i + 1).find('td').eq(4).find('div a').eq(2).hide();
+                        }
+                    }
+                {/if}
+                $('.treeTable .layui-icon-layer').css('display', 'none');
+                $('.treeTable .layui-icon-file').css('display', 'none');
+                layer.closeAll('loading');
+            }
+        });
+    });
+
+    function openWindow(title,url,type,process1,process2,process3)
+    {
+        var layer = layui.layer;
+
+        window.location.href=url+"&process1="+process1+"&process2="+process2+"&process3="+process3;
+    }
+
+    function show_process(t,id,link,id1,level) {
+        var $ = layui.$
+            , layer = layui.layer;
+        window.location.href='/collect_website/public/?s=centralize/index/package_manage&manage={$manage}&process1='+id1+'&process2='+id;
+    }
+</script>

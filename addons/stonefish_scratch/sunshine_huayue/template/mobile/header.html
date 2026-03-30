@@ -1,0 +1,216 @@
+<!doctype html>
+<html>
+<head>
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="yes" name="apple-touch-fullscreen" />
+    <meta content="telephone=no,email=no" name="format-detection" />
+    <meta content="maximum-dpr=1" name="flexible" />
+    <meta content="modeName=750-12" name="grid" />
+	<link rel="stylesheet" href="{$_W['siteroot']}/addons/sunshine_huayue/plugin/frozenui/css/full.css">
+	<link rel="stylesheet" href="{$_W['siteroot']}/addons/sunshine_huayue/common/css/common.css">
+	<link rel="stylesheet" href="{$_W['siteroot']}/addons/sunshine_huayue/common/weui/weui.min.css">
+	<link rel="stylesheet" href="{$_W['siteroot']}/addons/sunshine_huayue/common/weui/example.css">
+	<link rel="stylesheet" href="{$_W['siteroot']}/addons/sunshine_huayue/common/awesome/css/font-awesome.min.css">
+	<title>{php echo $this->super_title}</title>
+	{php register_jssdk()}
+	<script src="{$_W['siteroot']}addons/sunshine_huayue/plugin/frozenui/lib/zepto.min.js"></script>
+    <script src="{$_W['siteroot']}addons/sunshine_huayue/plugin/frozenui/js/frozen.js"></script>
+    <script src="{$_W['siteroot']}addons/sunshine_huayue/common/js/zoumadeng.js"></script>
+    <script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+	<script type="text/javascript">
+		// window.onload = function() {
+		// 	$("#loading_layer").remove();
+		// };
+		var Surrounds = {
+			openNew : function(url,id) {
+				window.location.href=url+"&id="+id;
+			},
+			page:1
+
+		}
+		// 分享相关
+		wx.ready(function() {
+			if("{$this->share_img}") {
+				imgUrl = "{php echo $this->share_img}";
+			}else {
+				imgUrl = '{php echo $_W['siteroot']}/addons/sunshine_huayue/common/img/share_img.jpg';
+			}
+
+			if("{php echo $this->share_title") {
+				share_title = "{php echo $this->share_title}";
+			}
+			else
+			{
+				share_title = '超级粉丝社区';
+			}
+			sharedata = {
+				title: share_title,
+				desc: "{php echo $this->share_content}",
+				link: window.location.href,
+				imgUrl: imgUrl,
+				success: function(){
+					
+				},
+				cancel: function(){
+					
+				}
+			};
+
+			wx.onMenuShareAppMessage(sharedata);
+			wx.onMenuShareTimeline(sharedata);
+			wx.onMenuShareQQ(sharedata);
+			wx.onMenuShareWeibo(sharedata);
+
+			wx.hideMenuItems({
+			    menuList: [
+			    	'menuItem:share:qq',
+			    	'menuItem:share:weiboApp',
+			    	'menuItem:share:facebook',
+			    	'menuItem:share:QZone',
+			    	'menuItem:copyUrl',
+			    	'menuItem:readMode',
+			    	'menuItem:openWithSafari',
+			    	'menuItem:openWithQQBrowser'
+			    ] // 要隐藏的菜单项，只能隐藏“传播类”和“保护类”按钮，所有menu项见附录3
+			});
+		})
+	</script>
+</head>
+<body>
+<!-- loading -->
+<!-- <div class="ui-loading-block show" id="loading_layer">
+<div class="ui-loading-cnt">
+<i class="ui-loading-bright"></i>
+<p>正在加载中...</p>
+</div>
+</div> -->
+<!-- share -->
+<div class="mcover" onclick="$(this).hide()" style="display: none;">
+    <img src="{$_W['siteroot']}addons/sunshine_huayue/common/img/guide.png">
+</div>
+<!-- 关注 -->
+{if !$this->super_follow}
+<div class="mcover" style="display:block">
+	<div style="margin-top:10%;color:#ffc723;">
+	<h3 style="font-size:24px;font-weight:bold;">客官~~~~~</h3>
+	<p>长按识别二维码</p>
+	<p>关注'{$_W['account']['name']}' | 加入~{php echo $this->super_title}</p>
+	<p>大家都聊嗨了~^^还在等什么~</p>
+    <img src="{$_W['account']['qrcode']}" style="border-radius:5px;">
+	</div>
+</div>
+<script type="text/javascript">
+	// 浮层出现禁止滚动
+    $('.mcover').on('touchmove',
+		function(event) {
+		    event.preventDefault();
+		    return false;
+		});
+</script>
+{/if}
+{if !$this->vip}
+<!-- 开通会员弹出框  begin-->
+<div class="ui-dialog" id="open_vip_dialog">
+    <div class="ui-dialog-cnt">
+      <header class="ui-dialog-hd ui-border-b">
+                  <h3>开通月会员</h3>
+                  <i class="ui-dialog-close" data-role="button"></i>
+              </header>
+        <div class="ui-dialog-bd">
+            <h4>{php echo $this->settings['vip_credit_month_1']}积分有效期1个月</h4>
+            <h4>开通会员即可享受更多权限</h4>
+        </div>
+        <div class="ui-dialog-ft">
+            <button type="button" data-role="button" onclick="$('#open_vip_dialog').dialog('hide')" >取消</button>
+            <button type="button" data-role="button" onclick="openVip();">开通</button>
+        </div>
+    </div>        
+</div>
+<script type="text/javascript">
+    function openVip() {
+        $.ajax({
+            type:'post',
+            data:{openvip:''},
+            url:"{php echo $this->createMobileUrl('vipopen')}",
+            success:function(d,s) {
+            	
+                if(d.res == 100) {
+                    alert('开通成功');
+                    window.location.href='';
+                }else {
+                    alert(d.msg);
+                }
+            }
+        })
+    }
+
+</script>
+{/if}
+<!-- 开通会员弹出框  end-->
+
+<!-- 提醒开关 -->
+{if $this->remind_key}
+{template 'remind_notice'}
+{/if}
+<style>
+body {
+	font-size:14px;
+}
+</style>
+
+
+{if $this->settings['superpoint_key'] == 'open'}
+<!-- 超级全局小黑点 -->
+<div id="drag_point" style="background-color:rgba(18,18,18,0.9);position:fixed;top:50px;;right:20px;padding:5px;border-radius:5px;z-index:1000;" onclick="DrayPointLayer.show_layer()">
+	<div style="opacity:1;border-radius:50%;width:30px;height:30px;background-color:rgba(255,255,255,0.5);margin:0px auto;">
+	</div>
+</div>
+<script type="text/javascript">
+(function() {
+	var drag_point = document.getElementById('drag_point');
+	drag_point.addEventListener('touchstart',function() {
+		e.preventDefault();
+		e.stopPropagation();
+		return;
+	});
+})
+
+var DrayPointLayer = (function() {
+
+	var show_layer = function() {
+		var mask = $("#drag_point_layer_mask");
+		var layer_content = $("#drag_point_layer_content");
+		mask.show();
+		mask.addClass("weui_fade_toggle");
+		layer_content.addClass('weui_actionsheet_toggle');
+	}
+	var hide_layer = function() {
+		var mask = $("#drag_point_layer_mask");
+		var layer_content = $("#drag_point_layer_content");
+		mask.hide();
+		mask.removeClass("weui_fade_toggle");
+		layer_content.removeClass("weui_actionsheet_toggle");
+	}
+
+	return {
+		show_layer:show_layer,
+		hide_layer:hide_layer
+	}
+}())
+</script>
+<div id="drag_point_layer" style="z-index:1002">
+    <div class="weui_mask_transition weui_fade_toggle" style="z-index:1003" id="drag_point_layer_mask" onclick="DrayPointLayer.hide_layer()"></div>
+    <div class="weui_actionsheet " id="drag_point_layer_content" style="z-index:1003">
+        <div class="weui_actionsheet_menu">
+        	<h4 class="weui_actionsheet_cell" style="color:rgb(200,200,200)">欢迎使用超级小黑点</h4>
+        	{loop $this->superpoint_menu $item}
+            <a style="display:block" class="weui_actionsheet_cell" href="{php echo $item['url']}">{php echo $item['name']}</a>
+            {/loop}
+        </div>
+        <div class="weui_actionsheet_action">
+            <div class="weui_actionsheet_cell"  onclick="DrayPointLayer.hide_layer()">取消</div>
+        </div>
+    </div>
+</div>
+{/if}

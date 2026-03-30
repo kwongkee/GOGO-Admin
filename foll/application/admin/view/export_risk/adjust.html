@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+</head>
+<style>
+    .form-group{display:flex;align-items:center;}
+    .userSelect{display:none;}
+    .send_news{display:none;}
+    .layui-input{width:30%;}
+    .layui-input-block{display:flex;align-items: center;}
+</style>
+<body class="gray-bg">
+<form class="layui-form" lay-filter="component-form-element1">
+
+    <div class="layui-card">
+        <div class="layui-card-header">每次按百分比</div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">上限</label>
+            <div class="layui-input-block">
+                <input type="text" name="percent_up" id="percent_up" value="{$data['percent_up']}" lay-verify="required" class="layui-input">&nbsp;%
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">下限</label>
+            <div class="layui-input-block">
+                <input type="text" name="percent_down" id="percent_down" value="{$data['percent_down']}" lay-verify="required" class="layui-input">&nbsp;%
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-card">
+        <div class="layui-card-header">每次按总值</div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">上限</label>
+            <div class="layui-input-block">
+                <input type="text" name="value_up" id="value_up" value="{$data['value_up']}" lay-verify="required" class="layui-input">&nbsp;元
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">下限</label>
+            <div class="layui-input-block">
+                <input type="text" name="value_down" id="value_down" value="{$data['value_down']}" lay-verify="required" class="layui-input">&nbsp;元
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="component-form-element">立即提交</button>
+        </div>
+    </div>
+</form>
+</body>
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script type="text/javascript">
+    $(function(){
+        layui.use(['layer','form','laydate'],function(){
+            var laydate = layui.laydate,
+                layer = layui.layer,
+                form  = layui.form,
+                $ = layui.jquery;
+            form.render(null, 'component-form-element1');
+
+            form.on('submit(component-form-element)', function(data){
+                data.field['id'] = "{$data['id']}";
+
+                $.ajax({
+                    url:"{:Url('admin/exportRisk/adjust')}",
+                    type:'POST',
+                    data:data.field,
+                    dataType:'JSON',
+                    success:function(res){
+                        layer.msg(res.msg,{time:3000}, function () {
+                            if(res.code == 1)
+                            {
+                                layer.closeAll();
+                                window.location.reload();
+                            }
+                        });
+                    },
+                    error:function (data) {
+                        layer.msg('系统错误',{time:2000});
+                    }
+                });
+                return false;
+            });
+        });
+    });
+</script>
+</html>

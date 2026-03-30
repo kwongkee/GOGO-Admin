@@ -1,0 +1,75 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="./static/aui/css/aui.css" />
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body>
+<header class="aui-bar aui-bar-nav">重新对账</header>
+<div class="aui-content aui-margin-b-15" style="margin-top:0.75rem !important;">
+    <h2 style="text-align: center;">{$date}微信免密对账文件下载失败</h2>
+</div>
+<button type="button" id="duizhang" class="aui-btn aui-btn-info aui-btn-block" style="margin: 10px;width: 95%;border: unset;" onclick="duizhang()">重新下载对账</button>
+</body>
+<script type="text/javascript" src="./static/aui/script/api.js" ></script>
+<script type="text/javascript" src="./static/aui/script/aui-dialog.js" ></script>
+<script type="text/javascript" src="./static/aui/script/aui-toast.js" ></script>
+<script type="text/javascript">
+    apiready = function () {
+        api.parseTapmode();
+    }
+    var dialog = new auiDialog();
+    var toast = new auiToast();
+    function duizhang() {
+
+        dialog.alert({
+            title:"系统提示",
+            msg:'确认要下载文件对账吗？',
+            buttons:['取消','确定']
+            },function(ret){
+                if(ret.buttonIndex == 2)
+                {
+                    $("#duizhang").attr("disabled",true);
+                    //提交对账
+                    toast.loading({
+                        title:"对账中，请稍等",
+                    });
+                    $.ajax({
+                        url:"{:Url('Reconcils/GoReconciliations')}",
+                        type:"post",
+                        dataType:"json",
+                        data:{"date": {$date}},
+                        success:function(res){
+                            toast.hide();
+                            if(res.code == 0)
+                            {
+                                toast.fail({
+                                    title:res.msg,
+                                    duration:2000
+                                });
+                            }else{
+                                toast.success({
+                                    title:res.msg,
+                                    duration:2000
+                                });
+                            }
+                            $("#duizhang").removeAttr("disabled");
+                        },
+                        error:function () {
+                            toast.hide();
+                            toast.fail({
+                                title:res.msg,
+                                duration:2000
+                            });
+                            $("#duizhang").removeAttr("disabled");
+                        }
+                    });
+                }
+            })
+        
+    }
+</script>
+</html>

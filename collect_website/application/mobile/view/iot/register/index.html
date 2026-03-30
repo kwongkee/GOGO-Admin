@@ -1,0 +1,82 @@
+{include file='iot/header'}
+<body style="background-color:#fff;">
+<style>
+    .tip {
+        display: none;
+        font-size: 14px;
+        position: absolute;
+        top: 55%;
+        left: 5%;
+        background: #000;
+        opacity: .5;
+        width: 90%;
+        color: #fff;
+        text-align: center;
+        padding: 5% 0;
+    }
+</style>
+<div class="whole">
+    <div class="header">
+        <div class="toplogo"><img src="./static/iot/images/top-logo.png" alt=""></div>
+        <h2 class="title">常驻人员账号申请</h2>
+    </div>
+    <form action="">
+        <input type="hidden" name="openid" id="openid" value="{$openid}">
+        <div class="content">
+            <div class="register_icon"><img src="./static/iot/images/icon_big01.png" alt=""></div>
+            <div class="box">
+                <img src="./static/iot/images/icon_01.png" alt="" class="icon">
+                <input type="text" name="phone" id="phone" value="" placeholder="请输入手机号码" class="box_input" id="phone">
+                <div class="tip" id="tip"></div>
+            </div>
+            <div class="box">
+                <img src="./static/iot/images/icon_03.png" alt="" class="icon">
+                <input type="text" name="name" id="name" value="" placeholder="请输入你的姓名" class="box_input">
+            </div>
+            <div class="box">
+                <img src="./static/iot/images/icon_04.png" alt="" class="icon">
+                <input type="text" name="idCard" id="idCard" value="" placeholder="请输入身份证号码" class="box_input">
+            </div>
+            <div class="btn"><a href="#" onclick="apply();return false;">申请</a></div>
+        </div>
+    </form>
+    <div class="login_bottom"><img src="./static/iot/images/bottom.jpg" alt=""></div>
+</div>
+</body>
+<script>
+    function apply() {
+        var phone = window.document.getElementById('phone').value;
+        var name = window.document.getElementById('name').value;
+        var idCard = window.document.getElementById('idCard').value;
+        var openid = window.document.getElementById('openid').value;
+        if (phone==''){
+            showMsg('手机号码不能为空');
+            return false;
+        }
+        if (name==''){
+            showMsg('姓名不能为空');
+            return false;
+        }
+        if (idCard==''){
+            showMsg('证件好不能为空');
+            return false;
+        }
+        axios.post("{:Url('iot/user/reg')}",{
+            phone:phone,
+            name:name,
+            idCard:idCard,
+            openid:openid
+        }).then(function (res) {
+            showMsg(res.data.message);
+            if (res.data.code==0){
+                setTimeout(function () {
+                    window.location.href="{:Url('iot/reg_success')}";
+                },1500);
+            }
+        }).catch(function(err){
+           showMsg('服务器错误!');
+        });
+        return false;
+    }
+</script>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="common/meta"}
+</head>
+<body class="gray-bg">
+<div class="col-sm-12" style="margin-top: 12px;">
+    <button class="btn-info btn-sm addRole">添加新角色</button>
+</div>
+<div class="col-sm-12">
+    <div class="ibox float-e-margins">
+        <div class="ibox-content" style="display:block;" id="list1">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>id</th>
+                    <th>名称</th>
+                    <th>状态</th>
+                    <th>说明</th>
+                    <th>时间</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name="list" id="item"}
+                <tr>
+                    <td>{$item.id}</td>
+                    <td>{$item.role_name}</td>
+                    <td>{$status[$item.status]}</td>
+                    <td>{$item.remark}</td>
+                    <td>{$item.created_time}</td>
+                    <td>
+                        {if $item.status==0}
+                        <a style="color: white" class="btn-warning btn" href="{:Url('admin/customssystem/roleStatus')}&id={$item.id}&status=1"><i class="glyphicon glyphicon-ban-circle"></i>禁用</a>
+                        {else}
+                        <a class="btn-success btn" href="{:Url('admin/customssystem/roleStatus')}&id={$item.id}&status=0"><i class="glyphicon glyphicon-ok-circle"></i>启用</a>
+                        {/if}
+                        <button class="btn btn-info " type="button" onclick="edit({$item.id})"><i class="fa fa-paste"></i> 编辑</button>
+                        <a class="btn-danger btn" href="{:Url('admin/customssystem/roleDel')}&id={$item.id}"><i class="glyphicon glyphicon-trash"></i>删除</a>
+                    </td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+<!--<div class="card-pay">
+
+</div>-->
+
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/js/bootstrap.min.js?v=3.3.6"></script>
+<!-- 自定义js -->
+<script src="./static/hadmin/js/content.js?v=1.0.0"></script>
+<!-- Bootstrap table -->
+<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="./static/hadmin/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="./static/hadmin/layui/layui.all.js"></script>
+
+<!-- Peity -->
+</body>
+<script>
+    $(function () {
+       $('.addRole').click(function () {
+           parent.layer.open({
+               type: 2,
+               title: '添加新角色',
+               shadeClose: true,
+               shade: 0.8,
+               area: ['720px', '50%'],
+               content: '{:Url("admin/customssystem/declRoleAdd")}' //iframe的url
+           });
+       }) ;
+    });
+    function edit(id) {
+        parent.layer.open({
+            type: 2,
+            title: '添加新角色',
+            shadeClose: true,
+            shade: 0.8,
+            area: ['720px', '50%'],
+            content: '{:Url("admin/customssystem/roleEdit")}&id='+id //iframe的url
+        });
+        return false;
+        // admin/customssystem/roleEdit
+    }
+</script>
+</html>

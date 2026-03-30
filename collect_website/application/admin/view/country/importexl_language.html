@@ -1,0 +1,98 @@
+{include file="common/header_inner_new"}
+
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .tel,.email{display:none;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="hidden" name="pid" value="{$pid}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">代码模板</div>
+                            <div class="layui-input-block">
+                                <div class="layui-upload" id="contract_type" style="margin-top: 10px;">
+                                    <button type="button" class="layui-btn" id="temp_file-upload">上传模板</button>
+                                    <!--                                    <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">-->
+                                    <!--                                        预览图：-->
+                                    <!--                                        <div class="layui-upload-list" id="temp_file-upload-list">-->
+
+                                    <!--                                        </div>-->
+                                    <!--                                    </blockquote>-->
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;display:none;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+
+        form.on('submit(component-form-element)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            $.ajax({
+                url:"{:Url('admin/country/upload_code')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+        // 轮播图文件
+        upload.render({
+            elem: '#temp_file-upload'
+            ,url: '{:Url("admin/country/importexl_language")}'
+            ,accept: 'file'
+            ,data: { folder: 'code',pid:"{$pid}"}
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                layer.msg(res.msg,{time:3000},function(){
+                    if(res.code == 0)
+                    {
+                        // parent.location.reload();
+                    }
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>

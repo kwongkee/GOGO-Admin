@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{$title}</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <script src="__STATIC__/index/admin/js/jquery.min.js"></script>
+    <style type="text/css">
+        .clear{clear: both;height: 8px;}
+        .money{color: red;font-weight: bold;font-size: 15px;}
+        .laytable-cell-1-0{ width: 80px; }
+        .laytable-cell-1-2{width: 185px;}
+        .laytable-cell-1-amount{width: 165px;}
+        .laytable-cell-1-4{ width: auto; }
+
+        .laytable-cell-1-province{ width: 115px; }
+        .laytable-cell-1-city{ width: 80px; }
+        .laytable-cell-1-zone{ width: 80px; }
+        .fee{color: red;}
+        .uname:hover{
+            background: skyblue;
+            width:auto;
+        }
+        .table-b{
+            width: 100%;
+            /*margin: 21px auto 0;*/
+            border: 1px solid #1481c5;
+        }
+        .table-b thead tr th{
+            text-align: center;
+            color: #1481c5;
+            line-height: 24px;
+            border-bottom: 1px solid #1481c5;
+            font-size: 16px;
+            /*font-weight: normal;*/
+            padding: 10px 0;
+        }
+        .table-b tbody tr td{
+            text-align: center;
+            /*color: #1481c5;*/
+            line-height: 24px;
+            border-right: 1px solid #1481c5;
+            border-bottom: 1px solid #1481c5;
+            line-height: 24px;
+            padding: 5px 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        #pagesd{
+            width: 100%;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            /*border: 1px solid rebeccapurple;*/
+            margin-top: 8px;
+        }
+        #pagesd label{
+            width: 8%;
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 16px;
+            color: white;
+        }
+        #pagesd label:nth-child(1){
+            background: #de9a20;
+        }
+        #pagesd label:nth-child(2){
+            background: #1481c5;
+        }
+        .confirm{
+            display:inline-block;
+            width: 30%;
+            height: 30px;
+            line-height: 30px;
+            background: #1481c5;
+            color: white;
+        }
+        .confirmd{
+            color: #de9a20;
+        }
+        .confirmd:hover{
+            color: #1481c5;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" style="width:auto;float: left;margin:25px 15px;">
+    <div class="layui-table-box">
+
+        <div class="layui-table-header">
+            <table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+                <thead>
+                <tr>
+                    <th data-field="2" colspan="4"><div class="layui-table-cell laytable-cell-group" align="center"><span style="font-size: 14px;font-weight: bold;">{$title}</span></div></th>
+                </tr>
+                <tr>
+                    <th data-field="province"><div class="layui-table-cell laytable-cell-1-province"><span>对账日期</span></div></th>
+                    <th data-field="city"><div class="layui-table-cell laytable-cell-1-city"><span>对账状态</span></div></th>
+                    <th data-field="city"><div class="layui-table-cell laytable-cell-1-city"><span>所属商户</span></div></th>
+                    <th data-field="zone"><div class="layui-table-cell laytable-cell-1-zone"><span>对账操作</span></div></th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+
+
+        <div class="layui-table-body layui-table-main">
+            <table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+                <tbody>
+                {volist name="$data" id='vo' key='index'}
+                <tr data-index="">
+                    <td data-field="province"><div class="layui-table-cell laytable-cell-1-province">{$vo.accountDay}</div></td>
+
+                    <td data-field="city">
+                        <div class="layui-table-cell laytable-cell-1-city">{$status[$vo.c_status]}</div>
+                    </td>
+
+                    <td data-field="city">
+                        <div class="layui-table-cell laytable-cell-1-city uname">{$vo.user_name}</div>
+                    </td>
+
+                    <td data-field="zone">
+                        <div class="layui-table-cell laytable-cell-1-zone">
+                            <form class="layui-form">
+                                <a class="layui-btn-sm layui-btn" href="javascript:void(0);" onclick="Query({$vo.bill_id})" id="Query">查看</a>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {/volist}
+
+                </tbody>
+            </table>
+        </div>
+
+        <div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+
+    </div>
+
+</div>
+
+
+
+<!-- 数据显示 -->
+<div class="x-bodys" id="contents" style="display: block;width:65%;float:left;margin-top: 25px;"></div>
+
+<div class="x-bodys" id="sett" style="display: block;width:65%;float:left;margin-top: 25px;"></div>
+
+
+<div class="clear"></div>
+<script>
+    function Query(billid)
+    {
+        $.post("{:Url('Financed/getDays')}",{'bill_id':billid},function(res){
+            $('#contents').html(res);
+            // 获取周期结算账单
+            getSetts(billid);
+        })
+    }
+
+    function getAdditional() {
+
+    }
+
+    // 获取其他费用，周期结算
+    function getSetts(billid) {
+        $.post("{:Url('Financed/getSetts')}",{'bill_id':billid},function(res) {
+            $('#sett').html(res)
+        })
+    }
+
+    // 分页
+    function prevs(urls) {
+        if(urls !='') {
+            $.get(urls,{},function(res) {
+                $('#contents').html(res);
+            })
+        }
+    }
+
+    // 数据导出
+    function exports(batch_num)
+    {
+        $.get("{:Url('Financed/Dayexports')}",{'batch_num':batch_num},function(res){
+            console.log(res);
+        })
+    }
+
+</script>
+
+<script>
+    layui.use(['layer','form','jquery','laypage','table','flow'],function() {
+        var $ = layui.jquery, form = layui.form, layer = layui.layer, laypage = layui.laypage, table = layui.table,
+            element = layui.element, flow = layui.flow;
+
+        //获取对账文件  对账 2018-07-11
+        $(document).on('click', '#checkOk', function (vals) {
+
+
+        });
+    });
+
+</script>
+</body>
+</html>

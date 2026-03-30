@@ -1,0 +1,151 @@
+
+{template 'web/link'}
+<style>
+    .layui-table thead tr{
+        background-color:#ecf6fc;
+    }
+    .layui-table thead tr th{
+        color: #1b7ab6;
+    }
+    .layui-input-block {
+        margin-left: 0;
+        min-height: 5px;
+    }
+    hr{
+        margin: 41px 0 0;
+    }
+    .pagination{
+        margin: 10px 0px;display: inline-block;
+        padding-left: 0px;
+        border-radius: 4px;
+    }
+
+    .pagination>li:first-child>a,.pagination>li:first-child>span
+    {
+        margin-left: 0px;border-top-left-radius: 4px;border-bottom-left-radius: 4px;
+    }
+    .pagination>li>a,.pagination>li>span
+    {
+        background-color: #FFF;border: 1px solid #DDD;color: inherit;float: left;line-height: 1.42857;
+        margin-left: 1px;padding: 4px 10px;position: relative;text-decoration: none;
+    }
+    .pagination>.active>a,.pagination>.active>span,.pagination>.active>a:hover,.pagination>.active>span:hover,.pagination>.active>a:focus,.pagination>.active>span:focus
+    {
+        background-color: #1ab394;border-color: #1ab394;color: #fff;cursor: default;z-index: 2;
+    }
+    .pagination>li{display: inherit;text-align: -webkit-match-parent;float: left;width: auto;text-align: center;font-size: 14px;}
+
+    .shopUrl{
+        width: 100%;
+        height: 34px;
+        border: 1px solid skyblue;
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
+        padding: 0px 5px 0px 5px;
+    }
+</style>
+<!-- 内容主体区域 -->
+<div style="padding: 15px;">
+    <div class="laytitle"><span>商户实体店铺列表</span></div>
+    <div class="layback" style="margin-right: 18px;"><a href="javascript:void(0);" onclick="go();">返回上一页</a></div>
+
+    <hr class="layui-bg-blue">
+
+    <div class="layui-form">
+        <table class="layui-table">
+            <colgroup>
+                <col width="150">
+                <col width="150">
+                <col width="150">
+                <col width="150">
+                <col width="150">
+                <col width="150">
+            </colgroup>
+            <thead>
+            <tr>
+                <th>商铺名称</th>
+                <th>所在国家</th>
+                <th>省市州</th>
+                <th>城市</th>
+                <th>区域</th>
+                <th>详细地址</th>
+                <th>添加时间</th>
+            </tr>
+            </thead>
+            <tbody>
+            {loop $shops $inx $itm}
+            <tr>
+                <td>{$itm['shopName']}</td>
+                <td>{$itm['country']}</td>
+                <td>{$itm['province']}</td>
+                <td>{$itm['city']}</td>
+                <td>{$itm['area']}</td>
+                <td>{$itm['address']}</td>
+                <td>{php echo date('Y-m-d H:i',$itm['c_time'])}</td>
+            </tr>
+            {/loop}
+            </tbody>
+        </table>
+
+
+        <div  style="text-align: center;" id="pager">
+            {$pager}
+        </div>
+
+    </div>
+</div>
+
+<script>
+    layui.use('layer', function(){ //独立版的layer无需执行这一句
+        var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
+    });
+
+    // 查看实体店铺
+    function showShop(uid) {
+        var urls = "{php echo WebUrl('mer_chats',array('m' => 'mer_chats','do'=>'index', 'p'=>'showShop'))}&uid="+uid;
+        window.location.href = urls;
+    }
+
+    // 显示大图
+    function showImg(obj) {
+        var src = $(obj).attr('src');
+
+        if(src != '') {
+            layer.open({
+                type: 1,
+                title:'图片信息',
+                closeBtn:2,
+                shadeClose:true,
+                skin: 'layui-layer-lan', //加上边框
+                area: ['520px', '540px'], //宽高
+                content: '<img src="'+src+'" width="500px" alt="">'
+            });
+        }
+    }
+
+
+    function go(){
+        window.history.go(-1);
+    }
+
+</script>
+
+
+<script>
+    layui.use(['form', 'layedit', 'laydate'], function(){
+        var form = layui.form
+            ,layer = layui.layer
+            ,layedit = layui.layedit
+            ,laydate = layui.laydate;
+
+        //表单赋值
+        layui.$('#LAY-component-form-setval').on('click', function(){
+            form.val('example', {
+                "like[checkbox]": true //复选框选中状态
+            });
+        });
+
+    });
+
+</script>

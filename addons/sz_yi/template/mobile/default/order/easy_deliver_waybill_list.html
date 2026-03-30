@@ -1,0 +1,78 @@
+{template "common/easy_delivery_header"}
+<body>
+<link rel="stylesheet" href="../addons/sz_yi/static/css/waybill.css">
+<style>
+    body {
+        font-size: 14px;
+        font-family: "微软雅黑"
+    }
+    a {
+        color: #333;
+        text-decoration: none;
+    }
+     .more {
+        overflow: hidden;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .more a {
+        display: block;
+        width: 80px;
+        padding: 8px 0;
+        color: #fff;
+        margin: 0 auto;
+        background: #333;
+        text-align: center;
+        border-radius: 3px;
+    }
+
+     .more a:hover {
+        text-decoration: none;
+        background: red;
+        color: #fff;
+    }
+</style>
+<header>
+    <div class="logo"><img src="../addons/sz_yi/static/images/logo.png" alt=""></div>
+    <div class="plane"><img src="../addons/sz_yi/static/images/plane.png" alt=""></div>
+</header>
+<div class="warp">
+    <div class="content">
+        <div class="waylist">
+            <ul id="list">
+                {loop $row $item}
+                <a href=""><li>快递单号：{$item['expresssn']} <img src="../addons/sz_yi/static/images/row_right.png" alt=""></li></a>
+                {/loop}
+            </ul>
+        </div>
+    </div>
+    <div class="more"><a href="javascript:;" onClick="app.loadMore();">加载更多</a></div>
+</div>
+{template "common/easy_deliver_footer"}
+</body>
+<script type="text/javascript" src="../addons/sz_yi/static/js/framework7.bundle.min.js"></script>
+<script>
+    var frame = new Framework7();
+    var $$ = Dom7;
+    var app={
+        page:2,
+        loadMore:function () {
+            $.DialogByZ.Alert({Title: "", Content: "<img style='width: 100%;' src='../addons/sz_yi/static/images/bS4jUCz.gif'>",BtnL:''});
+            frame.request.get("{php echo $this->createMobileUrl('order/easy_deliver_waybill_list')}",{'page':this.page},(data)=>{
+               console.dir(data);
+               $.DialogByZ.Close();
+               data = JSON.parse(data);
+               var j ='';
+               for (var i=0;i<data.length;i++){
+                   j+='<a href=""><li>快递单号：'+data.result[i].expresssn+'<img src="../addons/sz_yi/static/images/row_right.png" alt=""></li></a>';
+               }
+               $$('#list').append(j);
+               this.page+=1;
+
+            });
+        }
+
+    }
+</script>
+</html>

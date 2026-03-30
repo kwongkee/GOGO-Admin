@@ -1,0 +1,126 @@
+{template 'common/header'}
+{php load()->func('tpl')}
+<ul class="nav nav-tabs">
+    <li class="active"><a href="{php echo $this->createWebUrl('live', array('op' => 'list'))}">直播列表</a></li>
+    <li><a href="{php echo $this->createWebUrl('live', array('op' => 'post'))}">创建直播</a></li>
+</ul>
+<div class="main">
+    <div class="panel panel-info">
+        <div class="panel-heading">筛选</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get" class="form-inline ng-pristine ng-valid" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="jer_live" />
+                <input type="hidden" name="do" value="live" />
+                <input type="hidden" name="op" value="list" />
+                <input type="hidden" name="is" value="1">
+
+                <div class="form-group col-md-3">
+                    <label class="control-label">名称： </label>
+                    <input type="text" class="form-control" name="name" value="{$name}">
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label class="control-label">状态： </label>
+                    <select class="form-control" name="status">
+                        <option value="">所有</option>
+                        <option value="0" {if $status == '0'} selected="selected"{/if}>等待开始</option>
+                        <option value="1" {if $status == '1'} selected="selected"{/if}>直播中</option>
+                        <option value="2" {if $status == '2'} selected="selected"{/if}>直播结束</option>
+                    </select>
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label class="control-label">创建时间： </label>
+                    {php load()->func('tpl');}
+                    {php echo tpl_form_field_daterange('time', array('starttime'=>date('Y-m-d', $starttime),'endtime'=>date('Y-m-d', $endtime)));}
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label"></label>
+                    <button class="btn btn-default" data-original-title="" title=""><i class="fa fa-search"></i>搜索</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="panel panel-info">
+        <div class="panel-heading"><span class="pull-right">总数：<?php echo $total;?></span>
+            <span class="brand">列表</span></div>
+        <div class="panel-body table-responsive">
+            <form action="" method="post" onsubmit="">
+                <div class="sub-content">
+                    <table class="table table-hover">
+                        <thead class="navbar-inner">
+                            <tr>
+                                <th class="row-hover">直播名称</th>
+                                <th class="row-hover" width="100">信息数</th>
+                                <th class="row-hover" width="100">点赞数</th>
+                                <th class="row-hover" width="100">评论数</th>
+                                <th class="row-hover" width="100">查看数</th>
+                                <th class="row-hover" width="200">创建时间</th>
+                                <th class="row-hover" width="80">状态</th>
+                                <th class="row-hover" width="150">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loop $list $v}
+                            <tr>
+								<td>
+                                    <a href="{php echo murl('entry', array('m' => 'jer_live', 'do' => 'index'), true, true).'#!/message?lid='.$v['id']}" target="_blank">{$v['name']}</a>
+                                </td>
+                                <td>
+                                    {$v['message_count']}
+                                </td>
+                                <td>
+                                    {$v['zan_count']}
+                                </td>
+                                <td>
+                                    {if $v['live_type']}
+                                        {$v['comment_item_count']}
+                                    {else}
+                                        {$v['comment_count']}
+                                    {/if}
+                                </td>
+                                <td>
+                                    {$v['view']}
+                                </td>
+                                <td>
+                                    {php echo date('Y-m-d H:i:s',$v['createtime'])}
+                                </td>
+                                <td>
+                                    {if $v['status'] == '0'}
+                                    <span class="label label-info">等待开始</span>
+                                    {elseif $v['status'] == '1'}
+                                    <span class="label label-success">直播中</span>
+                                    {else}
+                                    <span class="label label-default">直播结束</span>
+                                    {/if}
+                                </td>
+								<td>
+                                    <a href="{php echo $this->createWebUrl('live',array('op'=>'put', 'ac'=>'list', 'lid' => $v['id']));}" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="bottom" title="信息列表"><i class="fa fa-align-justify"></i></a>
+                                    <a href="{php echo $this->createWebUrl('live',array('op'=>'post','id' => $v['id']));}" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="bottom" title="编辑"><i class="fa fa-edit"></i></a>
+
+                                    <a href="{php echo $this->createWebUrl('live',array('op'=>'del','id' => $v['id']));}" onclick="return confirm('确定删除信息吗?')" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="bottom" title="删除"><i class="fa fa-times"></i></a>
+                                </td>
+                            </tr>
+                            {/loop}
+                        </tbody>
+                        <tr>
+                            <td colspan="8">{$pager}</td>
+                        </tr>
+                    </table>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+	require(['bootstrap'],function(b){
+		b('.btn').tooltip();
+	});
+
+
+</script>
+{template 'common/footer'}

@@ -1,0 +1,100 @@
+{include file="public/header"}
+<body style="padding: 10px;">
+
+<form action="" class="layui-form">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">HS编码</label>
+        <div class="layui-input-inline">
+            <input type="text" class="layui-input" required  value="{$data['hscode']}" name="hscode">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">关税</label>
+        <div class="layui-input-inline">
+            <input type="text" class="layui-input" required value="{$data['tariff']}" name="tariff">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">关税优惠</label>
+        <div class="layui-input-inline">
+            <input type="text" class="layui-input" required value="{$data['tariffdis']}" name="tariffdis">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">增值税</label>
+        <div class="layui-input-inline">
+            <input type="text" class="layui-input" required value="{$data['addtax']}" name="addtax">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">增值税优惠</label>
+        <div class="layui-input-inline">
+            <input type="text" class="layui-input" required value="{$data['addtaxdis']}" name="addtaxdis">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">消费税</label>
+        <div class="layui-input-inline">
+            <input type="text" class="layui-input" required value="{$data['excisetax']}" name="excisetax">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">消费税优惠</label>
+        <div class="layui-input-inline">
+            <input type="text" class="layui-input" required value="{$data['excisetaxdis']}" name="excisetaxdis">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <input type="hidden" name="id" value="{$data['id']}">
+            <button class="layui-btn layui-btn-xm layui-btn-normal" lay-submit lay-filter="formDe">保存编辑</button>
+        </div>
+    </div>
+
+</form>
+
+
+</body>
+<script type="text/javascript">
+    layui.use(['layer','form'],function(){
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+
+        //监听提交
+        form.on('submit(formDe)', function(data) {
+
+            var obj = data.field;
+            console.log(data.field);
+
+            // 请求处理数据
+            $.post("{:Url('admin/taxation/edits')}",obj,function(res){
+                console.log(res);
+                if(res.code == 1) {
+
+                    layer.msg(res.msg,{icon:1});
+                    setTimeout(function(){
+                        window.location.reload = (parent.window.location.reload());
+                    },2000);
+
+                } else {
+                    layer.msg(res.msg,{icon:2});
+                }
+
+            });
+
+            return false;
+        });
+
+    })
+
+</script>
+</html>

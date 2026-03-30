@@ -1,0 +1,194 @@
+{template 'header'}
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<button class="btn btn-warning btn-sm" onclick="history.back();">返回</button>
+			<button class="btn btn-info btn-sm" onclick="window.location.href=''">刷新</button>
+			&nbsp;&nbsp;
+			<label>房间信息</label>
+		</div>
+	</div>
+	<br>
+	<br>
+	<div class="row">
+		<div class="col-sm-6">
+			<div class="input-group input-group-sm">
+				<span class='input-group-addon'>名称</span>
+				<input type="text" class="form-control" id="room_name" value="{$info['room_name']}">
+			</div>
+			<br>
+			<div class="input-group input-group-sm">
+				<span class='input-group-addon'>描述</span>
+				<input type="text" class="form-control" id="room_desc" value="{$info['room_desc']}">
+			</div>
+			<br>
+			<div class="input-group input-group-sm">
+				<span class='input-group-addon'>创建者</span>
+				<input type="text" class="form-control" value="{$info['creator']}" disabled>
+			</div>
+			<br>
+			<div class="input-group input-group-sm">
+				<span class='input-group-addon'>排序</span>
+				<input type="text" class="form-control" id="sort_id" value="{$info['sort_id']}">
+			</div>
+			<br>
+			<button class="btn btn-success form-control" onclick="save()">保存</button>
+		</div>
+		<div class="col-sm-6">
+			<script type="text/javascript">
+			function showImageDialog(elm, opts, options) {
+				require(["util"], function(util){
+					var btn = $(elm);
+					var ipt = btn.parent().prev();
+					var val = ipt.val();
+					var img = ipt.parent().next().children();
+					options = {'width':400,'extras':{'text':'ng-model=\'entry.thumb\''},'global':false,'class_extra':'','direct':true,'multiple':false};
+					util.image(val, function(url){
+						if(url.url){
+							if(img.length > 0){
+								img.get(0).src = url.url;
+							}
+							ipt.val(url.attachment);
+							ipt.attr("filename",url.filename);
+							ipt.attr("url",url.url);
+						}
+						if(url.media_id){
+							if(img.length > 0){
+								img.get(0).src = "";
+							}
+							ipt.val(url.media_id);
+						}
+					}, null, options);
+				});
+			}
+			function deleteImage(elm){
+				require(["jquery"], function($){
+					$(elm).prev().attr("src", "./resource/images/nopic.jpg");
+					$(elm).parent().prev().find("input").val("");
+				});
+			}
+		</script>
+			<div class="input-group ">
+				<input type="text" name="thumb" id='room_logo' class="form-control ng-pristine ng-untouched ng-valid" autocomplete="off" value="{$info['room_logo']}" disabled="disabled">
+				<span class="input-group-btn">
+					<button class="btn btn-default" type="button" onclick="showImageDialog(this);">选择图片</button>
+				</span>
+			</div>
+			<div class="input-group " style="margin-top:.5em;">
+				<img src="{media $info['room_logo']}" onerror="this.src='./resource/images/nopic.jpg'; this.title='图片未找到.'" class="img-responsive img-thumbnail" width="150"> <em class="close" style="position:absolute; top: 0px; right: -14px;" title="删除这张图片" onclick="deleteImage(this)">×</em>
+			</div>
+			<p class="help-block">图片最佳尺寸200*136，其他尺寸可能导致图片变形</p>
+		</div>
+	</div>
+	<br>
+	<br>
+	<div class="row">
+		<div class="col-sm-6">
+			<label>删除操作-慎用</label>
+			<button class="btn btn-danger form-control" onclick="doDelete()">删除该聊天室</button>
+			<br>
+		</div>
+	</div>
+	<br>
+	<br>
+	<div class="row">
+		<div class="col-sm-12">
+			<label>最新300条聊天记录</label>
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th width="50">#</th>
+						<th width="100">头像</th>
+						<th>昵称</th>
+						<th>内容</th>
+						<th>时间</th>
+					</tr>
+				</thead>
+				<tbody>
+				{loop $chatlist $key $item}
+				<tr>
+					<td>
+						{php echo $key+1}
+					</td>
+					<td>
+						<img style="width:48px;height:48px;" src="{$item['userinfo']['headimgurl']}">
+					</td>
+					<td>
+						{$item['userinfo']['nickname']}
+					</td>
+					<td>
+						{if $item['voice_info']['voice_path']}
+						<a href="{$item['voice_info']['voice_path']}">下载语音</a>
+						{else}
+						{$item['content']}
+						{/if}
+					</td>
+					<td>{$item['add_time']}</td>
+				</tr>
+				{/loop}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	function save() {
+		var room_id = "{php echo $info['id']}";
+		var room_name = $("#room_name").val();
+		var room_desc = $("#room_desc").val();
+		var room_logo = $("#room_logo").val();
+		var sort_id = $("#sort_id").val();
+
+		if(!room_name || !room_desc || !room_logo)
+		{
+			alert("文字+图片信息必须完备");
+			return;
+		}
+
+		$.ajax({
+			type:'post',
+			data:{
+				room_id:room_id,
+				room_name:room_name,
+				room_desc:room_desc,
+				room_logo:room_logo,
+				sort_id:sort_id
+			},
+			url:"{php echo $this->createWebUrl('chatroomupdate')}",
+			success:function(d,s) {
+				if(d.res == '100') {
+					alert("保存成功");
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+	}
+
+	function doDelete() {
+		var room_id = "{php echo $info['id']}";
+
+		if(!confirm('确定要删除聊天室？删除后无法恢复')) {
+			return false;
+		}
+		if(!confirm('再次确定删除')) {
+			return false;
+		}
+
+		$.ajax({
+			type:'post',
+			data:{
+				room_id:room_id
+			},
+			url:"{php echo $this->createWebUrl('chatroomdelete')}",
+			success:function(d,s) {
+				if(d.res == '100') {
+					alert("删除成功");
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+	}
+</script>
+{template 'footer'}

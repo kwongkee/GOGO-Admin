@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+</head>
+<style>
+    .layui-form{padding:10px;box-sizing: border-box;}
+</style>
+<body class="gray-bg">
+<form class="layui-form" lay-filter="component-form-element1">
+    <div class="layui-form-item">
+        <label class="layui-form-label">预报编号</label>
+        <div class="layui-input-block">
+            <input type="text" name="pre_batch_num" value="" placeholder="请输入客户的预报编号" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="component-form-element">立即关联</button>
+        </div>
+    </div>
+</form>
+</body>
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script type="text/javascript">
+    $(function(){
+        layui.use(['layer','form','laydate'],function(){
+            var laydate = layui.laydate,
+                layer = layui.layer,
+                form  = layui.form,
+                $ = layui.jquery;
+            form.render(null, 'component-form-element1');
+
+            form.on('submit(component-form-element)', function(data){
+                if(data.field['pre_batch_num']==''){
+                    layer.msg('请输入客户的预报编号');
+                    return false;
+                }
+
+                $.ajax({
+                    url:"{:Url('admin/predeclare/declare_t_connect')}",
+                    type:'POST',
+                    data:data.field,
+                    dataType:'JSON',
+                    success:function(res){
+                        layer.msg(res.msg,{time:3000}, function () {
+                            if(res.status == 1)
+                            {
+                                layer.closeAll();
+                                parent.window.location.reload();
+                            }
+                        });
+                    },
+                    error:function (data) {
+                        layer.msg('系统错误',{time:2000});
+                    }
+                });
+                return false;
+            });
+        });
+
+    });
+</script>
+</html>

@@ -1,0 +1,161 @@
+
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
+	<meta name="format-detection" content="telephone=no" />
+	<title>VIP{$titelname} - {$config['webtitle']}</title>
+	<link href="{$templateurl}css/foxui.min.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body ontouchstart>
+
+<div class='fui-page-group '>
+	<style>
+			
+	.fui-according-header{
+		font-size: .7rem;
+	}
+	.fui-according-header .text{
+		color: #666666;
+		font-size: .65rem;
+		text-align: right;
+	}
+	.fui-cell-group.recharge{
+		padding:.6rem 0 ;
+	}
+	.fui-cell-group.recharge .fui-cell{
+		padding:0;
+		font-size: .6rem;
+		height:1rem;
+		line-height:1rem;
+	}
+	.fui-cell-group.recharge .fui-cell .fui-cell-text{
+		color: #666;
+	}
+	.fui-cell-group.recharge .fui-cell:before{display: none}
+	.fui-cell-group.recharge:before{
+		content: " ";
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		height: 1px;
+		border-top: 1px solid #ebebeb;
+		color: #D9D9D9;
+		-webkit-transform-origin: 0 0;
+		-ms-transform-origin: 0 0;
+		transform-origin: 0 0;
+		-webkit-transform: scaleY(0.5);
+		-ms-transform: scaleY(0.5);
+		transform: scaleY(0.5);
+	}
+	.fui-according.expanded .fui-according-header .text{
+		filter:alpha(opacity=0);
+		-moz-opacity:0;
+		-khtml-opacity: 0;
+		opacity: 0;
+	}
+	.fui-cell-group .fui-cell .fui-cell-icon {
+		width: auto;
+		margin-right: .75rem;
+	}
+	.fui-cell-group .fui-cell .fui-cell-icon img {
+		width: 1.7rem;
+		height: 1.7rem;
+	}
+	.fui-cell-info .title {
+		position: relative;
+		font-size: 0.7rem;
+		color: #000;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		height: 1rem;
+		line-height: 1rem;
+	}
+	.fui-cell.applyradio{
+		height: 3.25rem;padding: .4rem .6rem;
+	}
+	.fui-cell.applyradio .fui-cell-info{
+		display: -webkit-box;
+		display: -webkit-flex;
+		display: -ms-flexbox;
+		display: flex;
+		height: 100%;
+		-webkit-box-orient: vertical;
+		-webkit-flex-direction: column;
+		-ms-flex-direction: column;
+		flex-direction: column;
+		-webkit-box-pack: justify;
+		-ms-flex-pack: justify;
+		-webkit-justify-content: space-around;
+		justify-content: space-around;
+	}
+</style>
+<div class='fui-page-group '>
+
+<div class='fui-page  fui-page-current order-pay-page'>
+    <div class="fui-header">
+        <div class="fui-header-left">
+            <a class="back" href="{$returnurl}"></a>
+        </div>
+        <div class="title" style='margin-right:-2rem;'>订单填写</div>
+    </div>
+    <div class='fui-content '>
+        <div class="fui-cell-group" style="margin-top: 0">
+			<script>
+				function jsMoney(){
+					var price = Number(document.getElementById("price").value);
+					var numberd = Number(document.getElementById("numberd").value);
+					document.getElementById("total").innerHTML = price*numberd;
+				}
+				function checkinfo() {
+					var numberd = Number(document.getElementById("numberd").value);
+					if (numberd < 1){
+						alert("抱歉！购买数量不能小于1！");
+						document.getElementById("numberd").focus();
+						return false; 
+					}
+				}
+			</script>
+			<form method="post" action="{$payurl}" class="form" onsubmit="return checkinfo(this);">
+			<input name="token" type="hidden" value="{$_W['token']}" />
+			<input type="hidden" name="type" value="vip" />
+			<input type="hidden" name="id" value="{$id}" />
+			<input type="hidden" id="price" value="{$srdb['level_price']}">
+            <div class="fui-cell">
+                <div class="fui-cell-label">名称信息</div>
+                <div class="fui-cell-info"></div>
+                <div class="fui-cell-remark noremark">{$titelname} {$srdb[level_name]} <span>{$srdb['level_validity']}</span> 天  <span>{$srdb['level_price']}</span> 元</div>
+            </div>
+			
+			<div class="fui-cell">
+                <div class="fui-cell-label">购买数量</div>
+                <div class="fui-cell-info"></div>
+                <div class="fui-cell-remark noremark"><input type="text" id="numberd" name="numberd" value="1" class='fui-input' onKeyUp="value=value.replace(/[^\d]/g,'');jsMoney();" style="text-align:center;">
+                </div>
+            </div>
+			
+            <div class="fui-cell">
+                <div class="fui-cell-label">支付金额</div>
+                <div class="fui-cell-info"></div>
+                <div class="fui-cell-remark noremark"><span class='text-danger bigprice'>￥<span id="total">{$srdb['level_price']}</span></span>
+                </div>
+            </div>
+        </div>
+
+		<input type="submit" name="dosubmit" value="确认支付" class='btn btn-danger mtop  block btn-pay' style="width:93%;">
+       </form>
+    </div>
+   
+</div>
+</div> 
+
+</div>
+
+	
+</body>
+</html>
+

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>个人行邮税号管理</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+</head>
+<body>
+<div class="layui-btn-group" style="margin-top: 12px;">
+    <button style="background-color:#23b7e5;" class="layui-btn" id="btn-add" onclick="addMenu();">添加数据</button>
+</div>
+
+<table id="auth-table" class="layui-table" lay-filter="auth-table"></table>
+
+<!-- 操作列 -->
+<script type="text/html" id="auth-state">
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="add" onclick="addMenu('{{d.id}}');">增加</a>
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit" onclick="edit('{{d.id}}');">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" onclick="del('{{d.id}}')">删除</a>
+</script>
+
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+<script>
+    layui.config({
+        base: './static/hadmin/assets/module/'
+    }).extend({
+        treetable: 'treetable-lay/treetable'
+    }).use(['table', 'treetable'], function () {
+        var $ = layui.jquery;
+        var table = layui.table;
+        var treetable = layui.treetable;
+
+        // 渲染表格
+        layer.load(2);
+        treetable.render({
+            treeColIndex: 1,
+            treeSpid: 0,
+            treeIdName: 'id',
+            treePidName: 'pid',
+            elem: '#auth-table',
+            url: '{:Url("admin/PostalTaxNumber/getpostal_list")}',
+            page: true,
+            treeDefaultClose:true,
+            cellMinWidth: 200,
+            cols: [[
+                {type: 'numbers', width:100, title: '序号'},
+                {field: 'code_name',width:400, title: '品名及规格'},
+                {field: 'code_value', width:120, title: '税号'},
+                {field: 'unit', width:120, title: '单位'},
+                {field:'rate', width:120, title:'税率'},
+                {templet: '#auth-state', width:250, align: 'center', title: '操作'}
+            ]],
+            done: function () {
+                layer.closeAll('loading');
+            }
+        });
+    });
+    function addMenu(pid=0) {
+        layer.open({
+            type: 2,
+            shadeClose:true,
+            cancel:function(){
+                //location.reload();
+            },
+            title:'添加税号',
+            area:['803px','530px'],
+            content: '{:Url("admin/PostalTaxNumber/postal_add")}&pid='+pid //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+        });
+        return false;
+    }
+
+    function edit(id=0) {
+        layer.open({
+            type: 2,
+            shadeClose:true,
+            cancel:function(){
+                //location.reload();
+            },
+            title:'添加菜单',
+            area:['803px','530px'],
+            content: '{:Url("admin/PostalTaxNumber/postal_edit")}&id='+id //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+        });
+        return false;
+    }
+
+    function del(id) {
+        $.ajax({
+            url:"{:Url('admin/PostalTaxNumber/postal_del')}",
+            type:"GET",
+            dataType:"json",
+            data:{id:id},
+            success:function (res) {
+                layer.msg(res.msg);
+                if (res.code==0){
+                    setTimeout(function () {
+                        location.reload();
+                    },2000);
+                }
+            },
+            error:function (xhr) {
+                layer.msg('连接服务器错误！');
+            }
+        });
+        return false;
+    }
+</script>
+</body>
+</html>

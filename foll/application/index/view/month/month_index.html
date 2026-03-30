@@ -1,0 +1,59 @@
+{include file="common/header"}
+<body>
+<div class="x-nav">
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<div class="x-body">
+    <table class="layui-table" lay-size="sm">
+        <thead>
+        <th lay-data="{field:'center', width:80}">方案名称</th>
+        <th lay-data="{align:'center',width:80}" >月卡名称</th>
+        <th lay-data="{field:'center', width:100}" >方案期限</th>
+        <th lay-data="{field:'center', width:100}" >发行申请期</th>
+        <th lay-data="{field:'center', width:100}">受理审核期</th>
+        <th lay-data="{field:'center', width:100}">抽签缴费期</th>
+        <th lay-data="{field:'center', width:80}">发行卡数</th>
+        <th lay-data="{field:'center', width:80}">候补卡数</th>
+        <th lay-data="{field:'center', width:100}">购买费用</th>
+        <th lay-data="{field:'center', width:100}">生效注销期</th>
+        <th lay-data="{field:'center', width:50}">失效状态</th>
+        <th lay-data="{field:'center', width:50}">审核状态</th>
+        <th lay-data="{field:'center', width:50}">操作</th>
+        </thead>
+        <tbody>
+        {volist name='list' id="item" empty='空数据'}
+        <tr>
+            <td>{$item.scheme_name}</td>
+            <td>{$item.month_name}</td>
+            <td>{$item.total_times}/{$item.total_timeer}</td>
+            <td>{$item.apply_start}/{$item.apply_end}</td>
+            <td>{$item.accept_review}/{$item.accept_review2}</td>
+            <td>{$item.lottery_pay}/{$item.lottery_pay2}</td>
+            <td>{$item.month_num}</td>
+            <td>{$item.bup_num}</td>
+            <td>{$item.month_money}</td>
+            <td>{$item.expir_start}/{$item.expir_end}</td>
+            <td>{$item.month_status}</td>
+            <td>{$item.is_check}</td>
+            <td>
+                <div class="layui-btn-group">
+                    {if $item['month_status'] == '有效'}
+                    <a class="layui-btn layui-btn-danger layui-btn-sm" href="{:Url('month_card/month_status')}&id={$item.id}&status=0" class="layui-btn layui-btn-xs">
+                        <i class="layui-icon">禁用</i>
+                    </a>
+                    {else}
+                    <a class="layui-btn layui-btn-sm" href="{:Url('month_card/month_status')}&id={$item.id}&status=1" class="layui-btn layui-btn-xs">
+                        <i class="layui-icon">启用</i>
+                    </a>
+                    {/if}
+                </div>
+            </td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+    <div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+</div>
+</body>
+</html>

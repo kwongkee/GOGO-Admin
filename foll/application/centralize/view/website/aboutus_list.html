@@ -1,0 +1,76 @@
+{include file="public/header"}
+<style>
+
+</style>
+
+<body style="padding:15px;box-sizing: border-box;">
+<form class="layui-form" action="">
+    <input type="hidden" name="id" value="{$id}">
+    <input type="hidden" name="aid" value="{$data['id']}">
+    <div class="layui-form-item">
+        <label class="layui-form-label">选择菜单</label>
+        <div class="layui-input-block">
+            <select name="menu_id" id="menu_id" lay-search>
+                <option value="">请选择菜单</option>
+                {volist name="menu" id="vo"}
+                <option value="{$vo.id}" {if $vo.id==$data['menu_id']}selected{/if}>{$vo.title}</option>
+                {/volist}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    //Demo
+    layui.use(['layer','form','laydate','upload','colorpicker'], function(){
+        var laydate = layui.laydate;
+        var layer = layui.layer;
+        var form  = layui.form;
+        var $ = layui.jquery;
+        var upload = layui.upload;
+        var colorpicker = layui.colorpicker;
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            $.ajax({
+                url:"{:Url('centralize/website/aboutus_list')}",
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (res) {
+                    layer.msg(res.msg);
+                    if(res.code==0){
+                        setTimeout(function () {
+                            window.location.reload();
+                        },2000);
+                    }
+
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            return false;
+        });
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+</script>
+</body>
+</html>

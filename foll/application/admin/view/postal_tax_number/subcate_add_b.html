@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>种类添加</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+</head>
+<body>
+<form class="layui-form" action="">
+    <input type="hidden" name="cate_id" value="{$cate_info['id']}">
+    <div class="layui-form-item">
+        <label class="layui-form-label">类别名称</label>
+        <div class="layui-input-block">
+            <input type="text" value="{$cate_info['name']}" disabled autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">规则名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="name" required  lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">限制数量</label>
+        <div class="layui-input-block">
+            <input type="number" name="max_num" value="0" placeholder="请输入限制数量" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">限制重量</label>
+        <div class="layui-input-block">
+            <input type="number" name="max_weight" value="0" placeholder="请输入限制重量" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">匹配关键词(请用,分隔)</label>
+        <div class="layui-input-block">
+            <textarea name="keywords" placeholder="匹配关键词(请用,分隔)" cols="30" rows="10" style="width:98%;"></textarea>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">涉及税号</label>
+        <div class="layui-input-block">
+            <div id="numbers" class="xm-select-demo" style="width: 98%;"></div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+        </div>
+    </div>
+</form>
+
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/layui/lay/modules/xm-select.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+
+<script>
+    //Demo
+    layui.use('form', function(){
+        var form = layui.form;
+
+        var demo1 = xmSelect.render({
+            el: '#numbers',
+            language: 'zn',
+            paging: true,
+            pageSize: 10,
+            size: 'mini',
+            filterable: true,
+            autoRow: true,
+            data: {$numbers},
+            name: 'numbers',
+            tips: '选择涉及的税号',
+        })
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            $.ajax({
+                url:"{:Url('admin/PostalTaxNumber/subcate_add')}",
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (res) {
+                    layer.msg(res.msg, {
+                        icon: 1,
+                        time: 2000
+                    }, function(){
+                        parent.window.location.reload();
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                    });
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            // admin/customssystem/declMenuCreate
+            return false;
+        });
+    });
+</script>
+</html>

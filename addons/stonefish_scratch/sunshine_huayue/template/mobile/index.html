@@ -1,0 +1,453 @@
+{template 'header'}
+{template 'wx_gps'}
+<link rel="stylesheet" href="{$_W['siteroot']}addons/sunshine_huayue/common/index/css/topscreen_v4.css" />
+<link rel="stylesheet" href="{$_W['siteroot']}addons/sunshine_huayue/common/index/css/index_v7.css" />
+<link rel="stylesheet" href="{$_W['siteroot']}addons/sunshine_huayue/common/index/css/welcome.css" />
+<link rel="stylesheet" href="{$_W['siteroot']}addons/sunshine_huayue/common/index/css/growth_dialog.css" />
+<!-- <link rel="stylesheet" href="{$_W['siteroot']}addons/sunshine_huayue/common/index/css/snow.css" /> -->
+
+<div class="vipzone-wrapper">
+    <header style="background-image: url({$_W['siteroot']}addons/sunshine_huayue/common/index/img/banner_christmas.jpg)" class="header">
+        <!-- <div id="snowContainer">
+        </div> -->
+       <h2 class="name" {if $this->vip }style="color:#ffc723"{/if} onclick="window.location.href='{php echo $this->createMobileUrl('usercenter')}'">{$userinfo['nickname']}</h2>
+        <div class="info">
+            <div class="date">
+                <p style="color:#ffc723">
+                    {if !$userinfo['sign']}暂无签名档{else}{$userinfo['sign']}{/if}
+                </p>
+            </div>
+        </div>
+         <div class="level">
+            <?php
+            if ($growth_level['king']) 
+            {
+                for($i = 0;$i<$growth_level['king'] ;$i++)
+                {
+                    ?>
+                    <span class="ui-icon-qqlevel ui-icon-qqlevel-king"></span>
+                    <?php
+                }
+            }
+            if ($growth_level['sun']) 
+            {
+                for($i = 0;$i<$growth_level['sun'] ;$i++)
+                {
+                     ?>
+                    <span class="ui-icon-qqlevel ui-icon-qqlevel-sun"></span>
+                    <?php
+                }
+            }
+            if ($growth_level['moon']) 
+            {
+                for($i = 0;$i<$growth_level['moon'] ;$i++)
+                {
+                     ?>
+                    <span class="ui-icon-qqlevel ui-icon-qqlevel-moon"></span>
+                    <?php
+                }
+            }
+            if ($growth_level['star']) 
+            {
+                for($i = 0;$i<$growth_level['star'] ;$i++)
+                {
+                     ?>
+                    <span class="ui-icon-qqlevel ui-icon-qqlevel-star"></span>
+                    <?php
+                }
+            }
+            ?>
+            <span>用户等级</span>
+         </div>
+        <ul>
+            <li onclick="window.location.href='{php echo $this->createMobileUrl('hall')}'"><em>{$count_all}</em><span>总用户量</span></li>
+            <li onclick="window.location.href='{php echo $this->createMobileUrl('ranking')}'"><em>{$userinfo['growth_score']}</em><span>我的成长值</span></li>
+            {if $this->settings['index_credit_jump_url']}
+            <!-- 支持自定义积分链接 -->
+             <li onclick="window.location.href='{php echo $this->settings['index_credit_jump_url']}'"><em>{$credit['credit1']}</em><span>我的积分</span></li>
+            {else}
+            <li onclick="window.location.href='{php echo $this->createMobileUrl('signinhistory')}'"><em>{$credit['credit1']}</em><span>我的积分</span></li>
+            {/if}
+        </ul>
+    </header>
+    <section class="life">
+        <div class="container" style="overflow:hidden">
+        <div style="overflow:hidden;">
+        <ul>
+            <li style="width:25%;text-align:center;float:left">
+                <img src="{$_W['siteroot']}/addons/sunshine_huayue/common/img/android_camera_gallerypicker_111px_1135283_easyicon.net.png" style="width:60px;height:60px;">
+                <p>动态</p>
+            </li>
+            <li style="width:25%;text-align:center;float:left">
+                <img src="{$_W['siteroot']}/addons/sunshine_huayue/common/img/android_contacts_dialtactscontactsentryactivity_111px_1135286_easyicon.net.png" style="width:60px;height:60px;">
+                <p>附近</p>
+            </li>
+            <li style="width:25%;text-align:center;float:left">
+                <img src="{$_W['siteroot']}/addons/sunshine_huayue/common/img/htc_friendstream_111px_1135375_easyicon.net.png" style="width:60px;height:60px;">
+                <p>交友</p>
+            </li>
+            <li style="width:25%;text-align:center;float:left">
+                <img src="{$_W['siteroot']}/addons/sunshine_huayue/common/img/liveprofile_android_ui_mainactivity_111px_1135399_easyicon.net.png" style="width:60px;height:60px;">
+                <p>大厅</p>
+            </li>
+            <li style="width:25%;text-align:center;float:left">
+                <img src="{$_W['siteroot']}/addons/sunshine_huayue/common/img/liveprofile_android_ui_mainactivity_111px_1135399_easyicon.net.png" style="width:60px;height:60px;">
+                <p>房间</p>
+            </li>
+        </ul>
+    </div>
+<!--             <ul class="ui-grid-halve">
+              <li>
+                    <div class="ui-grid-halve-img" onclick="window.location.href='{php echo $this->createMobileUrl('chatroomlist')}'"><span style="background-image:url({$_W['siteroot']}/addons/sunshine_huayue/common/index/img/index_chatroom.png)" aria-label="聊天室" role="img"></span></div>
+                </li>
+                <li>
+                    <div class="ui-grid-halve-img" onclick="window.location.href='{php echo $this->createMobileUrl('hall')}'"> <span style="background-image:url({$_W['siteroot']}/addons/sunshine_huayue/common/index/img/index_hall.png)" aria-label="大厅" role="img"></span></div>
+                </li>
+                <li>
+                    <div class="ui-grid-halve-img" onclick="window.location.href='{php echo $this->createMobileUrl('messagebox')}'"><span style="background-image:url({$_W['siteroot']}/addons/sunshine_huayue/common/index/img/index_chat.png)" aria-label="好友" role="img"></span></div>
+                </li>
+                <li>
+                    <div class="ui-grid-halve-img" onclick="window.location.href='{php echo $this->createMobileUrl('list')}'"><span style="background-image:url({$_W['siteroot']}/addons/sunshine_huayue/common/index/img/index_surrounds.png)" aria-label="附近" role="img"></span></div>
+                </li>
+                <li>
+                    <div class="ui-grid-halve-img" onclick="window.location.href='{php echo $this->createMobileUrl('usercenter')}'"><span style="background-image:url({$_W['siteroot']}/addons/sunshine_huayue/common/index/img/index_set.png)" aria-label="设置" role="img"></span></div>
+                </li>
+            </ul> -->
+        </div>
+    </section>
+    {if $this->settings['vip_credit_month_1']}
+    <section class="powerful vip">
+        <div class="mod-title">
+            <h2>超级会员</h2>
+        </div>
+        <ul class="ui-list ui-list-text ui-border-tb">
+            <li class="ui-border-t">
+                <div class="ui-list-info">
+                <h4 class="ui-nowrap"><span class="fa fa-group" style="color:#ffc723"></span>&nbsp;&nbsp;拥有创建聊天室权限</h4>
+                </div>
+                <div class="ui-badge">{if $this->vip}已获得{else}未获得{/if}</div>
+            </li>
+            <li class="ui-border-t">
+                <div class="ui-list-info">
+                <h4 class="ui-nowrap"><span class="fa fa-group" style="color:#ffc723"></span>&nbsp;&nbsp;尊贵VIP标签</h4>
+                </div>
+                <div class="ui-badge">{if $this->vip}已获得{else}未获得{/if}</div>
+            </li>
+            <li class="ui-border-t">
+                <div class="ui-list-info">
+                    <h4 class="ui-nowrap">更多特权请期待~</h4>
+                </div>
+            </li>
+        </ul>
+        {if !$this->vip}
+        <div class="container">
+            <button type="button" class="ui-btn-upgrade" onclick="$('#open_vip_dialog').dialog('show')">积分兑换会员</button>
+        </div>
+        {/if}
+    </section>
+    {/if}
+<!--     <section class="act">
+        <div class="mod-title">
+          <h2>精彩活动</h2>
+          <div class="more"></div>
+        </div>
+        <div class="ui-slider">
+          <ul style="width: 300%" class="ui-slider-content">
+            <li><span style="background-image:url(http://imgcache.gtimg.cn/ACT/svip_act/act_img/v_sfquan/201509/m1441164619_3h750x210.png?max_age=2592000)" aria-label="文本" role="img"></span></li>
+            <li><span style="background-image:url(http://imgcache.gtimg.cn/ACT/svip_act/act_img/v_sfquan/201509/m1441164619_3h750x210.png?max_age=2592000)" aria-label="文本" role="img"></span></li>
+            <li><span style="background-image:url(http://imgcache.gtimg.cn/ACT/svip_act/act_img/v_sfquan/201509/m1441164619_3h750x210.png?max_age=2592000)" aria-label="文本" role="img"></span></li>
+          </ul>
+          <ul class="ui-slider-indicators">
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+          </ul>
+        </div>
+        <div class="mod-entrance">
+          <ul>
+            <li>年费</li>
+            <li>动漫</li>
+            <li>靓号站</li>
+            <li>兑换</li>
+            <li>推荐</li>
+          </ul>
+        </div>
+      </section> -->
+      <script type="text/javascript">
+      (function(){
+
+        var slider = new fz.Scroll('.ui-slider', {
+            role: 'slider',
+            indicator: true,
+            autoplay: true,
+            interval: 3000
+        });
+
+        slider.on('beforeScrollStart', function(from, to) {
+            console.log(from, to);
+        });
+
+        slider.on('scrollEnd', function(cruPage) {
+            console.log(curPage);
+        });
+
+    })();
+      </script>
+    <footer class="footer">
+        <p>
+            {php echo $this->super_title}
+        </p>
+    </footer>
+    {if $this->settings['signin_key'] == 'open'}
+    <div class="signin-wrapper show">
+        <!-- 默认隐藏，显示添加添加.show，已打卡添加.done -->
+        <div class="signin-box">
+            <div class="signin-waiting">
+                <button class="voice-btn">
+                    打卡
+                </button>
+                <div class="qq1-body">
+                </div>
+                <div class="qq1-hand-left">
+                </div>
+                <div class="signin-done-tip show-tip">
+                </div>
+            </div>
+            <div class="signin-done">
+                <button class="voice-btn">
+                    已打卡
+                </button>
+                <div class="signin-done-tip">
+                </div>
+            </div>
+        </div>
+    </div>
+    {/if}
+    <div class="ui-dialog signin-dialog">
+        <div class="signin-dialog-close-wrap">
+            <div class="signin-dialog-close">
+                <button class="voice-btn">
+                    关闭
+                </button>
+            </div>
+        </div>
+        <div class="signin-dialog-content">
+            <div class="signin-dialog-task">
+                <ul>
+                    {if $signin_list}
+                    {loop $signin_list $key $item}
+                    <!-- 已打卡状态day-activated -->
+                    <li class="day-activated day-activating">
+                        <span class="num">
+                            {$item['sid']}
+                        </span>
+                         <p class="day-tip">
+                            <em>
+                                +{$item['credit']}
+                            </em>
+                            积分
+                        </p>
+                    </li>
+                    <!--
+                        未打卡状态添加day-unactivated
+                        当次打卡状态添加day-activating
+                    -->
+                    {/loop}
+                    {/if}
+                    <?php
+                        for($i = 0; $i<7-count($signin_list);$i++) 
+                        {
+                            ?>
+                            <li class="day-unactivated">
+                                <span class="num">
+                                    <?php echo $i+count($signin_list) +1?>
+                                </span>
+                                <p class="day-tip">
+                                    <em>
+                                        +{php echo $this->settings['signin_credit']+count($signin_list)*$this->settings['signin_credit_grow']}
+                                    </em>
+                                    积分
+                                </p>
+                            </li>
+                            <?php
+                        }
+                    ?>
+                </ul>
+            </div>
+            <div class="signin-gift">
+                <p class="signin-gift-tip">
+                    已经连续签到{php echo count($signin_list)}天 
+                </p>
+                <p class="signin-gift-tip">
+                签到可获取积分
+                </p>
+               <!--  <img src="http://imgcache.gtimg.cn/ACT/svip_act/act_img/jaydenlin/201507/1436776687_quanmingtuji_daka.png" alt="" /> -->
+                <!-- 不可点击态增加disabled -->
+                <button type="button" class="ui-vip-btn" onclick="window.location.href='{php echo $this->createMobileUrl('signinhistory')}'">
+                    我的签到记录
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- <script src="{$_W['siteroot']}addons/sunshine_huayue/common/index/js/snow.js">
+</script> -->
+<script src="{$_W['siteroot']}addons/sunshine_huayue/common/index/js/fastclick.js">
+</script>
+<script src="{$_W['siteroot']}addons/sunshine_huayue/common/index/js/index_topscreen.js">
+</script>
+<script src="{$_W['siteroot']}addons/sunshine_huayue/common/index/js/progressbar.js">
+</script>
+<script src="{$_W['siteroot']}addons/sunshine_huayue/common/index/js/index.js">
+</script>
+<script>
+    (function($, FastClick) {
+    FastClick.attach(document.body);
+    //- 通过 JS 添加按压态
+    $('.ui-grid-trisect,.ui-grid-halve, .life, .makeup, .privilege, .act').on("click", "li",
+    function(e) {
+        var item = $(this);
+        item.addClass('active');
+        setTimeout(function() {
+            item.removeClass('active');
+        },
+        300)
+    });
+    $('.ui-list').on("click", ".ui-list-info,.ui-list-thumb",
+    function(e) {
+        var item = $(this).parents('li');
+        item.addClass('active');
+        setTimeout(function() {
+            item.removeClass('active');
+        },
+        300)
+    });
+    $('.ui-btn,.ui-btn-upgrade').on("click",
+    function(e) {
+        var item = $(this);
+        item.addClass('active');
+        setTimeout(function() {
+            item.removeClass('active');
+        },
+        300)
+    });
+    //- 打卡签到
+    $('.signin-waiting').on('click',
+    function() {
+        $('.signin-dialog').addClass('show');
+        signIn();
+        //- 打卡机方案，去掉引导提示
+        // $('.signin-waiting .signin-done-tip').removeClass('show-tip');
+    })
+    // 签到功能
+    function signIn() {
+        $.ajax({
+            type:'post',
+            url:"{php echo $this->createMobileUrl('signin')}",
+            data:{},
+            success:function(d,s) {
+                if(d.res == 100) {
+                    setTimeout(function() {
+                            $($('.day-unactivated')[0]).addClass('day-activating');
+                        },200);
+                }else {
+                    alert(d.msg);
+                }
+            }
+        })
+    }
+    //- 切换打卡气泡
+    var sid = 0,
+    index = 0,
+    popupList = ['popup1', 'popup2', 'popup3'],
+    $signinTip = $('.signin-done-tip');
+    function signinTipShow() {
+        index = index === 3 ? 0 : index;
+        if ($signinTip.hasClass('show')) {
+            $signinTip.addClass('hide');
+            setTimeout(function() {
+                $signinTip.removeClass('popup1 popup2 popup3').addClass(popupList[index]);
+                $signinTip.addClass('show');
+                $signinTip.removeClass('hide');
+                index++;
+            })
+        } else {
+            $signinTip.removeClass('popup1 popup2 popup3').addClass(popupList[index]);
+            $signinTip.addClass('show');
+            index++;
+        }
+        clearTimeout(sid);
+        sid = setTimeout(function() {
+            $signinTip.addClass('hide');
+            setTimeout(function() {
+                $signinTip.removeClass('show hide');
+            },
+            500);
+        },
+        3000);
+    }
+    $('.signin-done').on('click', signinTipShow);
+    //- 关闭弹窗
+    $('.signin-dialog-close, .ui-vip-btn, .ui-dialog-close').on('click',
+    function() {
+        $('.signin-wrapper').addClass('done');
+        //- 打卡机方案，延迟显示已打卡，跳出引导提示
+        //- setTimeout(function() {
+        //-   $('.signin-wrapper').addClass('done');
+        //- }, 500);
+        //- setTimeout(signinTipShow,1600);
+        $('.ui-dialog').removeClass('show');
+    })
+} ($, FastClick)); 
+</script>
+<script>
+    (function($, index_topscreen, index) {
+    // 浮层出现禁止滚动
+    $('.signin-dialog, .welcome-dialog').on('touchmove',
+function(event) {
+    event.preventDefault();
+    return false;
+});
+//- 蒙层
+$('.ui-global-hover').on('touchmove',
+function(event) {
+    event.preventDefault();
+    return false;
+});
+// 点击到期数字出现浮层
+$('.header .date').on('click',
+function() {
+    var $popup = $(this).find('.popup');
+    $popup.addClass('show');
+    setTimeout(function() {
+        $popup.removeClass('show');
+    },
+    3000);
+});
+// 点击其他地方取消浮层
+$(window).on('click',
+function() {
+    if (event.target.className !== 'date') {
+        $('.header .popup').removeClass('show');
+    }
+});
+// 成长值排名气泡
+var marque = new index.numMarquee('.header .rank', 12345);
+marque.show();
+setTimeout(function() {
+    marque.hide();
+},
+4000)
+//-隐藏growth-dialog浮层
+$(".growth-dialog").tap(function() {
+    $(".growth-dialog").removeClass("show");
+});
+$('.growth-dialog').on('touchmove',
+function(event) {
+    event.preventDefault();
+    return false;
+});
+} ($, index_topscreen, index)); 
+</script>
+{template 'menu'}
+{template 'footer'}

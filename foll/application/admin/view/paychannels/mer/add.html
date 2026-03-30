@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>新增商户号</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+</head>
+<body>
+
+<form class="layui-form" action="">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <input type="hidden" name="method" value="add">
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">支付渠道</label>
+        <div class="layui-input-block">
+
+            <select name="" id="pid">
+                <option value="">请选择支付渠道</option>
+                <?php foreach($cates as $kk=>$vo) {?>
+                    <option value="{$kk}">{$vo}</option>
+                <?php }?>
+            </select>
+
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">申领企业名称</label>
+        <div class="layui-input-block">
+            <input type="text" value="" name="apply" placeholder="请填写申领企业名称" lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">商户号</label>
+        <div class="layui-input-block">
+            <input type="text" value="" name="merchatId" placeholder="请填写商户号" lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">商户密钥</label>
+        <div class="layui-input-block">
+            <input type="text" name="merchatKey" value="" placeholder="请填写商户密钥" required lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">（企业账号）付款方账户</label>
+        <div class="layui-input-block">
+            <input type="text" name="sysAccount" value="" placeholder="请填写（企业账号）付款方账户" lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">（企业）用户会员号</label>
+        <div class="layui-input-block">
+            <input type="text" name="sysPartnerId" value="" placeholder="请填写（企业）用户会员号" lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">（企业）用户会姓名</label>
+        <div class="layui-input-block">
+            <input type="text" name="sysName" value="" placeholder="请填写（企业）用户会姓名" lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">收款账户</label>
+        <div class="layui-input-block">
+            <input type="text" name="recpAccount" value="2013022819200006642" placeholder="请填写收款账户" required lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">收款企业信用代码</label>
+        <div class="layui-input-block">
+            <input type="text" name="recpCode" value="91440605782023871F" placeholder="请填写收款企业信用代码" required lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">收款企业名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="recpName" value="佛山市钜铭商务资讯服务有限公司" placeholder="请填写收款企业信用代码" required lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">确认编辑</button>
+            <button type="reset" class="layui-btn layui-btn-danger">重置数据</button>
+        </div>
+    </div>
+</form>
+
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+
+<script>
+    //Demo
+    layui.use('form', function(){
+        var form = layui.form;
+
+        //监听提交
+        form.on('submit(formDemo)', function(data) {
+            // 获取通道名称
+            var pay = $('#pid option:selected').val();
+            data.field.pid = pay;
+
+            if(pay == '') {
+                layer.msg('请选择支付渠道');
+                return false;
+            }
+
+            $.ajax({
+                url:"{:Url('admin/paychannels/merdoadd')}",
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (red) {
+                    // var red = JSON.parse(res);
+                    if(red.code <= 0) {
+                        layer.msg(red.msg);
+                        return false;
+                    }
+                    layer.msg(red.msg);
+                    setTimeout(function(){
+                        layer.closeAll();
+                        parent.window.location.reload();
+                    },1200)
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</html>

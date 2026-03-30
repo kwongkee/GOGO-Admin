@@ -1,0 +1,187 @@
+{template 'header'}
+	<div class="container-fluid">
+		<h4><span class='glyphicon glyphicon-circle-arrow-right'></span>&nbsp;&nbsp;新增礼物信息</h4>
+		<div class="row">
+			<div class="col-md-6">
+				<label>排序序号（填写数字）</label>
+				<input type="number" class="form-control" id='sort_id' placeholder=''>
+				<label>礼物名称</label>
+				<input type="text" class="form-control" id='gift_name' placeholder='礼物名称'>
+				<label>礼物价格（单位元）</label>
+				<input type="text" class="form-control" id='gift_price' placeholder='只能填写正整数'>
+				<br>
+				<button class="btn btn-sm btn-info" onclick="addGift('gift')">添加</button>
+			</div>
+			<div class="col-sm-6">
+				<label>礼物图片</label>
+				<script type="text/javascript">
+				function showImageDialog(elm, opts, options) {
+					require(["util"], function(util){
+						var btn = $(elm);
+						var ipt = btn.parent().prev();
+						var val = ipt.val();
+						var img = ipt.parent().next().children();
+						options = {'width':400,'extras':{'text':'ng-model=\'entry.thumb\''},'global':false,'class_extra':'','direct':true,'multiple':false};
+						util.image(val, function(url){
+							if(url.url){
+								if(img.length > 0){
+									img.get(0).src = url.url;
+								}
+								ipt.val(url.attachment);
+								ipt.attr("filename",url.filename);
+								ipt.attr("url",url.url);
+							}
+							if(url.media_id){
+								if(img.length > 0){
+									img.get(0).src = "";
+								}
+								ipt.val(url.media_id);
+							}
+						}, null, options);
+					});
+				}
+				function deleteImage(elm){
+					require(["jquery"], function($){
+						$(elm).prev().attr("src", "./resource/images/nopic.jpg");
+						$(elm).parent().prev().find("input").val("");
+					});
+				}
+				</script>
+				<div class="input-group ">
+					<input type="text" name="thumb" value="" id='gift_pic' class="form-control ng-pristine ng-untouched ng-valid" autocomplete="off" disabled="disabled">
+					<span class="input-group-btn">
+						<button class="btn btn-default" type="button" onclick="showImageDialog(this);">选择图片</button>
+					</span>
+				</div>
+				<div class="input-group " style="margin-top:.5em;">
+					<img src="" onerror="this.src='./resource/images/nopic.jpg'; this.title='图片未找到.'" class="img-responsive img-thumbnail" width="150"> <em class="close" style="position:absolute; top: 0px; right: -14px;" title="删除这张图片" onclick="deleteImage(this)">×</em>
+				</div>
+				<p class="help-block">图片请上传背景透明的png图片</p>
+			</div>
+		</div>
+		<br>
+	</div>
+	<script type="text/javascript">
+
+	function saveItem(id) {
+		var order_id = $("#order_id_"+id).val();
+		var name = $("#name_"+id).val();
+		var price = $("#price_"+id).val();
+
+		$.ajax({
+			type:'post',
+			data:{
+				sort_id:order_id,
+				gift_name:name,
+				gift_price:price,
+				gift_id:id
+			},
+
+			url:"{php echo $this->createWebUrl('superpointedit')}",
+			success:function(d) {
+				if(d.res == '100') {
+					alert('保存成功');
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+	}
+
+	function delItem(id) {
+		var order_id = $("#order_id_"+id).val();
+		var name = $("#name_"+id).val();
+		var url = $("#url_"+id).val();
+
+		$.ajax({
+			type:'post',
+			data:{
+				superpoint_order_id:order_id,
+				superpoint_name:name,
+				superpoint_url:url,
+				superpoint_id:id,
+				superpoint_is_del:'y'
+			},
+
+			url:"{php echo $this->createWebUrl('superpointedit')}",
+			success:function(d) {
+				if(d.res == '100') {
+					alert('保存成功');
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+	} 
+
+
+	function addGift() {
+		var sort_id = $("#sort_id").val();
+		var gift_name = $("#gift_name").val();
+		var gift_price = $("#gift_price").val();
+		var gift_pic = $("#gift_pic").val();
+
+		if(!sort_id || !gift_name || !gift_price) {
+			alert('填写内容不完整');
+			return;
+		}
+
+		$.ajax({
+			type:'post',
+			data:{
+				sort_id:sort_id,
+				gift_name:gift_name,
+				gift_price:gift_price,
+				gift_pic:gift_pic
+			},
+
+			url:"{php echo $this->createWebUrl('giftaddsubmit')}",
+			success:function(d) {
+				if(d.res == '100') {
+					alert('保存成功');
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+	}
+
+	function doSave(type,val) {
+
+		if(!type) {
+			return false;
+		}
+		// 开关
+		if(type == 'superpoint_key') {
+			var settings_name = 'superpoint_key';
+			var settings_value = val;
+		}
+		if(type == 'custom_menu_key') {
+			var settings_name = 'custom_menu_key';
+			var settings_value = val;
+		}
+
+		$.ajax({
+			type:'post',
+			data:{
+				settings_name:settings_name,
+				settings_value:settings_value
+			},
+
+			url:"{php echo $this->createWebUrl('settingformnew')}",
+			success:function(d) {
+				if(d.res == '100') {
+					alert('保存成功');
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+
+	}
+	</script>
+{template 'footer'}

@@ -1,0 +1,45 @@
+{include file="public/header_new"}
+<body class="gray-bg">
+<form class="form-horizontal" style="margin-left: 18%;margin-top: 12%;">
+    <div class="form-group">
+        <label for="ebc_name" class="col-sm-2 control-label">电商企业名称</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="ebc_name" id="ebc_name" placeholder="">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="ebc_number" class="col-sm-2 control-label">卡号</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="ebc_number" id="ebc_number" placeholder="中国国际贸易单一窗口-卡号">
+        </div>
+    </div>
+    <button type="button" class="btn btn-primary btn-lg btn-block" onclick="req();return false;" style="width: 50%;margin-left: 16%;">新增</button>
+</form>
+</body>
+
+<script type="text/javascript">
+    function req() {
+        let data={};
+        let value = $('form').serializeArray();
+        $.each(value,function (index,item) {
+            data[item.name]=item.value;
+        });
+        var i=layer.load(1); //风格1的加载
+        $.ajax({
+            url:"{:url('admin/reduction/add_body')}",
+            type:"POST",
+            dataType:"json",
+            data:data,
+            success:function (res) {
+                layer.close(i);
+                if(res.code<0){
+                    layer.msg(res.msg, {icon:5, time:2000});
+                }else{
+                    layer.msg(res.msg, {icon:6, time:2000});
+                }
+            }
+        });
+        return false;
+    }
+</script>
+</html>

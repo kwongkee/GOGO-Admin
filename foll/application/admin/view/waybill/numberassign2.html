@@ -1,0 +1,102 @@
+{include file="public/header"}
+<body style="padding: 10px;">
+<!-- 上级ID -->
+<input type="hidden" id="pid" value="1">
+<div class="header">
+    <span>进口运单号码列表</span>
+    <button class="layui-btn layui-btn-sm" onclick="addWaybill()" >导入运单号码</button>
+    <button class="layui-btn layui-btn-sm" onclick="assignWaybill()" style="margin-right:5px;">分配运单号码</button>
+
+    <div></div>
+</div>
+
+<table class="layui-table">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>商家名称</th>
+        <th>快递公司</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {volist name="data" id='vo' key="k"}
+    <tr>
+        <td>{$k}</td>
+        <td>{$vo.user_name}</td>
+        <td>{$vo.name}</td>
+        <td>
+            <button class="layui-btn layui-btn-normal layui-btn-xs" onclick="see('{$vo.uid}','{$vo.name}')">查看</button>
+            <!--<button class="layui-btn layui-btn-danger layui-btn-xs" onclick="del($vo['id'])">删除</button>-->
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<div class="layui-page">
+    <!--$page-->
+</div>
+
+<script type="text/javascript">
+
+    layui.use(['layer'],function(){
+        layer = layui.layer;
+        $     = layui.jquery;
+    });
+
+    // 分配商家运单号码
+    function assignWaybill() {
+        layer.open({
+            type:2,
+            title:'分配运单号码',
+            shade:0.3,
+            area:['600px','500px'],
+            content:'{:Url("admin/waybill/numberassign_add2")}'
+        });
+    }
+
+    //导入运单号码
+    function addWaybill(){
+        layer.open({
+            type:2,
+            title:'导入运单号码',
+            shade:0.3,
+            area:['600px','500px'],
+            content:'{:Url("admin/waybill/numberassign_insert")}'
+        });
+    }
+
+    function see(a,b){
+        layer.open({
+            type:2,
+            title:'配签号码列表',
+            shade:0.3,
+            area:['100%','100%'],
+            content:"{:Url('admin/waybill/numberassign_list2')}&uid="+a+"&name="+b
+        })
+    }
+
+    // 删除数据
+    function del(id,bill)
+    {
+        layer.confirm('确定要删除吗？',{icon:3,btn:['确定','取消']},function() {
+            $.post("{:Url('admin/transport/transDel')}",{id:id,bill:bill},function(resd){
+                var res = JSON.parse(resd);
+                if(res.code == 1) {
+                    layer.msg(res.msg,{icon:1});
+                    setTimeout(function(){
+                        layer.closeAll();
+                        parent.window.location.reload();
+                    },1100);
+                } else {
+                    layer.alert(res.msg,{icon:2});
+                }
+            },'json');
+        })
+    }
+</script>
+
+</body>
+</html>

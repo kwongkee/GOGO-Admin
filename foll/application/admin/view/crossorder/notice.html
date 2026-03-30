@@ -1,0 +1,77 @@
+{include file="public/header"}
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .layui-col-space15,form{background:#fff;}
+    .layui-col-xs12{margin-bottom:10px;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <form class="layui-form" action="" method="post" lay-filter="component-form-element1">
+                <div class="layui-col-xs12">
+                    <div class="layui-col-xs3">
+                        手机号
+                    </div>
+                    <div class="layui-col-xs9 disf">
+                        <input type="number" class="layui-input" name="mobile" placeholder="请输入消息下放手机号" value="" lay-verify="required"/>
+                    </div>
+                </div>
+                <div class="layui-col-xs12">
+                    <div class="layui-col-xs3">
+                        通知内容
+                    </div>
+                    <div class="layui-col-xs9 disf">
+                        <textarea name="content" placeholder="请输入通知内容" class="layui-textarea" lay-verify="required"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                    <div>
+                        <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+<script type="text/javascript">
+
+    layui.use(['layer','form','laydate','upload'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery,
+            upload = layui.upload;
+
+        form.render(null,'component-form-element1');
+
+        form.on('submit(component-form-element)', function(data){
+            //layer.msg(JSON.stringify(data.field));
+            $.ajax({
+                url:"{:Url('admin/crossorder/notice')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            window.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+
+    });
+
+</script>
+</body>
+</html>

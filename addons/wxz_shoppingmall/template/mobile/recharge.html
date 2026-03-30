@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>余额充值</title>
+        <script src="{$modulePublic}shop/js/SetSize.js"></script>
+        <meta name="screen-orientation" content="portrait/landscape">
+        <meta content="yes" name="apple-mobile-web-app-capable">
+        <meta content="yes" name="apple-touch-fullscreen">
+        <meta content="black" name="apple-mobile-web-app-status-bar-style">
+        <meta content="telephone=no" name="format-detection">
+        <link href="{$modulePublic}shop/css/content.css" rel="stylesheet" type="text/css" />
+        <link href="{$modulePublic}shop/css/mall.css" rel="stylesheet" type="text/css">
+        <script src="{$modulePublic}shop/js/baidu.js"></script>
+        <script src="{$modulePublic}shop/js/svgPackage.js"></script>
+
+    </head>
+    <body class="towhite">
+        <script>
+            document.body.style.fontSize = SetSize.getScreenRatio() * 10 + 'px';</script>
+        <script src="{$modulePublic}shop/js/svgPackage.js"></script>
+
+        <header id="header">
+            <div class="titleField">
+                <h2>充值</h2>
+            </div>
+            <!--            <div class="btnField">
+                            <a href="javascript:history.go(-1);" class="btn back"><i></i></a>
+                            <a href="javascript:location.reload();" class="btn"><i><svg><use xlink:href = "#icon_reload_1"/></svg></i></a>
+                        </div>-->
+        </header>
+
+        <section id="main">
+            <form method="post" action="" id="ctl00">
+                <div class="newaddress">
+                    <dl>
+                        <dt><i>*</i>充值金额</dt>
+                        <dd class="long">
+                            <input name="money" type="text" id="money" maxlength="11" placeholder="请输入充值金额" class="addtxt" /></dd>
+                    </dl>
+                    <div><a class="btn" id="btnSubmit" href="javascript:;">确定</a></div>
+                </div>
+            </form>
+        </section>
+
+        <script src="{$modulePublic}shop/js/jquery-1.8.3.min.js"></script>
+        <script src="{$modulePublic}shop/js/PRselector.js"></script>
+        <script src="{$modulePublic}shop/js/Dialogue.js"></script>
+
+        <script type="text/javascript">
+            $("#btnSubmit").click(function () {
+                var pars = {};
+                pars.money = $("#money").val() * 1;
+                if (!pars.money) {
+                    dialogue.dlAlert({
+                        title: '请输入充值金额',
+                        btns: [{
+                                text: '确定',
+                                fn: function () {
+                                    dialogue.closeAll();
+                                }
+                            }]
+                    });
+                    return;
+                }
+
+                dialogue.dlAlert({
+                    title: '确认充值吗?',
+                    btns: [
+                        {
+                            text: '确认',
+                            fn: function () {
+                                do_recharge();
+                            },
+                        }, {
+                            text: '取消',
+                            fn: function () {
+                                dialogue.closeAll();
+                            },
+                        },
+                    ],
+                });
+            })
+
+            function do_recharge() {
+                var pars = {};
+                pars.money = $("#money").val() * 1;
+                $.ajax({
+                    url: "{php echo $this->createMobileUrl('ajax_web',array('sdo'=>'do_recharge'))}",
+                    type: "post",
+                    dataType: "json",
+                    data: pars,
+                    success: function (res) {
+                        if (res.error_code == 1) {
+                            location.href = "{php echo $this->createMobileUrl('do_recharge')}" + "&order_id=" + res.data.order_id;
+                        } else {
+                            dialogue.dlAlert({
+                                title: '充值失败',
+                                content: res.error_msg,
+                                btns: [{
+                                        text: '确定',
+                                        fn: function () {
+                                            dialogue.closeAll();
+                                        }
+                                    }]
+                            });
+                        }
+                    }
+                })
+            }
+        </script>
+    </body>
+</html>

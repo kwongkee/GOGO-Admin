@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="Cache-Control" content="no-cache"/>
+<title>题目信息 - {$config['webtitle']}</title>
+<meta http-equiv="description" content="" />
+<meta name="renderer" content="webkit"/>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+<meta name="description" content="" id="description"/>
+<meta name="keywords" content=""/>
+<link rel="stylesheet" href="{$templateurl}css/css.css" type="text/css"/>
+<script src="{$templateurl}js/jquery-1.8.0.min.js" language="javascript"></script> 
+<style type="text/css">
+.cuotidiankai .a2 h4{ margin-top:15px;}
+.cuotidiankai .a2 h4 .teletnt{ font-size:16px; font-weight:bold; margin:0; margin-top:8px;}
+.cuotidiankai .a2 font{ font-size:13px; color:#f30; line-height:20px; margin:0; font-weight:normal;}
+.cuotidiankai .a2 h4 .wujinput{ font-weight:normal; color:#999; font-size:12px;}
+.cuotidiankai .a2 h4 .gx1{ margin-top:10px; width:266px; padding-left:4px; height:auto; position:absolute; left:50%; margin-left:-135px; overflow:hidden; text-align:center;}
+.cuotidiankai .a2 h4 a.g1{ width:auto; float:left; margin-left:8px; padding:0 11px;}
+.cuotidiankai .a2 h4 a{ font-size:12px; background:#fe6430; width:150px; text-align:center; line-height:28px; margin:15px auto 10px auto; display:block; color:#fff; font-weight: normal; border-radius:3px; float:left;}
+.cuotidiankai .a2 h4 a.s{ background: none; width:auto; float:left; color:#fe6430; border-radius:0px; transform:rotate(180deg); margin-top:10px;}
+.cuotidiankai .a2 h4 a.x{ background: none; width:auto; float:right; color:#fe6430; border-radius:0px; margin-top:15px;}
+.cuotidiankai .a2 h4 a i{ font-size:22px;}
+</style>
+</head>
+
+<body>
+<div class="cuotidiankai">
+	<div class="a1">
+    <p><a href="{$urlt}">[ {$type_arr[$srdb['type']]} ] 题目</a></p>
+    </div>
+    <div class="a2">
+    	<h1 style="color:#999; font-size:12px;">当前题目所属知识点：{$srdb_knowle['titlename']}</h1>
+    	<h1>{php echo html_entity_decode($srdb['titlename']);}</h1>
+		{if $srdb['type'] == 1 || $srdb['type'] == 2}
+        <h2>
+			{loop $arraytp $i $row}
+			{if $answer_arll[$i]}
+			<label>{$row}、{$answer_arll[$i]}</label>
+			{/if}
+			{/loop}
+        </h2>
+		{/if}
+        <h4>
+        	<div class="teletnt">正确答案：
+				{if $srdb['type'] == 4}
+				{if $srdb['zqanswer'] == 'A'}正确{elseif $srdb['zqanswer'] == 'B'}错误{/if}
+				{elseif $srdb['type'] > 4}
+				<div style="font-weight:normal; font-size:12px; color:#333333;">{php echo html_entity_decode($srdb['zqanswer']);}</div>
+				{else}{$srdb['zqanswer']}{/if}
+			</div>           
+            <div class="clear"></div>
+			{if $srdb['status'] == 1}<font>审核中，审核通过后即可在公开题库中查看</font>
+			{elseif $srdb['status'] == 2}<font>审核失败，原因：{$srdb['message']}</font>
+			{elseif $srdb['status'] == 3}<font>审核通过：{$srdb['message']}</font>
+			{else}<font>本题还未提交到公开题库</font>{/if}
+			<div class="clear"></div>
+            <div class="wujinput"><span style="color:#333333; font-size:14px;">解析：</span>{php echo html_entity_decode($srdb['content']);}</div>
+            <!--<a class="s" href="#"><i class="iconfont">&#xe60b;</i></a>-->
+			<div class="gx1">
+			 <a class="g1" href="{$urlt}">返回</a>
+			 {if $srdb['status'] == 3 || $srdb['status'] == 2}
+			 {else}
+			 <a class="g1" href="{$urlt}&tab=edit&id={$srdb['id']}">编辑</a>
+			 <a class="g1" href="{$urlt}&tab=delete&id={$srdb['id']}" onclick="return confirm('本操作不可恢复，确认删除？');">删除</a>
+			 {/if}
+			 {if $srdb['status'] < 1}
+			 <a class="g1" href="{$urlt}&tab=audit&id={$srdb['id']}" onclick="return confirm('本操作不可恢复，确认提交吗？');">提交审核</a>
+			 {/if}
+			</div>
+			<!--<a class="x" href="#"><i class="iconfont">&#xe60b;</i></a>-->
+        </h4>
+    </div>
+</div>
+
+<div class="clear"></div>
+
+<!--footer strat-->
+{template 't_footer'}
+
+</body>
+</html>

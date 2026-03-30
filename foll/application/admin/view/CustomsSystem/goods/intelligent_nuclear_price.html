@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="common/meta"}
+    <link rel="stylesheet" href="./static/hadmin/layui/css/layui.css"></link>
+</head>
+<body class="gray-bg">
+<div class="col-sm-12">
+    <div class="ibox float-e-margins">
+        <input style="float: left;width:20%; margin: 5px;" type="text" name="search" value="" id="where" required lay-verify="required" placeholder="请输入关区" autocomplete="off" class="layui-input">
+        <a class="btn btn-info layui-btn" href="#"  type="button" id="search" style="line-height:38px; margin-top: 5px;"><i class="fa fa-file-excel-o"></i>搜索</a>
+        <div class="ibox-content" style="display:block;" id="list1">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>关区</th>
+                    <th>基准百分百</th>
+                    <th>上浮百分百</th>
+                    <th>下浮百分百</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name="list" id="vo"}
+                <tr>
+                    <td>{$vo.code_value}</td>
+                    <td><input type="number"  name="datum" value="{if $vo.datum==''}0{else}{$vo.datum}{/if}"></td>
+                    <td><input type="number" name="up_floating" value="{if $vo.up_floating==''}0{else}{$vo.up_floating}{/if}" ></td>
+                    <td><input type="number"  name="low_floating" value="{if $vo.low_floating==''}0{else}{$vo.low_floating}{/if}"></td>
+                    <td>
+                        <a class="btn btn-info" href="#"  type="button" onclick="edit(this,'{$vo.code_value}');return false;"><i class="fa fa-paste"></i>编辑</a>
+                    </td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="layui-box layui-laypage layui-laypage-default" style="margin-left:43%">{$page}</div>
+</body>
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/js/bootstrap.min.js?v=3.3.6"></script>
+<!-- 自定义js -->
+<script src="./static/hadmin/js/content.js?v=1.0.0"></script>
+<!-- Bootstrap table -->
+<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<!--<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>-->
+<!--<script src="./static/hadmin/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>-->
+<script src="./static/hadmin/layui/layui.all.js"></script>
+<script>
+    // admin/goods/add
+
+    layui.use(['upload','form'], function () {
+        upload = layui.upload;
+        form = layui.form;
+    });
+
+    function edit(obj,code) {
+        var tr = obj.parentNode.parentNode;
+        var datum=$(tr).find("input[name='datum']").val();
+        var up_floating = $(tr).find("input[name='up_floating']").val();
+        var low_floating = $(tr).find("input[name='low_floating']").val();
+        if (datum == ''||up_floating==''||low_floating==''){
+            parent.layer.msg('参数不能为空', {icon: 5});
+        }
+        $.ajax({
+           url:"{:Url('admin/goods/recoIntelligentNuclearPrice')}",
+           type:'POST',
+           dataType:"json",
+           data:{code:code,datum:datum,up_floating:up_floating,low_floating:low_floating},
+            success:function (res) {
+                if (res.code==0){
+                    parent.layer.msg(res.message, {icon: 6});
+
+                } else{
+                    parent.layer.msg(res.message, {icon: 5});
+
+                }
+            }
+        });
+        return false;
+    }
+
+    $('#search').bind('click',function () {
+       var  where = $('#where').val();
+       window.location.href="{:Url('admin/goods/intelligentNuclearPrice')}&search="+where;
+    });
+
+</script>
+</html>
+

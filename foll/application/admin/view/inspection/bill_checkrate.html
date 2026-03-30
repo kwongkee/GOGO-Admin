@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="common/meta"}
+</head>
+<body class="gray-bg">
+<div class="col-sm-12">
+
+    <div class="ibox float-e-margins">
+        <div class="ibox-content" style="display:block;" id="list1">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>提单编号</th>
+                    <th>查验率</th>
+                    <th>扣件率</th>
+                    <th>退件率</th>
+                    <th>放行率</th>
+                    <th>查验文件</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name='bills' id='bill'}
+                <tr>
+                    <td>{$bill['bill_num']}</td>
+                    <td>{$bill['check_num']}</td>
+                    <td>{$bill['fasteners_num']}</td>
+                    <td>{$bill['return_num']}</td>
+                    <td>{$bill['release_num']}</td>
+                    <td>
+                        {volist name="bill['check_datafile']" id='file'}
+                        <a href="http://declare.gogo198.cn/customs/inspec/check_down?bill_num={$file}">{$file},</a>
+                        {/volist}
+                    </td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+</body>
+</html>

@@ -1,0 +1,46 @@
+{template 'header'}
+<style type="text/css">
+	.ui-reddot {
+		padding:0px;
+	}
+</style>
+<div class="ui-container">
+	<ul class="ui-list  ui-list-cover ui-border-tb">
+		{loop $list $key $item}
+		<li class="ui-row-flex ui-whitespace ui-border-tb" style="margin:5px 0px;" onclick="window.location.href='{php echo $this->createMobileUrl('chatroom',array('room_id'=>$item['id']))}'">
+			<div class="ui-col ui-col-2 ui-flex ui-flex-ver ui-flex-pack-center ui-flex-align-start">
+				<div class="ui-list-img ui-badge-wrap" style="margin:0px 10px 0px 0px;">
+					<span style="background-image:url({media $item['room_logo']});border-radius:2px;"></span>
+				</div>
+			</div>
+			<div class="ui-col ui-col-3 ui-flex ui-flex-ver ui-flex-pack-center ui-flex-align-start">
+				<p class="ui-nowrap" style="color:#483D8B">{$item['room_name']}</p>
+				<div class="ui-label-list">
+					{if $item['room_type'] == 'lvb' || $item['room_type'] == 'letv'}
+					<label class="ui-label-me ui-label-s-lvb">视频直播间</label>
+					{/if}
+					{if $item['in_type'] == 'secret'}<label class="ui-label-me ui-label-s-1">加密</label>{/if}
+					{if $item['in_type'] == 'money'}<label class="ui-label-me ui-label-s-1">付费房</label>{/if}
+					<label class="ui-label-me ui-label-s-3">{if $item['is_public'] == 'n'}会员房{else}公开房{/if}</label>
+				</div>
+				<p id="chatroom_desc_{php echo $key}" style="font-size:12px;width:100%;overflow:hidden;">{$item['room_desc']}</p>
+			</div>
+		</li>
+		<script type="text/javascript">
+            $(function() {
+                var m = new XX.Fx.Marquee(document.getElementById('chatroom_desc_{php echo $key}'), {direction:'left',speed:20, step:1});
+                m.start();
+            })
+        </script>
+		{/loop}
+	</ul>
+	{template 'chatroom_menu'}
+</div>
+<script>
+function myChatRoom() {
+	window.location.href="{php echo $this->createMobileUrl('chatroomapply')}";	
+}
+
+
+</script>
+{template 'footer'}

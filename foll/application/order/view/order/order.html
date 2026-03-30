@@ -1,0 +1,198 @@
+{include file="public/css" /}
+        <!-- 右侧主体开始 -->
+        <div class="page-content">
+          <div class="content">
+            <!-- 右侧内容框架，更改从这里开始 -->
+            <style type="text/css">
+            	.checkbox{
+            		width: auto;margin-top: 5px;margin-bottom: 5px;clear: both;margin-left: 22px;
+            	}
+            	.remark{
+            		width: auto;margin-top: 5px;margin-bottom: 5px;clear: both;
+            	}
+            	.checkbox1{
+            		margin: 0px;text-align: center;width: 110px;
+            	}
+            	.title{
+            		width: 100%;height: 25px;text-align: center;
+            		color: black;font-weight: bold;font-size: 25px;
+            	}
+            </style>
+			<div class="title">{$title}</div>
+            <form class="layui-form" method="get" action="#">
+            	
+            <table class="layui-table">
+                <thead>
+                    <tr>
+                        <th>订单号</th>
+                        <th>泊位号</th>
+                        <th>驶入时间</th>
+                        <th>驶出时间</th>
+                        <th>金额</th>
+                        <th>是否有误(<span style="color: blue;">有误请打钩</span>)</th>
+                        <th>备注</th>
+                    </tr>
+                </thead>
+                
+                <tbody id="content">
+                    
+                    {volist name="data" id="vo" empty="$empty"}
+                    
+                    <tr>
+                        <td>
+                        	<u style="cursor:pointer" onclick="member_show('张三','member-show.html','10001','360','400')">
+                               {$vo.ordersn}
+                            </u>
+                        </td>
+                        <td> {$vo.number}</td>
+                        <td> {$vo.starttime|date='Y-m-d H:i:s',###}</td>
+                        <td> {$vo.endtime|date='Y-m-d H:i:s',###}</td>
+                        <td>￥{$vo.pay_account}元</td>                        
+                        <td style="width: 141px;">
+						  	<div id="layui-form-item" class="checkbox">
+							    <div id="layui-input-block" class="checkbox1">
+							      	<input type="checkbox" name="like[]" orderid="{$vo.id}" title="有误" value="{$vo.id}" >
+							    </div>
+						  	</div>
+						</td>
+						<td>
+							<div id="layui-form-item" class="remark">
+							    <div id="layui-input-block" style="margin: 0px;">
+							      <input type="text" name="remarks" lay-verify="title" autocomplete="off" placeholder="可填写备注" class="layui-input">
+							    </div>
+							</div>
+						</td>
+						<input type="hidden" name="orderId" id="" value="{$vo.id}" />
+						<input type="hidden" name="orderId" id="" value="2" />
+                    </tr>
+                    
+                    <tr>
+                        <td>
+                        	<u style="cursor:pointer" onclick="member_show('张三','member-show.html','10001','360','400')">
+                               {$vo.ordersn}
+                            </u>
+                        </td>
+                        <td> {$vo.number}</td>
+                        <td> {$vo.starttime|date='Y-m-d H:i:s',###}</td>
+                        <td> {$vo.endtime|date='Y-m-d H:i:s',###}</td>
+                        <td>￥{$vo.pay_account}元</td>                        
+                        <td style="width: 141px;">
+						  	<div id="layui-form-item" class="checkbox">
+							    <div id="layui-input-block" class="checkbox1">
+							      	<input type="checkbox" name="like[]" orderid="{$vo.id}" title="有误" value="6" >
+							    </div>
+						  	</div>
+						</td>
+						<td>
+							<div id="layui-form-item" class="remark">
+							    <div id="layui-input-block" style="margin: 0px;">
+							      <input type="text" name="remarks" lay-verify="title" autocomplete="off" placeholder="可填写备注" class="layui-input">
+							    </div>
+							</div>
+						</td>
+						<input type="hidden" name="orderId" id="" value="{$vo.id}" />
+						<input type="hidden" name="orderId" id="" value="2" />
+                    </tr>
+					{/volist}
+					
+                </tbody>
+            </table>
+            
+            <div class="text-center" id="#nodata">11111</div>
+            <!-- 右侧内容框架，更改从这里结束 -->
+            
+            <xblock>
+            	<button class="layui-btn btn-danger" id="danger" type="button">有误，上报</button>
+            	
+            	<button class="layui-btn btn-primary" id="submit" type="button">全对,导出</button>
+            	
+            	<span class="x-right" style="line-height:40px">共有数据：{1111111111}条</span>
+            </xblock>
+            
+            </form>
+          </div>
+        </div>
+        <!-- 右侧主体结束 -->
+        
+        <input type="hidden" name="type" id="type" value="{$Request.get.type}" />
+    </div>
+    <!-- 中部结束 -->
+   
+ 
+        <script type="text/javascript">
+        //
+        $('#danger').bind('click',function(){
+//      	var a = $("input[type='checkbox']").attr('value')
+//			var b = $("input[type='checkbox']").is(':checked')
+			var a = new Array();
+			var b = new Array();
+
+			$("input[type='checkbox']").each(function(){
+				if($(this).is(':checked')) {
+					a.push($(this).val());
+//					console.dir('true: '+$(this).val())
+				}else {
+					b.push($(this).val());
+//					console.dir($(this).val())
+				}
+			})
+			console.dir(a)
+			console.dir(b)
+			$.getJSON("{:url('order/orderLists')}",{ass:a,bss:b},function(json) {
+				console.dir(json);				
+			})
+			
+        });
+        
+    	$(function(){
+    		
+    		//获取隐藏域中的所有值；
+//  		var inputArr = document.getElementsByName('orderId');
+//  		for(var i =0;i<inputArr.length;i++) {
+//  			console.dir(inputArr[i].value);
+//  		}
+
+			
+    		var winH = $(window).height();//页面可视区域高度
+    		var type = $('#type').val();
+    		var i = 1;//设置当前页数
+    		$(window).scroll(function () {
+    			var pageH = $(document.body).height();
+    			var scrollT = $(window).scrollTop();//滚动条TOP
+    			var aa = (pageH-winH-scrollT)/winH;
+    			if(aa < 0.02) {
+    				$.getJSON("{:url('order/orderLists')}",{page:i,type:type},function(json) {
+    					console.dir(json);
+    					if(json.status == 1) {
+    						var str = '';
+    						$.each(json,function(index,array) {
+//  							console.dir(array['page']);    							
+    							var str = '<tr><td><u style="cursor:pointer" >20180408</u></td> <td>23456</td> <td>2018-04-08 14:52</td> <td>2018-04-08 14:52</td> <td>￥13.00元</td>  <td style="width:141px;"><div class="checkbox layui-form-item" ><div class="checkbox1 layui-input-block"><input type="checkbox" name="like[1]" title="有误" value="no" /><div onclick="showCheck(this)" class="layui-unselect layui-form-checkbox"><span>有误</span><i class="layui-icon">&#xe618;</i></div></div></div></td>  <td><div class="remark layui-form-item" ><div class="layui-input-block" style="margin:0px;"><input type="text" name="remarks" lay-verify="title" autocomplete="off" placeholder="可填写备注" class="layui-input" /></div></div></td></tr>';
+    							$("#content").append(str);
+    						});
+    						i++;
+    					}else {
+    						$("#nodata").show().html("已经到底了。。。");
+    						return false;
+    					}
+    				})
+    			}
+    		});    		
+    	});
+    	
+    	/*用户-查看*/
+        function member_show(title,url,id,w,h){
+            x_admin_show(title,url,w,h);
+        }
+        
+        //显示控制打钩有误  2018-04-08
+        function showCheck(t)
+        {
+//      	console.dir($(t).hasClass("layui-form-checked"));   	
+        	if($(t).hasClass("layui-form-checked") === true){
+        		$(t).removeClass("layui-form-checked");
+        	} else {
+        		$(t).addClass("layui-form-checked");
+        	}
+        }
+    </script>

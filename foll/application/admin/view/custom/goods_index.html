@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="common/meta"}
+</head>
+<body class="gray-bg">
+<div class="col-sm-12">
+    <div class="ibox float-e-margins">
+        <div class="ibox-content" style="display:block;" id="list1">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>申报企业编号</th>
+                    <th>申报企业名称</th>
+                    <th>电商企业编号</th>
+                    <th>电商企业名称</th>
+                    <th>主海关</th>
+                    <th>检验机构</th>
+                    <th>电商平台</th>
+                    <td>平台名称</td>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name="list.data" id= "vo" empty='<td>没有数据</td>'}
+                <tr>
+                    <td>{$vo.DeclEntNo}</td>
+                    <td>{$vo.DeclEntName}</td>
+                    <td>{$vo.EBEntNo}</td>
+                    <td>{$vo.EBEntName}</td>
+                    <td>{$vo.CustomsCode}</td>
+                    <td>{$vo.CIQOrgCode}</td>
+                    <td>{$vo.EBPEntNo}</td>
+                    <td>{$vo.EBPEntName}</td>
+                    <td>
+                        <a class="btn btn-info btn-rounded" href="{:Url('admin/goods_details')}&hid={$vo.id}">详情</a>
+                        <a class="btn btn-danger btn-rounded" href="{:Url('admin/check_goods_dec')}&id={$vo.id}&check=1">通过</a>
+                        <a class="btn btn-danger btn-rounded" href="{:Url('admin/check_goods_dec')}&id={$vo.id}&check=2">拒绝</a>
+                    </td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+<!--<div class="card-pay">
+
+</div>-->
+
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/js/bootstrap.min.js?v=3.3.6"></script>
+<!-- 自定义js -->
+<script src="./static/hadmin/js/content.js?v=1.0.0"></script>
+<!-- Bootstrap table -->
+<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="./static/hadmin/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="./static/hadmin/layui/layui.all.js"></script>
+<script>
+    function detail(obj,id) {
+        parent.layer.open({
+            type: 2,
+            title:'详情',
+            area:['100%','100%'],
+            skin: 'layui-layer-lan',
+            content: '{:Url("admin/goods_details")}&hid='+id //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+        });
+    }
+</script>
+<!-- Peity -->
+</body>
+</html>

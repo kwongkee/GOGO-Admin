@@ -1,0 +1,157 @@
+<?php
+
+namespace app\declares\logic;
+
+use think\Model;
+use PHPExcel;
+use PHPExcel_IOFactory;
+
+class ReadElcOrderFile extends Model
+{
+
+    public $savePath = './uploads/excel/';
+
+    public $FileName = '';
+
+    public $headData = '';
+
+    public $activeSheet = [];
+
+    protected $ExcelObj;
+
+    protected $time;
+
+    /*
+     * 上传保存文件
+     */
+    public function moveFile ( $file )
+    {
+        $moveResult = $file->validate(['ext' => 'xls'])->rule('unique')->move($this->savePath);
+        if ( !$moveResult ) throw new \Exception($file->getErroe());
+        $this->FileName = $moveResult->getSaveName();
+        return $this;
+    }
+
+    /**
+     * @return object
+     */
+    public function PHPExcelObj ()
+    {
+        $fileNameArr = explode('/', $this->FileName);
+        $filePath = $this->savePath . $fileNameArr[0] . '/' . $fileNameArr[1];
+        try {
+            $reder = PHPExcel_IOFactory::createReader(PHPExcel_IOFactory::identify($filePath));
+            $reder->setReadDataOnly(true);
+            $reder->setLoadAllSheets();
+            $this->ExcelObj = $reder->load($filePath);
+        } catch (\Exception $exception) {
+            throw new \Exception($exception->getMessage() . $exception->getCode());
+        }
+        $this->activeSheet = $this->ExcelObj->getSheetNames();
+        unlink($filePath);
+        return $this;
+    }
+
+    /*
+     * 获取第一个工作区数据
+     */
+
+    protected function getOneSheet ( $postDatas )
+    {
+        $this->time = time();
+        $this->ExcelObj->setActiveSheetIndexByName($this->activeSheet[0]);
+        return ['DeclEntNo' => $postDatas['DeclEntNo'], 'DeclEntName' => $postDatas['DeclEntName'], 'EBEntNo' => $this->ExcelObj->getActiveSheet()->getCell('B2')->getValue(), 'EBEntName' => $this->ExcelObj->getActiveSheet()->getCell('D2')->getValue(), 'EBPEntNo' => $this->ExcelObj->getActiveSheet()->getCell('B3')->getValue(), 'EBPEntName' => $this->ExcelObj->getActiveSheet()->getCell('D3')->getValue(), 'InternetDomainName' => $this->ExcelObj->getActiveSheet()->getCell('B4')->getValue(), 'DeclTime' => $this->time, 'OpType' => 'A', 'IeFlag' => $this->ExcelObj->getActiveSheet()->getCell('F4')->getValue(), 'CustomsCode' => (int)$this->ExcelObj->getActiveSheet()->getCell('F2')->getValue(), 'CIQOrgCode' => (int)$this->ExcelObj->getActiveSheet()->getCell('F3')->getValue(),];
+    }
+
+
+    /*
+     * 获取第二个工作区数据
+     */
+    public function getTwoSheet ( $postData )
+    {
+
+        $data = ['OrderList'=>array()];
+        $orderHead = $this->getOneSheet($postData);
+        $orderGoods = $this->getThreeSheet();
+        $sheet = $this->ExcelObj->setActiveSheetIndexByName($this->activeSheet[1]);
+        $row = (int)$sheet->getHighestRow();
+        for ($i = 3; $i <= $row; $i++) {
+            $tmp = [];
+            $tmp = [
+                'EntOrderNo' => $this->ExcelObj->getActiveSheet()->getCell('A' . $i)->getValue(),
+                'OrderStatus' => $this->ExcelObj->getActiveSheet()->getCell('B' . $i)->getValue(),
+                'PayStatus' => $this->ExcelObj->getActiveSheet()->getCell('C' . $i)->getValue(),
+                'OrderGoodTotal' => $this->ExcelObj->getActiveSheet()->getCell('D' . $i)->getValue(),
+                'OrderGoodTotalCurr' => $this->ExcelObj->getActiveSheet()->getCell('E' . $i)->getValue(),
+                'Freight' => $this->ExcelObj->getActiveSheet()->getCell('F' . $i)->getValue(),
+                'Tax' => $this->ExcelObj->getActiveSheet()->getCell('G' . $i)->getValue(),
+                'OtherPayment' => 0,
+                'OtherPayNotes' => '待定',
+                'OtherCharges' => 0,
+                'ActualAmountPaid' => $this->ExcelObj->getActiveSheet()->getCell('K' . $i)->getValue(),
+                'RecipientName' => $this->ExcelObj->getActiveSheet()->getCell('L' . $i)->getValue(),
+                'RecipientAddr' => $this->ExcelObj->getActiveSheet()->getCell('M' . $i)->getValue(),
+                'RecipientTel' => $this->ExcelObj->getActiveSheet()->getCell('N' . $i)->getValue(),
+                'RecipientCountry' => $this->ExcelObj->getActiveSheet()->getCell('O' . $i)->getValue(),
+                'RecipientProvincesCode' => $this->ExcelObj->getActiveSheet()->getCell('O' . $i)->getValue(),
+                'OrderDocAcount' => $this->ExcelObj->getActiveSheet()->getCell('R' . $i)->getValue(),
+                'OrderDocName' => $this->ExcelObj->getActiveSheet()->getCell('S' . $i)->getValue(),
+                'OrderDocType' => $this->ExcelObj->getActiveSheet()->getCell('T' . $i)->getValue(),
+                'OrderDocId' => $this->ExcelObj->getActiveSheet()->getCell('U' . $i)->getValue(),
+                'OrderDocTel' => $this->ExcelObj->getActiveSheet()->getCell('V' . $i)->getValue(),
+                'OrderDate' => $this->ExcelObj->getActiveSheet()->getCell('Q' . $i)->getValue(),
+                'BatchNumbers' => '',
+                'InvoiceType' => '',
+                'InvoiceNo' => '',
+                'InvoiceTitle' => '',
+                'InvoiceIdentifyID' => '',
+                'InvoiceDesc' => '',
+                'InvoiceAmount' => '',
+                'InvoiceDate' => '',
+                'Notes' => '',
+                'senderName' =>$this->ExcelObj->getActiveSheet()->getCell('AF' . $i)->getValue(),
+                'senderTel' =>$this->ExcelObj->getActiveSheet()->getCell('AG' . $i)->getValue(),
+                'senderAddr' =>$this->ExcelObj->getActiveSheet()->getCell('AH' . $i)->getValue(),
+                'senderCountry'=>$this->ExcelObj->getActiveSheet()->getCell('AI' . $i)->getValue(),
+                'senderCounCode' =>$this->ExcelObj->getActiveSheet()->getCell('AJ' . $i)->getValue(),
+                'GoodsList' => $orderGoods[$this->ExcelObj->getActiveSheet()->getCell('A' . $i)->getValue()],
+                'OrderWaybillRel' => [
+                    'EHSEntNo' => $this->ExcelObj->getActiveSheet()->getCell('AL' . $i)->getValue(),
+                    'EHSEntName' => $this->ExcelObj->getActiveSheet()->getCell('AM' . $i)->getValue(),
+                    'WaybillNo' => $this->ExcelObj->getActiveSheet()->getCell('AK' . $i)->getValue(),
+                    'Notes' => $this->ExcelObj->getActiveSheet()->getCell('AN' . $i)->getValue(),
+                    ],
+                'OrderPaymentRel' => [
+                    'PayEntNo' => $this->ExcelObj->getActiveSheet()->getCell('AP' . $i)->getValue(),
+                    'PayEntName' => $this->ExcelObj->getActiveSheet()->getCell('AQ' . $i)->getValue(),
+                    'PayNo' => $this->ExcelObj->getActiveSheet()->getCell('AO' . $i)->getValue(),
+                    'Notes' => $this->ExcelObj->getActiveSheet()->getCell('AR' . $i)->getValue(),
+                    ]
+            ];
+            array_push($data['OrderList'], $tmp);
+        }
+        $data['OrderHead'] = $orderHead;
+        unset($orderGoods, $orderHead);
+        return $data;
+    }
+
+    /*
+     * 获取第三个工作表数据
+     */
+    protected function getThreeSheet ()
+    {
+        $sheet = $this->ExcelObj->setActiveSheetIndexByName($this->activeSheet[2]);
+        $row = (int)$sheet->getHighestRow();
+        $data = [];
+        $n = 0;
+        for ($i = 3; $i <= $row; $i++) {
+            $tmp = [];
+            $tmp = ['Seq' => $this->ExcelObj->getActiveSheet()->getCell('B' . $i)->getValue(), 'EntGoodsNo' => $this->ExcelObj->getActiveSheet()->getCell('C' . $i)->getValue(), 'CIQGoodsNo' => $this->ExcelObj->getActiveSheet()->getCell('F' . $i)->getValue(), 'CusGoodsNo' => $this->ExcelObj->getActiveSheet()->getCell('G' . $i)->getValue(), 'HSCode' => $this->ExcelObj->getActiveSheet()->getCell('E' . $i)->getValue(), 'GoodsName' => $this->ExcelObj->getActiveSheet()->getCell('D' . $i)->getValue(), 'GoodsStyle' => $this->ExcelObj->getActiveSheet()->getCell('H' . $i)->getValue(), 'GoodsDescribe' => '', 'OriginCountry' => $this->ExcelObj->getActiveSheet()->getCell('O' . $i)->getValue(), 'BarCode' => $this->ExcelObj->getActiveSheet()->getCell('P' . $i)->getValue(), 'Brand' => $this->ExcelObj->getActiveSheet()->getCell('Q' . $i)->getValue(), 'Qty' => $this->ExcelObj->getActiveSheet()->getCell('I' . $i)->getValue(), 'Unit' => $this->ExcelObj->getActiveSheet()->getCell('J' . $i)->getValue(), 'Price' => $this->ExcelObj->getActiveSheet()->getCell('K' . $i)->getValue(), 'Total' => $this->ExcelObj->getActiveSheet()->getCell('L' . $i)->getValue(), 'CurrCode' => $this->ExcelObj->getActiveSheet()->getCell('M' . $i)->getValue(), 'Notes' => $this->ExcelObj->getActiveSheet()->getCell('R' . $i)->getValue(),];
+            $order_id = $this->ExcelObj->getActiveSheet()->getCell('A' . $i)->getValue();
+            $data[$order_id][$n] = $tmp;
+            $n += 1;
+        }
+        return $data;
+    }
+
+}

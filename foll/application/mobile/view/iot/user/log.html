@@ -1,0 +1,74 @@
+{include file='iot/header'}
+<body>
+<div class="whole">
+    <div class="header">
+        <div class="toplogo"><img src="./static/iot/images/top-logo.png" alt=""></div>
+        <h2 class="title">访客日志</h2>
+        <a href="#" onClick="javascript :history.back(-1);" class="quit">返回</a>
+    </div>
+    <div class="content" style="margin-top: 17%; display: inline-block;">
+        {volist name="list" id="vo"}
+        <a href="{:Url('iot/visitdetail')}&id={$vo.id}">
+            <div class="log grey_bg">
+                <div class="log_left"><img src="./static/iot/images/head_icon.png" alt=""></div>
+                <div class="log_mid">
+                <p><span class="lightgary">访客姓名：</span>{if $vo.idname==''}无{else} {$vo.idname} {/if}</p>
+                <p><span class="lightgary">来访时间：</span>{$vo.invait_time|date='Y-m-d',###}</p>
+            </div>
+            <div class="log_right">{$verifType[$vo.verif_type]}</div>
+        </div>
+        </a>
+
+        {/volist}
+    </div>
+</div>
+<!--<button class="btn btn-success more">加载更多</button>-->
+{include file='iot/menu'}
+</body>
+<script src="./static/iot/js/jquery-1.11.0.min.js"></script>
+<!--瀑布流控制方式-->
+<script type="text/javascript">
+    //滚动加载
+    let [page,url] = [0,'{:Url("iot/visitlog/askdata")}'];
+    window.onscroll = function () {
+        page++
+        console.log(page);
+        var height = document.body.scrollHeight - document.body.scrollTop - window.innerHeight
+        if (height < 900&&page!=1) {
+            askData();
+        }
+    }
+    //异步请求数据
+    function askData() {
+        $.ajax({
+            type:"get",
+            url: url+"&page="+page,
+            dataType: 'json',
+            async:true,
+            success: function (res) {
+                console.log(res);
+                if (res.data.data!=''){
+                    loadDOM(res.data);
+                }
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        });
+    }
+    //加载数据到页面
+    function loadDOM (data) {
+        for (let i in data) {
+            let html = `<div class="log grey_bg">
+            <div class="log_left"><img src="./static/iot/images/head_icon.png" alt=""></div>
+            <div class="log_mid">
+                <p><span class="lightgary">访客姓名：</span>`+data[i].idname+`</p>
+                <p><span class="lightgary">来访时间：</span>`+data[i].invait_time+`</p>
+            </div>
+            <div class="log_right">`+data[i].verif_type+`</div>
+        </div>`
+            $(html).appendTo('.content')
+        }
+    }
+</script>
+</html>

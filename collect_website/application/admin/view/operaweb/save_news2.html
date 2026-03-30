@@ -1,0 +1,587 @@
+{include file="common/header_inner_new"}
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .format1,.format2,.seo_content,.url{display:none;}
+    #edui1{z-index: 9 !important;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <input type="text" style="display:none;" name="cate_id" id="cate_id" value="{$cate_id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">分类名称</div>
+                            <div class="layui-input-block">
+                                {$cate_name}
+                            </div>
+                        </div>
+                        <fieldset class="layui-elem-field">
+                            <legend>新闻标题</legend>
+                            <div class="layui-field-box">
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">新闻标题(简)</div>
+                                    <div class="layui-input-block">
+                                        <input type="text" class="layui-input" lay-verify="required" name="name[zh]" value="{$data['name']['zh']}">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">新闻标题(繁)</div>
+                                    <div class="layui-input-block">
+                                        <input type="text" class="layui-input" lay-verify="required" name="name[cht]" value="{$data['name']['cht']}">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">新闻标题(英)</div>
+                                    <div class="layui-input-block">
+                                        <input type="text" class="layui-input" lay-verify="required" name="name[en]" value="{$data['name']['en']}">
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <fieldset class="layui-elem-field">
+                            <legend>发文机关</legend>
+                            <div class="layui-field-box">
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">发文机关(简)</div>
+                                    <div class="layui-input-block">
+                                        <input type="text" class="layui-input" lay-verify="required" name="issuing_authority[zh]" value="{$data['issuing_authority']['zh']}">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">发文机关(繁)</div>
+                                    <div class="layui-input-block">
+                                        <input type="text" class="layui-input" lay-verify="required" name="issuing_authority[cht]" value="{$data['issuing_authority']['cht']}">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">发文机关(英)</div>
+                                    <div class="layui-input-block">
+                                        <input type="text" class="layui-input" lay-verify="required" name="issuing_authority[en]" value="{$data['issuing_authority']['en']}">
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <fieldset class="layui-elem-field">
+                            <legend>文号</legend>
+                            <div class="layui-field-box">
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">文号(简)</div>
+                                    <div class="layui-input-block">
+                                        <input type="text" class="layui-input" lay-verify="required" name="document_number[zh]" value="{$data['document_number']['zh']}">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">文号(繁)</div>
+                                    <div class="layui-input-block">
+                                        <input type="text" class="layui-input" lay-verify="required" name="document_number[cht]" value="{$data['document_number']['cht']}">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">文号(英)</div>
+                                    <div class="layui-input-block">
+                                        <input type="text" class="layui-input" lay-verify="required" name="document_number[en]" value="{$data['document_number']['en']}">
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <fieldset class="layui-elem-field">
+                            <legend>效力</legend>
+                            <div class="layui-field-box">
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">效力(简)</div>
+                                    <div class="layui-input-block">
+                                        <input type="text" class="layui-input" lay-verify="required" name="effect[zh]" value="{$data['effect']['zh']}">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">效力(繁)</div>
+                                    <div class="layui-input-block">
+                                        <input type="text" class="layui-input" lay-verify="required" name="effect[cht]" value="{$data['effect']['cht']}">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">效力(英)</div>
+                                    <div class="layui-input-block">
+                                        <input type="text" class="layui-input" lay-verify="required" name="effect[en]" value="{$data['effect']['en']}">
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <fieldset class="layui-elem-field">
+                            <legend>效力说明</legend>
+                            <div class="layui-field-box">
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">效力说明(简)</div>
+                                    <div class="layui-input-block">
+                                        <input type="text" class="layui-input" lay-verify="required" name="effect_statement[zh]" value="{$data['effect_statement']['zh']}">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">效力说明(繁)</div>
+                                    <div class="layui-input-block">
+                                        <input type="text" class="layui-input" lay-verify="required" name="effect_statement[cht]" value="{$data['effect_statement']['cht']}">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">效力说明(英)</div>
+                                    <div class="layui-input-block">
+                                        <input type="text" class="layui-input" lay-verify="required" name="effect_statement[en]" value="{$data['effect_statement']['en']}">
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <fieldset class="layui-elem-field">
+                            <legend>新闻描述</legend>
+                            <div class="layui-field-box">
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">新闻描述(简)</div>
+                                    <div class="layui-input-block">
+                                        <input type="text" class="layui-input" lay-verify="required" name="desc[zh]" value="{$data['desc']['zh']}">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">新闻描述(繁)</div>
+                                    <div class="layui-input-block">
+                                        <input type="text" class="layui-input" lay-verify="required" name="desc[cht]" value="{$data['desc']['cht']}">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">新闻描述(英)</div>
+                                    <div class="layui-input-block">
+                                        <input type="text" class="layui-input" lay-verify="required" name="desc[en]" value="{$data['desc']['en']}">
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">发布日期</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" id="release_date" lay-verify="required" name="release_date" value="{$data['release_date']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">生效日期</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" id="effective_date" lay-verify="required" name="effective_date" value="{$data['effective_date']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">原文链接</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" id="link" lay-verify="required" name="link" value="{$data['link']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">配图格式</div>
+                            <div class="layui-input-block">
+                                <select name="format" id="format" lay-filter="format">
+                                    <option value="">请选择</option>
+                                    <option value="1" {if $data['format']==1}selected{/if}>图片上传</option>
+                                    <option value="2" {if $data['format']==2}selected{/if}>色块设置</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="format1" {if $data['format']==1}style="display:block;"{/if}>
+                            <fieldset class="layui-elem-field">
+                                <legend>图片上传</legend>
+                                <div class="layui-field-box">
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">主图(815*455)</div>
+                                        <div class="layui-input-block">
+                                            <div class="layui-upload" style="margin-top: 10px;">
+                                                <button type="button" class="layui-btn" id="img_file-upload">上传图片(一张)</button>
+                                                <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                                                    预览图：
+                                                    <div class="layui-upload-list" id="img_file-upload-list">
+                                                        {if !empty($data['avatar'])}
+                                                        <div style="display: inline-block;">
+                                                            <img onclick="seePic(this);" src="/{$data['avatar']}" class="layui-upload-img" style="width:80px;height:80px;">
+                                                            <button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button>
+                                                            <input type="hidden" name="avatar[]" value="{$data['avatar']}">
+                                                        </div>
+                                                        {/if}
+                                                    </div>
+                                                </blockquote>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">配图位置</div>
+                                        <div class="layui-input-block">
+                                            <select name="avatar_location" id="avatar_location" lay-filter="avatar_location">
+                                                <option value="1" {if $data['avatar_location']==1}selected{/if}>图文上方</option>
+                                                <option value="2" {if $data['avatar_location']==2}selected{/if}>图文下方</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class=" format2 colorAndWord" {if $data['format']==2}style="display:block;"{/if}>
+                            <fieldset class="layui-elem-field">
+                                <legend>色块设置</legend>
+                                <div class="layui-field-box">
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">色块颜色</div>
+                                        <div class="layui-input-block">
+                                            <div id="color"></div>
+                                            <input type="hidden" name="color" value="{$data['color']}">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">文字(简)</div>
+                                        <div class="layui-input-block">
+                                            <input type="text" class="layui-input" name="color_word_zh" value="{$data['color_word']['zh']}">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">文字(繁)</div>
+                                        <div class="layui-input-block">
+                                            <input type="text" class="layui-input" name="color_word_cht" value="{$data['color_word']['cht']}">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">文字(英)</div>
+                                        <div class="layui-input-block">
+                                            <input type="text" class="layui-input" name="color_word_en" value="{$data['color_word']['en']}">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">文字颜色</div>
+                                        <div class="layui-input-block">
+                                            <div id="word_color"></div>
+                                            <input type="hidden" name="word_color" value="{$data['word_color']}">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">配图位置</div>
+                                        <div class="layui-input-block">
+                                            <select name="avatar_location" id="avatar_location" lay-filter="avatar_location">
+                                                <option value="1" {if $data['avatar_location']==1}selected{/if}>图文上方</option>
+                                                <option value="2" {if $data['avatar_location']==2}selected{/if}>图文下方</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">内页seo优化</div>
+                            <div class="layui-input-block">
+                                <select name="seo_type" id="seo_type" lay-filter="seo_type">
+                                    <option value="1" {if $data['seo_type']==1}selected{/if}>暂不优化</option>
+                                    <option value="2" {if $data['seo_type']==2}selected{/if}>马上优化</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="seo_content" {if $data['seo_type']==2}style="display:block;"{/if}>
+                            <fieldset class="layui-elem-field">
+                                <legend>内页标题</legend>
+                                <div class="layui-field-box">
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">内页标题(简)</div>
+                                        <div class="layui-input-block">
+                                            <input type="text" class="layui-input" name="seo_content[title][zh]" value="{$data['seo_content']['title']['zh']}">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">内页标题(繁)</div>
+                                        <div class="layui-input-block">
+                                            <input type="text" class="layui-input" name="seo_content[title][cht]" value="{$data['seo_content']['title']['cht']}">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">内页标题(英)</div>
+                                        <div class="layui-input-block">
+                                            <input type="text" class="layui-input" name="seo_content[title][en]" value="{$data['seo_content']['title']['en']}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <fieldset class="layui-elem-field">
+                                <legend>内页关键词</legend>
+                                <div class="layui-field-box">
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">内页关键词(简)</div>
+                                        <div class="layui-input-block">
+                                            <input type="text" class="layui-input" name="seo_content[keywords][zh]" value="{$data['seo_content']['keywords']['zh']}">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">内页关键词(繁)</div>
+                                        <div class="layui-input-block">
+                                            <input type="text" class="layui-input" name="seo_content[keywords][cht]" value="{$data['seo_content']['keywords']['cht']}">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">内页关键词(英)</div>
+                                        <div class="layui-input-block">
+                                            <input type="text" class="layui-input" name="seo_content[keywords][en]" value="{$data['seo_content']['keywords']['en']}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <fieldset class="layui-elem-field">
+                                <legend>内页描述</legend>
+                                <div class="layui-field-box">
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">内页描述(简)</div>
+                                        <div class="layui-input-block">
+                                            <input type="text" class="layui-input" name="seo_content[desc][zh]" value="{$data['seo_content']['desc']['zh']}">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">内页描述(繁)</div>
+                                        <div class="layui-input-block">
+                                            <input type="text" class="layui-input" name="seo_content[desc][cht]" value="{$data['seo_content']['desc']['cht']}">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">内页描述(英)</div>
+                                        <div class="layui-input-block">
+                                            <input type="text" class="layui-input" name="seo_content[desc][en]" value="{$data['seo_content']['desc']['en']}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">我要服务链接</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" name="url" value="{$data['url']}">
+                            </div>
+                        </div>
+                        <fieldset class="layui-elem-field">
+                            <legend>内容</legend>
+                            <div class="layui-field-box">
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">内容(简)</div>
+                                    <div class="layui-input-block">
+                                        <script id="content_zh" name="content_zh" type="text/plain" style="width:100%;height:400px;">
+                                            {if !empty($data['content']['zh'])}
+                                                {$data['content']['zh']|htmlspecialchars_decode|stripslashes}
+                                            {/if}
+                                        </script>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">内容(繁)</div>
+                                    <div class="layui-input-block">
+                                        <script id="content_cht" name="content_cht" type="text/plain" style="width:100%;height:400px;">
+                                                {if !empty($data['content']['cht'])}
+                                                    {$data['content']['cht']|htmlspecialchars_decode|stripslashes}
+                                                {/if}
+                                            </script>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">内容(英)</div>
+                                    <div class="layui-input-block">
+                                        <script id="content_en" name="content_en" type="text/plain" style="width:100%;height:400px;">
+                                                {if !empty($data['content']['en'])}
+                                                    {$data['content']['en']|htmlspecialchars_decode|stripslashes}
+                                                {/if}
+                                            </script>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload','colorpicker'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+        var colorpicker = layui.colorpicker;
+
+        //内页类型
+        form.on('select(type)',function(data){
+            let val = data.value;
+            if(val==1){
+                $('.url').show();
+            }else{
+                $('.url').hide();
+            }
+        });
+        //seo优化
+        form.on('select(seo_type)',function(data){
+            let val = data.value;
+            if(val==2){
+                $('.seo_content').show();
+            }else{
+                $('.seo_content').hide();
+            }
+        });
+        //配图格式
+        form.on('select(format)',function(data){
+            let val = data.value;
+            if(val==1){
+                $('.format1').show();
+                $('.format2').hide();
+            }else{
+                $('.format1').hide();
+                $('.format2').show();
+            }
+        });
+
+
+        laydate.render({
+            elem: '#release_date'
+            ,format: 'yyyy/MM/dd'
+        });
+
+        laydate.render({
+            elem: '#effective_date'
+            ,format: 'yyyy/MM/dd'
+        });
+
+        UE.getEditor('content_zh', {
+            initialFrameHeight: 400,
+            serverUrl: 'static/cklein/plugins/ueditor/php/controller.php'
+        });
+
+        UE.getEditor('content_cht', {
+            initialFrameHeight: 400,
+            serverUrl: 'static/cklein/plugins/ueditor/php/controller.php'
+        });
+
+        UE.getEditor('content_en', {
+            initialFrameHeight: 400,
+            serverUrl: 'static/cklein/plugins/ueditor/php/controller.php'
+        });
+
+        {if !empty($data['color'])}
+            colorpicker.render({
+                elem:'#color',
+                alpha:true,
+                size:'lg',
+                predefine:true,
+                color:'{$data["color"]}',
+                done:function(color){
+                    $('input[name="color"]').val(color);
+                }
+            });
+            colorpicker.render({
+                elem:'#word_color',
+                alpha:true,
+                size:'lg',
+                predefine:true,
+                color:'{$data["word_color"]}',
+                done:function(color){
+                    $('input[name="word_color"]').val(color);
+                }
+            });
+        {else}
+            colorpicker.render({
+                elem:'#color',
+                alpha:true,
+                size:'lg',
+                done:function(color){
+                    $('input[name="color"]').val(color);
+                }
+            });
+            colorpicker.render({
+                elem:'#word_color',
+                alpha:true,
+                size:'lg',
+                done:function(color){
+                    $('input[name="word_color"]').val(color);
+                }
+            });
+        {/if}
+
+        form.on('submit(component-form-element)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            // if( $('#img_file-upload-list').children().length == 0 )
+            // {
+            //     layer.msg('请上传新闻主图！');
+            //     return false;
+            // }
+
+            $.ajax({
+                url:"{:Url('admin/operaweb/save_news')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+        // 轮播图文件
+        upload.render({
+            elem: '#img_file-upload'
+            ,url: '{:Url("admin/basic/upload_file")}'
+            ,accept: 'image'
+            ,data: { folder: 'centralize', type: 'website_news'}
+            ,multiple: false
+            ,number:1
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+
+                    $('#img_file-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="avatar[]" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+
+</script>
+</body>
+</html>

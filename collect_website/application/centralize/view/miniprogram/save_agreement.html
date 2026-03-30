@@ -1,0 +1,162 @@
+{include file="public/header"}
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    #edui1{z-index: 10 !important;}
+    .layui-btn-success,.layui-btn-danger{font-size:25px;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">选择页面</div>
+                            <div class="layui-input-block">
+                                <select name="page_id" id="page_id" lay-verify="required">
+                                    <option value="">请选择页面</option>
+                                    {foreach $page as $val}
+                                    <option value="{$val['id']}" {if $data['page_id']==$val['id']}selected{/if}>{$val['name']}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                        </div>
+                        <table class="layui-table">
+                            <thead>
+                            <th>标题</th>
+                            <th>链接</th>
+                            <th>#</th>
+                            </thead>
+                            <tbody>
+                            {if $id>0}
+                                {volist name="data.content['title']" key="key2" id="vo"}
+                                <tr>
+                                    <td><input type="text" class="layui-input" name="content[title][]" placeholder="请输入标题" value="{$vo}"></td>
+                                    <td><input type="text" class="layui-input" name="content[link][]" placeholder="请输入链接" value="{$data['content']['link'][$key2-1]}"></td>
+                                    <td>
+                                        <div class="layui-btn layui-btn-success" onclick="add_content(this,1)">+</div>
+                                        {if $key2>1}
+                                        <div class="layui-btn layui-btn-danger" onclick="del_content(this,1)">-</div>
+                                        {/if}
+                                    </td>
+                                </tr>
+                                {/volist}
+                            {else}
+                                <tr>
+                                    <td><input type="text" class="layui-input" name="content[title][]" placeholder="请输入标题"></td>
+                                    <td><input type="text" class="layui-input" name="content[link][]" placeholder="请输入链接"></td>
+                                    <td>
+                                        <div class="layui-btn layui-btn-success" onclick="add_content(this,1)">+</div>
+                                    </td>
+                                </tr>
+                            {/if}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+
+        form.on('submit(component-form-element)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            // if( $('#img_file-upload-list').children().length == 0 )
+            // {
+            //     layer.msg('请上传新闻封面图！');
+            //     return false;
+            // }
+
+            $.ajax({
+                url:"{:Url('centralize/miniprogram/save_agreement')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+
+    function add_content(t,typ){
+        var layer = layui.layer,$ = layui.$;
+        let html = '';
+        if(typ==1){
+            html = '<tr>\n' +
+                '                                        <td><input type="text" class="layui-input" name="content[title][]" placeholder="请输入标题"></td>\n' +
+                '                                        <td><input type="text" class="layui-input" name="content[link][]" placeholder="请输入链接"></td>\n' +
+                '                                        <td>\n' +
+                '                                            <div class="layui-btn layui-btn-success" onclick="add_content(this,1)">+</div>\n' +
+                '                                            <div class="layui-btn layui-btn-danger" onclick="del_content(this,1)">-</div>\n' +
+                '                                        </td>\n' +
+                '                                    </tr>';
+        }else if(typ==2){
+            html = '<tr>\n' +
+                '                                        <td><input type="text" class="layui-input" name="sure[title][]" placeholder="请输入标题"></td>\n' +
+                '                                        <td><input type="text" class="layui-input" name="sure[link][]" placeholder="请输入链接"></td>\n' +
+                '                                        <td>\n' +
+                '                                            <div class="layui-btn layui-btn-success" onclick="add_content(this,2)">+</div>\n' +
+                '                                            <div class="layui-btn layui-btn-danger" onclick="del_content(this,1)">-</div>\n' +
+                '                                        </td>\n' +
+                '                                    </tr>';
+        }else if(typ==3){
+            html = '<tr>\n' +
+                '                                        <td><input type="text" class="layui-input" name="knows[title][]" placeholder="请输入标题"></td>\n' +
+                '                                        <td><input type="text" class="layui-input" name="knows[link][]" placeholder="请输入链接"></td>\n' +
+                '                                        <td>\n' +
+                '                                            <div class="layui-btn layui-btn-success" onclick="add_content(this,3)">+</div>\n' +
+                '                                            <div class="layui-btn layui-btn-danger" onclick="del_content(this,1)">-</div>\n' +
+                '                                        </td>\n' +
+                '                                    </tr>';
+        }
+        $(t).parent().parent().parent().append(html);
+    }
+
+    function del_content(t,typ){
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确定要删除吗?',{
+            icon:2,
+            btn:['确定','取消']
+        },function(){
+            $(t).parent().parent().remove();
+            layer.closeAll();
+        },function(){
+
+        });
+    }
+</script>
+</body>
+</html>

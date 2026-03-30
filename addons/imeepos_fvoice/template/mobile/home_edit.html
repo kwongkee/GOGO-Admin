@@ -1,0 +1,96 @@
+{template 'common/header'}
+<link rel="stylesheet" href="{MODULE_URL}public/css/edit.css"/>
+<div id="self" class="self">
+    <div class="avatar" style="position:relative;width:2.15rem;height:2.15rem;border-radius:50%;display:inline-block;">
+        <img style="position:relative;width:2.15rem;height:2.15rem;border-radius:50%;display:inline-block;" class="avatarImg" src="{php echo $member['avatar']}" /></div>
+    <h1 class="username">{$member['nickname']}</h1></div>
+<div id="Form">
+    <form action="" method="post">
+        <div style="background:#fff;padding:.8rem .9rem;margin-bottom:.6rem;">
+            <label style="font-size:.75rem;line-height:1.05rem;color:#3f3f3f;margin-bottom:.35rem;display:block;" for="title" data-reactid=".14p8ssk6neo.0.0">你的头衔（18个字以内）</label>
+            <textarea maxlength="18" id="title" placeholder="运营经理；电台DJ；Google早期员工；周游过列国的斜杠青年；心理咨询师……"
+                      style="display:block;height:3.15rem;width:100%;font-size:.75rem;line-height:1.05rem;outline:none;box-shadow:none;-webkit-appearance:none;border:none;">{$member['tags']}</textarea>
+        </div>
+        <div style="background:#fff;padding:.8rem .9rem;margin-bottom:.6rem;">
+            <label style="font-size:.75rem;line-height:1.05rem;color:#3f3f3f;margin-bottom:.35rem;display:block;" for="introduction">介绍下自己吧（100个字以内）</label>
+            <textarea maxlength="100" id="introduction"
+                      placeholder="关于这些，尽情问我：投资理财、迎取白富美；如何优雅参加前任婚礼；和异性出差时如何管理自我冲动……或者给你唱个晚安小曲吧。" style="display:block;height:3.15rem;width:100%;font-size:.75rem;line-height:1.05rem;outline:none;box-shadow:none;-webkit-appearance:none;border:none;"
+                      >{$member['desc']}</textarea>
+        </div>
+        <div style="background:#fff;padding:.8rem .9rem;margin-bottom:.6rem;">
+            <label style="font-size:.75rem;line-height:1.05rem;color:#3f3f3f;display:inline-block;vertical-align:middle;" for="price">向我提问需要支付</label>
+            <input placeholder="￥1-500" type="text" id="price" style="margin:0 .5rem;padding:.55rem;width:2.85rem;font-size:.75rem;line-height:1.05rem;outline:none;box-shadow:none;-webkit-appearance:none;border:none;background:#f4f4f4;border-radius:5px;" value="{$member['credit']}"/>
+            <span style="font-size:.75rem;line-height:1.05rem;color:#999;display:inline-block;vertical-align:middle;">元</span>
+        </div>
+        <style>
+            .category_id{
+                padding: 5px 10px 5px 10px;
+                background-color: gray;
+                color: #fff;
+                margin: 3px;
+            }
+            .category_id.active{
+                background-color:#f85f48;
+            }
+        </style>
+        <div style="background:#fff;padding:.8rem .9rem;margin-bottom:.6rem;">
+            <label style="font-size:.75rem;line-height:1.05rem;color:#3f3f3f;margin-bottom:.35rem;display:block;" for="category_id">选择服务范围</label>
+            <div id="category_id">
+                {php $categorys = M('category')->getall(array('fid'=>0));}
+                {loop $categorys $category}
+                {php $cates = M('category')->getall(array('fid'=>$category['id']))}
+                {loop $cates $cat}
+                <span style="display: inline-block;" class="weui_btn weui_btn_primary weui_btn_mini category_id {if $member['category_id'] == $cat['id']}active{/if}" data-id="{php echo $cat['id']}">{$cat['title']}</span>
+                {/loop}
+                {/loop}
+            </div>
+        </div>
+        <div style="text-align:center;padding-top:.6rem;">
+            <button style="display:inline-block;line-height:2.2rem;width:7.25rem;background:#F85F48;border:1px solid #F85F48;font-size:.75rem;color:#fff;text-decoration:none;text-align:center;border-radius:.3rem;" type="button" id="save">保存</button>
+            <input type="hidden" name="token" value="{$_W['token']}" />
+        </div>
+    </form>
+</div>
+<script type="text/javascript" src="{$_W['siteroot']}app/resource/js/lib/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="{MODULE_URL}public/libs/jquery_weui/jquery-weui.js"></script>
+<script>
+    var post = {};
+
+    $('.category_id').click(function(){
+        post.category_id = $(this).data('id');
+        $('.category_id').removeClass('active');
+        $(this).addClass('active');
+    });
+    $('#save').click(function(){
+        post.tags= $('#title').val();
+        post.desc = $('#introduction').val();
+        post.credit = parseFloat($('#price').val());
+        if(!post.tags){
+            $.toast("请填写你的头衔");
+            return '';
+        }
+        if(!post.desc){
+            $.toast("请填写你的介绍");
+            return '';
+        }
+        if(!post.credit){
+            $.toast("请填写提问支付费用");
+            return '';
+        }
+        if(!post.category_id){
+            $.toast("请选择服务范围");
+            return '';
+        }
+        if(post.credit <= 0){
+            $.toast("提问支付费用必须大于0");
+            return '';
+        }
+        $.post('',post,function(data){
+            $.toast(data.message,2000,function(){
+                window.location.href = "{php echo $this->createMobileUrl('home')}";
+            });
+        },'json');
+        return false;
+    });
+</script>
+{template 'common/footer'}

@@ -1,0 +1,757 @@
+{include file="common/header_inner_new"}
+
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .menu_list,.child_menu,.picAndWord,.colorAndWord,.other_list,.picAndWordo,.colorAndWordo{display:none;}
+    .show{display:block;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element2">
+            <input type="hidden" name="id" value="{$gather_id}">
+            <input type="hidden" name="mid" value="{$id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">中文名称</div>
+                            <div class="layui-input-block">
+                                <input type="text" name="zh_name" class="layui-input" value="{$data['zh_name']}" placeholder="请输入中文名称" lay-verify="required">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">英文名称</div>
+                            <div class="layui-input-block">
+                                <input type="text" name="en_name" class="layui-input" value="{$data['en_name']}" placeholder="请输入英文名称" lay-verify="required">
+                            </div>
+                        </div>
+                        <div class="layui-form-item ">
+                            <label class="layui-form-label">选择导航</label>
+                            <div class="layui-input-block disf">
+                                <select name="nav_type" id="nav_type" lay-filter="nav_type" {if $id>0}disabled{/if}>
+                                    <option value="">请选择导航类型</option>
+                                    <option value="1" {if $data['nav_type']==1}selected{/if}>菜单导航</option>
+                                    <option value="2" {if $data['nav_type']==2}selected{/if}>其它导航</option>
+                                </select>
+                            </div>
+                        </div>
+                        {if $id>0}
+                            {if $data['nav_type']==1}
+                                <div class="menu_list show">
+                                    <input type="hidden" name="bigmenu_num" value="<?php echo count($data['menu_info'])?>">
+                                    <div class="bigmenu">
+                                        <?php $ele_idx=1;?>
+                                        {volist name="data.menu_info" key="index" id="val"}
+                                            <fieldset class="layui-elem-field">
+                                                <legend>菜单{$index}：</legend>
+                                                <div class="layui-field-box">
+                                                    <div class="layui-form-item">
+                                                        <label class="layui-form-label">选择菜单</label>
+                                                        <div class="layui-input-block disf">
+                                                            <select name="menu_id[]" id="menu_id" lay-filter="menu_id" lay-search>
+                                                                <option value="">请选择菜单</option>
+                                                                {volist name="menu" id="vo"}
+                                                                <option value="{$vo.id}" {if $val.menu_id==$vo.id}selected{/if}>{$vo.title}</option>
+                                                                {/volist}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="layui-form-item">
+                                                        <label class="layui-form-label">底部显示</label>
+                                                        <div class="layui-input-block disf">
+                                                            <select name="footer_show[]">
+                                                                <option value="0" {if $val.footer_show==0}selected{/if}>否</option>
+                                                                <option value="1" {if $val.footer_show==1}selected{/if}>是</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="layui-form-item">
+                                                        <div class="layui-form-label">菜单描述</div>
+                                                        <div class="layui-input-block">
+                                                            <textarea name="description[]" id="description" class="layui-textarea" placeholder="请输入菜单描述">{$val.description}</textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="this_index">
+                                                        <input type="hidden" name="index[]" class="index" value="{$index-1}" />
+                                                    </div>
+                                                    <div class="child_menu show">
+                                                        <div class="child_content">
+                                                            <div class="layui-collapse" lay-accordion>
+                                                              {volist name="val.child_menu" key="index2" id="vo"}
+                                                              <div class="layui-colla-item">
+                                                                    <h2 class="layui-colla-title">{$vo.menu_name}</h2>
+                                                                    <div class="layui-colla-content {if $index2==1}layui-show{else}{/if}">
+                                                                        <input name="child_menu[{$index-1}][]" value="{$vo.menu_id}" type="hidden">
+                                                                        <div class="layui-form-item">
+                                                                            <div class="layui-form-label">选择样式</div>
+                                                                            <div class="layui-input-block">
+                                                                               <select name="child_style[{$index-1}][]" lay-filter="child_style">
+                                                                                   <option value="">请选择样式</option>
+                                                                                   <option value="1" {if $vo.child_style==1}selected{/if}>添加配图</option>
+                                                                                   <option value="2" {if $vo.child_style==2}selected{/if}>添加底色</option>
+                                                                               </select>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="layui-form-item picAndWord {if $vo.child_style==1}show{/if}">
+                                                                            <div class="layui-form-label">图片(520*300)</div>
+                                                                            <div class="layui-input-block">
+                                                                                <div class="layui-upload" style="margin-top: 10px;">
+                                                                                    <button type="button" class="layui-btn" id="imgword_file-upload{$ele_idx}">上传图片(一张)</button>
+                                                                                    <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                                                                                        预览图：
+                                                                                        <div class="layui-upload-list" id="imgword_file-upload-list{$ele_idx}">
+                                                                                            {if !empty($vo.imgword)}
+                                                                                            <div style="display: inline-block;">
+                                                                                                <img onclick="seePic(this);" src="/{$vo.imgword}" class="layui-upload-img" style="width:80px;height:80px;">
+                                                                                                <button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button>
+                                                                                            </div>
+                                                                                            {/if}
+                                                                                            <input type="hidden" name="imgword[{$index-1}][]" value="{$vo.imgword}">
+                                                                                        </div>
+                                                                                    </blockquote>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="layui-form-item colorAndWord {if $vo.child_style==2}show{/if}">
+                                                                            <div class="layui-form-label">颜色</div>
+                                                                            <div class="layui-input-block">
+                                                                                <div id="color{$ele_idx}" data-i="{$ele_idx}"></div>
+                                                                                <input type="hidden" name="color[{$index-1}][]" id="color_input{$ele_idx}" value="{$vo.color}">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="layui-form-item word">
+                                                                            <label class="layui-form-label">文字描述</label>
+                                                                            <div class="layui-input-block">
+                                                                                <input type="text" name="word[{$index-1}][]" value="{$vo.word}" placeholder="请输入文字" autocomplete="off" class="layui-input">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <?php $ele_idx+=1;?>
+                                                                {/volist}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        {/volist}
+                                    </div>
+                                    <hr>
+                                    <div class="layui-btn add_bmenu layui-btn-primary">添加菜单（最多5个）</div>
+                                </div>
+                            {else if($data['nav_type']==2)}
+                                <div class="other_list show">
+                                <div class="layui-form-item ">
+                                    <label class="layui-form-label">选择内容</label>
+                                    <div class="layui-input-block disf">
+                                        <select name="content_type" id="content_type" lay-filter="content_type" {if $id>0}disabled{/if}>
+                                            <option value="">请选择导航类型</option>
+                                            <option value="1" {if $data['content_type']==1}selected{/if}>菜单内容</option>
+                                            <option value="2" {if $data['content_type']==2}selected{/if}>内页内容</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="other_content">
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">选择内容</div>
+                                        <div class="layui-input-block">
+                                            <select name="menu_ido" id="menu_ido">
+                                                <option value="">请选择内容</option>
+                                                {volist name="list" id="vo"}
+                                                <option value="{$vo.menu_id}" {if $vo.menu_id==$data['content_info']['menu_id']}selected{/if}>{$vo.title}</option>
+                                                {/volist}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">选择样式</div>
+                                        <div class="layui-input-block">
+                                            <select name="child_styleo" lay-filter="child_styleo">
+                                                <option value="">请选择样式</option>
+                                                <option value="1" {if 1==$data['content_info']['child_style']}selected{/if}>添加配图</option>
+                                                <option value="2" {if 2==$data['content_info']['child_style']}selected{/if}>添加底色</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item picAndWordo {if 1==$data['content_info']['child_style']}show{/if}">
+                                        <div class="layui-form-label">图片(520*300)</div>
+                                        <div class="layui-input-block">
+                                            <div class="layui-upload" style="margin-top: 10px;">
+                                                <button type="button" class="layui-btn" id="imgword_file-uploado">上传图片(一张)</button>
+                                                <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                                                    预览图：
+                                                    <div class="layui-upload-list" id="imgword_file-upload-listo">
+                                                        {if !empty($data['content_info']['imgword'])}
+                                                        <div style="display: inline-block;">
+                                                            <img onclick="seePic(this);" src="/{$data['content_info']['imgword']}" class="layui-upload-img" style="width:80px;height:80px;">
+                                                            <button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button>
+                                                        </div>
+                                                        {/if}
+                                                        <div style="display: inline-block;"><input type="hidden" name="imgwordo[]" value="{$data['content_info']['imgword']}"></div>
+                                                    </div>
+                                                </blockquote>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item colorAndWordo {if 2==$data['content_info']['child_style']}show{/if}">
+                                        <div class="layui-form-label">颜色</div>
+                                        <div class="layui-input-block">
+                                            <div id="coloro"></div>
+                                            <input type="hidden" name="coloro" id="color_inputo" value="{$data['content_info']['color']}">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item word">
+                                        <label class="layui-form-label">文字描述</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="wordo" value="{$data['content_info']['description']}" placeholder="请输入文字" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {/if}
+                        {else}
+                            <div class="menu_list">
+                                <input type="hidden" name="bigmenu_num" value="1">
+                                <div class="bigmenu">
+                                    <fieldset class="layui-elem-field">
+                                        <legend>菜单1：</legend>
+                                        <div class="layui-field-box">
+                                            <div class="layui-form-item">
+                                                <label class="layui-form-label">选择菜单</label>
+                                                <div class="layui-input-block disf">
+                                                    <select name="menu_id[]" id="menu_id" lay-filter="menu_id" lay-search>
+                                                        <option value="">请选择菜单</option>
+                                                        {volist name="menu" id="vo"}
+                                                        <option value="{$vo.id}">{$vo.title}</option>
+                                                        {/volist}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="layui-form-item">
+                                                <label class="layui-form-label">底部显示</label>
+                                                <div class="layui-input-block disf">
+                                                    <select name="footer_show[]">
+                                                        <option value="0">否</option>
+                                                        <option value="1">是</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="layui-form-item">
+                                                <div class="layui-form-label">菜单描述</div>
+                                                <div class="layui-input-block">
+                                                    <textarea name="description[]" id="description" class="layui-textarea" placeholder="请输入菜单描述"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="this_index">
+                                                <input type="hidden" name="index[]" class="index" value="0" />
+                                            </div>
+                                            <div class="child_menu">
+
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <hr>
+                                <div class="layui-btn add_bmenu layui-btn-primary">添加菜单（最多5个）</div>
+                            </div>
+                            <div class="other_list">
+                                <div class="layui-form-item ">
+                                    <label class="layui-form-label">选择内容</label>
+                                    <div class="layui-input-block disf">
+                                        <select name="content_type" id="content_type" lay-filter="content_type">
+                                            <option value="">请选择导航类型</option>
+                                            <option value="1">菜单内容</option>
+                                            <option value="2">内页内容</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="other_content">
+
+                                </div>
+                            </div>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload','colorpicker','element'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+        var element = layui.element;
+        var colorpicker = layui.colorpicker;
+
+        {if $id>0}
+            <?php $ele_idx=1;?>
+            {if $data['nav_type']==1}
+                {volist name="data.menu_info" key="index" id="val"}
+                {volist name="val.child_menu" key="index2" id="vo"}
+                    colorpicker.render({
+                        elem:'#color'+{$ele_idx},
+                        alpha:true,
+                        size:'lg',
+                        datai:{$ele_idx},
+                        predefine:true,
+                        color:'{$vo.color}',
+                        done:function(color){
+                            // $('input[name="color['+idx+'][]"]').val(color);
+                            $('#color_input'+$(this)[0].datai).val(color);
+                            form.render(null,'component-form-element2');
+                        }
+                    });
+
+                    //图片+文字
+                    upload.render({
+                        elem: '#imgword_file-upload'+{$ele_idx}
+                        ,url: '{:Url("admin/basic/upload_file")}'
+                        ,accept: 'image'
+                        ,data: { folder: 'centralize', type: 'website_index','idx':{$ele_idx}}
+                        ,multiple: false
+                        ,number:1
+                        ,before: function(obj){
+                            layer.load(); //上传loading
+                        }
+                        ,done: function(res){
+                            list_idx = $(this)[0].data.idx;
+                            layer.closeAll('loading'); //关闭loading
+                            if(res.code == 1)
+                            {
+                                $('#imgword_file-upload-list'+list_idx).html('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="imgword[{$index-1}][]" value="'+res.file_path+'"></div>')
+                            }
+                        }
+                    });
+                <?php $ele_idx+=1;?>
+                {/volist}
+                {/volist}
+            {else}
+                colorpicker.render({
+                    elem:'#coloro',
+                    alpha:true,
+                    size:'lg',
+                    predefine:true,
+                    color:'{$data["content_info"]["color"]}',
+                    done:function(color){
+                        // $('input[name="color['+idx+'][]"]').val(color);
+                        $('#color_inputo').val(color);
+                        form.render(null,'component-form-element2');
+                    }
+                });
+
+                //图片+文字
+                upload.render({
+                    elem: '#imgword_file-uploado'
+                    ,url: '{:Url("admin/basic/upload_file")}'
+                    ,accept: 'image'
+                    ,data: { folder: 'centralize', type: 'website_index'}
+                    ,multiple: false
+                    ,number:1
+                    ,before: function(obj){
+                        layer.load(); //上传loading
+                    }
+                    ,done: function(res){
+                        layer.closeAll('loading'); //关闭loading
+                        if(res.code == 1)
+                        {
+                            $('#imgword_file-upload-listo').html('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="imgwordo[]" value="'+res.file_path+'"></div>')
+                        }
+                    }
+                });
+            {/if}
+        {/if}
+
+        form.on('select(nav_type)',function(data){
+            let val=data.value;
+            if(val==1){
+                $('.menu_list').show();
+                $('.other_list').hide();
+            }else{
+                $('.other_list').show();
+                $('.menu_list').hide();
+            }
+        });
+        form.on('select(content_type)',function(data){
+            let val = data.value;
+            $.ajax({
+                url: "{:Url('admin/officialwebsite/get_content')}",
+                method: 'post',
+                data: {'nav_type': val,'website_id':'{$gather_id}'},
+                dataType: 'JSON',
+                success: function (res) {
+                    if (res.code == 0) {
+                        if(res.list.length==0){
+                            layer.confirm('暂无内容，是否要跳转新增？', {
+                                btn: ['是','否']
+                            }, function(){
+                                layer.open({
+                                    type: 2,
+                                    title: '新增内容',
+                                    area:['100%','100%'],
+                                    content: "{:url('admin/officialwebsite/add_diycontent')}"
+                                });
+                            },function(){
+
+                            });
+                        }else{
+                            let html = '<div class="layui-form-item">\n'+
+                                '<div class="layui-form-label">选择内容</div>\n'+
+                                '<div class="layui-input-block">\n'+
+                                '<select name="menu_ido" id="menu_ido">\n'+
+                                '<option value="">请选择内容</option>\n';
+
+                            for(let i=0;i<res.list.length;i++){
+                                html += '<option value="'+res.list[i].menu_id+'">'+res.list[i].title+'</option>\n';
+                            }
+                            html += '</select>\n'+
+                                '</div>\n'+
+                                '</div>\n'+
+                                '<div class="layui-form-item">\n'+
+                                '<div class="layui-form-label">选择样式</div>\n'+
+                                '<div class="layui-input-block">\n'+
+                                '   <select name="child_styleo" lay-filter="child_styleo">\n'+
+                                '       <option value="">请选择样式</option>\n'+
+                                '       <option value="1">添加配图</option>\n'+
+                                '       <option value="2">添加底色</option>\n'+
+                                '   </select>\n'+
+                                '</div>\n'+
+                                '</div>\n'+
+                                '<div class="layui-form-item picAndWordo">\n'+
+                                '<div class="layui-form-label">图片(520*300)</div>\n'+
+                                '<div class="layui-input-block">\n'+
+                                '<div class="layui-upload" style="margin-top: 10px;">\n'+
+                                '<button type="button" class="layui-btn" id="imgword_file-uploado">上传图片(一张)</button>\n'+
+                                '<blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">\n'+
+                                '预览图：\n'+
+                                '<div class="layui-upload-list" id="imgword_file-upload-listo">\n'+
+                                '<div style="display: inline-block;"><input type="hidden" name="imgwordo[]" value=""></div>\n'+
+                                '</div>\n'+
+                                '</blockquote>\n'+
+                                '</div>\n'+
+                                '</div>\n'+
+                                '</div>\n'+
+                                '<div class="layui-form-item colorAndWordo">\n'+
+                                '<div class="layui-form-label">颜色</div>\n'+
+                                '<div class="layui-input-block">\n'+
+                                '<div id="coloro"></div>\n'+
+                                '<input type="hidden" name="coloro" id="color_inputo" value="">\n'+
+                                '</div>\n'+
+                                '</div>\n'+
+                                '<div class="layui-form-item word">\n'+
+                                '<label class="layui-form-label">文字描述</label>\n'+
+                                '<div class="layui-input-block">\n'+
+                                '<input type="text" name="wordo" value="" placeholder="请输入文字" autocomplete="off" class="layui-input">\n'+
+                                '</div>\n'+
+                                '</div>\n';
+
+                            $('.other_content').html(html);
+
+                            form.render(null,'component-form-element2');
+                            layui.element.init();
+
+                            colorpicker.render({
+                                elem:'#coloro',
+                                alpha:true,
+                                size:'lg',
+                                done:function(color){
+                                    // $('input[name="color['+idx+'][]"]').val(color);
+                                    $('#color_inputo').val(color);
+                                    form.render(null,'component-form-element2');
+                                }
+                            });
+
+                            //图片+文字
+                            upload.render({
+                                elem: '#imgword_file-uploado'
+                                ,url: '{:Url("admin/basic/upload_file")}'
+                                ,accept: 'image'
+                                ,data: { folder: 'centralize', type: 'website_index'}
+                                ,multiple: false
+                                ,number:1
+                                ,before: function(obj){
+                                    layer.load(); //上传loading
+                                }
+                                ,done: function(res){
+                                    layer.closeAll('loading'); //关闭loading
+                                    if(res.code == 1)
+                                    {
+                                        $('#imgword_file-upload-listo').html('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="imgwordo[]" value="'+res.file_path+'"></div>')
+                                    }
+                                }
+                            });
+
+                        }
+                    }
+                }
+            });
+        });
+        form.on('select(child_styleo)',function(data){
+            let val = data.value;
+
+            if(val==1){
+                $('.picAndWordo').show();
+                $('.colorAndWordo').hide();
+            }else if(val==2){
+                $('.picAndWordo').hide();
+                $('.colorAndWordo').show();
+            }
+        });
+
+        {if $id>0}
+            var elem_idx = <?php echo $ele_idx;?>;
+            var elem_idx2 = <?php echo $ele_idx;?>;
+        {else}
+            var elem_idx = 1;
+            var elem_idx2 = 1;
+        {/if}
+        form.on('select(menu_id)',function(data){
+            let val = data.value;
+            let t = this;
+            let idx = $(t).parent().parent().parent().parent().parent().find('.index').val();
+            if(val!=''){
+                $.ajax({
+                    url:"{:Url('admin/officialwebsite/get_child_menu')}",
+                    method:'post',
+                    data:{'pid':val},
+                    dataType:'JSON',
+                    success:function(res){
+                        if(res.code == 0)
+                        {
+                            if(res.list.length>0)
+                            {
+                                $('.child_menu').show();
+                                var html = '<div class="child_content">\n'+
+                                    '<div class="layui-collapse" lay-accordion>\n';
+                                for(let i=0;i<res.list.length;i++){
+                                    html += '  <div class="layui-colla-item">\n' +
+                                                '    <h2 class="layui-colla-title">'+res.list[i].title+'</h2>\n';
+                                    if(i==0){
+                                        html += '    <div class="layui-colla-content layui-show">';
+                                    }else{
+                                        html += '    <div class="layui-colla-content">';
+                                    }
+
+                                    html +=     '<input name="child_menu['+idx+'][]" value="'+res.list[i].id+'" type="hidden">\n' +
+                                                '<div class="layui-form-item">\n'+
+                                                '<div class="layui-form-label">选择样式</div>\n'+
+                                                '<div class="layui-input-block">\n'+
+                                                '   <select name="child_style['+idx+'][]" lay-filter="child_style">\n'+
+                                                '       <option value="">请选择样式</option>\n'+
+                                                '       <option value="1">添加配图</option>\n'+
+                                                '       <option value="2">添加底色</option>\n'+
+                                                '   </select>\n'+
+                                                '</div>\n'+
+                                                '</div>\n'+
+                                                '<div class="layui-form-item picAndWord">\n'+
+                                                '<div class="layui-form-label">图片(520*300)</div>\n'+
+                                                '<div class="layui-input-block">\n'+
+                                                '<div class="layui-upload" style="margin-top: 10px;">\n'+
+                                                '<button type="button" class="layui-btn" id="imgword_file-upload'+elem_idx+'">上传图片(一张)</button>\n'+
+                                                '<blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">\n'+
+                                                '预览图：\n'+
+                                                '<div class="layui-upload-list" id="imgword_file-upload-list'+elem_idx+'">\n'+
+                                                    '<div style="display: inline-block;"><input type="hidden" name="imgword['+idx+'][]" value=""></div>\n'+
+                                                '</div>\n'+
+                                                '</blockquote>\n'+
+                                                '</div>\n'+
+                                                '</div>\n'+
+                                                '</div>\n'+
+                                                '<div class="layui-form-item colorAndWord">\n'+
+                                                '<div class="layui-form-label">颜色</div>\n'+
+                                                '<div class="layui-input-block">\n'+
+                                                '<div id="color'+elem_idx+'" data-i="'+elem_idx+'"></div>\n'+
+                                                '<input type="hidden" name="color['+idx+'][]" id="color_input'+elem_idx+'" value="">\n'+
+                                                '</div>\n'+
+                                                '</div>\n'+
+                                                '<div class="layui-form-item word">\n'+
+                                                '<label class="layui-form-label">文字描述</label>\n'+
+                                                '<div class="layui-input-block">\n'+
+                                                '<input type="text" name="word['+idx+'][]" value="" placeholder="请输入文字" autocomplete="off" class="layui-input">\n'+
+                                                '</div>\n'+
+                                                '</div>\n'+
+                                                '    </div>\n' +
+                                                '  </div>\n';
+                                    elem_idx+=1;
+                                }
+                                html += '</div>\n'+
+                                    '</div>';
+                                $(t).parent().parent().parent().parent().parent().find('.child_menu').html(html);
+                                form.render(null,'component-form-element2');
+                                layui.element.init();
+
+
+                                for(let i=0;i<res.list.length;i++){
+                                    colorpicker.render({
+                                        elem:'#color'+elem_idx2,
+                                        alpha:true,
+                                        size:'lg',
+                                        datai:elem_idx2,
+                                        done:function(color){
+                                            // $('input[name="color['+idx+'][]"]').val(color);
+                                            $('#color_input'+$(this)[0].datai).val(color);
+                                            form.render(null,'component-form-element2');
+                                        }
+                                    });
+
+                                    //图片+文字
+                                    upload.render({
+                                        elem: '#imgword_file-upload'+elem_idx2
+                                        ,url: '{:Url("admin/basic/upload_file")}'
+                                        ,accept: 'image'
+                                        ,data: { folder: 'centralize', type: 'website_index','idx':elem_idx2}
+                                        ,multiple: false
+                                        ,number:1
+                                        ,before: function(obj){
+                                            layer.load(); //上传loading
+                                        }
+                                        ,done: function(res){
+                                            list_idx = $(this)[0].data.idx;
+                                            layer.closeAll('loading'); //关闭loading
+                                            if(res.code == 1)
+                                            {
+                                                $('#imgword_file-upload-list'+list_idx).html('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="imgword['+idx+'][]" value="'+res.file_path+'"></div>')
+                                            }
+                                        }
+                                    });
+                                    elem_idx2+=1;
+                                }
+                            }
+                        }
+                    },
+                    error:function (data) {
+                        layer.msg('系统错误',{time:2000});
+                    }
+                });
+            }
+        });
+        
+        form.on('select(child_style)',function(data){
+           let val = data.value;
+           let t = this;
+           if(val==1){
+               $(t).parent().parent().parent().parent().parent().find('.picAndWord').show();
+               $(t).parent().parent().parent().parent().parent().find('.colorAndWord').hide();
+           }else if(val==2){
+               $(t).parent().parent().parent().parent().parent().find('.picAndWord').hide();
+               $(t).parent().parent().parent().parent().parent().find('.colorAndWord').show();
+           }
+        });
+        
+        form.on('submit(component-form-element)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            $.ajax({
+                url:"{:Url('admin/officialwebsite/save_index_content')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+        $('.add_bmenu').click(function(){
+            let idx = parseInt($('input[name="bigmenu_num"]').val());
+            idx += 1;
+            if(idx>=6){
+                layer.msg('此功能模块最多可支持5个菜单');return false;
+            }
+            $('input[name="bigmenu_num"]').val(idx);
+            let html = '<fieldset class="layui-elem-field">\n' +
+                '                                <legend>菜单'+idx+'：<div class="layui-btn layui-btn-danger layui-btn-xs" onclick="del_menu(this,'+idx+')">删除</div></legend>\n' +
+                '                                <div class="layui-field-box">\n' +
+                '                                    <div class="layui-form-item">\n' +
+                '                                        <label class="layui-form-label">选择菜单</label>\n' +
+                '                                        <div class="layui-input-block disf">\n' +
+                '                                            <select name="menu_id[]" id="menu_id" lay-filter="menu_id" lay-search>\n' +
+                '                                                <option value="">请选择菜单</option>\n';
+                                                                {volist name="menu" id="vo"}
+                html += '                                                   <option value="{$vo.id}">{$vo.title}</option>\n';
+                                                                {/volist}
+                html += '                                    </select>\n' +
+                '                                        </div>\n' +
+                '                                    </div>    \n' +
+                '                                    <div class="layui-form-item">\n' +
+                '                                        <label class="layui-form-label">底部显示</label>\n' +
+                '                                        <div class="layui-input-block disf">\n' +
+                '                                           <select name="footer_show[]">\n' +
+                '                                                <option value="0">否</option>\n' +
+                '                                                <option value="1">是</option>\n' +
+                '                                           </select>\n' +
+                '                                        </div>\n' +
+                '                                    </div>\n'+
+                '                                    <div class="layui-form-item">\n' +
+                '                                        <div class="layui-form-label">菜单描述</div>\n' +
+                '                                        <div class="layui-input-block">\n' +
+                '                                            <textarea name="description[]" id="description" class="layui-textarea" placeholder="请输入菜单描述"></textarea>\n' +
+                '                                        </div>\n' +
+                '                                    </div>\n' +
+                '                                    <div class="this_index">\n' +
+                '                                        <input type="hidden" name="index[]" class="index" value="'+idx+'" />\n' +
+                '                                    </div>\n' +
+                '                                    <div class="child_menu">\n' +
+                '                                        \n' +
+                '                                    </div>\n' +
+                '                                </div>\n' +
+                '                            </fieldset>';
+
+            $('.menu_list').find('.bigmenu').append(html);
+            form.render(null,'component-form-element2');
+        });
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+
+    function del_menu(t,num){
+        let form = layui.form
+            ,$ = layui.jquery
+            ,layer = layui.layer;
+        layer.confirm('确认要删除该内容'+num+'吗？', {
+            btn: ['删除','取消']
+        }, function() {
+            let idx = parseInt($('input[name="bigmenu_num"]').val());
+            $('input[name="bigmenu_num"]').val(idx - 1);
+            $(t).parent().parent().remove();
+            form.render(null, 'component-form-element2');
+            layer.closeAll();
+        },function(){
+
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,330 @@
+{template "parking/base/header"}
+{template "parking/base/myheader"}
+<style type="text/css">
+	.clear{clear: both;}
+	.wx_box{height: auto;}
+	.footer{position: relative;}
+	.weui-cell__ft{color: green;}
+	.dates span{float: left;margin-left: 5px;}
+	.nodata{
+		font-size: 26px;font-weight: bold;color:silver;
+		width: 100%;text-align: center;
+		margin: 42% auto;
+	}
+</style>
+	
+    <div class="license_Fee">
+    	
+    	<h3 class="title_h3"><span>{$title}</span></h3>
+    	
+		<div align="center">
+			<form class="layui-form" action="<?php echo mobileUrl('parking/queryuserinfo/parkOrders');?>" method="post">
+			
+			  <div class="layui-form-item">
+			    <label class="layui-form-label" style="padding: 9px 6px;">订单编号：</label>
+			    <div class="layui-input-inline" style="margin-left: 94px;">
+			      <input type="text" name="ordersn" maxlength="32" placeholder="请输入停车订单号" autocomplete="off" class="layui-input">
+			    </div>
+			    
+			  </div>
+			
+			  <div class="layui-form-item" style="text-align: center;">
+			    <div class="layui-input-block" style="margin-left: 0px;">
+			      <button class="layui-btn layui-btn-sm" lay-submit lay-filter="formDemo">立即查询</button>
+			      <button type="reset" class="layui-btn layui-btn-sm layui-btn-danger">信息重置</button>
+			    </div>
+			  </div>
+			  
+			</form>
+			<script>
+				//Demo
+				layui.use('form', function(){
+				  	var form = layui.form;
+				  	//监听提交
+				  	form.on('submit(formDemo)', function(data) {
+				  		var s = data.field;
+				  		if((s.ordersn == '')) {
+				  			alert('订单编号不能为空！')
+				  			return false;
+				  		}
+				    	return true;
+				  	});
+				});
+			</script>
+		</div>
+	</div>
+
+    {if empty($parks)}
+		<p class="nodata">暂无数据!</p>
+	{else}
+	     
+	    <!--  订单信息  -->
+		<div class="weui-cells__title">订单详细信息</div>
+			<div class="weui-cells">
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>创建时间：</p></div>
+					<div class="weui-cell__ft">{$parks['create_time']}</div>
+				</div>
+			
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>订单编号：</p></div>
+					<div class="weui-cell__ft">{$parks['ordersn']}</div>
+				</div>
+			
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>设备订单：</p></div>
+					<div class="weui-cell__ft">{$parks['devs_ordersn']}</div>
+				</div>
+				
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>入场时间：</p></div>
+					<div class="weui-cell__ft">{$parks['starttime']}</div>
+				</div>
+				
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>离场时间：</p></div>
+					<div class="weui-cell__ft">{$parks['endtime']}</div>
+				</div>
+			</div>
+		</div>
+		
+		
+		<!-- 计费信息  -->
+		<div class="weui-cells__title">计费信息</div>
+			<div class="weui-cells">
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>总停时长：</p></div>
+					<div class="weui-cell__ft">{$parks['duration']}分钟</div>
+				</div>
+			
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>抵扣时长：</p></div>
+					<div class="weui-cell__ft">0分钟</div>
+				</div>
+			
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>实计时长：</p></div>
+					<div class="weui-cell__ft">{$parks['duration']}分钟</div>
+				</div>
+				
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>应付费用：</p></div>
+					<div class="weui-cell__ft">{$parks['total']}元</div>
+				</div>
+				
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>抵扣费用：</p></div>
+					<div class="weui-cell__ft">{$parks['dedu']}元</div>
+				</div>
+				
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>实付费用：</p></div>
+					<div class="weui-cell__ft">{$parks['pay_account']}元</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- 付费信息 -->
+		<div class="weui-cells__title">付费信息</div>
+			<div class="weui-cells">
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>支付时间：</p></div>
+					<div class="weui-cell__ft">{$parks['pay_time']}</div>
+				</div>
+			
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>支付金额：</p></div>
+					<div class="weui-cell__ft">{$parks['pay_account']}元</div>
+				</div>
+			
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>支付方式：</p></div>
+					<div class="weui-cell__ft">{$parks['pay_type']}</div>
+				</div>
+				
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>未结金额：</p></div>
+					{if $parks['pay_status'] == 1}
+						<div class="weui-cell__ft">0元</div>
+					{else}
+						<div class="weui-cell__ft">{$parks['pay_account']}元</div>
+					{/if}					
+				</div>
+			</div>
+		</div>
+		
+		<!-- 泊位信息 -->
+		<div class="weui-cells__title">泊位信息</div>
+			<div class="weui-cells">
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>所属企业：</p></div>
+					<div class="weui-cell__ft">{$position['name']}</div>
+				</div>
+			
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>所属路段：</p></div>
+					<div class="weui-cell__ft">{$position['Road']}</div>
+				</div>
+			
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>设备编号：</p></div>
+					<div class="weui-cell__ft">{$space['numbers']}</div>
+				</div>
+				
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>泊位编号：</p></div>
+					<div class="weui-cell__ft">{$space['park_code']}</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- 车主信息 -->
+		<div class="weui-cells__title">车主信息</div>
+			<div class="weui-cells">
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>注册手机号：</p></div>
+					<div class="weui-cell__ft">{$author['mobile']}</div>
+				</div>
+			
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>会员姓名：</p></div>
+					<div class="weui-cell__ft">{$author['name']}</div>
+				</div>
+			
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>会员身份证：</p></div>
+					<div class="weui-cell__ft">{$author['CertNo']}</div>
+				</div>
+				
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>关联号牌：</p></div>
+					<div class="weui-cell__ft">{$author['CarNo']}</div>
+				</div>
+				
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>授权支付：</p></div>
+					{if $author['auth_status'] == 1}
+						<div class="weui-cell__ft">{$author['auth_type']}</div>
+					{else}
+						<div class="weui-cell__ft">未授权支付</div>
+					{/if}
+				</div>
+				
+			</div>
+		</div>
+		
+		
+		<!-- 订单状态 -->
+		<div class="weui-cells__title">订单状态</div>
+			<div class="weui-cells">
+				<div class="weui-cell">
+					<div class="weui-cell__hd"></div>
+					<div class="weui-cell__bd"><p>订单状态：</p></div>
+					<!--<div class="weui-cell__ft">未结、异常、失信、其他</div>-->
+					<div class="weui-cell__ft">{$parks['status']}</div>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="weui-cells__title">订单变更</div>
+			<div class="weui-cells">
+				
+				<a class="weui-cell weui-cell_access" href="javascript:;">
+					<div class="weui-cell__bd"><p>实计变更</p></div>
+					<div class="weui-cell__ft">修改计费时间</div>
+				</a>
+				
+				<a class="weui-cell weui-cell_access" href="javascript:;">
+					<div class="weui-cell__bd"><p>实付变更</p></div>
+					<div class="weui-cell__ft">修改实付金额</div>
+				</a>
+				
+		      	<div class="weui-cell weui-cell_select weui-cell_select-after">
+		      	
+			        <div class="weui-cell__hd">
+			          <label for="" class="weui-label">状态变更</label>
+			        </div>
+		        
+			        <div class="weui-cell__bd">
+			          <select class="weui-select" name="select2">
+			            <option value="1">异常</option>
+			            <option value="2">失信</option>
+			            <option value="3">关闭</option>
+			          </select>
+			        </div>
+		        
+		      	</div>
+		  	</div>
+		</div>
+		
+		
+		<div class="weui-cells__title">费用结算</div>
+			<div class="weui-cells">
+				
+				<a class="weui-cell weui-cell_access" href="javascript:;">
+					<div class="weui-cell__bd"><p>未结催账</p></div>
+					<div class="weui-cell__ft">{$parks['status']}</div>
+				</a>
+				
+				<a class="weui-cell weui-cell_access" href="{php echo mobileUrl('parking/queryuserinfo/getPayold')}">
+					<div class="weui-cell__bd"><p>原路退款</p></div>
+					<div class="weui-cell__ft">订单退款</div>
+				</a>
+				
+				<a class="weui-cell weui-cell_access" href="javascript:;">
+					<div class="weui-cell__bd"><p>订单奖励</p></div>
+					<div class="weui-cell__ft">订单奖励</div>
+				</a>
+				
+		  	</div>
+		</div>
+		
+		
+		<div class="weui-cells__title">关联查询</div>
+			<div class="weui-cells">
+				
+				<a class="weui-cell weui-cell_access" href="{php echo mobileUrl('parking/queryuserinfo/infoslist')}&token=code&sn={$space['park_code']}">
+					<div class="weui-cell__bd"><p>泊位信息</p></div>
+					<div class="weui-cell__ft">{$space['park_code']}</div>
+				</a>
+				
+				<a class="weui-cell weui-cell_access" href="{php echo mobileUrl('parking/queryuserinfo/infoslist')}&token=tel&sn={$parks['user_id']}">
+					<div class="weui-cell__bd"><p>车主信息</p></div>
+					<div class="weui-cell__ft">{$author['mobile']}</div>
+				</a>
+				
+		  </div>
+		</div>
+	{/if}
+	   	<div class="clear">	</div>
+	    <div class="footer">Technology by </div>
+	    <div class="footer_placeholder"> </div>
+    
+</div>
+{template "parking/base/mycomm"}
+{template "parking/base/footer"}

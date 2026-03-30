@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="Cache-Control" content="no-cache"/>
+<title>查看批注 - {$config['webtitle']}</title>
+<meta http-equiv="description" content="" />
+<meta name="renderer" content="webkit"/>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+<meta name="description" content="" id="description"/>
+<meta name="keywords" content=""/>
+<link rel="stylesheet" href="{$templateurl}css/wap_css.css" type="text/css"/>
+<script src="{MOBILE_ASSETS}js/jquery.min.js"></script>
+
+
+<script src="{$templateurl}js/easydialog.min.js"></script>
+<script>
+
+var btnFn = function( e ){
+	alert( e.target );
+	return false;
+};
+
+//显示
+function ck_tag(id){
+	easyDialog.open({		
+		container : 'bz'+id+'b',
+		fixed : true
+	});
+}
+//关闭
+function ck_close(id){
+	easyDialog.close();
+	document.getElementById('play_audio'+id).pause();
+}
+
+$(document).ready(function () {
+
+	 $('#jobclick').click('click', function () {
+	  $('#footerjob').toggle();
+	  $('#footerresume').hide();
+	});  
+
+	$('#footerjob').click('click', function () {
+		$('#footerjob').hide();
+	});   
+});
+</script>
+<style type="text/css">
+.cuotidiankai .a2 h4{ margin-top:15px;}
+.cuotidiankai .a2 h4 .teletnt{ font-size:16px; font-weight:bold; margin:0; margin-top:8px;}
+.cuotidiankai .a2 font{ font-size:13px; color:#f30; line-height:20px; margin:0; font-weight:normal;}
+.cuotidiankai .a2 h4 .wujinput{ font-weight:normal; color:#999; font-size:12px;}
+.cuotidiankai .a2 h4 .gx1{ margin-top:10px; width:266px; padding-left:4px; height:auto; position:absolute; left:50%; margin-left:-135px; overflow:hidden; text-align:center;}
+.cuotidiankai .a2 h4 a.g1{ width:auto; float:left; margin-left:8px; padding:0 11px;}
+.cuotidiankai .a2 h4 a{ font-size:12px; background:#9EEA6A; width:150px; text-align:center; line-height:28px; margin:15px auto 10px auto; display:block; color:#fff; font-weight: normal; border-radius:3px; float:left;}
+.cuotidiankai .a2 h4 a.s{ background: none; width:auto; float:left; color:#9EEA6A; border-radius:0px; transform:rotate(180deg); margin-top:10px;}
+.cuotidiankai .a2 h4 a.x{ background: none; width:auto; float:right; color:#9EEA6A; border-radius:0px; margin-top:15px;}
+.cuotidiankai .a2 h4 a i{ font-size:22px;}
+</style>
+</head>
+
+<body>
+
+
+<div class="shijuanpaiznr">
+    {loop $answer_show['answer'] $i $rowpl}
+    <p><img src="{php echo tomedia($rowpl);}" style="max-width:100%;"/></p>
+    {/loop}
+</div>
+
+
+{loop $notes_list $value}
+<a href="javascript:void(0)" class="biaozhuanniu" onClick="ck_tag({$value['id']})" style="top:{$value['ytag']}px; left:{$value['xtag']}px; color:#{$value['yanse']}"><i class="iconfont">&#{$value['tuxing']};</i></a>  
+<div id="bz{$value['id']}b" class="bztanc" style="display:none;">
+	<div id="easyDialogWrapper">
+    <div class="z1">
+		<h4 id="easyDialogTitle" style="cursor: move;">
+			<a href="javascript:void(0)" onClick="ck_close({$value['id']})" title="关闭窗口">×</a>
+		</h4>
+		<div class="z2">
+			{if !empty($value['mp3url']) || !empty($value['qnmp3url'])}
+        	<audio id="play_audio{$value['id']}" {if $value['mp3url']}src="../attachment/{$value['mp3url']}"{else}src="{$value['qnmp3url']}"{/if} controls="controls"></audio>
+			{/if}
+			<p>{$value['infotext']}</p>
+        </div>
+	</div>
+	</div>
+</div>
+{/loop}
+
+
+<div class="clear"></div>
+
+
+
+
+
+<footer>
+  <div class="clear"></div>
+  <div class="footer_box_bot"></div>
+  <div class="footer_sum">
+    <div class="bottom_sum">
+      <div class="bottom_con" style="height:36px; line-height:36px; font-size:16px; overflow:hidden;">
+      
+        <div class="classify" style="width:50%; float:left; padding:0;">
+        	<a href="{$urlt}&tab=show&qid={$qid}" id="indexclick" class="fotter_nav_link">
+            	<i class="iconfont" style="font-size:18px; margin-right:3px; color:#999;">&#xe642;</i>返回
+            </a> 
+        </div>  
+              
+        <div class="classify footer_nav_cur" style="width:50%; float:right; padding:0;"> 
+        <a href="javascript:void(0);" id="jobclick" class="fotter_nav_link">
+        	<i style="font-size:18px; margin-right:3px; color:#999;" class="iconfont">&#xe616;</i>查看题目
+        </a> 
+      </div>
+      
+      
+      </div>
+    </div>
+  </div>
+  <div style="width:100%;height:100%; background:rgba(0,0,0,0.9); position:fixed;left:0px;right:0px;bottom:0px;top:0px ; z-index:10000;display:none" id="footerjob">
+    <div class="foot_nav_close" style="bottom:15px; background:none; color:#F00;"><i class="iconfont" style="font-size:32px;">&#xe622;</i></div>
+    
+    <div class="cuotidiankai">
+	<div class="a1">
+    <p><a href="{$urlt}">{$rsdb_work['titlename']}</a></p>
+    </div>
+    <div class="a2">
+    	<h1>{php echo html_entity_decode($rsdb_que['titlename']);}</h1>
+        <h4>
+        	<div class="teletnt">正确答案结果：
+			{if $rsdb_que['type'] == 4}
+				{if $rsdb_que['zqanswer'] == 'A'}正确{elseif $rsdb_que['zqanswer'] == 'B'}错误{/if}
+				{elseif $rsdb_que['type'] > 4}
+				<div style="font-weight:normal; font-size:12px; color:#333333;">{php echo html_entity_decode($rsdb_que['zqanswer']);}</div>
+				{else}{$rsdb_que['zqanswer']}{/if}
+			</div>
+            <div class="wujinput" ><span style="color:#333333; font-size:14px;">解析：</span>
+			<div style=" width:100%;height:400px;overflow:auto;">
+			{php echo html_entity_decode($rsdb_que['content']);}
+			</div>
+			</div> 
+        </h4>
+    </div>
+</div>
+    
+    
+    
+    
+    
+    
+    
+    
+  </div>
+</footer>
+
+
+
+</body>
+</html>

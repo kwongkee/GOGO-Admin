@@ -1,0 +1,294 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/header', TEMPLATE_INCLUDEPATH)) : (include template('common/header', TEMPLATE_INCLUDEPATH));?>
+<title>添加员工</title>
+<link href="../addons/sz_yi/static/css/layui.css" rel="stylesheet">
+<style>
+    .layui-table td, .layui-table th{ text-align: center;}
+    .layui-table th{ background-color: #ecf6fc; }
+    .required{color: red;font-size: 1.3rem;right: 3px;position: relative;top: 7px;}
+    .icon-right{
+        font-size: 20px;
+        line-height: 20px;
+        padding-right: 10px;
+        vertical-align: middle;
+    }
+    .layui-layer-adminRight{
+        top : 0px !important;
+    }
+    .layui-layer-btn .layui-layer-btn0{border-color: #F7931E!important;background-color: #F7931E!important;}
+    .disf{display:flex;align-items: center;justify-content: space-evenly;}
+    .layui-tab-title li{min-width:50px;}
+    .layui-table img{max-width:50px;}
+    .layui-upload-list img{max-width:50px;}
+    .layui-form-label{padding:9px 0;width:90px;}
+    .btnSendCode{width: 150px;background: #009688;color: #fff;text-align: center;padding: 6px 0;box-sizing: border-box;}
+</style>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">添加员工</div>
+        <div class="layui-card-body" style="padding: 0px;">
+            <form class="layui-form" action="" lay-filter="component-form-demo1">
+                <input type="hidden" name="id" value="<?php  echo $data['id'];?>">
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">岗位</label>
+                    <div class="layui-input-block layui-select-fscon">
+                        <select name="job" id="job" lay-search lay-verify="required">
+                            <?php  if(is_array($job_list)) { foreach($job_list as $v) { ?>
+                            <option value="<?php  echo $v['id'];?>" <?php  if($v['id']==$data['job_id']) { ?>selected<?php  } ?>><?php  echo $v['name'];?></option>
+                            <?php  } } ?>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">姓名</label>
+                    <div class="layui-input-block layui-select-fscon">
+                        <input type="text" name="name" id="name" lay-verify="required" placeholder="请输入姓名" autocomplete="off" class="layui-input" value="<?php  echo $data['name'];?>">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">手机号</label>
+                    <div class="layui-input-block layui-select-fscon">
+                        <div class="disf">
+                            <input type="number" name="mobile" id="mobile" lay-verify="required" placeholder="请输入手机号" autocomplete="off" class="layui-input" value="<?php  echo $data['mobile'];?>">
+                            <input class="btnSendCode" id="btnSendCode" type="button" value="发送验证码">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">验证码</label>
+                    <div class="layui-input-block layui-select-fscon">
+                        <input type="number" name="yzm" id="yzm" lay-verify="required" placeholder="请输入验证码" autocomplete="off" class="layui-input" value="">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item layui-layout-admin">
+                    <div class="layui-input-block">
+                        <div class="layui-footer" style="left: 0;text-align:center;">
+                            <button class="layui-btn" lay-submit="" lay-filter="component-form-demo1">立即提交</button>
+                            <!--<button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../addons/sz_yi/static/js/layui/layui.js"></script>
+<script>
+    $(function() {
+        layui.use(['layer', 'form', 'table', 'upload', 'laydate'], function () {
+            var  $ = layui.$
+                ,layer = layui.layer
+                , form = layui.form
+                ,element = layui.element
+                ,laydate = layui.laydate
+                ,upload = layui.upload
+                , table = layui.table;
+
+            // laydate.render({
+            //     elem: '#ie_date'
+            //     ,format: 'yyyyMMdd'
+            // });
+
+            form.render(null, 'component-form-demo1');
+
+            /* 监听提交 */
+            form.on('submit(component-form-demo1)', function(data){
+                let name = $('#name').val();
+                if($('#name').isEmpty()){
+                    layer.msg('请输入姓名', {time: 2000});
+                    return false;
+                }
+                let job = $('#job').val();
+                let mobile = $('#mobile').val();
+                if($('#mobile').isEmpty()){
+                    layer.msg('请输入手机号', {time: 2000});
+                    return false;
+                }
+                let yzm = $('#yzm').val();
+                if($('#yzm').isEmpty()){
+                    layer.msg('请输入验证码', {time: 2000});
+                    return false;
+                }
+                $.ajax({
+                    url: 'https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=enterprise&m=sz_yi&p=sendcode',
+                    method: 'post',
+                    data: {
+                        'code': yzm,
+                        'op': 'checkcode'
+                    },
+                    dataType: 'JSON',
+                    success: function (res) {
+                        if(res.status==0){
+                            layer.msg(res.result, {time: 2000});
+                            return false;
+                        }
+
+                        $.ajax({
+                            url: "<?php  echo $this->createMobileUrl('enterprise/config');?>&op=save_info&id=<?php  echo $data['id'];?>&pa=1",
+                            method: 'post',
+                            data: {name: name, job: job, mobile: mobile},
+                            dataType: 'JSON',
+                            success: function (res) {
+                                layer.msg(res.result.msg, {time: 2000}, function () {
+                                    if (res.status == 1) {
+                                        var index = parent.layer.getFrameIndex(window.name);
+                                        parent.layer.close(index);
+                                        parent.window.location.reload();
+                                    }
+                                });
+                            },
+                            error: function (data) {
+                                layer.msg('系统错误', {time: 2000});
+                            }
+                        });
+                        return false;
+                    },
+                    error: function (data) {
+                        layer.msg('系统错误', {time: 2000});
+                    }
+                });
+                return false;
+            });
+        });
+    });
+
+    function openWindow(title,url)
+    {
+        var layer = layui.layer;
+        var index = layer.open({
+            type: 2,
+            title: title,
+            content: url
+        });
+        layer.full(index);
+    }
+
+    var InterValObj; //timer变量，控制时间
+    var count = 60; //间隔函数，1秒执行
+    var curCount;//当前剩余秒数
+
+    $('#btnSendCode').click(function(){
+        var layer = layui.layer;
+        if(!$('#mobile').isMobile()){
+            layer.msg('请输入正确手机号码!');
+            return;
+        }
+
+        $.ajax({
+            url:'https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=enterprise&m=sz_yi&p=sendcode',
+            method : 'post',
+            data : {
+                'mobile': $('#mobile').val(),
+                'op':'ismobile'
+            },
+            dataType: 'JSON',
+            success:function(res){
+                if(res.status==0){
+                    layer.msg(res.result);
+                    return false;
+                }
+            },
+            error:function(res){
+                $.ajax({
+                    url: 'https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=enterprise&m=sz_yi&p=sendcode',
+                    method: 'post',
+                    data: {
+                        'mobile': $('#mobile').val(),
+                        'op': 'ismobile'
+                    },
+                    dataType: 'JSON',
+                    success: function (json) {
+                        if(json.status==1){
+                            // $('.hide').show();
+                            hasmobile = true;
+                        }
+                    },
+                });
+            }
+        });
+
+        curCount = count;
+        //向后台发送处理数据
+        $.ajax({
+            url:'https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=enterprise&m=sz_yi&p=sendcode',
+            method : 'post',
+            data : {
+                'mobile': $('#mobile').val(),
+                'op':'bindmobilecode'
+            },
+            dataType: 'JSON',
+            success:function(json){
+                // $('#aa').text(json.status);
+                if(json.status==1){
+                    //设置button效果，开始计时
+                    $("#btnSendCode").attr("disabled", "true");
+                    $("#btnSendCode").val("请在" + curCount + "秒内输入验证码");
+                    InterValObj = window.setInterval(SetRemainTime, 1000); //启动计时器，1秒执行一次
+                }else{
+
+                }
+            },
+            error:function(res){
+                $.ajax({
+                    url: 'https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=enterprise&m=sz_yi&p=sendcode',
+                    method: 'post',
+                    data: {
+                        'mobile': $('#mobile').val(),
+                        'op': 'bindmobilecode'
+                    },
+                    dataType: 'JSON',
+                    success: function (json) {
+                        if(json.status==1){
+                            //设置button效果，开始计时
+                            $("#btnSendCode").attr("disabled", "true");
+                            $("#btnSendCode").val("请在" + curCount + "秒内输入验证码");
+                            InterValObj = window.setInterval(SetRemainTime, 1000); //启动计时器，1秒执行一次
+                        }else{
+                            layer.msg(json.result);
+                        }
+                    }
+                });
+            }
+        })
+
+    });
+
+    //timer处理函数
+    function SetRemainTime() {
+        if (curCount == 0) {
+            window.clearInterval(InterValObj);//停止计时器
+            $("#btnSendCode").removeAttr("disabled");//启用按钮
+            $("#btnSendCode").val("重新发送验证码");
+        }
+        else {
+            curCount--;
+            $("#btnSendCode").val("请在" + curCount + "秒内输入验证码");
+        }
+    }
+    //检验验证码
+    function checkcode()
+    {
+        $.ajax({
+            url: 'https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=enterprise&m=sz_yi&p=sendcode',
+            method: 'post',
+            data: {
+                'mobile': $('#mobile').val(),
+                'op': 'checkcode'
+            },
+            dataType: 'JSON',
+            success: function (json) {
+                if(json.status == 0)
+                {
+                    layer.msg(json.result);
+                    return;
+                }
+            }
+        });
+    }
+</script>
+<?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/footer', TEMPLATE_INCLUDEPATH)) : (include template('common/footer', TEMPLATE_INCLUDEPATH));?>

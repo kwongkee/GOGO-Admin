@@ -1,0 +1,158 @@
+{template '_headers'}
+<div class="warp">
+    <div class="container">
+        <form action="" id="form">
+            <div class="shop-input">
+                店铺名称： <input type="text" name="shopName" placeholder="请输入实体店铺名称">
+            </div>
+            <div class="shop-sel">
+                所在区域：
+                <select name="Country" id="Country">
+                    <option value="中国">中国</option>
+                </select>
+
+                <select name="province" id="province">
+                    <option value="">选择省份</option>
+                    {loop $area $index $item}
+                        <option value="{$item['area_id']}">{$item['area_name']}</option>
+                    {/loop}
+                </select>
+
+                <select name="city" id="city">
+                    <option value="">选择城市</option>
+                </select>
+
+                <select name="area" id="area">
+                    <option value="">选择区/县</option>
+                </select>
+            </div>
+            <input type="hidden" name="typeShop" value="physiCal">
+            <input type="hidden" name="addr" class="addr" value="">
+            <input type="hidden" name="method" value="add">
+            <div class="shop-input">
+                <span>详细地址:</span>
+                <input type="text" name="address" placeholder="详细地址：如道路、门牌号、小区、楼栋号、单元室等">
+            </div>
+            <div class="login-btn">
+                <button id="submit" type="button" class="zbox-btn zbox-btn-blue zbox-btn-outlined login">确认添加</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    // 选择省份，显示城市
+    $('#province').change(function(){
+        var pid = $(this).val();
+        if(!pid) {
+            $.DialogByZ.Alert({Title: "提示", Content: "选择的数据不能为空",BtnL:"确定",FunL:alerts})
+            return false;
+        }
+        $('#city option').remove();
+        // 获取城市名称地址地址
+        var urls = "{php echo url('entry',array('do'=>'city','m'=>'mer_chats'))}";
+        // Ajax  获取验证码
+        $.ajax({url:urls, type:'POST',
+            data:{'pid':pid},
+            success:function(red) {
+                // 获取成功改变按钮
+                var req = JSON.parse(red);
+                if(!req.code) {
+                    $.DialogByZ.Alert({Title: "提示", Content: req.msg,BtnL:"确定",FunL:alerts})
+                    return false;}
+                // 获取成功，进行赋值；
+                var str = '<option value="">选择城市</option>';
+                $.each(req.data,function(inx,val) {str += '<option value="'+val['area_id']+'">'+val['area_name']+'</option>';})
+                $('#city').append(str);
+            }
+        });
+    });
+
+    // 选择城市，显示区域
+    $('#city').change(function(){
+        var pid = $(this).val();
+        if(!pid) {
+            $.DialogByZ.Alert({Title: "提示", Content: "选择的数据不能为空",BtnL:"确定",FunL:alerts})
+            return false;
+        }
+        $('#area option').remove();
+        // 获取城市名称地址地址
+        var urls = "{php echo url('entry',array('do'=>'city','m'=>'mer_chats'))}";
+        // Ajax  获取验证码
+        $.ajax({url:urls, type:'POST',
+            data:{'pid':pid},
+            success:function(red) {
+                // 获取成功改变按钮
+                var req = JSON.parse(red);
+                if(!req.code) {
+                    $.DialogByZ.Alert({Title: "提示", Content: req.msg,BtnL:"确定",FunL:alerts})
+                    return false;}
+                // 获取成功，进行赋值；
+                var str = '<option value="">选择区域</option>';
+                $.each(req.data,function(inx,val) {str += '<option value="'+val['area_id']+'">'+val['area_name']+'</option>';})
+                $('#area').append(str);
+            }
+        });
+    });
+
+    $('#submit').click(function () {
+
+        // 用户选择地址；拼接
+        var Country2 = $('#Country option:selected').text();
+        var province2 = $('#province option:selected').text();
+        var city2 = $('#city option:selected').text();
+        var area2 = $('#area option:selected').text();
+        // 拼接地址
+        var addr = Country2+province2+city2+area2;
+        $('.addr').val(addr);
+
+        var formData = $('#form').serialize();
+        var forms = $('#form').serializeArray();
+
+        if(forms[0].value == '') {
+            $.DialogByZ.Alert({Title: "提示", Content:'店铺名称不能为空！',BtnL:"确定",FunL:alerts})
+            return false;
+        }
+        if(forms[1].value == '') {
+            $.DialogByZ.Alert({Title: "提示", Content:'请选择国家！',BtnL:"确定",FunL:alerts})
+            return false;
+        }
+        if(forms[2].value == '') {
+            $.DialogByZ.Alert({Title: "提示", Content:'请选择省份州区！',BtnL:"确定",FunL:alerts})
+            return false;
+        }
+        if(forms[3].value == '') {
+            $.DialogByZ.Alert({Title: "提示", Content:'请选择城市！',BtnL:"确定",FunL:alerts})
+            return false;
+        }
+        if(forms[4].value == '') {
+            $.DialogByZ.Alert({Title: "提示", Content:'请选择区域！',BtnL:"确定",FunL:alerts})
+            return false;
+        }
+        if(forms[5].value == '') {
+            $.DialogByZ.Alert({Title: "提示", Content:'请填写详细地址！',BtnL:"确定",FunL:alerts})
+            return false;
+        }
+
+        var Urls = "{php echo url('entry',array('do'=>'index','p'=>'addShop','m'=>'mer_chats'))}";
+        $.ajax({
+            url:Urls,
+            type:'POST',
+            data:formData,
+            success:function(res){
+                var red = JSON.parse(res);
+                if(red.code != 1) {
+                    $.DialogByZ.Alert({Title: "提示", Content:red.msg,BtnL:"确定",FunL:alerts})
+                    return false;
+                }
+                $.DialogByZ.Alert({Title: "提示", Content:red.msg,BtnL:"确定",FunL:alerts})
+                setTimeout(function(){
+                    window.location.href = "{php echo url('entry',array('do'=>'index','p'=>'physicalShop','m'=>'mer_chats'))}";
+                },1200);
+            }
+        })
+    })
+</script>
+
+{template '_footers'}

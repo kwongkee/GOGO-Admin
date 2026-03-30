@@ -1,0 +1,95 @@
+
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>商户活动</title>
+        <script src="{$modulePublic}shop/js/SetSize.js"></script>
+
+        <meta name="screen-orientation" content="portrait/landscape">
+        <meta content="yes" name="apple-mobile-web-app-capable">
+        <meta content="yes" name="apple-touch-fullscreen">
+        <meta content="black" name="apple-mobile-web-app-status-bar-style">
+        <meta content="telephone=no" name="format-detection">
+        <link href="{$modulePublic}shop/css//content.css" rel="stylesheet" type="text/css">
+        <script src="{$modulePublic}shop/js/baidu.js"></script>
+    </head>
+    <body class="complexSearch">
+        <script>
+            document.body.style.fontSize = SetSize.getScreenRatio() * 10 + 'px';</script>
+        <script src="{$modulePublic}shop/js/svgPackage.js"></script>
+        <form id="myform" action="" onsubmit="return false;">
+            <header id="header" class="headLine listHeader">
+                <div class="linkField addSmallMood">
+                    <span class="addSmallMood_span back" onclick="window.history.go(-1)"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_goBack_2"></use></svg></span>
+                    <span class="addSmallMood_span search addSmallMood_spanSearch"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_search_1"></use></svg></span>
+                    <a href="{php echo $this->createMobileUrl('shop_activity_list',array('type'=>1))}" class="current">商户活动</a>
+                    <a href="{php echo $this->createMobileUrl('shop_activity_list',array('type'=>2))}" >商场活动</a>
+                </div>
+            </header>
+
+            <section id="main" class="listMain">
+                <div class="eventListPanel_02">
+                    <div class="listField">
+                        <ul>
+                            {loop $list $row}
+                            <li>
+                                <a href="{php echo $this->createMobileUrl('shop_activity_detail',array('id'=>$row['id']))}">
+                                    <div class="img">
+                                        <div class="flag icon2">促销</div>
+                                        <img data-bg="http://file.capitaland.com.cn/webupload/103-2/Activity/images/201701/201701061154515098.png" alt="" src="data:image/PNG;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAEElEQVR42gEFAPr/AP///wAI/AL+Sr4t6gAAAABJRU5ErkJggg==" style="width: 100%; height: 100%; background-position: 50% 50%; background-repeat: no-repeat; background-size: cover; background-image: url(&quot;{php echo $attach_url . '/'.$row['img']}&quot;);">
+                                    </div>
+                                    <div class="detail">
+                                        <h2>{$row['title']}
+                                        {if $date_status[$row['date_status']]}
+                                             {$date_status[$row['date_status']]}
+                                        {/if}
+                                        </h2>
+                                        <p>
+                                            <em>{$row['shop']['category']}</em>
+                                            <span class="location"><i><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_location_1"></use></svg></i>{$row['shop']['floor']}</span>
+                                        </p>
+                                    </div>
+                                </a>
+                            </li>
+                            {/loop}
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            <nav id="nav" class="mainNav">
+                <div class="linkField">
+               <ul>
+                    <li>
+                        <a href="{php echo $this->createMobileUrl('index2')}" >
+                            <i><svg><use xlink:href = "#icon_index_1"/></svg></i>
+                            <span>逛商场</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="{php echo $this->createMobileUrl('shop_activity_list')}" class="current">
+                            <i><svg><use xlink:href = "#icon_star_1"/></svg></i>
+                            <span>活动</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{php echo $this->createMobileUrl('award_list')}">
+                            <i><svg><use xlink:href = "#icon_gift_1"/></svg></i>
+                            <span>换礼品</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{php echo $this->createMobileUrl('index')}" >
+                            <i><svg><use xlink:href = "#icon_user_2"/></svg></i>
+                            <span>我</span>
+                        </a>
+                    </li>
+                </ul>
+                </div>
+            </nav>
+        </form>
+        {template 'share'}
+    </body>
+</html>

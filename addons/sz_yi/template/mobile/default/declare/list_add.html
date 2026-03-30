@@ -1,0 +1,227 @@
+{template 'common/header'}
+<title>新增清单</title>
+<link href="../addons/sz_yi/static/css/layui.css" rel="stylesheet">
+<style>
+    .layui-table td, .layui-table th{ text-align: center;}
+    .layui-table th{ background-color: #ecf6fc; }
+    .required{color: red;font-size: 1.3rem;right: 3px;position: relative;top: 7px;}
+    .icon-right{
+        font-size: 20px;
+        line-height: 20px;
+        padding-right: 10px;
+        vertical-align: middle;
+    }
+    .layui-layer-adminRight{
+        top : 0px !important;
+    }
+    .layui-layer-btn .layui-layer-btn0{border-color: #F7931E!important;background-color: #F7931E!important;}
+    .disf{display:flex;align-items: center;justify-content: space-evenly;}
+    .layui-tab-title li{min-width:50px;}
+    .layui-table img{max-width:50px;}
+    .layui-upload-list img{max-width:50px;}
+    .layui-form-radio i {
+        top: 0;
+        width: 16px;
+        height: 16px;
+        line-height: 16px;
+        border: 1px solid #d2d2d2;
+        font-size: 12px;
+        border-radius: 2px;
+        background-color: #fff;
+        color: #fff !important;
+    }
+    .layui-form-radioed i {
+        position: relative;
+        width: 18px;
+        height: 18px;
+        border-style: solid;
+        background-color: #5FB878;
+        color: #5FB878 !important;
+    }
+    /* 使用伪类画选中的对号 */
+    .layui-form-radioed i::after, .layui-form-radioed i::before {
+        content: "";
+        position: absolute;
+        top: 8px;
+        left: 5px;
+        display: block;
+        width: 12px;
+        height: 2px;
+        border-radius: 4px;
+        background-color: #fff;
+        -webkit-transform: rotate(-45deg);
+        transform: rotate(-45deg);
+    }
+    .layui-form-radioed i::before {
+        position: absolute;
+        top: 10px;
+        left: 2px;
+        width: 7px;
+        transform: rotate(-135deg);
+    }
+    /**进度条**/
+    .layui-progress{display:none;position: fixed;background: #ffffff;border-radius: 5px;z-index:9999999;transform:translate(-50%,-50%);top: 50%;left:50%;width:80%;}
+</style>
+<div class="mask"  style="position: fixed; margin: 0px; padding: 0px;background: rgba(0, 0, 0,0.6); z-index: 999999; width: 100%; height: 100%; transition: all 0.2s ease 0s;display:none;left: 0;top: 0;"></div>
+<div class="layui-progress" lay-showpercent="true" lay-filter="demo" >
+    <p style="color:#fff;text-align:center;margin-top:10px;">系统进行中，请稍后...</p>
+    <div class="layui-progress-bar layui-bg-red" lay-percent="0%"></div>
+</div>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" lay-filter="component-form-element1">
+            <div class="layui-col-md12">
+
+                <div class="layui-card listInfo">
+                    <div class="layui-card-header">清单信息</div>
+                    <div class="layui-input-block" style="margin-left:0;margin-top:10px;">
+                        <div class="layui-upload" style="text-align:left;">
+                            <button type="button" class="layui-btn list_file_active" id="list_file-upload">上传清单</button>
+                            <div type="button" class="layui-btn list_file_blur" style="background:#999;display:none;">上传清单</div>
+                            <a href="https://shop.gogo198.cn/addons/sz_yi/static/images/商品导入.xlsx" style="text-decoration: none;color:#ff2222;font-size:14px;margin-left:10px;">下载模板</a>
+                            <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                                预览图：
+                                <div class="layui-upload-list" id="list_file-upload-list"></div>
+                            </blockquote>
+                        </div>
+                    </div>
+                    <input type="text" style="display:none;" name="id" value="{$id}">
+                </div>
+
+                <div class="layui-form-item" style="margin-top: 15px;text-align: center;">
+                    <div>
+                        <button class="layui-btn layui-btn-normal submit" lay-submit="" lay-filter="component-form-element" style="background:#F7931E !important;">立即提交</button>
+                    </div>
+                </div>
+
+
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript" src="../addons/sz_yi/static/js/layui/layui.js"></script>
+<script>
+    //显示进度条
+    function load(){
+        var n = 0;
+        timer = setInterval(function(){//按照时间随机生成一个小于95的进度，具体数值可以自己调整
+            n = n + Math.random()*10|0;
+            if(n>95){
+                n = 95;
+                clearInterval(timer);
+            }
+            $('.mask').show();
+            $('.layui-progress').show();
+            $('.layui-progress').find('.layui-progress-bar').css('width',n+'%').text(n+'%');
+        }, 50+Math.random()*1000);
+
+        return timer;
+    }
+
+    //隐藏进度条
+    function hide_load(timer){
+        clearInterval(timer);
+        $('.layui-progress').find('.layui-progress-bar').css('width','100%').text('100%');
+        setTimeout(function(){
+            $('.mask').hide();
+            $('.layui-progress').find('.layui-progress-bar').css('width','0%').text('0%');
+            $('.layui-progress').hide();
+        },500);
+    }
+
+    $(function() {
+        layui.use(['layer', 'form', 'table', 'upload', 'laydate'], function () {
+            var  $ = layui.$
+                ,layer = layui.layer
+                , form = layui.form
+                ,element = layui.element
+                ,laydate = layui.laydate
+                ,upload = layui.upload;
+
+            form.render(null, 'component-form-element1');
+            // element.render('breadcrumb', 'breadcrumb');
+
+            var timer = '';
+            upload.render({
+                elem: '#list_file-upload'
+                ,url: 'https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=util&m=sz_yi&p=uploader'
+                ,accept: 'file'
+                ,data: {file: "list_file-upload",'op':'uploadDeclGoodsFile','declare_id':"{$id}"}
+                ,multiple: false
+                ,before: function(obj){
+                    timer = load();
+                    // layer.load(); //上传loading
+                }
+                ,done: function(res){
+                    hide_load(timer);
+                    // layer.closeAll('loading'); //关闭loading
+                    if(res.status == 'success')
+                    {
+                        var length = $('#list_file-upload-list').children().length;
+                        $('#list_file-upload-list').append('<div style="display: inline-block;margin-top:10px;"><img onclick="seePic(this);" src="/attachment/'+ res.filename +'" class="layui-upload-img" onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="display:none;position: relative;left: -20px;top: -13px;">删除</button><input type="hidden" name="list_file['+length+']" value="'+res.filename+'"></div>');
+                        $('#pre_batch_num').val(res.pre_batch_num);
+                        $('.list_file_active').hide();
+                        $('.list_file_blur').show();
+                    }else{
+                        layer.msg(res.msg);
+                    }
+                }
+            });
+
+            form.on('submit(component-form-element)', function(data){
+
+                if($('#list_file-upload-list').children().length == 0){
+                    layer.msg('请上传商品清单！',{time:2000});
+                    return false;
+                }
+
+                $.ajax({
+                    url:"<?php echo $this->createMobileUrl('declare/index');?>&op=list_add",
+                    type:'POST',
+                    data:data.field,
+                    dataType:'JSON',
+                    success:function(res){
+                        layer.msg(res.result.msg,{time:2000}, function () {
+                            if(res.status == 1)
+                            {
+                                window.location.reload();
+                            }
+                        });
+                    },
+                    error:function (data) {
+                        layer.msg('系统错误',{time:2000});
+                    }
+                });
+
+                return false;
+            });
+        });
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+            // $.ajax({
+            //     url: "",
+            //     type: 'POST',
+            //     dataType: 'json',
+            //     data: {op: 'remove', file: del_img},
+            //     function(rjson) {
+            //         if (rjson.status == 1) {
+            //
+            //         }
+            //     }
+            // });
+
+        }, function(){
+
+        });
+    }
+</script>
+{template 'common/footer'}

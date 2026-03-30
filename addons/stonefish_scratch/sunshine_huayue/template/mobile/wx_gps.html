@@ -1,0 +1,78 @@
+<div class="ui-loading-block show" id="loading_gps_layer" style="display:none;">
+	<div class="ui-loading-cnt">
+		<i class="ui-loading-bright"></i>
+		<p>定位中...</p>
+	</div>
+</div>
+
+<div class="ui-dialog" id="loading_gps_dialog">
+    <div class="ui-dialog-cnt">
+      <header class="ui-dialog-hd ui-border-b">
+                  <h3>系统提示</h3>
+                  <i class="ui-dialog-close" data-role="button"></i>
+              </header>
+        <div class="ui-dialog-bd">
+            <h4>定位失败</h4>
+            <h3>点击关闭继续浏览</h3>
+        </div>
+        <div class="ui-dialog-ft">
+            <button type="button"  onclick="window.location.reload()">重试</button>
+            <button type="button"  onclick="$('#loading_gps_dialog').hide()">关闭</button>
+        </div>
+    </div>        
+</div>
+
+<script type="text/javascript">
+	//2011-7-25
+	var wx_gps_res = {}; // 结果
+	var wx_gps_status = false; // 状态
+	var wx_gps_sign = 1;
+	var intv_wx;
+
+    wx.ready(function () {
+    	// gps
+		var clock_key = "{php echo $this->gps_key}";
+    	if(clock_key == 'open') {
+    		$("#loading_gps_layer").show();
+		    // 在这里调用 API
+			wx.getLocation({
+				type: 'gcj02',
+			    success: function (res) {
+			    	$("#loading_gps_layer").hide();
+			        var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
+			        var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
+			        var speed = res.speed; // 速度，以米/每秒计
+			        var accuracy = res.accuracy; // 位置精度
+
+			        wx_gps_status = true;
+			        wx_gps_res.x = longitude;
+			        wx_gps_res.y = latitude;
+
+			        // 更新用户坐标为实时坐标
+					doSynclnglat(wx_gps_res);
+			    },
+			    fail:function() {
+			    	$("#loading_gps_layer").hide();
+					$("#loading_gps_dialog").dialog('show');
+			    }
+			});
+    	}
+	});
+
+	// 获取当前用户的坐标直接更新到数据表
+	function doSynclnglat(wx_gps_res) {
+		$.ajax({
+		 	async:true,
+		 	type:'post',
+		 	data:{'lat':wx_gps_res.y,'lng':wx_gps_res.x},
+		 	url:"{php echo $this->createMobileUrl('updatelnglat')}",
+		 	success:function(d) {
+		 		if(d.res == '100') {
+		 			//
+		 		}else {
+		 			alert(d.msg);
+		 		}
+		 	}
+		})
+	}
+</script>

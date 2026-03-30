@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Document</title>
+</head>
+<body>
+	<h2 style="color: green">微信支付</h2>
+	<script>
+        function onBridgeReady(){
+            WeixinJSBridge.invoke(
+                'getBrandWCPayRequest', {
+                    "appId":"wx0781c1dea664cd9a",     //公众号名称，由商户传入
+                    "timeStamp":"1550135729",         //时间戳，自1970年以来的秒数
+                    "nonceStr":"03d37f96d194496cae153103a245b8f8", //随机串
+                    "package":"prepay_id=wx14171529023585db4821550a0563850032",
+                    "signType":"RSA",         //微信签名方式：
+                    "paySign":"ZIxtXShyexhSt+Gg0B9mgKdfkEzahO1b30QlaRduIj7owFy+l9xKxcoeybF4ipmNpCNM5m0F+yW3mdhjbDPofaiuMeJYgWkhgDBb5Q0hrI2cZdcn+brJuMp1tmnHTrAwySYjAI4szutfSZhoQ5L9PhgdmJYc0QV+A0efPgGgtRRHbxkyrpRkghAQ94s3/fISQ8kvYN5549K+st/WmJCrTlBeyrsUFLTtfnQbXTDqSSoccmayLGqi5IbuEEovYWYR4CBO7/frX2O2UMdqEAlZ4SiAo8LynP9zRvODpEcSG+oKqRoko9M+GZdiaT9Gq7Z9R4RiRVRWkghUC7m4YmS6Ug==" //微信签名
+                },
+                function(res){
+                    if(res.err_msg == "get_brand_wcpay_request:ok" ){//支付成功
+                        // 使用以上方式判断前端返回,微信团队郑重提示： ok  cancel  fail
+                        //res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
+                    } else if(res.err_msg == "get_brand_wcpay_request:cancel") {// 取消支付
+
+					} else {// 支付失败
+
+					}
+
+                });
+        }
+
+        if (typeof WeixinJSBridge == "undefined") {
+            if( document.addEventListener ){
+                document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+
+            }else if (document.attachEvent){
+                document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
+                document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+            }
+
+        }else{
+            onBridgeReady();
+        }
+
+        </script>
+</body>
+</html>

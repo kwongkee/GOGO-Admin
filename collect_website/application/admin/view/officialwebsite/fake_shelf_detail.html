@@ -1,0 +1,301 @@
+{include file="common/header_inner_new"}
+
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .method1,.method1_1,.method1_2,.method2{display:none;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element2">
+            <input type="hidden" name="pid" value="{$pid}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">目标网站</div>
+                            <div class="layui-input-block">
+                                <select name="website_id" id="website_id" lay-search lay-filter="website_id" lay-verify="required">
+                                    <option value="">请选择要上架的网站</option>
+                                    {volist name="website" id="vo"}
+                                    <option value="{$vo.id}">{$vo.title}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="module">
+                            <div class="layui-form-item ">
+                                <label class="layui-form-label">选择栏目</label>
+                                <div class="layui-input-block modules disf">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">选择内容</div>
+                            <div class="layui-input-block">
+                                <select name="content_id" id="content_id" lay-search>
+                                    <option value="">请选择要上架的内容</option>
+                                    {volist name="data" id="vo"}
+                                    <option value="{$vo.id}">{$vo.id}：{$vo.title}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+                        <fieldset class="layui-elem-field">
+                            <legend>内容替换</legend>
+                            <div class="layui-field-box">
+                                <div class="origin_rep">
+                                    <div class="rep_content">
+                                        <div class="layui-form-item ">
+                                            <label class="layui-form-label">原文关键字</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" name="replace[]" class="layui-input" placeholder="请输入原文关键字" value="">
+                                            </div>
+                                        </div>
+                                        <div class="layui-form-item ">
+                                            <label class="layui-form-label">替换关键字</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" name="renew[]" class="layui-input" placeholder="请输入要替换的关键字" value="">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="layui-btn add_rep layui-btn-primary">添加替换</div>
+                                <hr>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+
+
+        form.on('submit(component-form-element)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            $.ajax({
+                url:"{:Url('admin/officialwebsite/fake_shelf_detail')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+        form.on('select(website_id)',function(data){
+            let val = data.value;
+            let t = this;
+
+            $.ajax({
+                url:"{:Url('admin/officialwebsite/get_module')}",
+                method:'post',
+                data:{'wid':val},
+                dataType:'JSON',
+                success:function(res){
+                    if(res.code == 0)
+                    {
+                        if($(t).parent().parent().parent().parent().siblings('.module').find('.module_1').length>0){
+                            $(t).parent().parent().parent().parent().siblings('.module').find('.modules').html('');
+                        }else{
+                            if(res.data.length>0) {
+                                let html = '<select name="module_1" lay-verify="required" lay-filter="module_1" class="module_1" style="margin-right:5px;">\n' +
+                                    '                            <option value="">请选择一级栏目</option>\n';
+
+                                for (let i = 0; i < res.data.length; i++) {
+                                    html += '<option value="' + res.data[i].id + '">' + res.data[i].title + '</option>';
+                                }
+                                html += '                </select>';
+                                $(t).parent().parent().parent().parent().siblings('.module').find('.modules').append(html);
+                                form.render(null, 'component-form-element2');
+                            }else{
+                                $(t).parent().parent().parent().parent().siblings('.module').find('.modules').append('');
+                                form.render(null, 'component-form-element2');
+                            }
+                        }
+                    }
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+        });
+
+        form.on('select(module_1)',function(data){
+            let val = data.value;
+            let t = this;
+
+            $.ajax({
+                url:"{:Url('admin/officialwebsite/get_child_module')}",
+                method:'post',
+                data:{'pid':val},
+                dataType:'JSON',
+                success:function(res){
+                    if(res.code == 0)
+                    {
+                        if($(t).parent().parent().parent().find('.module_2').length>0){
+                            $(t).parent().parent().parent().find('.module_2').next().remove();
+                            $(t).parent().parent().parent().find('.module_2').remove();
+                            $(t).parent().parent().parent().find('.module_3').next().remove();
+                            $(t).parent().parent().parent().find('.module_3').remove();
+                            $(t).parent().parent().parent().find('.module_4').next().remove();
+                            $(t).parent().parent().parent().find('.module_4').remove();
+                        }
+
+                        if(res.data.length>0){
+                            let html = '<select name="module_2" lay-verify="required" lay-filter="module_2" class="module_2" style="margin-right:5px;">\n' +
+                                '                            <option value="">请选择二级栏目</option>\n';
+
+                            for(let i=0;i<res.data.length;i++){
+                                html += '<option value="'+res.data[i].id+'">'+res.data[i].title+'</option>';
+                            }
+                            html += '                </select>';
+                            $(t).parent().parent().parent().append(html);
+                            form.render(null,'component-form-element2');
+                        }else{
+                            $(t).parent().parent().parent().append('');
+                            form.render(null, 'component-form-element2');
+                        }
+
+                    }
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+        });
+
+        form.on('select(module_2)',function(data){
+            let val = data.value;
+            let t = this;
+
+            $.ajax({
+                url:"{:Url('admin/officialwebsite/get_child_module')}",
+                method:'post',
+                data:{'pid':val},
+                dataType:'JSON',
+                success:function(res){
+                    if(res.code == 0)
+                    {
+                        if($(t).parent().parent().parent().find('.module_3').length>0){
+                            $(t).parent().parent().parent().find('.module_3').next().remove();
+                            $(t).parent().parent().parent().find('.module_3').remove();
+                            $(t).parent().parent().parent().find('.module_4').next().remove();
+                            $(t).parent().parent().parent().find('.module_4').remove();
+                        }
+
+                        if(res.data.length>0){
+                            let html = '<select name="module_3" lay-verify="required" lay-filter="module_3" class="module_3" style="margin-right:5px;">\n' +
+                                '                            <option value="">请选择三级栏目</option>\n';
+
+                            for(let i=0;i<res.data.length;i++){
+                                html += '<option value="'+res.data[i].id+'">'+res.data[i].title+'</option>';
+                            }
+                            html += '                </select>';
+                            $(t).parent().parent().parent().append(html);
+                            form.render(null,'component-form-element2');
+                        }else{
+                            $(t).parent().parent().parent().append('');
+                            form.render(null, 'component-form-element2');
+                        }
+                    }
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+        });
+
+        form.on('select(module_3)',function(data){
+            let val = data.value;
+            let t = this;
+
+            $.ajax({
+                url:"{:Url('admin/officialwebsite/get_child_module')}",
+                method:'post',
+                data:{'pid':val},
+                dataType:'JSON',
+                success:function(res){
+                    if(res.code == 0)
+                    {
+                        if($(t).parent().parent().parent().find('.module_4').length>0){
+                            $(t).parent().parent().parent().find('.module_4').next().remove();
+                            $(t).parent().parent().parent().find('.module_4').remove();
+                        }
+
+                        if(res.data.length>0){
+                            let html = '<select name="module_4" lay-verify="required" lay-filter="module_4" class="module_4" style="margin-right:5px;">\n' +
+                                '                            <option value="">请选择四级栏目</option>\n';
+
+                            for(let i=0;i<res.data.length;i++){
+                                html += '<option value="'+res.data[i].id+'">'+res.data[i].title+'</option>';
+                            }
+                            html += '                </select>';
+                            $(t).parent().parent().parent().append(html);
+                            form.render(null,'component-form-element2');
+                        }else{
+                            $(t).parent().parent().parent().append('');
+                            form.render(null, 'component-form-element2');
+                        }
+                    }
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+        });
+
+        $('.add_rep').click(function(){
+            let html = '<hr/>\n'+
+                '<div class="rep_content">\n' +
+                '            <div class="layui-form-item ">\n' +
+                '                <label class="layui-form-label">原文关键字</label>\n' +
+                '                <div class="layui-input-block">\n' +
+                '                    <input type="text" name="replace[]" class="layui-input" placeholder="请输入原文关键字" value="">\n' +
+                '                </div>\n' +
+                '            </div>\n' +
+                '            <div class="layui-form-item ">\n' +
+                '                <label class="layui-form-label">替换关键字</label>\n' +
+                '                <div class="layui-input-block">\n' +
+                '                    <input type="text" name="renew[]" class="layui-input" placeholder="请输入要替换的关键字" value="">\n' +
+                '                </div>\n' +
+                '            </div>\n' +
+                '        </div>';
+
+            $('.rep_content').last().append(html);
+            form.render(null,'component-form-element2');
+        });
+    });
+</script>
+</body>
+</html>

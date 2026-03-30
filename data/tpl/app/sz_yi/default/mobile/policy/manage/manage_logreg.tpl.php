@@ -1,0 +1,362 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/warehouse_header', TEMPLATE_INCLUDEPATH)) : (include template('common/warehouse_header', TEMPLATE_INCLUDEPATH));?>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title><?php  echo $title;?></title>
+</head>
+<link rel="stylesheet" type="text/css" href="https://decl.gogo198.cn/customs/css/login.css">
+<style>
+    .info_main {height:auto; margin-top:14px; border-bottom:1px solid #e8e8e8; border-top:1px solid #e8e8e8;}
+    .info_main .line {margin:0 10px; height:40px; border-bottom:1px solid #e8e8e8; line-height:40px; color:#999;position: relative;}
+    .info_main .line .title {height:40px; width:80px; line-height:40px; color:#444; float:left; font-size:14px;}
+    .info_main .line .info { width:100%;float:right;margin-left:-80px; }
+    .info_main .line .inner { margin-left:80px; }
+    .info_main .line .inner input {height:40px; display:block; padding:0px; margin:0px; border:0px; float:left; font-size:14px;background:#fff;}
+    .info_main .line .inner .user_sex {line-height:40px;}
+    .login_user:first-child{margin-top:22px;}
+    .login_user{margin-top: 10px;}
+    @media screen and (max-width: 500px){
+        .login_logo img{width: 100% !important;}
+    }
+    @media screen and (max-width: 1920px){
+        .login_logo img{width: 567px;}
+    }
+    @media screen and (max-width: 1680px) and (min-width: 1440px){
+        .login_logo img{width: 567px;}
+    }
+    @media screen and (max-width: 1439px) and (min-width: 1024px){
+        .login_logo img{width: 567px;}
+    }
+    .login{
+        display: block;
+        height: 110%;
+        max-height: 110%;
+        min-height: 100%;
+    }
+    .reg:hover{
+        color: blue;
+        display: inline-block;
+        border: 1px solid #e0a800;
+    }
+    .regist{
+        display: none;
+    }
+    .form2 img{width:22px;height:20px;}
+
+    .mark{width:80%;white-space: pre-wrap;}
+</style>
+
+<div class="login">
+
+    <div class="login_logo">
+        <img src="https://decl.gogo198.cn/policy/CrossBorderNews_logo.png" alt="">
+    </div>
+
+    <div class="login_bg">
+
+        <h3 class="login_title"><a href="javascript:void(0);" das="login" class="reg">登录</a> | <a href="./index.php?i=3&c=entry&do=enterprise&m=sz_yi&p=register" das="reg" class="reg">注册</a> </h3>
+
+        <div class="logins">
+            <form action="" class="form1">
+                <div class="info_main">
+                    <div class="line"><div class="title">手机号码</div><div class='info'><div class='inner'><input type="number" id='acc' name="acc" placeholder="输入手机号码"  value="" /></div></div></div>
+                </div>
+                <div class="login_btn" style="text-align: center;"  onclick="login();"><a href="#">登录</a></div>
+            </form>
+        </div>
+
+        <!--注册-->
+        <div class="regist">
+
+            <form class="form2" action="">
+                <div class="info_main">
+                    <div class="line"><div class="title">注册类别</div><div class='info'><div class='inner'>
+                        <select name="reg_type" id="reg_type" style="height: 40px;background: #d9d0d0;">
+                            <option value="1">企业注册</option>
+                            <option value="2">个人注册</option>
+                        </select>
+                    </div></div></div>
+                    <div class="line realname" style="display:none;"><div class="title">姓名</div><div class='info'><div class='inner'><input type="text" id='realname' placeholder="请输入您的真实姓名"  value="" /></div></div></div>
+                    <div class="line"><div class="title">身份证号</div><div class='info'><div class='inner'><input type="text" id='idcard' placeholder="请输入法人的身份证号"  value="" /></div></div></div>
+                    <div class="line"><div class="title">手机号码</div><div class='info'><div class='inner'><input type="number" id='mobile' placeholder="请输入法人的手机号码"  value="" /></div></div></div>
+
+                    <div class="line"><div class="title">验证码</div><div class='info'><div class='inner'><input type="text" id='code' placeholder="请输入验证码"  value="" /><input id="btnSendCode" class="login_countdown" onclick="sendCode(this,'reg');" style="position: absolute;right: 0;top: 0;background:#c1bdbd;" type="button" value="发送验证码"  /></div></div></div>
+
+                    <div class="login_btn" style="text-align: center;"  onclick="register();"><a href="#">注册</a></div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+<script src="https://decl.gogo198.cn/layuiadmin/qrcode/jquery-1.10.2.min.js"></script>
+
+<script>
+    $('#change_captcha').click(function () {
+        $(this).attr('src',  '/captcha/default?' + Math.random());
+    });
+
+    //登录注册更换box
+    $('.reg').click(function(e) {
+        var das = e.currentTarget.attributes.das.nodeValue;
+        if(das == 'login') {
+            $('.login_bg').css({height:'262px'});
+            $('.logins').css({display:'block'});
+            $('.regist').css({display:'none'});
+        }
+        // else if(das == 'reg') {
+        //     $('.login_bg').css({height:'530px'});
+        //     $('.logins').css({display:'none'});
+        //     $('.regist').css({display:'block'});
+        // }
+    });
+
+    $('#reg_type').change(function(){
+        let reg_type = $(this).val();
+        if(reg_type==1){
+            //企业
+            $('#idcard').attr('placeholder','请输入法人的身份证号');
+            $('#mobile').attr('placeholder','请输入法人的手机号码');
+            $('.realname').hide();
+        }else if(reg_type==2){
+            //个人
+            $('#idcard').attr('placeholder','请输入您的身份证号');
+            $('#mobile').attr('placeholder','请输入您的手机号码');
+            $('.realname').show();
+        }
+    });
+
+    var InterValObj; //timer变量，控制时间
+    var count = 60; //间隔函数，1秒执行
+    var curCount;//当前剩余秒数
+
+    $('#btnSendCode').click(function(){
+        if(!$('#mobile').isMobile()){
+            core.tip.show('请输入正确手机号码!');
+            return;
+        }
+
+        $.ajax({
+            url:'./index.php?i=3&c=entry&do=enterprise&m=sz_yi&p=sendcode',
+            method : 'post',
+            data : {
+                'mobile': $('#mobile').val(),
+                'op':'ismobile'
+            },
+            dataType: 'JSON',
+            success:function(res){
+
+            },
+            error:function(res){
+                core.json('enterprise/sendcode', {
+                    'mobile': $('#mobile').val(),
+                    'op':'ismobile'
+                }, function(json) {
+                    if(json.status==1){
+                        // $('.hide').show();
+                        hasmobile = true;
+                    }
+                },true,true);
+            }
+        });
+
+
+
+        curCount = count;
+        //向后台发送处理数据
+        $.ajax({
+            url:'./index.php?i=3&c=entry&do=enterprise&m=sz_yi&p=sendcode',
+            method : 'post',
+            data : {
+                'mobile': $('#mobile').val(),
+                'op':'bindmobilecode'
+            },
+            dataType: 'JSON',
+            success:function(json){
+                // $('#aa').text(json.status);
+                if(json.status==1){
+                    //设置button效果，开始计时
+                    $("#btnSendCode").attr("disabled", "true");
+                    $("#btnSendCode").val("请在" + curCount + "秒内输入验证码");
+                    InterValObj = window.setInterval(SetRemainTime, 1000); //启动计时器，1秒执行一次
+                }else{
+
+                }
+            },
+            error:function(res){
+                core.json('enterprise/sendcode', {
+                    'mobile': $('#mobile').val(),
+                    'op' : "bindmobilecode"
+                }, function(json) {
+                    if(json.status==1){
+                        //设置button效果，开始计时
+                        $("#btnSendCode").attr("disabled", "true");
+                        $("#btnSendCode").val("请在" + curCount + "秒内输入验证码");
+                        InterValObj = window.setInterval(SetRemainTime, 1000); //启动计时器，1秒执行一次
+                    }else{
+                        core.tip.show(json.result);
+                    }
+
+                },true,true);
+            }
+        })
+
+    });
+
+    //timer处理函数
+    function SetRemainTime() {
+        if (curCount == 0) {
+            window.clearInterval(InterValObj);//停止计时器
+            $("#btnSendCode").removeAttr("disabled");//启用按钮
+            $("#btnSendCode").val("重新发送验证码");
+        }
+        else {
+            curCount--;
+            $("#btnSendCode").val("请在" + curCount + "秒内输入验证码");
+        }
+    }
+    //检验验证码
+    function checkcode()
+    {
+        core.json('enterprise/sendcode', {
+            'code': $('#code').val(),
+            'op':'checkcode'
+        }, function(json) {
+
+            if(json.status == 0)
+            {
+                core.tip.show(json.result);
+                return;
+            }
+        },true,true);
+    }
+
+    // 注册
+    function register(){
+
+        var data = $('.form2').serializeArray();
+        var obj  = serize(data);
+        // 判断数据师傅为空
+        if(obj.email == '') {
+            myalert("{{trans('messages.please_email')}}");
+            return false;
+        }
+
+        if(obj.name == '') {
+            myalert("{{trans('messages.please_user_name')}}");
+            return false;
+        }
+
+        if(obj.country_id2 == '' || obj.country_id3 == '' || obj.address == '') {
+            myalert("{{trans('messages.please_address_detail')}}");
+            return false;
+        }
+        if(obj.pwd == '') {
+            myalert("{{trans('messages.please_pwd')}}");
+            return false;
+        }
+        if(obj.pwd_confirm == '') {
+            myalert("{{trans('messages.please_confirm_pwd')}}");
+            return false;
+        }
+        if(obj.pwd != obj.pwd_confirm){
+            myalert("{{trans('messages.please_confirm_pwd2')}}");
+            return false;
+        }
+
+        if(obj.area_code==""){
+            myalert("{{trans('messages.please_area_code')}}");
+            return false;
+        }
+
+        // if(!checkPhone(obj.mobile)) {
+        //     myalert('手機號碼格式不正確！');
+        //     return false;
+        // }
+        if(obj.code == '') {
+            myalert("请输入验证码");
+            return false;
+        }
+
+        $.ajax({
+            url:'/centralize/register',
+            type:'POST',
+            dataType:'json',
+            data:{
+                'data':obj,
+            },
+            success:function(e) {
+                if(e.code == 1) {
+                    myalert(e.msg);
+                    setTimeout(function(){
+                        window.location.reload();
+                    },1500);
+                } else {
+                    myalert(e.msg);
+                }
+            },
+            error:function(e) {
+
+            }
+        })
+    }
+
+    // 将表单转换成对象
+    function serize(e){
+        var o = {};
+        $.each(e, function() {
+            if (o[this.name] !== undefined) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    }
+
+    function checkPhone(phone){
+        if(!(/^1[34578]\d{9}$/.test(phone))){
+            return false;
+        }
+        return true;
+    }
+
+    // 登陆操作
+    function login() {
+
+        var fm = $('.form1').serializeArray();
+        var obj = serize(fm);
+
+        if(obj.acc == '') {
+            myalert("请输入手机号码");
+            return false;
+        }
+
+        $.ajax({
+            url:"./index.php?i=3&c=entry&do=policy&p=manage&m=sz_yi&op=manage_logreg",
+            type:"POST",
+            dataType:'json',
+            data:{
+                'acc':obj.acc,
+            },
+            success:function (res) {
+                alert(res.msg);
+                if ( res.code == 1 ){
+                    window.location.href='./index.php?i=3&c=entry&do=policy&p=manage&m=sz_yi&op=manage_index';
+                }
+                return false;
+            },
+            error:function (error) {
+                if (error.status==404||error.status==500){
+                    myalert("系统错误");
+                }
+                return false;
+            }
+        });
+        return false;
+    }
+</script>

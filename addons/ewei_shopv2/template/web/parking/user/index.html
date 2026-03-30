@@ -1,0 +1,120 @@
+{template "parking/_header"}
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">授权免密用户</a>
+        <a>
+          <cite>列表</cite></a>
+      </span>
+      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+    </div>
+    <div class="x-body">
+      <div class="layui-row">
+        <form class="layui-form layui-col-md12 x-so">
+          <!-- <input class="layui-input" placeholder="开始日" name="start" id="start"> -->
+          <!-- <input class="layui-input" placeholder="截止日" name="end" id="end"> -->
+          <input type="text" name="username"  placeholder="请输入手机号" autocomplete="off" class="layui-input">
+          <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+      </div>
+      <xblock>
+        <!-- <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button> -->
+        <!-- <button class="layui-btn" onclick="x_admin_show('添加用户','./member-add.html',600,400)"><i class="layui-icon"></i>添加</button> -->
+        <span class="x-right" style="line-height:40px">共有数据：{$total} 条</span>
+      </xblock>
+      <table class="layui-table">
+        <thead>
+          <tr>
+            <!-- <th>
+              <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+            </th> -->
+            <th>序号</th>
+            <th>手机</th>
+            <th>车牌号</th>
+            <th>授权类型</th>
+            <th>状态</th>
+            <th>注册时间</th>
+            <!--<th>未支付订单</th>-->
+            <th>移入黑名单</th></tr>
+        </thead>
+        <tbody>
+            {loop $UserRes $index $item}
+          <tr>
+            <td>{$item['id']}</td>
+            <td>{$item['mobile']}</td>
+            {if $item['CarNo']==''}
+            <td>空</td>
+            {else}
+            <td>{$item['CarNo']}</td>
+            {/if}
+            {if $item['auth_type']==''}
+            <td>空</td>
+            {else}
+            {loop $item['auth_type'] $items $index}
+            <td>{$type[$index]}</td>
+            {/loop}
+            {/if}
+            {if $item['auth_status']=='1'}
+            <td class="td-status">
+              <span class="layui-btn layui-btn-normal layui-btn-mini">已授权</span></td>
+
+            {else}
+            <td class="td-status">
+              <span class="layui-btn layui-btn-normal layui-btn-mini">未授权</span></td>
+
+            {/if}
+            <td class="td-manage">{$item['createtime']}</td>
+            <!--{if $OrderNum['0']['num']!=null}-->
+            <!--<td class="td-manage">{$OrderNum['0']['num']}</td>-->
+            <!--{else}-->
+            <!--<td class="td-manage">0</td>-->
+            <!--{/if}-->
+            <td class="td-manage">
+              <a title="移入黑名单" onclick="member_del(this,{$item['id']})" href="javascript:;">
+                <i class="layui-icon">&#xe640;</i>
+              </a>
+            </td>
+          </tr>
+          {/loop}
+        </tbody>
+      </table>
+      <div class="page">
+        <div>
+         {$pager}
+        </div>
+      </div>
+
+    </div>
+    <script>
+      layui.use('laydate', function(){
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+          elem: '#start' //指定元素
+        });
+
+        //执行一个laydate实例
+        laydate.render({
+          elem: '#end' //指定元素
+        });
+      });
+      /*用户-删除*/
+      function member_del(obj,id){
+          layer.confirm('确认要拉黑吗？',function(index){
+              //发异步删除数据
+              $(obj).parents("tr").remove();
+              layer.msg('已拉黑!',{icon:1,time:1000});
+          });
+      }
+
+    </script>
+    <!-- <script>var _hmt = _hmt || []; (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+      })();</script> -->
+
+{template "parking/_footer"}

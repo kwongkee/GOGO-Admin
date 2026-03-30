@@ -1,0 +1,97 @@
+{include file='home_header'}
+<body>
+<!--内容区域-->
+<div class="list-content">
+    <!--块元素-->
+    <div class="block">
+        <!--banner用来修饰块元素的名称-->
+        <!--<div class="banner">-->
+        <!--<p class="tab fixed">添加</p>-->
+        <!--</div>-->
+        <!--正文内容-->
+        <div class="main">
+            <form id="form" action="{:Url('coupon/coupon/save')}" method="post">
+                <!--商户-->
+                <div class="unit">
+                    <div class="left"><p class="subtitle">配置公众号</p></div>
+                    <div class="right" style="width: 327px;">
+                        <select id="select" name="uniacid">
+                            <option value="" selected>请选择</option>
+                            {volist name='publicAccoount' id='item'}
+                            <option value="{$item['uniacid']}">{$item['name']}</option>
+                            {/volist}
+                        </select>
+                    </div>
+                    <!--清浮动-->
+                    <span class="clearfix"></span>
+                </div>
+
+
+                <!--提交按钮-->
+                <div class="unit" style="width: 800px;">
+                    <div style="text-align: center;">
+                        <!--表单提交时，必须是input元素，并指定type类型为button，否则ajax提交时，会返回error回调函数-->
+                        <!--<input type="button" id="return" class="button no" value="返回" />-->
+                        <input type="button" id="save" class="button yes" value="保存"/>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    javaex.select({
+        id: "select",
+        isSearch: false,
+        callback: function (rtn) {
+            var val = $('#coupon_app').val();
+            if (val == '') {
+                $('#coupon_app').val(rtn.selectValue);
+            } else {
+                $('#coupon_app').val(val + ',' + rtn.selectValue);
+            }
+        }
+    });
+    // 监听点击保存按钮事件
+    $("#save").click(function () {
+        if (javaexVerify()) {
+
+            // 返回错误信息时，可以添加自定义异常提示。参数为元素id和提示
+            // addErrorMsg("username", "用户名不存在");
+            // 提交
+           $.ajax({
+               url:'{:Url("coupon/user/set_companyinfo")}',
+               type:"POST",
+               dataType:'json',
+               data:{'uniacid':$('#select option:selected').val()},
+               success:function (res) {
+                   console.log(res);
+                   if (res.code<0){
+                       javaex.optTip({
+                           content : res.msg,
+                           type : "error"
+                       });
+                   }else{
+                       javaex.optTip({
+                           content : "操作成功",
+                           type : "success"
+                       });
+                   }
+               },
+               error:function (err) {
+
+               }
+           })
+            // var form = new FormData();
+
+        }
+        return false;
+    });
+
+    // 监听点击返回按钮事件
+    // $("#return").click(function() {
+    //     window.location.href = document.referrer;
+    // });
+</script>
+</html>

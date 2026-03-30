@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<title>形式发票PI</title>
+<link rel="stylesheet" href="./static/doc/invoice2.css" />
+<link rel="stylesheet" href="./static/doc/pi_invoice.css" />
+<style type="text/css">
+	.btn{width:300px;line-height:40px}
+    body{overflow-y: auto;}
+    .page{width: 595.32pt;margin: 0;}
+    .content>div{width: 100%;height: 800pt;padding-top: 5px;}
+    #printId{width: 100%;background: white;font-size: 18px;}
+    input{border: 1px #000 solid;padding: 5px;}
+    .layui-form-label{width: 110px;}
+    body{color: #505050;}
+    .pi-seal{width: 200px; top: -47mm;left: 127mm;}
+    .diyform input{border:1px solid #333 !important;padding:5px 5px;box-sizing:border-box;}
+    .layui-form-label{width:100px;}
+    .goodsinfo input{
+        font-size: 12pt;
+        color: #000;
+        font-family: "arial, helvetica, sans-serif";
+        background:none;
+        border:0;
+    }
+    .goodsinfo #goods_qty{width:40px;text-align:right;}
+    .goodsinfo #goods_price_cny,.goodsinfo #goods_total_price_cny{width:100px;text-align:left;}
+    .diyform .layui-form-item:nth-child(even){margin-left:15px;}
+    .layui-upload-file{display:none;}
+    .layui-btn{
+        background-color: #009688;
+        color: #fff;
+        white-space: nowrap;
+        text-align: center;
+        font-size: 14px;
+        border: none;
+        border-radius: 2px;
+        cursor: pointer;
+        padding:4px 6px;
+        box-sizing:border-box;
+    }
+</style>
+</head>
+
+<body>
+<div class="page root">
+
+			<div class="page_box">
+				<div id="printId">
+					<div class="content">
+						<div>
+                            <div class="pi-bg">
+                                
+                                <div class="pi-top">
+                                    <div class="pi-pic"><img src="./static/doc/images/logo.png" alt="" /></div>
+                                </div>
+                                
+                                <div class="pi-mid flex-grow-1">
+                                    <h1 class="pi-title">Proforma Invoice</h1>
+                                    <div class="pi-txt">
+                                        <div class="pi-num">PI No.: {$doc_data['pdf_sn']}</div>
+                                        <div class="pi-date">DATE:<span class="date">{php} echo date('d / m / Y',$doc_data['create_at']);{/php}</span></div>
+                                    </div>
+                                    <div class="pi-con">
+                                        <div class="pi-con-left">
+                                            <div class="num1" style="height: 38mm;">
+                                                <div class="num-title">1.Shipper</div>
+                                                <div class="num1-con">
+                                                    <p>地址：<span class="seller_address">佛山市南海区桂城南三路11号广东珠江开关有限公司内3号楼D611室</span></p>
+                                                    <p>电话：<span class="seller_tel">0757-86329911</span></p>
+                                                    <p>联系人：<span class="seller_name">佛山市钜铭商务资讯服务有限公司</span></p>
+                                            </div>
+                                            </div>
+                                            <div class="num1" style="height: 38mm;">
+                                                <div class="num-title">2.For account and risk of <span>(付款方和风险承担方)</span></div>
+                                                <div class="num1-con">
+                                                    <p>地址：<span class="payer_address">{$default_buyer['company_address']}</span></p>
+                                                    <p>电话：<span class="payer_tel">{$default_buyer['company_tel']}</span></p>
+                                                    <p>联系人：<span class="payer_name">{$default_buyer['company_name']}</span></p>
+                                                </div>
+                                            </div>
+                                            <div class="pi4-5">
+                                                    <div class="num-left" style="height: 14mm;">
+                                                        <div class="num-title">4.Final Destination</div>
+                                                        <div class="num1-con"><span class="destination">香港</span></div>
+                                                    </div>
+                                                    <div class="num-left noborder" style="height: 14mm;">
+                                                        <div class="num-title" style="text-align: center;">5.ETD</div>
+                                                        <div class="num1-con" style="text-align: center;"><span class="create_at">{php} echo date('d / m / Y',$doc_data['create_at']);{/php}</span></div>
+                                                    </div>
+                                            </div>
+                                        </div>
+                                        <div class="pi-con-right">
+                                            <div class="num1" style="height: 28mm;">
+                                                <div class="num-title">3.Consignee <span>(收货方信息)</span></div>
+                                                <div class="num1-con">
+                                                    <p>地址：<span class="buyer_address">{$default_buyer['company_address']}</span></p>
+                                                    <p>电话：<span class="buyer_tel">{$default_buyer['company_tel']}</span></p>
+                                                    <p>联系人：<span class="buyer_name">{$default_buyer['company_name']}</span></p>
+                                                </div>
+                                            </div>
+                                            <div class="num1" style="height: 18mm;">
+                                                <div class="num-title">6.Payment term</div>
+                                                <div class="num1-con" id="term"><span class="payTerm">{$doc_data['payment_term']}</span></div>
+                                            </div>
+                                            <div class="num1" style="height: 18mm;">
+                                                <div class="num-title">7.Transportation</div>
+                                                <div class="num1-con" id="shipping_type_text"><span class="shipType">{$doc_data['shipping_type']}</span></div>
+                                            </div>
+                                            <div class="num1" style="height: 24mm;">
+                                                <div class="num-title">8.Price term</div>
+                                                <div class="num1-con" id="trans_mode_text"><span class="transMode">{$doc_data['trans_mode']}</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="num2">
+                                        <table class="pi-table">
+                                            <tr>
+                                                <th style="width: 45mm;">9.Model</th>
+                                                <th style="width: 50mm;">10.Description</th>
+                                                <th style="width: 35mm;">11.Qty & Unit</th>
+                                                <th style="width: 30mm;">12.Unit price</th>
+                                                <th style="width: 30mm;">13.Total price</th>
+                                            </tr>
+                                            {foreach name="order_goods" item="v" key="k"}
+                                            <tr class="goodsinfo">
+                                                <td class="gname{$k+1}" onclick="changeGName('gname{$k+1}')">{$v['item_name']}</td>
+                                                <td class="gdescribe{$k+1}" onclick="changeGDescribe('gdescribe{$k+1}')">{$v['item_describe']} {$v['gmodel']}</td>
+                                                <!-- <td>{$v['goods_qty']} {$v['unit_name']}</td> -->
+                                                <td style="white-space:nowrap;"><input type="text" name="" id="goods_qty" value="{$v['goods_qty']}" /> pcs</td>
+                                                <td style="white-space:nowrap;">
+                                                    CNY <input type="text" name="" id="goods_price_cny" value="{$v['goods_price_cny']}" /></br>
+                                                </td>
+                                                <td style="white-space:nowrap;">
+                                                    CNY <input type="text" name="" id="goods_total_price_cny" value="{$v['goods_total_price_cny']}" /></br>
+                                                </td>
+                                            </tr>
+                                            {/foreach}
+                                        </table>
+                                        <div class="totalprice">Total value of payment: <span>
+                                            <span>CNY <span class="amountCny">{$order['order_amount_cny']}</span></span></br>
+                                            <span>USD <span class="amountUsd">{$order['order_amount_usd']}</span></span>
+                                            
+                                        </span></div>
+                                    </div>
+                                    <div class="num3">
+                                        <div class="pi-14">14.Please kindly remmit the payment to following beneficiary's bank:</div>
+                                        {if $doc_data['account']}
+                                            <div class="pi-14-con" style="height: 28mm;">
+                                                <span>Account name: <span id="account_name" class="account_name">{$doc_data['account']['account_name']}</span></span></br>
+                                                <span>Account: <span id="account_number" class="account_number">{$doc_data['account']['account_number']}</span></span></br>
+                                                <span>Bank name: <span id="bank_name" class="bank_name">{$doc_data['account']['bank_name']}</span></span></br>
+                                                <span>Swift code: <span id="swift_bic" class="swift_bic">{$doc_data['account']['swift_bic']}</span></span></br>
+                                            </div>
+                                        {else}
+                                            <div class="pi-14-con" style="height: 28mm;">
+                                                <span>Account name: <span class="account_name"></span></span></br>
+                                                <span>Account: <span class="account_number"></span></span></br>
+                                                <span>Bank name: <span class="bank_name"></span></span></br>
+                                                <span>Swift code: <span class="swift_bic"></span></span></br>
+                                            </div>
+                                        {/if}
+                                    </div>
+                                    
+                                    <div class="num4">
+                                        <div class="pi-15">15.Confirmation</div>
+                                        <div class="pi-15-con" style="height: 33mm;"></div>
+                                    </div>
+                                    
+                                    <div class="signature">
+                                        <div class="sign-left">
+                                            <p class="sigh-buy">The Buyer</p>
+                                        </div>
+                                        <div class="sign-right">
+                                            <p class="sigh-buy">The Seller</p>
+                                        </div>
+                                    </div>
+                                    <div class="pi-seal sellseal-real"><img style="width: 100%" class="sellerSeal" src="./static/doc/images/seal2.png" alt="" /></div>
+                                    <div class="pi-seal buyseal-real" style="top: -87mm;left: 34mm;width: 120px;"><img style="width: 100%" class="buyerSeal"  src="./static/doc/images/kuajing.png" alt="" /></div>
+                                </div>
+                            </div>
+		                </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <div class="diyform" style='background: #fff;margin-bottom: 10px;padding: 10px;width: 650px;position: fixed;top: 150px;right: 40px;'>
+                <div class="layui-form-item" style="width: auto;display: inline-block;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">DATE</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="27 / 07 / 2021" name="date" id="date" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">发货人地址</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请填写发货人地址" name="seller_address" id="seller_address" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">发货人电话</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请填写发货人电话" name="seller_tel" id="seller_tel" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">发货人名称</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请填写发货人名称" name="seller_name" id="seller_name" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">付款方名称</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请填写付款方名称" name="payer_address" id="payer_address" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">付款方电话</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请填写付款方电话" name="payer_tel" id="payer_tel" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">付款方名称</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请填写付款方名称" name="payer_name" id="payer_name" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">收货方地址</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请填写收货方地址" name="buyer_address" id="buyer_address" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">收货方电话</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请填写收货方电话" name="buyer_tel" id="buyer_tel" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">收货方名称</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请填写收货方名称" name="buyer_name" id="buyer_name" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">付款方式</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请填写付款方式" name="payTerm" id="payTerm" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">运输方式</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请填写运输方式" name="shipType" id="shipType" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">价格条件</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请填写价格条件" name="transMode" id="transMode" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">目的地</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请填写目的地" name="destination" id="destination" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">ETD</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="27 / 07 / 2021" name="create_at" id="create_at" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">付款总额CNY</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请填写总额CNY" name="amountCny" id="amountCny" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">付款总额USD</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请填写总额USD" name="amountUsd" id="amountUsd" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">收益人账户名</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请填写收益人账户名" name="account_name" id="account_name2" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">收益人账户</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请填写收益人账户" name="account_number" id="account_number2" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">银行名称</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请填写银行名称" name="bank_name" id="bank_name2" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">银行代码</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请填写银行代码" name="swift_bic" id="swift_bic2" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item gnameInput" style="width: auto;margin-top:10px;display:none;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">商品名</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" name="gname" id="gname" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item gDescribeInput" style="width: auto;margin-top:10px;display:none;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">商品描述</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" name="gdescribe" id="gdescribe" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">买方章</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <button type="button" class="layui-btn" id="buyer_file-upload">上传专用章</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;display: inline-block;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">卖方章</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <button type="button" class="layui-btn" id="seller_file-upload">上传专用章</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <div style="padding: 30px 0;text-align: center;position: fixed;top: 0;right: 3em;">
+			<button type="button" style="width: 10em;" class="btn" onclick="createPDF()">生成</button>	
+		</div>
+
+        <script src="./static/doc/jquery.min.js"></script>
+		<script src="./static/doc/html2canvas.min.js"></script>
+        <script src="./static/doc/jspdf.min.js"></script>
+        <script src="./static/hadmin/assets/layui/layui.js"></script>
+        <script>
+            function changeGName(classname){
+                $('.gnameInput').css('display','inline-block');
+                $('.gnameInput #gname').val($('.'+classname).text()).attr('data-classname',classname);
+            }
+            function changeGDescribe(classname){
+                $('.gDescribeInput').css('display','inline-block');
+                $('.gDescribeInput #gdescribe').val($('.'+classname).text()).attr('data-classname',classname);
+            }
+            // 随机数
+            function randomNum(minNum,maxNum){
+                switch(arguments.length){
+                    case 1:
+                        return parseInt(Math.random()*minNum+1,10);
+                        break;
+                    case 2:
+                        return parseInt(Math.random()*(maxNum-minNum+1)+minNum,10);
+                        break;
+                    default:
+                        return 0;
+                        break;
+                }
+            }
+            $(function(){
+                $('.buyseal-real').css('left',randomNum(7,56)+'mm');
+                $('.sellseal-real').css('left',randomNum(102,130)+'mm');
+                // DATE
+                $('#date').bind('input propertychange',function() {
+                    $('.date').text($(this).val());
+                });
+                // 发货人地址
+                $('#seller_address').bind('input propertychange',function() {
+                    $('.seller_address').text($(this).val());
+                });
+                // 发货人电话
+                $('#seller_tel').bind('input propertychange',function() {
+                    $('.seller_tel').text($(this).val());
+                });
+                // 发货人名称
+                $('#seller_name').bind('input propertychange',function() {
+                    $('.seller_name').text($(this).val());
+                });
+                // 付款方名称
+                $('#payer_address').bind('input propertychange',function() {
+                    $('.payer_address').text($(this).val());
+                });
+                // 付款方电话
+                $('#payer_tel').bind('input propertychange',function() {
+                    $('.payer_tel').text($(this).val());
+                });
+                // 付款方名称
+                $('#payer_name').bind('input propertychange',function() {
+                    $('.payer_name').text($(this).val());
+                });
+                // 收货方地址
+                $('#buyer_address').bind('input propertychange',function() {
+                    $('.buyer_address').text($(this).val());
+                });
+                // 收货方电话
+                $('#buyer_tel').bind('input propertychange',function() {
+                    $('.buyer_tel').text($(this).val());
+                });
+                // 收货方名称
+                $('#buyer_name').bind('input propertychange',function() {
+                    $('.buyer_name').text($(this).val());
+                });
+                // 付款方式
+                $('#payTerm').bind('input propertychange',function() {
+                    $('.payTerm').text($(this).val());
+                });
+                // 运输方式
+                $('#shipType').bind('input propertychange',function() {
+                    $('.shipType').text($(this).val());
+                });
+                // 价格条件
+                $('#transMode').bind('input propertychange',function() {
+                    $('.transMode').text($(this).val());
+                });
+                // 目的地
+                $('#destination').bind('input propertychange',function() {
+                    $('.destination').text($(this).val());
+                });
+                // ETD
+                $('#create_at').bind('input propertychange',function() {
+                    $('.create_at').text($(this).val());
+                });
+                // 付款总额CNY
+                $('#amountCny').bind('input propertychange',function() {
+                    $('.amountCny').text($(this).val());
+                });
+                // 付款总额USD
+                $('#amountUsd').bind('input propertychange',function() {
+                    $('.amountUsd').text($(this).val());
+                });
+                // 收益人账户名
+                $('#account_name2').bind('input propertychange',function() {
+                    $('.account_name').text($(this).val());
+                });
+                // 收益人账户
+                $('#account_number2').bind('input propertychange',function() {
+                    $('.account_number').text($(this).val());
+                });
+                // 银行名称
+                $('#bank_name2').bind('input propertychange',function() {
+                    $('.bank_name').text($(this).val());
+                });
+                // 银行代码
+                $('#swift_bic2').bind('input propertychange',function() {
+                    $('.swift_bic').text($(this).val());
+                });
+                //更换商品名
+                $('#gname').bind('input propertychange',function() {
+                    let classname = $(this).attr('data-classname');
+                    $('.'+classname).text($(this).val());
+                });
+                //更换商品描述
+                $('#gdescribe').bind('input propertychange',function() {
+                    let classname = $(this).attr('data-classname');
+                    $('.'+classname).text($(this).val());
+                });
+            })
+            layui.use(['form','upload','laydate'], function(){
+                var upload = layui.upload;
+                // 买方章
+                upload.render({
+                    elem: '#buyer_file-upload'
+                    ,url: '{:Url("admin/entrymanage/upload_seal_file")}'
+                    ,accept: 'image'
+                    ,data: { folder: 'pi_buyer', type: 'seal_file'}
+                    ,multiple: false
+                    ,before: function(obj){
+                        layer.load(); //上传loading
+                    }
+                    ,done: function(res){
+                        layer.closeAll('loading'); //关闭loading
+                        if(res.code == 1)
+                        {
+                            $('.buyerSeal').attr('src','/'+res.file_path);
+                            // .css('width','175px').css('height','118px')
+                        }
+                    }
+                });
+                // 卖方章
+                upload.render({
+                    elem: '#seller_file-upload'
+                    ,url: '{:Url("admin/entrymanage/upload_seal_file")}'
+                    ,accept: 'image'
+                    ,data: { folder: 'pi_seller', type: 'seal_file'}
+                    ,multiple: false
+                    ,before: function(obj){
+                        layer.load(); //上传loading
+                    }
+                    ,done: function(res){
+                        layer.closeAll('loading'); //关闭loading
+                        if(res.code == 1)
+                        {
+                            $('.sellerSeal').attr('src','/'+res.file_path);
+                            // .css('width','175px').css('height','118px')
+                        }
+                    }
+                });
+            });
+            // 生成pdf
+            function createPDF() {
+                var layer = layui.layer;
+                html2canvas(document.querySelector("#printId"), {
+                    allowTaint: !0,
+                    scale: 2
+                }).then((function(canvas) {
+                    
+                    var contentWidth = canvas.width;
+                    var contentHeight = canvas.height;
+
+                    //一页pdf显示html页面生成的canvas高度;
+                    var pageHeight = contentWidth / 595.28 * 841.89;
+                    //未生成pdf的html页面高度
+                    var leftHeight = contentHeight;
+                    //pdf页面偏移
+                    var position = 0;
+                    //a4纸的尺寸[595.28,841.89]，html页面生成的canvas在pdf中图片的宽高
+                    var imgWidth = 555.28;
+                    var imgHeight = 555.28/contentWidth * contentHeight;
+
+                    var pageData = canvas.toDataURL('image/jpeg', 1.0);
+
+                    var pdf = new jsPDF('', 'pt', 'a4');
+                    //有两个高度需要区分，一个是html页面的实际高度，和生成pdf的页面高度(841.89)
+                    //当内容未超过pdf一页显示的范围，无需分页
+                    if (leftHeight < pageHeight) {
+                        pdf.addImage(pageData, 'JPEG', 30, 0, imgWidth, imgHeight );
+                    } else {
+                        while(leftHeight > 0) {
+                            pdf.addImage(pageData, 'JPEG', 30, position, imgWidth, imgHeight)
+                            leftHeight -= pageHeight;
+                            position -= 841.89;
+                            //避免添加空白页
+                            if(leftHeight > 0) {
+                                pdf.addPage();
+                            }
+                        }
+                    }
+
+                    var pdfName = "{$doc_data['pdf_sn']}.pdf";
+                    // 将pdf输入为base格式的字符串
+                    var buffer = pdf.output("datauristring");
+                    // 将base64格式的字符串转换为file文件
+                    var myfile = dataURLtoFile(buffer, pdfName);
+                    var formdata = new FormData();
+                    formdata.append('file', myfile);
+                    formdata.append('folder', 'payer_pay');
+                    formdata.append('type', 'pi_invoice');
+
+                    // 之后ajax传递数据
+                    // 判断是否已经生成
+                    //pdf.save('PI_Innvoice_'+pdfName);
+                    // let transaction_currency = $('#transaction_currency').val()
+                    //     ,payment_currency = $('#payment_currency').val()
+                    //     ,exchange_rate = $('#exchange_rate').val();
+                    $.ajax({   
+                        url:'{:Url("admin/entryManage/check_pdf")}',       
+                        method:'get',       
+                        data:{ trade_id: "{$doc_data['trade_id']}", 'trade_type': 1, type: 'pi_invoice' }, 
+                        dataType:'JSON',         
+                        success:function(res){       
+                            if(res.code == 1)
+                            {
+                                layer.msg(res.msg);
+                            }else{
+                                $.ajax({   
+                                    url:'{:Url("admin/entryManage/upload_file")}',       
+                                    method:'post',       
+                                    data:formdata,
+                                    processData: false,
+                                    contentType : false,    
+                                    dataType:'JSON',         
+                                    success:function(res){       
+                                        if(res.code == 1)
+                                        {
+                                            $.ajax({   
+                                                url:'{:Url("admin/entryManage/save_pdf")}',       
+                                                method:'post',       
+                                                data:{ trade_id: "{$doc_data['trade_id']}", 'trade_type': 1, type: 'pi_invoice', pdf_sn: "{$doc_data['pdf_sn']}", file_path: res.file_path, collect_account: "{$doc_data['collect_account']}", pay_term: "{$doc_data['pay_term']}", shipping_type: "{$doc_data['shipping_type']}", trans_mode: "{$doc_data['trans_mode']}", advance_money: "{$doc_data['advance_money']}", advance_scale: "{$doc_data['advance_scale']}", deposit_money: "{$doc_data['deposit_money']}", deposit_scale: "{$doc_data['deposit_scale']}", instalment_num: "{$doc_data['instalment_num']}", instalment_money_1: "{$doc_data['instalment_money_1']}", instalment_money_2: "{$doc_data['instalment_money_2']}", instalment_money_3: "{$doc_data['instalment_money_3']}", payment_term: "{$doc_data['payment_term']}", pay_type: "{$doc_data['pay_type']}",transaction_currency:"{$doc_data['transaction_currency']}",payment_currency:"{$doc_data['payment_currency']}",exchange_rate:"{$doc_data['exchange_rate']}"}, 
+                                                dataType:'JSON',         
+                                                success:function(res){ 
+                                                    if(res.code == 1)
+                                                    {
+                                                        layer.msg('变更成功');
+                                                        pdf.save('PI_Innvoice_'+pdfName);
+                                                        setTimeout(function(){
+                                                            parent.window.location.reload();
+                                                            var index = parent.layer.getFrameIndex(window.name);
+                                                            parent.layer.close(index);
+                                                        }, 1000);
+                                                    }else{
+                                                        layer.msg(res.msg);
+                                                    }
+                                                },              
+                                                error:function (data) {
+                                                    layer.msg('系统错误');
+                                                }
+                                            });
+                                            
+                                        } 
+                                    },              
+                                    error:function (data) {
+                                        layer.msg('系统错误');
+                                    }           
+                                });
+                            }
+                        },              
+                        error:function (data) {
+                            layer.msg('系统错误');
+                        }           
+                    });
+
+                    
+
+                    //pdf.save("download.pdf")
+                }))
+            }
+
+            //将base64转换为文件对象
+            function dataURLtoFile(dataurl, filename) {
+                var arr = dataurl.split(',');
+                var mime = arr[0].match(/:(.*?);/)[1];
+                var bstr = atob(arr[1]);
+                var n = bstr.length; 
+                var u8arr = new Uint8Array(n);
+                while(n--){
+                    u8arr[n] = bstr.charCodeAt(n);
+                }
+                //转换成file对象
+                return new File([u8arr], filename, {type:mime});
+                //转换成成blob对象
+                //return new Blob([u8arr],{type:mime});
+            }
+        </script>
+
+</body>
+</html>

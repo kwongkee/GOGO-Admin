@@ -1,0 +1,57 @@
+<div id="banner">
+    <style>
+        #advSwiper{height:150px;overflow:hidden;}
+        .swiper-slide{overflow:hidden;}
+        #advSwiper img{width:100%;max-height:2000px !important;}
+    </style>
+    {php $advs = M('advs')->getList(1," AND position = 'swiper'");}
+    {if !empty($advs['list'])}
+    <div class="swiper-container" id="advSwiper">
+        <div class="swiper-wrapper">
+            {loop $advs['list'] $adv}
+            <a href="{php echo $adv['link']}" class="swiper-slide">
+                <img src="{php echo tomedia($adv['image'])}" />
+            </a>
+            {/loop}
+        </div>
+    </div>
+    <script src="{MODULE_URL}public/libs/swiper/js/swiper.min.js"></script>
+    <script>
+        var swiper = new Swiper('#advSwiper',{
+            autoplay: 2000,
+        });
+    </script>
+    {/if}
+</div>
+<style>
+    .header .header-nav a{
+        margin-right:-3px;
+        margin-left:-3px;
+    }
+</style>
+{if $this->template['open_index_nav'] == 1}
+<header class="header">
+
+    <div class="main">
+        <nav class="header-nav">
+            {if $this->template['index_nav_1'] == 1}
+            <a class="{if $_GPC['do'] == 'index'}current{/if}" href="{php echo $this->createMobileUrl('index')}">
+                {php echo $this->template['index_nav_title_1']}
+            </a>
+            {/if}
+            {if $this->template['index_nav_2'] == 1}
+            <a class="{if $_GPC['do'] == 'chart'}current{/if}" href="{php echo $this->createMobileUrl('chart')}">
+                {php echo $this->template['index_nav_title_2']}
+            </a>
+            {/if}
+            {if $this->template['index_nav_3'] == 1}
+            <a class="{if $_GPC['do'] == 'longvoice'}current{/if}" href="{php echo $this->createMobileUrl('longvoice')}">
+                {php echo $this->template['index_nav_title_3']}
+            </a>
+            {/if}
+        </nav>
+        <a class="search-btn" href="{php echo $this->createMobileUrl('search')}" id="searchTrigger"></a>
+    </div>
+
+</header>
+{/if}

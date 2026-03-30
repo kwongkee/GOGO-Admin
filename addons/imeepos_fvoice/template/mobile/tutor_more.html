@@ -1,0 +1,76 @@
+{loop $questions['list'] $li}
+{php $to_member = M('member')->getInfo($li['to_openid'])}
+{if !empty($li['isfree'])}
+<li class="a-question">
+    <a class="AQ" href="{php echo $this->createMobileUrl('question',array('id'=>$li['id']))}">
+        <div class="question-content">
+            <p>{$li['title']}</p>
+        </div>
+                <span class="question-respondent">
+                    {$to_member['nickname']}{if !empty($to_member['tags'])}｜{$to_member['tags']}{/if}
+                </span>
+    </a>
+    <div class="question-answer">
+        <div class="avatar" data-openid="{php echo $to_member['openid']}" style="position:relative;width:1.85rem;height:1.85rem;border-radius:50%;display:inline-block;vertical-align:middle;margin-right:.675rem;">
+            <img style="position:relative;width:1.85rem;height:1.85rem;border-radius:50%;display:inline-block;" class="avatarImg" src="{php echo tomedia($to_member['avatar'])}">
+            <span></span>
+        </div>
+        <div style="display:inline-block;" class="listen" class="listen" data-id="{$li['id']}">
+                        <span class="bubble bubble-red" style="float:none;">
+                            <span class="bubble-tail"></span>
+                            <span class="wave1"></span>
+                            <span class="wave2"></span>
+                            <span class="wave3"></span>
+                            <span>限时免费听</span>
+                        </span>
+        </div>
+        <div class="duration">
+            <span>{php echo $li['timelong']}</span>
+            <span>秒</span>
+        </div>
+    </div>
+</li>
+{else}
+<li class="a-question">
+    <a class="AQ" href="{php echo $this->createMobileUrl('question',array('id'=>$li['id']))}">
+        <div class="question-content">
+            <p>{$li['title']}</p>
+        </div>
+    </a>
+    <div>
+                    <span class="question-respondent">
+                        {$to_member['nickname']}｜{$to_member['desc']}
+                    </span>
+        <div class="question-answer">
+            <div class="avatar" data-openid="{php echo $to_member['openid']}" style="position:relative;width:1.85rem;height:1.85rem;border-radius:50%;display:inline-block;vertical-align:middle;margin-right:.675rem;">
+                <img style="position:relative;width:1.85rem;height:1.85rem;border-radius:50%;display:inline-block;"
+                     class="avatarImg" src="{php echo tomedia($to_member['avatar'])}">
+                <span></span>
+            </div>
+            <div style="display:inline-block;" class="listen" data-id="{$li['id']}">
+                        <span class="bubble" style="float:none;">
+                            <span class="bubble-tail"></span>
+                            <span class="wave1"></span>
+                            <span class="wave2"></span>
+                            <span class="wave3"></span>
+                            {php $listen_log = M('listen_log')->getOpenid($li['id'],$_W['openid'])}
+                            {if empty($listen_log) || $listen_log['status'] == 0}
+                            <span>{php echo $this->system['listen_price']}元偷偷听</span>
+                            {else}
+                            <span>立即播放</span>
+                            {/if}
+                        </span>
+            </div>
+            <div class="duration">
+                <span>{php echo $li['timelong']}</span>
+                <span>秒</span>
+            </div>
+            <div class="question-visitor">
+                <span>听过</span>
+                <span >{php echo M('listen_log')->gettotal($li['id'])}</span>
+            </div>
+        </div>
+    </div>
+</li>
+{/if}
+{/loop}

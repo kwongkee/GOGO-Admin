@@ -1,0 +1,474 @@
+{include file="common/header_inner_new"}
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .format1,.format2,.seo_content,.url{display:none;}
+    #edui1{z-index: 9 !important;}
+    .layui-card-body{width:50%;}
+    @media ( max-width: 992px ){
+        .layui-card-body{width:90%;}
+    }
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <input type="text" style="display:none;" name="cate_id" id="cate_id" value="{$cate_id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">分类名称</div>
+                            <div class="layui-input-block">
+                                {$cate_name}
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">政策标题</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" lay-verify="required" name="name[zh]" value="{$data['name']['zh']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">发文机关</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" name="issuing_authority[zh]" value="{$data['issuing_authority']['zh']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">文号</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" name="document_number[zh]" value="{$data['document_number']['zh']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">效力</div>
+                            <div class="layui-input-block">
+                                <select name="effect[zh]" id="effect">
+                                    <option value="有效">有效</option>
+                                    <option value="失效">失效</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">发布日期</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" id="release_date" lay-verify="required" name="release_date" value="{$data['release_date']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">生效日期</div>
+                            <div class="layui-input-block disf">
+                                <div class="layui-btn layui-btn-success layui-btn-md" onclick="common_date()">与发布日相同</div>
+                                <input type="text" class="layui-input" id="effective_date" name="effective_date" value="{$data['effective_date']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label" style="padding: 5px;width: 100px;">
+                                <select name="origin_type" id="origin_type" lay-filter="origin_type">
+                                    <option value="1" {if $data['origin_type']==1}selected{/if}>公布链接</option>
+                                    <option value="2" {if $data['origin_type']==2}selected{/if}>上传文件</option>
+                                </select>
+                            </div>
+                            <div class="layui-input-block">
+                                <div class="linkBox disf" {if $data['origin_type']==2}style="display:none;"{/if}>
+                                <input type="text" class="layui-input" id="link" name="link" value="{$data['link']}">
+                                <div class="layui-btn layui-btn-success layui-btn-md" onclick="open_link()">打开链接</div>
+                                <div class="layui-btn layui-btn-primary layui-btn-md" onclick="check_link()">链接查重</div>
+                            </div>
+                            <div class="fileBox" {if $data['origin_type']==1}style="display: none;"{/if} {if $data['origin_type']==2}style="display:block;"{/if}>
+                            <div class="layui-upload" style="margin-top: 10px;">
+                                <button type="button" class="layui-btn" id="img_file-upload">上传文件</button>{if !empty($data['file'])}<span class="file_span" style="margin-left:8px;"><?php echo explode('/',$data['file'][0])[5];?></span>{else}<span class="file_span" style="margin-left:8px;"></span>{/if}
+                                <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;display:none;">
+                                    <!--                                            预览图：-->
+                                    <div class="layui-upload-list" id="img_file-upload-list" style="background: #e6e6e6;">
+                                        {if !empty($data['file'])}
+                                        <a href="https://shop.gogo198.cn/{$data['file'][0]}">https://shop.gogo198.cn/{$data['file'][0]}</a>
+                                        <div style="display: none;">
+                                            <img onclick="seePic(this);" src="/{$data['file'][0]}" class="layui-upload-img" style="width:80px;height:80px;">
+                                            <button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button>
+                                            <input type="hidden" name="file[]" value="{$data['file'][0]}">
+                                        </div>
+                                        {/if}
+                                    </div>
+                                </blockquote>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-form-label">备注</div>
+                    <div class="layui-input-block">
+                        <input type="text" class="layui-input" id="remark" name="remark" value="{$data['remark']}">
+                    </div>
+                </div>
+                <div class="layui-form-item" style="display: none;">
+                    <div class="layui-form-label">配图格式</div>
+                    <div class="layui-input-block">
+                        <select name="format" id="format" lay-filter="format">
+                            <option value="">请选择</option>
+                            <option value="1" {if $data['format']==1}selected{/if}>图片上传</option>
+                            <option value="2" {if $data['format']==2}selected{/if}>色块设置</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="format1" {if $data['format']==1}style="display:block;"{/if}>
+                <fieldset class="layui-elem-field">
+                    <legend>图片上传</legend>
+                    <div class="layui-field-box">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">导向图图(815*455)</div>
+                            <div class="layui-input-block">
+                                <div class="layui-upload" style="margin-top: 10px;">
+                                    <button type="button" class="layui-btn" id="img_file-upload">上传图片(一张)</button>
+                                    <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                                        预览图：
+                                        <div class="layui-upload-list" id="img_file-upload-list">
+                                            {if !empty($data['avatar'])}
+                                            <div style="display: inline-block;">
+                                                <img onclick="seePic(this);" src="/{$data['avatar']}" class="layui-upload-img" style="width:80px;height:80px;">
+                                                <button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button>
+                                                <input type="hidden" name="avatar[]" value="{$data['avatar']}">
+                                            </div>
+                                            {/if}
+                                        </div>
+                                    </blockquote>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">摆图位置</div>
+                            <div class="layui-input-block">
+                                <select name="avatar_location" id="avatar_location" lay-filter="avatar_location">
+                                    <option value="1" {if $data['avatar_location']==1}selected{/if}>图文上方</option>
+                                    <option value="2" {if $data['avatar_location']==2}selected{/if}>图文下方</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            <div class=" format2 colorAndWord" {if $data['format']==2}style="display:block;"{/if}>
+            <fieldset class="layui-elem-field" style="display: none;">
+                <legend>色块设置</legend>
+                <div class="layui-field-box">
+                    <div class="layui-form-item">
+                        <div class="layui-form-label">色块颜色</div>
+                        <div class="layui-input-block">
+                            <div id="color"></div>
+                            <input type="hidden" name="color" value="{$data['color']}">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-form-label">文字</div>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input" name="color_word_zh" value="{$data['color_word']['zh']}">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-form-label">文字颜色</div>
+                        <div class="layui-input-block">
+                            <div id="word_color"></div>
+                            <input type="hidden" name="word_color" value="{$data['word_color']}">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-form-label">摆图位置</div>
+                        <div class="layui-input-block">
+                            <select name="avatar_location" id="avatar_location" lay-filter="avatar_location">
+                                <option value="1" {if $data['avatar_location']==1}selected{/if}>图文上方</option>
+                                <option value="2" {if $data['avatar_location']==2}selected{/if}>图文下方</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+    </div>
+    <div class="layui-form-item" style="display: none;">
+        <div class="layui-form-label">内页seo优化</div>
+        <div class="layui-input-block">
+            <select name="seo_type" id="seo_type" lay-filter="seo_type">
+                <option value="1" {if $data['seo_type']==1}selected{/if}>暂不优化</option>
+                <option value="2" {if $data['seo_type']==2}selected{/if}>马上优化</option>
+            </select>
+        </div>
+    </div>
+    <div class="seo_content" {if $data['seo_type']==2}style="display:block;"{/if}>
+    <div class="layui-form-item">
+        <div class="layui-form-label">内页标题</div>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" name="seo_content[title][zh]" value="{$data['seo_content']['title']['zh']}">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-form-label">内页关键词</div>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" name="seo_content[keywords][zh]" value="{$data['seo_content']['keywords']['zh']}">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-form-label">内页描述</div>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" name="seo_content[desc][zh]" value="{$data['seo_content']['desc']['zh']}">
+        </div>
+    </div>
+</div>
+<div class="layui-form-item" style="display: none;">
+    <div class="layui-form-label">我要服务链接</div>
+    <div class="layui-input-block">
+        <input type="text" class="layui-input" name="url" value="{$data['url']}">
+    </div>
+</div>
+<div class="layui-form-item">
+    <div class="layui-form-label">内容</div>
+    <div class="layui-input-block">
+        <script id="content_zh" name="content_zh" type="text/plain" style="width:100%;height:400px;">
+                                        {if !empty($data['content']['zh'])}
+                                            {$data['content']['zh']|htmlspecialchars_decode|stripslashes}
+                                        {/if}
+                                    </script>
+        <div class="clearfix"></div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+    <div>
+        <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+</div>
+</form>
+</div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload','colorpicker'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+        var colorpicker = layui.colorpicker;
+
+        //内页类型
+        form.on('select(type)',function(data){
+            let val = data.value;
+            if(val==1){
+                $('.url').show();
+            }else{
+                $('.url').hide();
+            }
+        });
+        //seo优化
+        form.on('select(seo_type)',function(data){
+            let val = data.value;
+            if(val==2){
+                $('.seo_content').show();
+            }else{
+                $('.seo_content').hide();
+            }
+        });
+        //配图格式
+        form.on('select(format)',function(data){
+            let val = data.value;
+            if(val==1){
+                $('.format1').show();
+                $('.format2').hide();
+            }else{
+                $('.format1').hide();
+                $('.format2').show();
+            }
+        });
+        //公报链接
+        form.on('select(origin_type)',function(data){
+            let val = data.value;
+            if(val==1){
+                $('.fileBox').hide();
+                $('.linkBox').show();
+            }else if(val==2){
+                $('.fileBox').show();
+                $('.linkBox').hide();
+            }
+        });
+
+
+        laydate.render({
+            elem: '#release_date'
+            ,format: 'yyyy/MM/dd'
+        });
+
+        laydate.render({
+            elem: '#effective_date'
+            ,format: 'yyyy/MM/dd'
+        });
+
+        UE.getEditor('content_zh', {
+            initialFrameHeight: 400,
+            serverUrl: 'static/cklein/plugins/ueditor/php/controller.php'
+        });
+
+        // UE.getEditor('content_cht', {
+        //     initialFrameHeight: 400,
+        //     serverUrl: 'static/cklein/plugins/ueditor/php/controller.php'
+        // });
+        //
+        // UE.getEditor('content_en', {
+        //     initialFrameHeight: 400,
+        //     serverUrl: 'static/cklein/plugins/ueditor/php/controller.php'
+        // });
+
+        {if !empty($data['color'])}
+        colorpicker.render({
+            elem:'#color',
+            alpha:true,
+            size:'lg',
+            predefine:true,
+            color:'{$data["color"]}',
+            done:function(color){
+                $('input[name="color"]').val(color);
+            }
+        });
+        colorpicker.render({
+            elem:'#word_color',
+            alpha:true,
+            size:'lg',
+            predefine:true,
+            color:'{$data["word_color"]}',
+            done:function(color){
+                $('input[name="word_color"]').val(color);
+            }
+        });
+        {else}
+        colorpicker.render({
+            elem:'#color',
+            alpha:true,
+            size:'lg',
+            done:function(color){
+                $('input[name="color"]').val(color);
+            }
+        });
+        colorpicker.render({
+            elem:'#word_color',
+            alpha:true,
+            size:'lg',
+            done:function(color){
+                $('input[name="word_color"]').val(color);
+            }
+        });
+        {/if}
+
+            form.on('submit(component-form-element)', function(data){
+                // JSON.stringify()
+                // console.log(data.field);return false;
+                // if( $('#img_file-upload-list').children().length == 0 )
+                // {
+                //     layer.msg('请上传新闻主图！');
+                //     return false;
+                // }
+
+                $.ajax({
+                    url:"{:Url('centralize/index/save_news')}",
+                    method:'post',
+                    data:data.field,
+                    dataType:'JSON',
+                    success:function(res){
+                        layer.msg(res.msg,{time:2000}, function () {
+                            if(res.code == 0)
+                            {
+                                parent.location.reload();
+                            }else if(res.code == -2){
+                                layer.alert('线上链接：https://www.gogo198.com/?s=gather/news_detail&news_type=3&id='+res.id);
+                            }
+                        });
+                    },
+                    error:function (data) {
+                        layer.msg('系统错误',{time:2000});
+                    }
+                });
+                return false;
+            });
+
+            // 政策文件
+            upload.render({
+                elem: '#img_file-upload'
+                ,url: '{:Url("admin/basic/upload_file")}'
+                ,accept: 'file'
+                ,data: { folder: 'centralize', type: 'centralize_policy'}
+                ,multiple: false
+                ,number:1
+                ,before: function(obj){
+                    layer.load(); //上传loading
+                }
+                ,done: function(res){
+                    layer.closeAll('loading'); //关闭loading
+                    if(res.code == 1)
+                    {
+                        $('.file_span').text(res.file_name);
+                        $('#img_file-upload-list').append('<a href="https://shop.gogo198.cn/'+res.file_path+'">https://shop.gogo198.cn/'+res.file_path+'</a><div style="display: none;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="file[]" value="'+res.file_path+'"></div>')
+                    }
+                }
+            });
+        });
+
+    function common_date(){
+        let $ = layui.jquery;
+        $('#effective_date').val($('#release_date').val());
+    }
+
+    function open_link(){
+        let $ = layui.jquery;
+        if($('#link').val() != ''){
+            window.open($('#link').val());
+        }
+    }
+
+    function check_link(){
+        let $ = layui.jquery;
+        if($('#link').val() != ''){
+            $.ajax({
+                url:"{:Url('centralize/index/news_check_link')}",
+                method:'post',
+                data:{'link':$('#link').val(),'id':"{$id}"},
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 1)
+                        {
+
+                        }else if(res.code == 2){
+
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+        }
+    }
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+
+</script>
+</body>
+</html>

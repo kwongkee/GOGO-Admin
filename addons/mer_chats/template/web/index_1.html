@@ -1,0 +1,90 @@
+{template 'web/header'}
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="padding: 15px;">
+            <div class="laytitle"><span>注册审批</span></div>
+            <hr class="layui-bg-blue">
+            <div class="layui-form">
+                <table class="layui-table">
+                    <colgroup>
+                        <col width="30">
+                        <col width="150">
+                        <col width="150">
+                        <col width="150">
+                        <col width="150">
+                        <col width="150">
+                        <col width="150">
+                        <col width="200">
+                        <col>
+                    </colgroup>
+
+                    <thead>
+                    <tr>
+                        <th style="text-align: center;">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="like1[write]" lay-skin="primary" checked="">
+                            </div>
+                        </th>
+                        <th>商户类别</th>
+                        <th>手机号码</th>
+                        <th>邮箱</th>
+                        <th>商户名称</th>
+                        <th>状态</th>
+                        <th>注册时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {loop $users $index $item}
+                        <tr>
+                            <td style="text-align: center;">
+                                <div class="layui-input-block">
+                                    <input type="checkbox" name="like1[write]" lay-skin="primary" checked="">
+                                </div>
+                            </td>
+                            <td>{$cusTypes[$item['cusTypes']]}{$typeCom[$item['typeCom']]}</td>
+                            <td>{$item['phone']}</td>
+                            <td>{$item['email']}</td>
+                            <td>{$item['adminName']}</td>
+                            <td>{$appStatus[$item['appStatus']]}</td>
+                            <td><?php echo date('Y-m-d H:i',$item['c_time'])?></td>
+                            <td>
+                                <div>
+                                    <button type="button" onclick="pezi({$item['uid']});" class="layui-btn layui-btn-normal layui-btn-sm" style="margin-bottom: 0; float: left; margin-right: 10px;">配置公众号</button>
+                                    <div class="site-demo-button" id="layerDemo" style="margin-bottom: 0; float: left; margin-right: 10px;"><button type="button"  data-method="offset" data-type="auto"  class="layui-btn layui-btn-warm layui-btn-sm" >审核</button>
+                                    </div>
+                                    <button type="button" class="layui-btn layui-btn-danger layui-btn-sm" style="margin-bottom: 0; float: left; margin-right: 10px;">禁用</button>
+                                </div>
+                            </td>
+                        </tr>
+                    {/loop}
+                    </tbody>
+                </table>
+
+                <div  style="text-align: right;" id="pager">
+                    {$pager}
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+
+    function pezi() {
+
+        var urls = "{php echo url('account/summary/', array('acid' => $_W['acid'], 'uniacid' => $_W['uniacid']));}";
+        console.log(urls);
+        layer.open({
+            type: 1,
+            area: ['300px', '150px'],
+            content: "{php echo WebUrl('mer_chats/public',array('m' => 'mer_chats', 'p'=>'public'))}",
+
+            //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+        });
+    }
+
+    //http://shop.gogo198.cn/web/index.php?c=site&a=entry&m=mer_chats&do=web&r=mer_chats.public&p=public
+</script>
+
+{template 'web/footer'}

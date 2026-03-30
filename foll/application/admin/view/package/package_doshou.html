@@ -1,0 +1,127 @@
+{include file="public/header_new" /}
+
+
+<body class="gray-bg">
+    <div class="animated fadeInRight">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+
+                    <div class="ibox-content">
+                        <form action="{:url('admin/Package/packageCollectDoShou')}" method="post" class="form form-horizontal" id="form" >
+                        <input type="hidden" name="form_user_id" value="{$formuser.id}">
+                        <input type="hidden" name="collect_id" value="{$collectdata.id}">
+						<div class="form-group">
+                            <label class="col-sm-2 control-label">发起商户</label>
+                            <div class="col-md-5">
+                                <p class="form-control-static">姓名:{$formuser.user_name}</p>
+                                <p class="form-control-static">手机:{$formuser.user_tel}</p>
+                                <p class="form-control-static">公司名称:{$formuser.company_name}</p>
+                                <p class="form-control-static">联系地址:{$formuser.address}</p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">揽收商户</label>
+                            <div class="col-md-5">
+                                <p class="form-control-static">姓名:{$touser.user_name}</p>
+                                <p class="form-control-static">手机:{$touser.user_tel}</p>
+                                <p class="form-control-static">公司名称:{$touser.company_name}</p>
+                                <p class="form-control-static">联系地址:{$touser.address}</p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">包裹详情</label>
+                            <div class="col-md-5">
+                                {volist name="collectdata.order_goods" id="vo"}
+                                  <p class="form-control-static">运单号{$vo.ordersn},共有{$vo.goods_num}件商品</p>
+                                  <p class="form-control-static">包含的商品有:</p>
+                                  {volist name="vo.orderdata" id="vos"}
+                                    <p class="form-control-static">{$vos.title}</p>
+                                  {/volist}
+                                {/volist}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label">状态</label>
+                          <div class="radio radio-info radio-inline" style="padding-left: 40px;">
+                            <input type="radio" id="status1" name="status" value="2" checked>
+                            <label for="status1">通过</label>
+                          </div>
+                          <div class="radio radio-info radio-inline" style="padding-left: 40px;">
+                            <input type="radio" id="status2" name="status" value="-1">
+                            <label for="status2">拒绝</label>
+                          </div>
+                        </div>
+						            <div class="form-group">
+                            <label class="col-sm-2 control-label"></label>
+                            <div class="col-sm-10">
+                                <input type="submit" class="btn btn-primary" value="&nbsp;提交&nbsp;">
+                                <span id="msgtip" style="margin-left:30px;"></span>
+                            </div>
+						            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+	<script>
+    $(function()
+    {
+
+      $("#to_user_id").select2({
+          placeholder: "选择揽收商户",
+          allowClear: true
+      });
+
+        var form = $("#form").Validform({
+            tiptype:2,
+            postonce:true,//让表单只能提交一次，提交成功后再提交表单将不会有操作
+            ajaxPost:true,
+            tiptype:function(msg,o,cssctl){
+                if(!o.obj.is("form"))
+                {
+                    var objtip=o.obj.siblings(".Validform_checktip");
+                    cssctl(objtip,o.type);
+                    objtip.text(msg);
+                }
+                else
+                {
+                    var objtip=o.obj.find("#msgtip");
+                    cssctl(objtip,o.type);
+                    objtip.text(msg);
+                }
+            },
+            callback:function(data){
+                if(data.status==1)
+                {
+                    layer.msg(data.message, {
+                                icon: 1,
+                                time: 2000
+                            }, function(){
+                                parent.window.table.bootstrapTable('refresh');
+                                var index = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(index);
+                            });
+                            return true;
+                }
+                else
+                {
+                    layer.msg(data.message, {icon:2, time:2000});
+                    return false;
+                }
+            }
+        });
+    });
+    </script>
+
+</body>
+
+</html>

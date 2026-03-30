@@ -1,0 +1,254 @@
+{template 'common/warehouse_header'}
+<!--百度富文本-->
+<script type="text/javascript" src="https://shop.gogo198.cn/foll/public/static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="https://shop.gogo198.cn/foll/public/static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="https://shop.gogo198.cn/foll/public/static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+
+<style>
+    .layui-table td, .layui-table th{ text-align: center;}
+    .layui-table th{ background-color: #ecf6fc; }
+    .required{color: red;font-size: 1.3rem;right: 3px;position: relative;top: 7px;}
+    .icon-right{font-size: 20px;line-height: 20px;padding-right: 10px;vertical-align: middle;}
+    .layui-layer-adminRight{top : 0px !important;}
+    .layui-layer-btn .layui-layer-btn0{border-color: #F7931E!important;background-color: #F7931E!important;}
+    .layui-table-cell{padding:0 2px;}
+    .laytable-cell-1-0-2{height:auto;min-height:auto;}
+    .page_head{width:100%;background:#fff;margin-bottom:5px;box-shadow:0 0 4px #ddd;padding:10px 0 10px;}
+    .page_head .left{width:20%;display:flex;align-items:center;font-size:15px;}
+    .page_head .left .back{width:13px;height:13px;border-top:2px solid #000;border-left:2px solid #000;transform:rotate(-50deg);margin-left:15px;margin-right:5px;}
+
+    #edui1_iframeholder{height:200px !important;}
+
+    .layui-layer-hui .layui-layer-content{color:#fff;}
+    .layui-input, .layui-textarea{width:98%;}
+</style>
+<div class="page_head">
+    <div class="left" onclick="javascript:window.history.back(-1);">
+        <div class="back"></div>
+        <div style="font-size:15px;padding-top:2px;">返回</div>
+    </div>
+</div>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            {if $id>0}
+            “{$info['name']}”&nbsp;编辑
+            {else}
+            新闻添加
+            {/if}</div>
+        <div class="layui-card-body" style="padding: 0px;">
+            <form class="layui-form" action="" lay-filter="component-form-demo1">
+                <input type="number" name="id" value="{$id}" style="display:none;">
+                <input type="number" name="cate_id" value="{$cate_id}" style="display:none;">
+                <input type="number" name="edit" value="1" style="display:none;">
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">分类名称</label>
+                    <div class="layui-input-block layui-select-fscon">
+                        {$cate_name}
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">发文机关</label>
+                    <div class="layui-input-block layui-select-fscon">
+                        <input type="text" name="issuing_authority" lay-verify="required" placeholder="请输入发文机关" autocomplete="off" class="layui-input" value="{$info['issuing_authority']}">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">文号</label>
+                    <div class="layui-input-block layui-select-fscon">
+                        <input type="text" name="document_number" lay-verify="required" placeholder="请输入文号" autocomplete="off" class="layui-input" value="{$info['document_number']}">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">新闻标题</label>
+                    <div class="layui-input-block layui-select-fscon">
+                        <input type="text" name="name" lay-verify="required" placeholder="请输入新闻标题" autocomplete="off" class="layui-input" value="{$info['name']}">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">发布日期</label>
+                    <div class="layui-input-block layui-select-fscon">
+                        <input type="text" name="release_date" id="release_date" lay-verify="required" placeholder="请输入发布日期" autocomplete="off" class="layui-input" value="{$info['release_date']}">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">生效日期</label>
+                    <div class="layui-input-block layui-select-fscon">
+                        <input type="text" name="effective_date" id="effective_date" placeholder="请输入生效日期" autocomplete="off" class="layui-input" value="{$info['effective_date']}">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">效力</label>
+                    <div class="layui-input-block layui-select-fscon">
+                        <input type="text" name="effect" placeholder="请输入效力" autocomplete="off" class="layui-input" value="{$info['effect']}">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">效力说明</label>
+                    <div class="layui-input-block layui-select-fscon">
+                        <input type="text" name="effect_statement" placeholder="请输入效力说明" autocomplete="off" class="layui-input" value="{$info['effect_statement']}">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">原文链接</label>
+                    <div class="layui-input-block layui-select-fscon">
+                        <input type="text" name="link" lay-verify="required" placeholder="请输入原文链接" autocomplete="off" class="layui-input" value="{$info['link']}">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">新闻描述</label>
+                    <div class="layui-input-block layui-select-fscon">
+                        <textarea name="desc" id="desc" rows="5" placeholder="请输入新闻描述" class="layui-textarea">{$info['desc']}</textarea>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">封面图片</label>
+                    <div class="layui-input-block layui-select-fscon">
+                        <div class="layui-upload" style="text-align:left;">
+                            <button type="button" class="layui-btn pic_file_active" id="pic_list-upload">上传</button>
+                            <div type="button" class="layui-btn pic_file_blur" style="background:#999;display:none;">上传封面图</div>
+                            <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                                预览图：
+                                <div class="layui-upload-list" id="pic_list-upload-list">
+                                    {if !empty($info['avatar'])}
+                                    <div style="display: inline-block;margin-top:10px;overflow:visible;">
+                                        <img onclick="seePic(this);" src="{$info['avatar']}" class="layui-upload-img"  style="width:30px;">
+                                        <button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -20px;top: -13px;">删除</button>
+                                        <input type="hidden" name="pic_file[0]" value="{$info['avatar']}">
+                                    </div>
+                                    {/if}
+                                </div>
+                            </blockquote>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">新闻内容</label>
+                    <div class="layui-input-block layui-select-fscon">
+                        <script id="content" type="text/plain" style="width:98%;height:200px;">
+                            {if isset($info['content'])}
+                            <?php echo stripslashes(htmlspecialchars_decode($info['content']));?>
+                            {/if}
+                        </script>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+
+                        <div class="layui-form-item layui-layout-admin">
+                            <div class="layui-input-block">
+                            <div class="layui-footer" style="left: 0;text-align:center;">
+                            <button class="layui-btn" lay-submit="" lay-filter="component-form-demo1">立即提交</button>
+                            <!--<button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+                            </div>
+                            </div>
+                            </div>
+                            </form>
+                            </div>
+                            </div>
+                            </div>
+
+                            <script>
+                            layui.use(['layer', 'form', 'table', 'upload', 'laydate'], function () {
+                                var $ = layui.$
+                                    , layer = layui.layer
+                                    , form = layui.form
+                                    , element = layui.element
+                                    , laydate = layui.laydate
+                                    , upload = layui.upload
+                                    , table = layui.table;
+
+                                var ue = UE.getEditor('content', {
+                                    initialFrameHeight: 400,
+                                    serverUrl: 'https://shop.gogo198.cn/foll/public/static/cklein/plugins/ueditor/php/controller.php'
+                                });
+
+                                laydate.render({
+                                    elem: '#release_date'
+                                    ,format: 'yyyy年MM月dd日'
+                                });
+
+                                laydate.render({
+                                    elem: '#effective_date'
+                                    ,format: 'yyyy年MM月dd日'
+                                });
+
+                                form.render(null, 'component-form-demo1');
+
+                                upload.render({
+                                    elem: '#pic_list-upload'
+                                    ,url: "https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=util&m=sz_yi&p=uploader"
+                                    ,accept: 'image'
+                                    ,data: {file: "pic_list-upload",'op':'uploadDeclFile'}
+                                    ,multiple: false
+                                    ,number:1
+                                    ,done: function(res,indexs,upload){
+                                        layer.closeAll('loading'); //关闭loading
+                                        if(res.status == 'success')
+                                        {
+                                            // onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png"
+                                            var length = $('#pic_list-upload-list').children().length;
+                                            $('#pic_list-upload-list').append('<div style="display: inline-block;margin-top:10px;overflow:visible;"><img onclick="seePic(this);" src="'+ res.url +'" class="layui-upload-img"  style="width:30px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -20px;top: -13px;">删除</button><input type="hidden" name="pic_file['+length+']" value="'+res.url+'"></div>');
+                                            if(length==0){
+                                                $('.pic_file_active').hide();
+                                                $('.pic_file_blur').show();
+                                            }
+                                        }else{
+                                            layer.msg(res.message,{time:3000});
+                                        }
+                                    }
+                                });
+
+                                /* 监听提交 */
+                                form.on('submit(component-form-demo1)', function(data){
+                                    if(data.field['editorValue']==''){
+                                        layer.msg('请输入内容！');
+                                        return false;
+                                    }
+                                    layer.load();
+                                    $.ajax({
+                                        url:"./index.php?i=3&c=entry&do=policy&p=manage&m=sz_yi&op=save_news",
+                                        method:'post',
+                                        data:data.field,
+                                        dataType:'JSON',
+                                        success:function(res){
+                                            layer.closeAll('loading');
+                                            layer.msg(res.msg,{time:2000}, function () {
+                                                if(res.code == 0)
+                                                {
+                                                    window.history.back(-1);
+                                                }
+                                            });
+                                        },
+                                        error:function (data) {
+                                            layer.msg('系统错误',{time:2000});
+                                        }
+                                    });
+                                    return false;
+                                });
+                            });
+
+                        function delPic(obj)
+                        {
+                            var layer = layui.layer,$ = layui.$;
+
+                            layer.confirm("确认删除封面图？", {
+                                btn: ["删除","取消"]
+                            }, function(){
+                                $(obj).parent().remove();
+                                layer.close(layer.index);
+                                var length = $('#pic_list-upload-list').children().length;
+                                length-=1;
+                                if(length<1){
+                                    $('.pic_file_active').show();
+                                    $('.pic_file_blur').hide();
+                                }
+                            }, function(){
+
+                            });
+                        }
+                        </script>

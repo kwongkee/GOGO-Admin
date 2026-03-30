@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="format-detection" content="telephone=no">
+<title>知识点 - {$config['webtitle']}</title>
+<script src="{$templateurl}js/jquery-1.8.0.min.js" language="javascript"></script>
+<link rel="stylesheet" href="{$templateurl}css/wap_css.css" type="text/css"/>
+</head>
+
+<body>
+<div class="tabbar tabbar_wrap page_wrap">
+  <div class="weui_tab">
+    <link href="{$templateurl}css/search.css?v=2.0.8" rel="stylesheet" />
+    <style type="text/css">.weui_tab{margin-bottom: 60px;}</style>
+    
+    <!-- 分类 START-->
+    
+    <div class="allcategory-wrap"> <a class="allcategory" href="{php echo $this->createMobileUrl('knowledge');}">全部知识点</a> </div>
+    
+	{loop $list_class $key $value}
+	<div class="cat_box">
+      <h3 class="cat_tit">
+	  	{if $value['iconimg']} <span class="cat_ico"><img src="{php echo tomedia($value['iconimg']);}" /></span>{/if}
+		<span class="cat_name"><a href="{php echo $this->createMobileUrl('knowledge', array('op'=>'lsit','craid1'=>$value['cid']));}">{$value[name]}</a></span>
+	  </h3>
+	  
+	  {if !empty($children[$value['cid']])}
+      <div>
+        <ul class="cat_list">
+		{loop $children[$value['cid']] $row}
+		  <li><a href="{php echo $this->createMobileUrl('knowledge', array('op'=>'lsit','craid2'=>$row[0]));}">{$row[1]}</a></li>
+		  
+		  <!--start-->
+		  {if !empty($children[$row[0]])}
+		  {loop $children[$row[0]] $rowl}
+			  <li><a href="{php echo $this->createMobileUrl('knowledge', array('op'=>'lsit','craid3'=>$rowl[0]));}">{$rowl[1]}</a></li>
+			  
+			  <!--start-->
+			  {if !empty($children[$rowl[0]])}
+			  {loop $children[$rowl[0]] $rowlp}
+				  <li><a href="{php echo $this->createMobileUrl('knowledge', array('op'=>'lsit','craid4'=>$rowlp[0]));}">{$rowlp[1]}</a></li>
+				  
+				  <!--start-->
+				  {if !empty($children[$rowlp[0]])}
+				  {loop $children[$rowlp[0]] $rowlpx}
+				  <li><a href="{php echo $this->createMobileUrl('knowledge', array('op'=>'lsit','craid5'=>$rowlpx[0]));}">{$rowlpx[1]}</a></li>
+				  {/loop}
+				  {/if}
+				  <!--end-->
+				  
+			  {/loop}
+			  {/if}
+			  <!--end-->
+			  
+		  {/loop}
+		  {/if}
+		  <!--end-->
+		  
+		{/loop}
+        </ul>
+      </div>
+	  {/if}
+	  
+    </div>
+    {/loop}
+	
+    <!-- 分类 END--> 
+    
+  </div>
+</div>
+
+<!--footer strat-->
+{template 'footer'}
+
+</body>
+</html>

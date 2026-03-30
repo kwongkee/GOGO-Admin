@@ -1,0 +1,319 @@
+{template "parking/base/header"}
+{template "parking/base/myheader"}
+<style type="text/css">
+	.clear{clear: both;}
+	.wx_box{height: auto;}
+	.footer{position: relative;}
+	.weui-cell__ft{color: green;}
+	.layui-form-item .layui-input-inline{margin: 0 0 5px 12px;}
+	
+	.dates span{float: left;margin-left: 5px;}
+	.weui-form-preview__ft{height: 30px;}
+	.weui-navbar{position: fixed;top: 0.1px;}
+	.weui-tabbar{position: fixed;bottom: 0.1px;}
+	.weui-input{width: 62%;border: 1px solid saddlebrown;}
+	.yuan{margin-left: 1px;}
+	.nodata{
+		font-size: 26px;font-weight: bold;color:silver;
+		width: 100%;text-align: center;
+		margin: 42% auto;
+	}
+	
+*{	margin: 0; padding: 0;list-style:none;border:0; box-sizing:border-box;}
+.clearfix:after { content: "."; display: block; font-size: 0; height: 0; clear: both; visibility: hidden; }
+.clearfix { display: inline-table;}
+
+*html .clearfix { height: 1%; }
+.clearfix { display: block; }
+
+*+html .clearfix { min-height: 1%; }
+.che_tit{ text-align:center; padding:5px;}
+.ul_pro{ background-color:#CED3D9; text-align:center; padding:4px 2px; font-size:14px;}
+.ul_pro li{ float:left; width:8.11%; padding:2px;box-sizing: border-box;}
+.ul_pro .li_close{  float:right; width:22.22%;}
+.ul_pro .li_close span{ background-color:#ACB3BB;}
+.ul_pro .li_clean{  float:right; width:22.22%;}
+.ul_pro li span{ display:block; background-color:#fff; border-radius:4px; box-shadow: 2px 2px 2px #888888; /* max-width:48px; margin:0 auto; */ line-height:32px; padding-top:2px;  }
+.ul_pro li span:active{ background-color:#4DA9F2; color:#fff;}
+
+.ul_input{ padding:10px;width:350px; margin:0 auto; }
+.ul_input li{ float:left; width:12%; padding:1.5px;text-align:center;}
+.ul_input li span{ display:block; background-color:#fff; border:1px solid #ccc; border-radius:4px;
+width:38px; margin:0 auto; height:38px; line-height:38px; }
+
+.ul_keybord{ background-color:#CED3D9; text-align:center; padding:4px 2px; font-size:14px;}
+.ul_keybord li{ float:left; width:10%; padding:2px;box-sizing: border-box;}
+.ul_keybord .ikey20{ margin-left:5%;}
+.ul_keybord .li_w{ width:11.11%; }
+
+.ul_keybord .li_close{  float:right; width:22.22%;}
+.ul_keybord .li_close span{ background-color:#ACB3BB;}
+.ul_keybord .li_clean{  float:right; width:22.22%;}
+.ul_keybord li span{ display:block; background-color:#fff; border-radius:4px; box-shadow: 2px 2px 2px #888888; /* max-width:48px; margin:0 auto; */ line-height:32px; padding-top:2px;  }
+.ul_keybord li span:active{ background-color:#4DA9F2; color:#fff;}
+
+</style>
+<div class="wx_box">
+    <div class="license_Fee">
+        <h3 class="title_h3"><span>请输入违规车牌</span></h3>
+	<div class="">
+		<!--<div class="che_tit">请输入车牌号</div>-->
+		<div class="car_input" data-pai="">
+			<ul class="clearfix ul_input">
+				<li class="input_pro hasPro"><span>粤</span></li>
+				<li class="input_pp input_zim"><span>X</span></li>
+				<li class="input_pp"><span></span></li>
+				<li class="input_pp"><span></span></li>
+				<li class="input_pp"><span></span></li>
+				<li class="input_pp"><span></span></li>
+				<li class="input_pp"><span></span></li>
+				<li class="input_pp"><span></span></li>
+			</ul>
+		</div>
+	</div>
+	<div id="jp_pro"></div>
+	
+	{if empty($info)}
+			<p class="nodata">暂无数据!</p>
+		{else}
+	
+    	<div class="weui-form-preview">
+    		{loop $info $index $val}
+			<div class="weui-form-preview__bd">
+				
+				<div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">订单金额:</label>
+			      <span style="color: green;" class="weui-form-preview__value">¥ {$val['pay_account']}元</span>
+			    </div>
+				
+			    <div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">订单编号:</label>
+			      <span class="weui-form-preview__value">{$val['ordersn']}</span>
+			    </div>
+			    
+			    <div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">泊位编号:</label>
+			      <span class="weui-form-preview__value">{$val['number']}</span>
+			    </div>
+			    
+			    <div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">停车时长:</label>
+			      <span class="weui-form-preview__value">{$val['duration']} 分钟</span>
+			    </div>
+			    
+			    <div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">车辆驶入时间:</label>
+			      <span class="weui-form-preview__value"><?php echo date("Y-m-d H:i:s",$val['starttime'])?></span>
+			    </div>
+			    
+			    <div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">车辆驶出时间:</label>
+			      <span class="weui-form-preview__value"><?php echo date("Y-m-d H:i:s",$val['endtime'])?></span>
+			    </div>
+			    
+			    <div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">车牌号码:</label>
+			      <span class="weui-form-preview__value">{$val['CarNo']}</span>
+			    </div>
+			    
+			    <div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">操作缴费:</label>
+			      <span class="weui-form-preview__value"><a href="#" hrs="{$val['ordersn']}" class="layui-btn layui-btn-xs layui-btn-radius check">立即前往缴费</a></span>
+			    </div>
+			</div>
+			{/loop}
+	{/if}
+            
+   </div>
+	
+	<input type="hidden" name="purl" id="purl" value="<?php echo mobileUrl('parking/parking_orderdetails/violition');?>" />
+	
+	<form action="<?php echo mobileUrl('parking/parking_orderdetails/violition');?>" method="post" id="bk_form">
+		<input type="hidden" name="CarNo" id="CarNo" value=""/>
+	</form>
+   
+    <div class="footer">Technology by </div>
+    <div class="footer_placeholder"> </div>
+    
+</div>
+
+<script type="text/javascript" src="../addons/ewei_shopv2/static/weiui/js/jquery.js"></script>
+
+<script type="text/javascript">
+;!function(a){"use strict";var b=document,c="querySelectorAll",d="getElementsByClassName",e=function(a){return b[c](a)},f={type:0,shade:!0,shadeClose:!0,fixed:!0,anim:"scale"},g={extend:function(a){var b=JSON.parse(JSON.stringify(f));for(var c in a)b[c]=a[c];return b},timer:{},end:{}};g.touch=function(a,b){a.addEventListener("click",function(a){b.call(this,a)},!1)};var h=0,i=["layui-m-layer"],j=function(a){var b=this;b.config=g.extend(a),b.view()};j.prototype.view=function(){var a=this,c=a.config,f=b.createElement("div");a.id=f.id=i[0]+h,f.setAttribute("class",i[0]+" "+i[0]+(c.type||0)),f.setAttribute("index",h);var g=function(){var a="object"==typeof c.title;return c.title?'<h3 style="'+(a?c.title[1]:"")+'">'+(a?c.title[0]:c.title)+"</h3>":""}(),j=function(){"string"==typeof c.btn&&(c.btn=[c.btn]);var a,b=(c.btn||[]).length;return 0!==b&&c.btn?(a='<span yes type="1">'+c.btn[0]+"</span>",2===b&&(a='<span no type="0">'+c.btn[1]+"</span>"+a),'<div class="layui-m-layerbtn">'+a+"</div>"):""}();if(c.fixed||(c.top=c.hasOwnProperty("top")?c.top:100,c.style=c.style||"",c.style+=" top:"+(b.body.scrollTop+c.top)+"px"),2===c.type&&(c.content='<i></i><i class="layui-m-layerload"></i><i></i><p>'+(c.content||"")+"</p>"),c.skin&&(c.anim="up"),"msg"===c.skin&&(c.shade=!1),f.innerHTML=(c.shade?"<div "+("string"==typeof c.shade?'style="'+c.shade+'"':"")+' class="layui-m-layershade"></div>':"")+'<div class="layui-m-layermain" '+(c.fixed?"":'style="position:static;"')+'><div class="layui-m-layersection"><div class="layui-m-layerchild '+(c.skin?"layui-m-layer-"+c.skin+" ":"")+(c.className?c.className:"")+" "+(c.anim?"layui-m-anim-"+c.anim:"")+'" '+(c.style?'style="'+c.style+'"':"")+">"+g+'<div class="layui-m-layercont">'+c.content+"</div>"+j+"</div></div></div>",!c.type||2===c.type){var k=b[d](i[0]+c.type),l=k.length;l>=1&&layer.close(k[0].getAttribute("index"))}document.body.appendChild(f);var m=a.elem=e("#"+a.id)[0];c.success&&c.success(m),a.index=h++,a.action(c,m)},j.prototype.action=function(a,b){var c=this;a.time&&(g.timer[c.index]=setTimeout(function(){layer.close(c.index)},1e3*a.time));var e=function(){var b=this.getAttribute("type");0==b?(a.no&&a.no(),layer.close(c.index)):a.yes?a.yes(c.index):layer.close(c.index)};if(a.btn)for(var f=b[d]("layui-m-layerbtn")[0].children,h=f.length,i=0;h>i;i++)g.touch(f[i],e);if(a.shade&&a.shadeClose){var j=b[d]("layui-m-layershade")[0];g.touch(j,function(){layer.close(c.index,a.end)})}a.end&&(g.end[c.index]=a.end)},a.layer={v:"2.0",index:h,open:function(a){var b=new j(a||{});return b.index},close:function(a){var c=e("#"+i[0]+a)[0];c&&(c.innerHTML="",b.body.removeChild(c),clearTimeout(g.timer[a]),delete g.timer[a],"function"==typeof g.end[a]&&g.end[a](),delete g.end[a])},closeAll:function(){for(var a=b[d](i[0]),c=0,e=a.length;e>c;c++)layer.close(0|a[0].getAttribute("index"))}},"function"==typeof define?define(function(){return layer}):function(){var a=document.scripts,c=a[a.length-1],d=c.src,e=d.substring(0,d.lastIndexOf("/")+1);c.getAttribute("merge")||document.head.appendChild(function(){var a=b.createElement("link");return a.href=e+"need/layer.css?2.0",a.type="text/css",a.rel="styleSheet",a.id="layermcss",a}())}()}(window);
+</script>
+
+<script type="text/javascript">
+
+$('.check').bind('click',function(obj) {
+	var th = $(this);
+	var ordersn = th.attr('hrs');
+	$.ajax({
+		type:"post",
+		url:"{$upOpenid}",
+		async:true,
+		data:{'ordersn':ordersn},
+		success:function(res) {
+			var res = JSON.parse(res);
+			if(res.code >= 1) {
+				window.location.href = res.info;
+			} else {
+				alert(res.msg)
+			}
+		}
+	});
+});
+
+var provinces = new Array("京","沪","浙","苏","粤","鲁","晋","冀","豫","川","渝","辽","吉","黑","皖","鄂","津","贵","云","桂","琼","青","新","藏","蒙","宁","甘","陕","闽","赣","湘");
+var keyNums = new Array("0","1","2","3","4","5","6","7","8","9","Q","W","E","R","T","Y","U","I","O","P","A","S","D","F","G","H","J","K","L","确认","Z","X","C","V","B","N","M","删除");
+var next=0;
+
+function showProvince() {
+	$("#pro").html("");
+	var ss="";
+	for(var i=0;i<provinces.length;i++){
+		ss=ss+addKeyProvince(i)
+	} 
+	$("#pro").html("<ul class='clearfix ul_pro'>"+ss+"<li class='li_close' onclick='closePro();'><span>关闭</span></li><li class='li_clean' onclick='cleanPro();'><span>清空</span></li></ul>");
+}
+	
+function showKeybord(){
+	$("#pro").html("");
+	var sss="";
+	for(var i=0;i<keyNums.length;i++){
+		sss=sss+'<li class="ikey ikey'+i+' '+(i>9?"li_zm":"li_num")+' '+(i>28?"li_w":"")+'" ><span onclick="choosekey(this,'+i+');">'+keyNums[i]+'</span></li>'
+	} 
+	$("#pro").html("<ul class='clearfix ul_keybord'>"+sss+"</ul>");
+}
+	
+function addKeyProvince(provinceIds){
+    var addHtml = '<li>';
+        addHtml += '<span onclick="chooseProvince(this);">'+provinces[provinceIds]+'</span>';
+        addHtml += '</li>';
+        return addHtml;
+}
+
+//清空数据
+function chooseProvince(obj){
+   $(".input_pro span").text($(obj).text());
+   $(".input_pro").addClass("hasPro");
+   $(".input_pp").find("span").text("");
+   $(".ppHas").removeClass("ppHas");
+   next=0;
+   showKeybord();
+}	
+//确认按钮
+function choosekey(obj,jj){	
+	if(jj==29){
+		var cars = $(".ul_input").find('li');
+		var CarNo = '';
+		$(cars).each(function() {
+			if($(this).text()!='') {
+				CarNo += $.trim($(this).text())
+			}
+		});
+		
+		CarNo = CarNo.toUpperCase();
+	  	// var isVe  = isVehicleNumber(CarNo);
+	  	var isVe   = isLicenseNo(CarNo);
+	  	if(!isVe) {
+	  		alert('您输入的车牌号不正确');
+	  		return false;
+	  	}
+	  	$('#CarNo').val(CarNo);
+	  	$('#bk_form').submit();
+	  	
+		layer.closeAll();
+		
+	} else if(jj==37) {
+		if($(".ppHas").length==0){
+			$(".hasPro").find("span").text("");			
+			$(".hasPro").removeClass("hasPro");	
+			showProvince();
+			next=0;
+		}
+		$(".ppHas:last").find("span").text("");
+		$(".ppHas:last").removeClass("ppHas");
+		next=next-1;
+		if(next<1){
+			next=0;
+		}
+	}else{
+		if(next>6) {
+			return
+		}
+		for(var i = 0; i<$(".input_pp").length;i++){
+			if(next==0 & jj<10 & $(".input_pp:eq("+next+")").hasClass("input_zim")){
+				layer.open({
+					content: '车牌第二位为字母',
+					skin: 'msg',
+					time: 1
+				});
+				return
+			}
+			$(".input_pp:eq("+next+")").find("span").text($(obj).text());
+			$(".input_pp:eq("+next+")").addClass("ppHas");
+			next=next+1;
+			if(next>6){
+				next=7;
+			}
+			getpai();
+			return
+		}
+	}
+}
+//车牌验证
+function isVehicleNumber(vehicleNumber) {
+	var xreg=/^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}(([0-9]{5}[DF]$)|([DF][A-HJ-NP-Z0-9][0-9]{4}$))/;
+	var creg=/^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}[A-HJ-NP-Z0-9]{4}[A-HJ-NP-Z0-9挂学警港澳]{1}$/;
+	if(vehicleNumber.length == 7) {
+		return creg.test(vehicleNumber);
+	} else if(vehicleNumber.length == 8) {
+		return xreg.test(vehicleNumber);
+	} else {
+		return false;
+	}
+}
+
+function isLicenseNo(str) {
+    return /(^[\u4E00-\u9FA5]{1}[A-Z0-9]{6}$)|(^[A-Z]{2}[A-Z0-9]{2}[A-Z0-9\u4E00-\u9FA5]{1}[A-Z0-9]{4}$)|(^[\u4E00-\u9FA5]{1}[A-Z0-9]{5}[挂学警军港澳]{1}$)|(^[A-Z]{2}[0-9]{5}$)|(^(08|38){1}[A-Z0-9]{4}[A-Z0-9挂学警军港澳]{1}$)/.test(str);
+}
+
+function closePro() {
+   layer.closeAll()
+}
+	
+function cleanPro(){$(".ul_input").find("span").text("");$(".hasPro").removeClass("hasPro");$(".ppHas").removeClass("ppHas");next=0;}
+function trimStr(str){return str.replace(/(^\s*)|(\s*$)/g,"");}
+function getpai(){var pai=trimStr($(".car_input").text());$(".car_input").attr("data-pai",pai);}
+	
+	
+window.onload = function() {
+	$(".input_pro").click(function(){
+		 layer.open({
+			type: 1
+			,content: '<div id="pro"></div>'
+			,anim: 'up'
+			,shade :false 
+			,style: 'position:fixed; bottom:0; left:0; width: 100%; height: auto; padding:0; border:none;'
+		  });
+		 showProvince()
+	})
+	
+	$(".input_pp").click(function(){
+		 if($(".input_pro").hasClass("hasPro")){//如果已选择省份
+			layer.open({
+				type: 1
+				,content: '<div id="pro"></div>'
+				,anim: 'up'
+				,shade :false 
+				,style: 'position:fixed; bottom:0; left:0; width: 100%; height: auto; padding:0; border:none;'
+			});
+			showKeybord()
+		 }else{
+			$(".input_pro").click()
+		 }
+	})
+}
+</script>
+{template "parking/base/footer"}

@@ -1,0 +1,160 @@
+{include file="common/header"}
+<body>
+<div class="x-nav">
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<div class="x-body">
+</div>
+<table class="layui-table">
+    <thead>
+    <tr>
+        <th>中签者</th>
+        <th>方案</th>
+        <th>应缴金额</th>
+        <th>缴费期限</th>
+        <th>操作</th>
+    </thead>
+    <tbody>
+
+    {volist name='list.data' id='vo' empty='暂无数据'}
+    <tr>
+        <td>{$vo.user_name}</td>
+        <td>{$vo.scheme_name}</td>
+        {if $vo.up_money ==0.00}
+        <td>{$vo.month_money}</td>
+        {else}
+        <td>{$vo.up_money}</td>
+        {/if}
+        <td>{$vo.lottery_pay|date='Y-m-d',###}至{$vo.lottery_pay2|date='Y-m-d',###}</td>
+        <td>
+            <a class="layui-btn layui-btn-normal"  onclick="delayTime(this,'{$vo.id}');">延期缴费</a>
+            <a class="layui-btn layui-btn-danger"  onclick="firstBakUp(this,'{$vo.id}');">候补替补</a>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+<div class="page">
+    <div>
+        {$page}
+    </div>
+</div>
+</div>
+<div class="layui-col-md12" id="in" style="display: none">
+    <input type="text" name="time" id="date" value="" placeholder="请选择时间" autocomplete="off" class="layui-input">
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" id="onsub" lay-submit="" lay-filter="component-form-element">立即提交</button>
+        </div>
+    </div>
+</div>
+<form class="layui-form layui-form-pane" action="" style="display: none" id="sel">
+    <div class="layui-form-item" >
+        <label class="layui-form-label">选择候选</label>
+        <div class="layui-input-block">
+            <select name="Up" lay-verify="required" id="Up">
+                <option value=""></option>
+            </select>
+        </div>
+        <input type="text" name="time" id="date2" value="" placeholder="请选择候补支付时间" autocomplete="off" class="layui-input">
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" id="onUp" lay-submit lay-filter="formDemo">立即提交</button>
+            </div>
+        </div>
+    </div>
+</form>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    var userId=null;
+    var objs =null;
+    layui.use(['laydate','layer','form'], function(){
+        var laydate = layui.laydate;
+        var layer = layui.layer;
+        var form = layui.form;
+        laydate.render({
+            elem:"#date",
+            type:"datetime",
+            range:"/"
+        })
+        laydate.render({
+            elem:"#date2",
+            type:"datetime",
+            range:"/"
+        })
+    });
+
+
+    function delayTime(obj,id) {
+        userId=id;
+        layer.open({
+            type: 1,
+            area:['300px','190px'],
+            content: $('#in') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+        });
+    }
+
+    function firstBakUp(obj,id) {
+        userId = id;
+        objs = obj;
+        axios.get("{:Url('month_card/subte_list')}&id="+id).then(function (reason) {
+            var user = JSON.parse(reason.data.data);
+            var selHTML = '<option value=""></option>';
+            for (var i=0;i<user.length;i++){
+                selHTML += '<option value="'+user[i].id+'">'+user[i].user_name+'</option>'
+            }
+
+            $("#Up").html(selHTML);
+            console.dir(user);
+            layer.open({
+                type:1,
+                area:['597','265px'],
+                content:$("#sel"),
+            });
+            layui.form.render();
+        }).catch(function (error) {
+            console.log(error);
+        });
+    }
+    $("#onsub").bind("click",function () {
+        axios.post("{:Url('month_card/pay_outdelaytime')}",{
+            userid:userId,
+            time:$("#date").val()
+        }).then(function (reason) {
+            if(reason.data.code==0){
+                layui.layer.msg(reason.data.msg);
+                setTimeout(function () {
+                    layer.closeAll();
+
+                },3000);
+            }else{
+                layui.layer.msg(reason.data.msg);
+            }
+            return false;
+        }).catch(function (err) {
+            layui.layer.msg(err);
+        })
+    });
+
+    $("#onUp").bind("click",function () {
+        var value = $("#Up option:selected").val();
+        var date  = $("#date2").val();
+        axios.get("{:Url('month_card/update_alternateStu')}&id="+value+"&uid="+userId+"&time="+date).then(function (reason) {
+            layui.layer.msg(reason.data.msg);
+            if (reason.data.code !=0){
+                return false;
+            }
+            $(objs).parent().parent().remove();
+            setTimeout(function () {
+                layer.closeAll();
+            },1000);
+        }).catch(function (err) {
+            layui.layer.msg(err);
+        })
+        return false;
+    });
+
+</script>
+</body>
+</html>

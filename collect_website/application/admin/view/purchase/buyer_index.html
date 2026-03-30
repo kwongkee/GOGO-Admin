@@ -1,0 +1,205 @@
+{include file="common/header_new"}
+<link rel="stylesheet" href="static/agents/layui/css/layui.css">
+<script src="static/agents/layui/layui.js"></script>
+<style>
+    .disf{display:flex;align-items: center;}
+    img{ width:20px;height:20px;}
+    .layui-colla-item{border:1px solid #000;}
+    .layui-colla-title{background:#0e2e68;color:#fff;margin-top:0;}
+    .layui-form-label{width:100px;}
+
+    .expend_div{width: 140px;text-align: right;border-left: 1px solid #fff;line-height: 1px;}
+    .add_operation{font-size:30px;}
+</style>
+<body class="gray-bg">
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <h3 style="text-align: center;">买手管理</h3>
+
+                <div id="toolbar1" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;float: left;">
+                    <button type="button" href="javascript:;" onclick="save();" class="btn btn-default">
+                        添加买手
+                    </button>
+                </div>
+
+                <table id="table"
+                /*默认排序项*/
+                data-sort-name="id"
+                data-sort-order="desc"
+                /*工具栏相关*/
+                data-toolbar="#toolbar"
+                data-search="false"          /*搜索框*/
+                data-search-on-enter-key="true"
+                data-show-refresh="true"    /*刷新按钮*/
+                /*分页相关*/
+                data-side-pagination="server"
+                data-pagination="true"      /*显示分页*/
+                data-page-size="10"         /*每页显示条数*/
+                /*移动端相关*/
+                data-mobile-responsive="true"
+                data-card-view="true"
+                data-show-columns="true"
+                /*radio or checkbox字段名称*/
+                data-select-item-name="id" >
+                <thead>
+                <tr>
+                    <th data-field="id"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">ID</th>
+                    <th data-field="type_name"
+                        data-align="center"
+                        data-sortable="true">买手类别</th>
+                    <th data-field="name"
+                        data-align="center"
+                        data-sortable="true">买手名称</th>
+                    <th data-field="statusname"
+                        data-align="center"
+                        data-sortable="true">买手状态</th>
+                    <th data-field="createtime"
+                        data-align="center"
+                        data-sortable="true">创建时间</th>
+                    <th data-field="manage"
+                        data-align="center"
+                        data-sortable="true"
+                        data-formatter="actionFormatter">操作</th>
+                </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+
+<script type="text/javascript">
+    var table;
+
+    layui.use(['layer','form','laydate','upload','element'],function() {
+        var laydate = layui.laydate
+            , layer = layui.layer
+            , form = layui.form
+            , $ = layui.jquery
+            , element = layui.element
+            , upload = layui.upload;
+
+    });
+
+    $(document).ready(function() {
+        table = $('#table').bootstrapTable({
+            url: "{:url('admin/purchase/buyer_index')}&pa=1",
+            queryParams: queryParams,
+        });
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.id;
+        var title = row.name;
+
+        var result = "";
+
+        if(row.is_verify==1){
+            // result += '<button style="margin-right: 5px;" type="button" onclick="openWindow('+id+',\''+title+'\',1)" class="btn btn-warning btn-xs">采购历史</button>';
+            result += '<button style="margin-right: 5px;" type="button" onclick="openWindow('+id+',\''+title+'\',5)" class="btn btn-warning btn-xs">订单分配</button>';
+        }
+
+        if(row.is_apply==1 && row.is_verify==0){
+            <!--申请和待审核-->
+            result += '<button style="margin-right: 5px;" type="button" onclick="openWindow('+id+',\''+title+'\',4)" class="btn btn-warning btn-xs">审核</button>';
+        }
+
+        result += '<button style="margin-right: 5px;" type="button" onclick="openWindow('+id+',\''+title+'\',2)" class="btn btn-primary btn-xs">编辑</button>';
+        result += '<button style="margin-right: 5px;" type="button" onclick="openWindow('+id+',\''+title+'\',3)" class="btn btn-danger btn-xs">删除</button>';
+
+        return result;
+    }
+
+    function save(){
+        var index = layer.open({
+            type: 2,
+            title: '添加买手',
+            area:['100%','100%'],
+            content: "{:url('admin/purchase/save_buyer')}"
+        });
+    }
+
+    function openWindow(id,title,typ){
+        if(typ==1){
+            var index = layer.open({
+                type: 2,
+                title: title+'-采购历史',
+                area:['100%','100%'],
+                content: "{:url('admin/purchase/purchase_history')}&id="+id
+            });
+        }else if(typ==2){
+            var index = layer.open({
+                type: 2,
+                title: title+'-编辑',
+                area:['100%','100%'],
+                content: "{:url('admin/purchase/save_buyer')}&id="+id
+            });
+        }else if(typ==3){
+            del(id);
+        }else if(typ==4){
+            var index = layer.open({
+                type: 2,
+                title: title+'-审核',
+                area:['100%','100%'],
+                content: "{:url('admin/purchase/review_buyer')}&id="+id
+            });
+        }else if(typ==5){
+            var index = layer.open({
+                type: 2,
+                title: title+'-订单分配',
+                area:['100%','100%'],
+                content: "{:url('admin/purchase/audit_order')}&id="+id
+            });
+        }
+    }
+
+    function del(id){
+        layer.confirm('确认删除该买手吗？',function(index){
+            $.ajax({
+                url: "<?php echo Url('admin/purchase/del_buyer'); ?>",
+                data:{'id':id},
+                type:'post',
+                cache:false,
+                dataType:'json',
+                success:function(data){
+                    if(data.code==0)
+                    {
+                        layer.msg(data.msg, {
+                            icon: 1,
+                            time: 2000
+                        }, function(){
+                            window.location.reload();
+                        });
+                        return true;
+                    }else {
+                        layer.msg(data.msg, {icon:2, time:2000});
+                        return false;
+                    }
+                },
+                error:function() {
+                    layer.msg('系统出错,请重试',{icon:2,time:1000});
+                }
+            });
+        });
+    }
+</script>

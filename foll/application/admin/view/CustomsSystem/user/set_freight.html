@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>配置商户的拖车信息</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <style>
+        .entry_type2,.entry_type4,.entry_type6,.entry_type8{display:none;}
+        .fee_show{display:block;}
+        .fee_hide{display:none;}
+    </style>
+</head>
+<body>
+<form class="layui-form" action="" style="padding-top:15px;padding-right:15px;box-sizing:border-box;">
+
+    <div class="layui-tab">
+
+        <div class="layui-tab-content">
+            <div class="layui-tab-item layui-show">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">运费加副</label>
+                    <div class="layui-input-block">
+                        <input class="layui-input" name="freight_price" id="freight_price" placeholder="请输入运费加减副度" value="{$user['freight_info']['freight_price']}">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+
+</body>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<!--<script src="./static/hadmin/assets/layui/xm-select.js"></script>-->
+<script>
+    layui.use(['form','jquery','element'], function(){
+        var form = layui.form;
+        var $ = layui.jquery;
+        var element = layui.element;
+
+        form.on('submit(formDemo)', function(data) {
+            $.ajax({
+                url: '{:Url("admin/customssystem/setFreight")}',
+                type: "POST",
+                dataType: "JSON",
+                data: {"uid":{$user['id']},"data":data.field},
+                success:function (res) {
+                    layer.msg(res.message);
+                    // if (res.code==0){
+                    //     setTimeout(function () {
+                    //         location.reload();
+                    //     },2000);
+                    // }
+                },error:function (xhr) {
+                    layer.msg("连接服务错误..");
+                }
+            });
+            return false;
+        });
+    });
+
+</script>
+</html>

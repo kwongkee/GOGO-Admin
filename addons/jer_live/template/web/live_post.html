@@ -1,0 +1,427 @@
+{template 'common/header'}
+{php load()->func('tpl')}
+<link rel="stylesheet" href="/addons/jer_live/static/css/style.css">
+<ul class="nav nav-tabs">
+    <li><a href="{php echo $this->createWebUrl('live', array('op' => 'list'))}">直播列表</a></li>
+    <li {if !$id} class="active" {/if}><a href="{php echo $this->createWebUrl('live',array('op'=>'post'));}">创建直播</a></li>
+    {if $id}<li class="active"><a href="">编辑直播</a></li>{/if}
+</ul>
+<div class="main">
+    <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data" onsubmit="return validate(this);">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                编辑直播
+            </div>
+            <div class="panel-body">
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">直播名称</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <input type="text" name="name" class="form-control" value="{$data['name']}" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">标题图片</label>
+                    <div class="col-sm-9 col-xs-12">
+                        {php echo tpl_form_field_image('thumb', $data['thumb']);}
+                        <span class="help-block">
+                        图片尺寸建议440 * 220
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">直播简介</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <textarea style="height:150px;" class="form-control" name="description" cols="100">{$data['description']}</textarea>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">是否收费观看</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <label class="radio-inline" onclick="$('.js-charge-selector').hide();"><input type="radio" name="live_charge" value="0" {if $data['live_charge'] == '0' || !isset($data['live_charge'])}  checked="true" {/if}> 否</label>&nbsp;&nbsp;&nbsp;
+                        <label class="radio-inline" onclick="$('.js-charge-selector').show();"><input type="radio" name="live_charge" value="1" {if $data['live_charge'] == '1'}  checked="true" {/if}> 是</label>
+                    </div>
+                </div>
+
+                <div class="js-charge-selector" {if $data['live_charge'] != '1'} style="display: none;" {/if}>
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">收费观看费用</label>
+                    <div class="col-sm-9 col-xs-12 form-group">
+                        <input type="text" class="form-control" name="live_charge_price" value="{$data['live_charge_price']}" placeholder="费用">
+                        <span class="help-block">1为1分， 10为0.1元，100为1元</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">直播类型</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <label class="radio-inline" onclick="$('.js-live_video-selector').hide();$('.js-live_photo-selector').show();"><input type="radio" name="live_type" value="0" {if $data['live_type'] == '0' || !isset($data['live_type'])}  checked="true" {/if}> 图文直播</label>&nbsp;&nbsp;&nbsp;
+                        <label class="radio-inline" onclick="$('.js-live_video-selector').show();$('.js-live_photo-selector').hide();"><input type="radio" name="live_type" value="1" {if $data['live_type'] == '1'}  checked="true" {/if}> 视频直播</label>
+                    </div>
+                </div>
+
+                <div class="form-group js-live_photo-selector" {if $data['live_type'] == 1}style="display: none;"{/if}>
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">信息审核</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <label class="radio-inline"><input type="radio" name="message_add_status" value="0" {if $data['message_add_status'] == '0' || !isset($data['message_add_status'])}  checked="true" {/if}> 需要审核</label>&nbsp;&nbsp;&nbsp;
+                        <label class="radio-inline"><input type="radio" name="message_add_status" value="1" {if $data['message_add_status'] == '1'}  checked="true" {/if}> 无需审核，直接显示</label>
+                        <span class="help-block">
+                            前线主持人是否可以发布信息直接显示，而不需要后台管理员审核筛选。
+                        </span>
+                    </div>
+                </div>
+
+
+
+                <div class="form-group js-live_video-selector" {if $data['live_type'] == 0}style="display: none;"{/if}>
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">直播云类型</label>
+                    <div class="col-sm-9 col-xs-12 form-group">
+                        <label class="radio-inline" onclick="$('.js-letv-selector').show();$('.js-bfy-selector').hide();$('.js-other-selector').hide();"><input type="radio" name="live_video_type" value="0" {if $live_video['live_video_type'] == '0'}  checked="true" {/if}> 乐视云</label>
+                        <label class="radio-inline" onclick="$('.js-letv-selector').hide();$('.js-bfy-selector').show();$('.js-other-selector').hide();"><input type="radio" name="live_video_type" value="1" {if $live_video['live_video_type'] == '1'}  checked="true" {/if}> 暴风云</label>
+                        <label class="radio-inline" onclick="$('.js-letv-selector').hide();$('.js-bfy-selector').hide();$('.js-other-selector').show();"><input type="radio" name="live_video_type" value="2" {if $live_video['live_video_type'] == '2'}  checked="true" {/if}> 其他</label>
+                    </div>
+
+                    <div class="js-letv-selector" {if $live_video['live_video_type'] != '0'}style="display: none;"{/if}>
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">视频源类型</label>
+                        <div class="col-sm-9 col-xs-12 form-group">
+                            <label class="radio-inline" onclick="$('.js-letv-paly-1-selector').hide();$('.js-letv-paly-2-selector').show();"><input type="radio" name="live_video_letv_play_type" value="2" {if $live_video['live_video_letv_play_type'] == '2'}  checked="true" {/if}> 直播</label>&nbsp;&nbsp;&nbsp;
+                            <label class="radio-inline" onclick="$('.js-letv-paly-2-selector').hide();$('.js-letv-paly-1-selector').show();"><input type="radio" name="live_video_letv_play_type" value="1" {if $live_video['live_video_letv_play_type'] == '1'}  checked="true" {/if}> 点播（录播）</label>
+                        </div>
+
+                        <div class="js-letv-paly-2-selector" {if $live_video['live_video_letv_play_type'] != '2'} style="display: none;" {/if}>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">乐视云直播配置</label>
+                            <div class="col-sm-9 col-xs-12 form-group">
+                                <div class="form-inline">
+                                    <div class="form-group">
+                                        <label>活动ID：</label>
+                                        <input type="text" class="form-control" name="letv_activityid" value="{$live_video['letv_activityid']}" placeholder="活动ID">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="js-letv-paly-1-selector" {if $live_video['live_video_letv_play_type'] != '1'} style="display: none;" {/if}>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">乐视云点播配置</label>
+                            <div class="col-sm-9 col-xs-12 form-group">
+                                <div class="form-inline">
+                                    <div class="form-group">
+                                        <label>uu：</label>
+                                        <input type="text" class="form-control" name="letv_uu" value="{$live_video['letv_uu']}" placeholder="uu">
+                                    </div>
+                                    &nbsp;&nbsp;&nbsp;
+                                    <div class="form-group">
+                                        <label>vu：</label>
+                                        <input type="text" class="form-control"  name="letv_vu" value="{$live_video['letv_vu']}" placeholder="vu">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="js-bfy-selector" {if $live_video['live_video_type'] != '1'}style="display: none;"{/if}>
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">视频源类型</label>
+                        <div class="col-sm-9 col-xs-12 form-group">
+                            <label class="radio-inline" onclick="$('.js-bfy-paly-1-selector').hide();$('.js-bfy-paly-2-selector').show();"><input type="radio" name="live_video_bfy_play_type" value="2" {if $live_video['live_video_bfy_play_type'] == '2'}  checked="true" {/if}> 直播</label>&nbsp;&nbsp;&nbsp;
+                            <label class="radio-inline" onclick="$('.js-bfy-paly-2-selector').hide();$('.js-bfy-paly-1-selector').show();"><input type="radio" name="live_video_bfy_play_type" value="1" {if $live_video['live_video_bfy_play_type'] == '1'}  checked="true" {/if}> 点播（录播）</label>
+                        </div>
+
+                        <div class="js-bfy-paly-2-selector" {if $live_video['live_video_bfy_play_type'] != '2'} style="display: none;" {/if}>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">暴风云直播配置</label>
+                            <div class="col-sm-9 col-xs-12 form-group">
+                                <div class="form-inline">
+                                    <div class="form-group">
+                                        <label>userid：</label>
+                                        <input type="text" class="form-control" name="bfy_live_userid" value="{$live_video['bfy_live_userid']}" placeholder="userid">
+                                    </div>
+                                    &nbsp;&nbsp;&nbsp;
+                                    <div class="form-group">
+                                        <label>使用ID：</label>
+                                        <input type="text" class="form-control"  name="bfy_live_fid" value="{$live_video['bfy_live_fid']}" placeholder="使用ID">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="js-bfy-paly-1-selector" {if $live_video['live_video_bfy_play_type'] != '1'} style="display: none;" {/if}>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">暴风云点播配置</label>
+                            <div class="col-sm-9 col-xs-12 form-group">
+                                <div class="form-inline">
+                                    <div class="form-group">
+                                        <label>userid：</label>
+                                        <input type="text" class="form-control" name="bfy_vod_userid" value="{$live_video['bfy_vod_userid']}" placeholder="userid">
+                                    </div>
+                                    &nbsp;&nbsp;&nbsp;
+                                    <div class="form-group">
+                                        <label>视频ID：</label>
+                                        <input type="text" class="form-control"  name="bfy_vod_fid" value="{$live_video['bfy_vod_fid']}" placeholder="视频ID">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="js-other-selector" {if $live_video['live_video_type'] != '2'}style="display: none;"{/if}>
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">视频源地址</label>
+                        <div class="col-sm-9 col-xs-12 form-group">
+                            <input type="text" class="form-control" name="m3u8_url" value="{$live_video['m3u8_url']}" placeholder="视频直播源m3u8地址">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">开启tab标签[1]</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <label class="radio-inline" onclick="$('.js-tab1-selector').hide();"><input type="radio" name="live_tab1_status" value="0" {if $live_tab['live_tab1_status'] == '0' || !isset($live_tab['live_tab1_status'])}  checked="true" {/if}> 关闭</label>&nbsp;&nbsp;&nbsp;
+                            <label class="radio-inline" onclick="$('.js-tab1-selector').show();"><input type="radio" name="live_tab1_status" value="1" {if $live_tab['live_tab1_status'] == '1'}  checked="true" {/if}> 开启</label>
+                        </div>
+                    </div>
+
+                    <div class="js-tab1-selector" {if $live_tab['live_tab1_status'] != '1'} style="display: none;" {/if}>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">tab标签[1]名称</label>
+                            <div class="col-sm-9 col-xs-12">
+                                <input type="text" name="live_tab1_name" class="form-control" value="{$live_tab['live_tab1_name']}" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="js-tab1-selector" {if $live_tab['live_tab1_status'] != '1'} style="display: none;" {/if}>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">tab标签[1]内容</label>
+                            <div class="col-sm-9 col-xs-12">
+                                {php echo tpl_ueditor('live_tab1_content', $live_tab['live_tab1_content']);}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">开启tab标签[2]</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <label class="radio-inline" onclick="$('.js-tab2-selector').hide();"><input type="radio" name="live_tab2_status" value="0" {if $live_tab['live_tab2_status'] == '0' || !isset($live_tab['live_tab2_status'])}  checked="true" {/if}> 关闭</label>&nbsp;&nbsp;&nbsp;
+                            <label class="radio-inline" onclick="$('.js-tab2-selector').show();"><input type="radio" name="live_tab2_status" value="1" {if $live_tab['live_tab2_status'] == '1'}  checked="true" {/if}> 开启</label>
+                        </div>
+                    </div>
+
+                    <div class="js-tab2-selector" {if $live_tab['live_tab2_status'] != '1'} style="display: none;" {/if}>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">tab标签[2]名称</label>
+                            <div class="col-sm-9 col-xs-12">
+                                <input type="text" name="live_tab2_name" class="form-control" value="{$live_tab['live_tab2_name']}" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="js-tab2-selector" {if $live_tab['live_tab2_status'] != '1'} style="display: none;" {/if}>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">tab标签[2]内容</label>
+                            <div class="col-sm-9 col-xs-12">
+                                {php echo tpl_ueditor('live_tab2_content', $live_tab['live_tab2_content']);}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">开启tab标签[3]</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <label class="radio-inline" onclick="$('.js-tab3-selector').hide();"><input type="radio" name="live_tab3_status" value="0" {if $live_tab['live_tab3_status'] == '0' || !isset($live_tab['live_tab3_status'])}  checked="true" {/if}> 关闭</label>&nbsp;&nbsp;&nbsp;
+                            <label class="radio-inline" onclick="$('.js-tab3-selector').show();"><input type="radio" name="live_tab3_status" value="1" {if $live_tab['live_tab3_status'] == '1'}  checked="true" {/if}> 开启</label>
+                        </div>
+                    </div>
+
+                    <div class="js-tab3-selector" {if $live_tab['live_tab3_status'] != '1'} style="display: none;" {/if}>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">tab标签[3]名称</label>
+                            <div class="col-sm-9 col-xs-12">
+                                <input type="text" name="live_tab3_name" class="form-control" value="{$live_tab['live_tab3_name']}" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="js-tab3-selector" {if $live_tab['live_tab3_status'] != '1'} style="display: none;" {/if}>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">tab标签[3]内容</label>
+                            <div class="col-sm-9 col-xs-12">
+                                {php echo tpl_ueditor('live_tab3_content', $live_tab['live_tab3_content']);}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">开启跑马灯效果</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <label class="radio-inline" onclick="$('.js-marquee-selector').hide();"><input type="radio" name="live_marquee_status" value="0" {if $data['live_marquee_status'] == '0' || !isset($data['live_marquee_status'])}  checked="true" {/if}> 关闭</label>&nbsp;&nbsp;&nbsp;
+                            <label class="radio-inline" onclick="$('.js-marquee-selector').show();"><input type="radio" name="live_marquee_status" value="1" {if $data['live_marquee_status'] == '1'}  checked="true" {/if}> 开启</label>
+                        </div>
+                    </div>
+
+                    <div class="js-marquee-selector" {if $data['live_marquee_status'] != '1'} style="display: none;" {/if}>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">跑马灯内容</label>
+                            <div class="col-sm-9 col-xs-12">
+                                <textarea class="form-control" rows="3" name="live_marquee_content">{$data['live_marquee_content']}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">视频顶部图片</label>
+                        <div class="col-sm-9 col-xs-12">
+                            {php echo tpl_form_field_image('live_top_ad_img', $data['live_top_ad_img']);}
+                            <span class="help-block">位于视频顶部的图片</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">视频顶部图片链接</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <input type="text" name="live_top_ad_img_link" class="form-control" value="{$data['live_top_ad_img_link']}" />
+                            <span class="help-block">位于视频顶部图片的链接</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">留言审核</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <label class="radio-inline"><input type="radio" name="comment_add_status" value="0" {if $data['comment_add_status'] == '0' || !isset($data['comment_add_status'])}  checked="true" {/if}> 需要审核</label>&nbsp;&nbsp;&nbsp;
+                        <label class="radio-inline"><input type="radio" name="comment_add_status" value="1" {if $data['comment_add_status'] == '1'}  checked="true" {/if}> 无需审核，直接显示</label>
+                        <span class="help-block">
+                            前台信息留言是否直接显示。
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">直播主持人</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <div class="input-group">
+                            <input type="text" class="form-control dropdown-toggle" placeholder="请输入用户昵称或uid进行搜索" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu2" id="nicknamelist">
+                                <li><a href=''>搜索不到用户...X_X...</a></li>
+                            </ul>
+                            <span class="input-group-btn">
+                                <span class="btn btn-default"><span class="caret"></span></span>
+                            </span>
+                        </div>
+                        <div id="user_list">
+                            {loop $uid_list $user}
+                            <span class="btn btn-success">{$user[nickname]}(uid：{$user[uid]})&nbsp;&nbsp;<span class="badge">X</span><input type="hidden" name='uid_list[]' id="uid_{$user[uid]}" value="{$user[uid]}" /></span>
+                            {/loop}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">开始时间</label>
+                    <div class="col-sm-9 col-xs-12">
+                        {php echo tpl_form_field_date('starttime', date('Y-m-d H:i:s', $starttime), true);}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">直播状态</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <label class="radio-inline"><input type="radio" name="status" value="0" {if $data['status'] == '0' || !isset($data['status'])}  checked="true" {/if}> 等待开始</label>&nbsp;&nbsp;&nbsp;
+                        <label class="radio-inline"><input type="radio" name="status" value="1" {if $data['status'] == '1'}  checked="true" {/if}> 直播中</label>
+                        <label class="radio-inline"><input type="radio" name="status" value="2" {if $data['status'] == '2'}  checked="true" {/if}> 直播结束</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">直播查看数</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <input type="text" name="view" class="form-control" value="{$data['view']}" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">排序</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <input type="text" name="sort" class="form-control" value="{$data['sort']}" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">分享标题</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <input type="text" name="live_share_title" class="form-control" value="{$data['live_share_title']}" />
+                        <span class="help-block">分享给朋友或朋友圈时的标题，如不填则使用直播的名称</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">分享摘要</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <input type="text" name="live_share_desc" class="form-control" value="{$data['live_share_desc']}" />
+                        <span class="help-block">分享给朋友或朋友圈时的摘要，如不填则使用直播的简介</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">分享图片</label>
+                    <div class="col-sm-9 col-xs-12">
+                        {php echo tpl_form_field_image('live_share_img', $data['live_share_img']);}
+                        <span class="help-block">分享给朋友或朋友圈时的缩略图，如不填则使用直播的标题图片，建议尺寸不小于300*300</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+		<div class="form-group col-sm-12">
+         	<input type='hidden' name='id' value="{$data['id']}" />
+            <input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1" />
+            <input type="hidden" name="token" value="{$_W['token']}" />
+        </div>
+	</form>
+</div>
+<script type="text/javascript">
+    function message(msg) {
+        require(['util'], function(util) {
+            util.message(msg);
+        });
+    }
+
+    $("#dropdownMenu2").on("keyup",function(data){
+        var k = $(this).val();
+        var empty_html = "<li><a href=''>搜索不到用户...X_X...</a></li>";
+        var html = "";
+        console.log(k);
+        if(k){
+            $.getJSON("{php echo $this->createWebUrl('ajax', array('op'=>'getMembers'))}", {nickname: k}, function(json){
+                if(json.status == '1'){
+                    //console.log(json);
+                    $.each(json.data, function(i,v){
+                        html += "<li><a href='' uid='" + v['uid'] + "'>" + v['nickname'] + "(uid："+ v['uid'] + ")</a></li>";
+                    });
+                }else{
+                    html = empty_html;
+                }
+
+                $("#nicknamelist").html(html);
+            });
+        }else{
+            html = empty_html;
+            $("#nicknamelist").html(html);
+        }
+    });
+
+    $(document).on("click", "#nicknamelist li a", function() {
+        var txt = $(this).text();
+        var uid = $(this).attr("uid");
+        var empty_html = "<li><a href=''>搜索不到用户...X_X...</a></li>";
+        if(uid){
+            var re_uid = $("#uid_" + uid).val();
+            if(!re_uid){
+                var html = "<span class='btn btn-success'>" + txt + "&nbsp;&nbsp;<span class='badge'>X</span><input type='hidden' name='uid_list[]' id='uid_" + uid + "' value='" + uid + "' /></span>";
+                $("#user_list").append(html);
+            }
+        }
+
+        $("#dropdownMenu2").val("");
+        $("#nicknamelist").html(empty_html);
+        return false;
+    });
+
+    $(document).on("click", "#user_list .badge", function() {
+        $(this).parent().remove();
+    });
+</script>
+{template 'common/footer'}
+

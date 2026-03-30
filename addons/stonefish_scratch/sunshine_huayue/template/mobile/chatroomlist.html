@@ -1,0 +1,56 @@
+{template 'header'}
+<style type="text/css">
+	.ui-reddot {
+		padding:0px;
+	}
+</style>
+<div class="ui-container">
+	<ul class="ui-list  ui-list-cover ui-border-tb">
+		{loop $list $key $item}
+		<li class="ui-row-flex ui-whitespace ui-border-tb" style="padding:0px 5px;overflow:hidden;" onclick="window.location.href='{php echo $this->createMobileUrl('chatroom',array('room_id'=>$item['id']))}'">
+			<div class="ui-flex ui-flex-ver ui-flex-pack-center ui-flex-align-start" style="width:110px;">
+				<div class="ui-list-img ui-badge-wrap" style="margin-right:10px">
+					<!-- 删除此段代码可以隐藏未读标记 begin -->
+					{if $item['unread']}
+					<div class="ui-badge-corner">
+						未读{$item['unread']}
+					</div>
+					{/if}
+					<!-- 删除此段代码可以隐藏未读标记 end -->
+					<span style="background-image:url({media $item['room_logo']});border-radius:2px;"></span>
+				</div>
+			</div>
+			<div class="ui-flex ui-flex-ver ui-flex-pack-center ui-flex-align-start" style="-webkit-box-flex:1">
+				<p class="ui-nowrap" style="color:#483D8B"><span class="fa fa-home"></span>{$item['room_name']}</p>
+				<div class="ui-label-list">
+					{if $item['room_type'] == 'lvb' }
+					<label class="ui-label-me ui-label-s-lvb">腾讯直播</label>
+					<label class="ui-label-me ui-label-s-lvb">{$item['lvb_status']}</label>
+					{elseif $item['room_type'] == 'letv'}
+					<label class="ui-label-me ui-label-s-lvb">乐视直播</label>
+					<label class="ui-label-me ui-label-s-lvb">{$item['lvb_status']}</label>
+					{/if}
+					{if $item['in_type'] == 'secret'}<label class="ui-label-me ui-label-s-1">加密</label>{/if}
+					{if $item['in_type'] == 'money'}<label class="ui-label-me ui-label-s-1">付费房</label>{/if}
+					<label class="ui-label-me ui-label-s-3">{if $item['is_public'] == 'n'}会员房{else}公开房{/if}</label>
+					
+				</div>
+				<p id="chatroom_desc_{php echo $key}" style="font-size:12px;width:100%;overflow:hidden;">{$item['room_desc']}</p>
+			</div>
+		</li>
+		<script type="text/javascript">
+            $(function() {
+                var m = new XX.Fx.Marquee(document.getElementById('chatroom_desc_{php echo $key}'), {direction:'left',speed:20, step:1});
+                m.start();
+            })
+        </script>
+		{/loop}
+	</ul>
+	{template 'menu'}
+</div>
+<script>
+function myChatRoom() {
+	window.location.href="{php echo $this->createMobileUrl('chatroomapply')}";	
+}
+</script>
+{template 'footer'}

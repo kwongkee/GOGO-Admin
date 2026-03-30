@@ -1,0 +1,287 @@
+{template 'header'}
+<div class="container">
+	<div class="cell">
+		<div class="bd">
+			<div class="weui_panel weui_panel_access">
+				<div class="weui_panel_bd">
+					<a href="{php echo $this->createMobileUrl('headimgset')}" class="weui_media_box weui_media_appmsg">
+					<div class="weui_media_hd">
+						<img class="weui_media_appmsg_thumb" src="{php echo $userinfo['headimgurl']}">
+					</div>
+					<div class="weui_media_bd">
+						<h4>点击更换头像</h4>
+					</div>
+					</a>
+				</div>
+			</div>
+			<div class="weui_cells_title">
+		    我的签名档
+		    </div>
+		    <div class="weui_cells weui_cells_form">
+		    <div class="weui_cell">
+		            <div class="weui_cell_bd weui_cell_primary">
+		                <textarea class="weui_textarea" placeholder="必填" id="sign" rows="3">{php echo $userinfo['sign']}</textarea>
+		            </div>
+		        </div>
+		    </div>
+		    <div class="weui_cells_title">
+		    个人资料
+		    </div>
+			<div class="weui_cells weui_cells_form">
+				<div class="weui_cell">
+					<div class="weui_cell_hd">
+						<label class="weui_label">昵称</label>
+					</div>
+					<div class="weui_cell_bd">
+						<input class="weui_input" type="text" placeholder="必填" id="nickname" value="{php echo $userinfo['nickname']}"/>
+					</div>
+				</div>
+				<div class="weui_cell">
+					<div class="weui_cell_hd">
+						<label class="weui_label">性别</label>
+					</div>
+					<div class="weui_cell_bd">
+						<input class="weui_input" type="text"id='sex' value="{if $userinfo['sex'] == '1'}男{else}女{/if}" readonly="readonly" onclick="choose_user_sex()"/>
+					</div>
+				</div>
+				<div class="weui_cell">
+					<div class="weui_cell_hd">
+						<label class="weui_label">年龄</label>
+					</div>
+					<div class="weui_cell_bd">
+						<input class="weui_input" type="text" placeholder="必填" id="age" value="{php echo $userinfo['age']}"/>
+					</div>
+				</div>
+				<div class="weui_cell">
+					<div class="weui_cell_hd">
+						<label class="weui_label">职业</label>
+					</div>
+					<div class="weui_cell_bd">
+						<input class="weui_input" type="text" placeholder="必填" id="work" value="{php echo $userinfo['work']}"/>
+					</div>
+				</div>
+			</div>
+			<div class="weui_cells_title">
+			查看附近的TA（男/女）
+			</div>
+			<div class="weui_cells">
+				<div class="weui_cell">
+					<div class="weui_cell_bd weui_cell_primary">
+						<input class="weui_input" type="text" id="user_sex"  value="{if $userinfo['choose_sex'] == '1'}帅哥{else}美女{/if}" onclick="choose_sex()" readonly="readonly"/>
+					</div>    
+		        </div>
+			</div>
+			<a href="javascript:;" name="mobilecheck"></a>
+			<div class="weui_cells_title">
+		    身份认证
+		    </div>
+		    <div class="weui_cells weui_cells_access">
+		        {if $userinfo['mobile_status'] == 'y'}
+		         <a class="weui_cell" href="javascript:;">
+		            <div class="weui_cell_bd weui_cell_primary">
+		                <p>{php echo $userinfo['mobile']}</p>
+		            </div>
+		            <div class="weui_cell_ft"><span style="color:red">已认证</span></div>
+		        </a>
+		        {else}
+		        <a class="weui_cell" href="{php echo $this->createMobileUrl('usercheckmobile')}" onclick="save_userinfo()">
+		            <div class="weui_cell_bd weui_cell_primary">
+		                <p>手机号认证</p>
+		            </div>
+		            <div class="weui_cell_ft"><span style="color:red">（尚未认证）</span>认证</div>
+		        </a>
+		        {/if}
+		    </div>
+		    <div class="weui_cells_tips">
+		    认证成功后将获得更多权限
+		    </div>
+		    <div class="weui_cells_title">
+		    功能
+		    </div>
+		    <div class="weui_cells weui_cells_form">
+		    	<div class="weui_cell weui_cell_switch">
+		            <div class="weui_cell_hd weui_cell_primary">对附近的人可见</div>
+		            <div class="weui_cell_ft">
+		                <input class="weui_switch" type="checkbox" id="isvisible" {if $userinfo['isvisible'] == 'open'}checked{/if} onclick='change_visible(this)'>
+		            </div>
+		        </div>
+		        <div class="weui_cell weui_cell_switch">
+		            <div class="weui_cell_hd weui_cell_primary">允许接收消息通知</div>
+		            <div class="weui_cell_ft">
+		                <input class="weui_switch" type="checkbox" id="is_notice" {if $userinfo['is_notice'] == 'y'}checked{/if} onclick='change_notice(this)'>
+		            </div>
+		        </div>
+		    </div>
+		    <!-- save btn -->
+		    <div class="weui_btn_area">
+		    	<a href="javascript:;" onclick="save(this)" class="weui_btn weui_btn_primary">保存资料</a>
+			</div>
+		</div>
+	</div>
+	<!-- layer -->
+	<div id="layer_wrap">
+	    <div class="weui_mask_transition weui_fade_toggle" id="layer_mask" onclick="hide_layer()"></div>
+	    <div class="weui_actionsheet " id="layer_content">
+	        <div class="weui_actionsheet_menu" id="layer_sex">
+	            <div class="weui_actionsheet_cell" onclick="select_user_sex(this)">男</div>
+	            <div class="weui_actionsheet_cell" onclick="select_user_sex(this)">女</div>
+	        </div>
+	        <div class="weui_actionsheet_menu" id="layer_choose_sex">
+	            <div class="weui_actionsheet_cell" onclick="select_choose_sex(this)">帅哥</div>
+	            <div class="weui_actionsheet_cell" onclick="select_choose_sex(this)">美女</div>
+	        </div>
+	        <div class="weui_actionsheet_action">
+	            <div class="weui_actionsheet_cell" id="layer_cancel" onclick="hide_layer()">取消</div>
+	        </div>
+	    </div>
+	</div>
+</div>
+<script type="text/javascript">
+	function choose_sex()
+	{
+		show_layer('choose_sex');
+	}
+	function select_choose_sex(obj,val) {
+		var sex = $(obj).html();
+		$("#user_sex").val(sex);
+		hide_layer();
+	}
+	function show_layer(type) {
+		var mask = $("#layer_mask");
+		var layer_content = $("#layer_content");
+		var layer_sex = $("#layer_sex");
+		var layer_choose_sex = $("#layer_choose_sex");
+		mask.show();
+		mask.addClass("weui_fade_toggle");
+		layer_content.addClass('weui_actionsheet_toggle');
+		if(type == 'sex') {
+			layer_choose_sex.hide();
+			layer_sex.show();
+		}else {
+			layer_choose_sex.show();
+			layer_sex.hide();
+		}
+	}
+	function hide_layer() {
+		var mask = $("#layer_mask");
+		var layer_content = $("#layer_content");
+		var layer_sex = $("#layer_sex");
+		var layer_choose_sex = $("#layer_choose_sex");
+		mask.hide();
+		mask.removeClass("weui_fade_toggle");
+		layer_content.removeClass("weui_actionsheet_toggle");
+		layer_sex.hide();
+		layer_choose_sex.hide();
+	}
+	//  self
+	function choose_user_sex()
+	{
+		show_layer('sex');
+	}
+	function select_user_sex(obj,val) {
+		var sex = $(obj).html();
+		$("#sex").val(sex);
+		hide_layer();
+	}
+	function save(obj) {
+		var nickname  = $("#nickname").val();
+		var sign  = $("#sign").val();
+		var age  = $("#age").val();
+		var sex  = $("#sex").val();
+		var choose_sex  = $("#user_sex").val();
+		var work = $("#work").val();
+
+		if(nickname.length > 20) {
+			alert("昵称不能超过20字符");
+			return;
+		}
+
+		if(age < 0 || age > 200) {
+			alert("年龄不能大于200");
+			return;
+		}
+
+		// 按钮状态变化
+		$(obj).html("提交中...");
+		$(obj).attr('disabled','disabled');
+		$(obj).addClass('weui_btn_disabled');
+
+		if(sex == '' || nickname=='' || choose_sex == '' || age == '' || work == '')
+		{
+			alert("资料不能为空");
+			$(obj).html("保存资料");
+			$(obj).attr('disabled','');
+			$(obj).removeClass('weui_btn_disabled');
+			return;
+		}
+		$.ajax({
+			type:'post',
+			url:"{php echo $this->createMobileUrl('userupdate')}",
+			data:{nickname:nickname,usersign:sign,age:age,sex:sex,choose_sex:choose_sex,work:work},
+			success:function(d) {
+				if(d.res == '100') {
+					$(obj).html("保存成功");
+					window.location.href='';
+				}else {
+					$(obj).html("保存资料");
+					$(obj).attr('disabled','');
+					$(obj).removeClass('weui_btn_disabled');
+					alert(d.msg);
+				}
+			}
+		})
+	}
+	// change visible
+	function change_visible(obj) {
+		var _self = $(obj);
+		// if checked  then false
+		if(_self.attr('checked')) {
+			_self.attr('checked',true);
+			isvisible = 'open';
+		}else {
+			_self.attr('checked',false);
+			isvisible = 'close';
+		}
+
+		// ajax
+		$.ajax({
+			type:'post',
+			url:"{php echo $this->createMobileUrl('visible')}",
+			data:{isvisible:isvisible},
+			success:function(d) {
+				if(d.res == '100') {
+					//
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+	}
+	// change visible
+	function change_notice(obj) {
+		var _self = $(obj);
+		// if checked  then false
+		if(_self.attr('checked')) {
+			_self.attr('checked',true);
+			is_notice = 'y';
+		}else {
+			_self.attr('checked',false);
+			is_notice = 'n';
+		}
+
+		// ajax
+		$.ajax({
+			type:'post',
+			url:"{php echo $this->createMobileUrl('changenotice')}",
+			data:{is_notice:is_notice},
+			success:function(d) {
+				if(d.res == '100') {
+					//
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+	}
+</script>
+{template 'footer'}

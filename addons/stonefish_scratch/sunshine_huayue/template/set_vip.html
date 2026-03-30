@@ -1,0 +1,46 @@
+{template 'header'}
+	<div class="container-fluid">
+		<h4><span class='glyphicon glyphicon-circle-arrow-right'></span>&nbsp;&nbsp;开通会员积分设置</h4>
+		<div class="row">
+			<div class="col-md-6">
+				<label>积分</label>
+					<input type="text" class="form-control" value="{php echo $this->settings['vip_credit_month_1']}" id='vip_credit' placeholder='例如：100'>
+				<p class="help-block">只填写正整数就可以，如果不设置则前段不显示开通会员模块</p>
+				<button class="btn btn-sm btn-info" onclick="doSave('vip_credit')">保存</button>
+			</div>
+		</div>
+		<br>
+	</div>
+	<script type="text/javascript">
+	function doSave(type,val) {
+
+		if(!type) {
+			return false;
+		}
+
+		if(type == 'vip_credit') {
+			vip_credit_month_1 = $("#vip_credit").val();
+		}
+		
+		$.ajax({
+			type:'post',
+			data:{
+				dataType:type, // 数据类型区分
+				vip_credit_month_1:vip_credit_month_1,
+				setval:val
+			},
+
+			url:"{php echo $this->createWebUrl('settingform')}",
+			success:function(d) {
+				if(d.res == '100') {
+					alert('保存成功');
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+
+	}
+	</script>
+{template 'footer'}

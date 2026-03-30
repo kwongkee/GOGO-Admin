@@ -1,0 +1,186 @@
+{include file="public/header_new"}
+
+<style>
+    img{ width:20px;height:20px;}
+</style>
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <h3 style="text-align: center;">集运网站管理</h3>
+                <div id="toolbar" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;">
+                    <button type="button" href="javascript:;" onclick="save();" class="btn btn-default">
+                        添加域名
+                    </button>
+                </div>
+                <table id="table"
+
+                /*默认排序项*/
+                data-sort-name="id"
+                data-sort-order="desc"
+                /*工具栏相关*/
+                data-toolbar="#toolbar"
+                data-search="false"          /*搜索框*/
+                data-search-on-enter-key="false"
+                data-show-refresh="true"    /*刷新按钮*/
+                /*分页相关*/
+                data-side-pagination="server"
+                data-pagination="true"      /*显示分页*/
+                data-page-size="10"         /*每页显示条数*/
+                /*移动端相关*/
+                data-mobile-responsive="true"
+                data-card-view="true"
+                data-show-columns="true"
+                /*radio or checkbox字段名称*/
+                data-select-item-name="id" >
+
+                <thead>
+                <tr>
+                    <th data-field="checkbox"
+                        data-align="center"
+                        data-checkbox="true"></th>
+                    <th data-field="id"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">ID</th>
+                    <th data-field="title"
+                        data-align="center"
+                        data-sortable="true">名称</th>
+                    <th data-field="domain_name"
+                        data-align="center"
+                        data-sortable="true">域名</th>
+                    <th data-field="remark"
+                        data-align="center"
+                        data-sortable="true">备注</th>
+                    <th data-field="createtime"
+                        data-align="center"
+                        data-sortable="true">创建时间</th>
+                    <th data-field="manage"
+                        data-align="center"
+                        data-sortable="true"
+                        data-formatter="actionFormatter">操作</th>
+                </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var table;
+
+    $(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:url('centralize/website/gather_website_list')}",
+            queryParams: queryParams,
+        });
+        $('.form-control').attr('placeholder','搜索网站名称');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.id;
+        var title = row.domain_name;
+
+        var result = "";
+        result += '<button style="margin-right: 5px;" type="button" onclick="edit('+id+',\''+title+'\')" class="btn btn-primary btn-xs">编辑</button>';
+        result += '<select name="sel" style="margin:0 5px;" onchange="openWindow(this,'+id+',\''+title+'\')"><option>网站管理</option><option value="1">1-基础配置</option><option value="2">2-菜单栏配置</option><option value="3">3-轮播图配置</option><option value="4">4-服务配置</option><option value="5">5-关于我们配置</option></select>';
+        // result += '<button style="margin-right: 5px;" type="button" onclick="del('+id+',\''+title+'\')" class="btn btn-danger btn-xs">删除</button>';
+        return result;
+    }
+
+    function edit(id,name){
+        var index = layer.open({
+            type: 2,
+            title: '修改-'+name,
+            area:['100%','100%'],
+            content: "{:url('centralize/website/save_gather_website')}&id="+id
+        });
+        // layer.full(index);
+    }
+
+
+    function save(title) {
+        var index = layer.open({
+            type: 2,
+            title: title,
+            area:['100%','100%'],
+            content: "{:url('centralize/website/save_gather_website')}"
+        });
+        // layer.full(index);
+    }
+
+    function openWindow(t,id,title){
+        let val = $(t).val();
+
+        let url = '';
+        if(val==1){
+            url = "{:Url('centralize/website/base_setting')}";
+        }else if(val==2){
+            url = "{:Url('centralize/website/menu_list')}";
+        }else if(val==3){
+            url = "{:Url('centralize/website/rotate_list')}";
+        }else if(val==4){
+            url = "{:Url('centralize/website/services_list')}";
+        }else if(val==5){
+            url = "{:Url('centralize/website/aboutus_list')}";
+        }
+        if(url!=''){
+            var index = layer.open({
+                type: 2,
+                title: title,
+                area:['100%','100%'],
+                content: url+'&id='+id
+            });
+        }
+    }
+
+    function del(id,title){
+        layer.confirm('确认删除该集运官网吗？',function(index){
+            $.ajax({
+                url: "<?php echo Url('centralize/website/del_gather_website'); ?>",
+                data:{'id':id},
+                type:'post',
+                cache:false,
+                dataType:'json',
+                success:function(data){
+                    if(data.code==1)
+                    {
+                        layer.msg(data.msg, {
+                            icon: 1,
+                            time: 2000
+                        }, function(){
+                            window.location.reload();
+                        });
+                        return true;
+                    }else {
+                        layer.msg(data.message, {icon:2, time:2000});
+                        return false;
+                    }
+                },
+                error:function() {
+                    layer.msg('系统出错,请重试',{icon:2,time:1000});
+                }
+            });
+        });
+    }
+
+</script>
+
+</body>
+</html>

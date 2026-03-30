@@ -1,0 +1,138 @@
+{include file="common/header_inner_new"}
+<style>
+
+</style>
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+
+<body style="padding:15px;box-sizing: border-box;">
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <div class="layui-form-label">Logo<br/>(像素：135*55)</div>
+            <div class="layui-input-block">
+                <div class="layui-upload" style="margin-top: 10px;">
+                    <button type="button" class="layui-btn" id="logo_file-upload">上传网站小标志(一张)</button>
+                    <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                        预览图：
+                        <div class="layui-upload-list" id="logo_file-upload-list">
+                            {if !empty($data['logo'])}
+                                <div style="display: inline-block;">
+                                    <img onclick="seePic(this);" src="/{$data['logo']}" class="layui-upload-img" style="width:80px;height:80px;">
+                                    <button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button>
+                                    <input type="hidden" name="logo[]" value="{$data['logo']}">
+                                </div>
+                            {/if}
+                        </div>
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-form-label">头部背景色</div>
+            <div class="layui-input-block">
+                <div id="color_head"></div>
+                <input type="hidden" name="head_background" value="{$data['head_background']}">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+            </div>
+        </div>
+    </form>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload','element','colorpicker'],function(){
+        var laydate = layui.laydate
+            ,layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery
+            ,element = layui.element
+            ,colorpicker = layui.colorpicker
+            ,upload = layui.upload;
+
+        {if !empty($data['head_background'])}
+            colorpicker.render({
+                elem:'#color_head',
+                alpha:true,
+                size:'lg',
+                predefine:true,
+                color:'{$data["head_background"]}',
+                done:function(color){
+                    $('input[name="head_background"]').val(color);
+                }
+            });
+        {else}
+            colorpicker.render({
+                elem:'#color_head',
+                alpha:true,
+                size:'lg',
+                done:function(color){
+                    $('input[name="head_background"]').val(color);
+                }
+            });
+        {/if}
+
+        upload.render({
+            elem: '#logo_file-upload'
+            ,url: '{:Url("admin/basic/upload_file")}'
+            ,accept: 'file'
+            ,data: { folder: 'centralize', type: 'miniprogram_index'}
+            ,multiple: false
+            ,number:1
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+
+                    $('#logo_file-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="logo[]" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            layer.load();
+            $.ajax({
+                url:"{:Url('centralize/miniprogram/basic_info')}",
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (res) {
+                    layer.closeAll('loading');
+                    layer.msg(res.msg, {time: 2000}, function () {
+                        if (res.code == 0) {
+                            window.location.reload();
+                        }
+                    });
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            return false;
+        });
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+{include file="public/header"}
+
+<body style="padding: 10px;">
+
+<form action="" class="layui-form" id="form1">
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">快递企业名称</label>
+        <div class="layui-input-inline">
+            <input type="text" class="layui-input" required name="expName" placeholder="请输入快递企业名称">
+        </div>
+    </div>
+
+</form>
+
+<div class="layui-form-item">
+    <div class="layui-input-block">
+        <button class="layui-btn" onclick="save()">确认添加快递企业</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    layui.use(['layer','form'],function(){
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+    })
+
+
+    // 添加管理员
+    function save()
+    {
+        var expName    = $('input[name="expName"]').val();
+
+        if(expName == '') {
+            layer.msg('请输入快递企业名称',{icon:2});
+            return false;
+        }
+
+        // 请求处理数据
+        $.post("{:Url('admin/express/Doadd')}",{
+            expName:expName,
+            methods:'add',
+        },function(resd){
+            var res = JSON.parse(resd);
+            if(res.code == 1) {
+                layer.msg(res.msg,{icon:1});
+                setTimeout(function(){
+                    layer.closeAll();
+                    parent.window.location.reload();
+                },1100);
+            } else {
+                layer.msg(res.msg,{icon:2});
+            }
+
+        });
+    }
+</script>
+</body>
+</html>

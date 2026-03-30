@@ -1,0 +1,173 @@
+{template 'common/header'}
+<ul class="nav nav-tabs">
+	{template 'config_header'}
+	<li style="float:right;">
+		{if $nextid}
+		<a href="{$urltad}&op=addnext" class="btn btn-primary"><i class="fa fa-plus"></i> 添加子类</a>
+		{else}
+		<a href="{$urltad}&op=add" class="btn btn-primary"><i class="fa fa-plus"></i> 添加分类</a>
+		{/if}
+	</li>
+</ul>
+
+<style>.t_input{ height:30px; border: 1px solid #cccc; line-height: 30px; border-radius: 5px;}</style>
+
+{if $op == 'add' || $op == 'edit' || $op == 'addnext'}
+<div class="main">
+	<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data" onsubmit='return formcheck()'>
+	<input type="hidden" name="token" value="{$_W['token']}" />
+    	<input type="hidden" name="cid" value="{$srdb['cid']}" />
+        <div class="panel panel-default">
+            <div class="panel-heading">{if $op == 'add'}添加分类{elseif $op == 'addnext'}添加子类{elseif $op == 'edit'}修改分类{/if}</div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">上级分类</label>
+                    <div class="col-xs-12 col-sm-9">
+						<select name="pid" class="form-control">
+							<option value="0" >顶级分类</option>
+							{if $_GPC['pid'] || $srdb['pid']}
+							{loop $list_class $key $value}
+							<option value="{$value[cid]}" {if $srdb['pid']==$value[cid] || $_GPC['pid']==$value[cid]}selected{/if}>{$value[name]}</option>
+							{/loop}
+							{/if}
+						</select>
+                    </div>
+                </div>
+				{if $tab == ''}
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">所属类型</label>
+                    <div class="col-xs-12 col-sm-9">
+						<select name="type" class="form-control">
+							<option value="" >--请选择--</option>
+							{loop $typeall $key $value}
+							<option value="{$key}" {if $srdb['type'] == $key || $tab == $key}selected{/if}>{$value}</option>
+							{/loop}
+						</select>
+                    </div>
+                </div>
+				{else}
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">所属类型</label>
+                    <div class="col-xs-12 col-sm-9">
+						<p class="form-control-static">
+						{$typeall[$tab]}
+						<input type="hidden" name="type" value="{$tab}" />
+						</p>
+                    </div>
+                </div>
+				{/if}
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red;font-weight:bolder;">*</span>名称</label>
+                    <div class="col-xs-12 col-sm-9" >
+						<input type="txt" class="form-control" id="name" name="name" value="{$srdb[name]}">
+                    </div>
+                </div>
+				{if $tab == 'zsd' && empty($_GPC['pid'])}
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">图标</label>
+                    <div class="col-xs-12 col-sm-9" >
+						{php echo tpl_form_field_image('iconimg', $srdb['iconimg'])}
+						<br/>
+						建议尺寸200*200
+                    </div>
+                </div>
+				{/if}
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">序号</label>
+                    <div class="col-xs-12 col-sm-9" >
+                    	<input type="txt" class="form-control" id="listorder" name="listorder" value="{$srdb[listorder]}">
+                    </div>
+                </div>
+				
+            </div>
+        </div>
+        <div class="form-group col-sm-12 col-xs-12">
+			<input type="submit" name="{$op}_submit" value="保 存" class="btn btn-primary col-lg-1" onclick='return formcheck()' />
+		</div>
+  </form>
+</div>
+{else}
+
+<div class="nav" style="padding-bottom:20px;">
+	<a href="{$urlt}" {if $tab==''}class="btn btn-info"{else}class="btn btn-default"{/if}>全部</a>
+	{loop $typeall $key $value}
+	<a href="{$urlt}&tab={$key}" {if $tab == $key}class="btn btn-info"{else}class="btn btn-default"{/if}>{$value}</a>
+	{/loop}
+</div>
+
+{if $onclassname['name']}
+<div class="nav" style="padding-bottom:20px;">
+	上级分类：
+	<a href="{$urlt}&tab={$tab}&nextid={php echo $nexp = $nextid - 1;}&pid={$onclassname['pid']}" class="btn btn-default">{$onclassname['name']}</a>
+</div>
+{/if}
+
+<script language="javascript" type="text/javascript">
+function checkAll(form, name) {
+	for(var i = 0; i < form.elements.length; i++) {
+		var e = form.elements[i];
+		if(e.name.match(name)) {
+			e.checked = form.elements['chkall'].checked;
+		}
+	}
+}
+</script>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <form method="post" class="form">
+	<input name="token" type="hidden" value="{$_W['token']}" />
+	<div class="table-responsive">
+	  <table class="table">
+		<tr>
+			<th width="30">选择</th>
+			<th width="50">ID</th>
+			<th width="100">序号</th>
+			<th >名称</th>
+			<th >所属类型</th>
+			<th >操作</th>
+		</tr>
+		{loop $list $key $value}
+		<tr >
+			<td><input type="checkbox" name="ids[]" value="{$value[cid]}"></td>
+			<td>{$value[cid]}</td>
+			<td><input type="text" name="listorder[{$value[cid]}]" value="{$value[listorder]}" size="6" class="t_input"/></td>
+			<td>{$value[name]}{if $value[iconimg]}<font color="#CC3300">&nbsp;图</font>{/if}</td>
+			<td><font color="#993300">[{$typeall[$value[type]]}]</font></td>
+			<td>
+				{if $value[type] == 'xk'}
+				{elseif $value[type] == 'nj'}
+				{elseif $value[type] == 'help'}
+				{elseif $value[type] == 'zsd'}
+				{if $nextid < 4}
+				<a href="{$urlt}&pid={$value[cid]}&nextid={$nextall}&tab={$value[type]}&op=add" class="btn btn-primary btn-sm" title="添加{$classtype[$nextall]}级子类"><i class="fa fa-plus"></i></a>
+				<a href="{$urlt}&pid={$value[cid]}&nextid={$nextall}&tab={$value[type]}" class="btn btn-primary btn-sm" title="{$classtype[$nextall]}级子类管理({$nextnum[$value['cid']]})"><i class="fa fa-search"></i></a>
+				{/if}
+				{else}
+				<a href="{$urlt}&op=addnext&pid={$value[cid]}" class="btn btn-primary btn-sm" title="添加子类"><i class="fa fa-plus"></i></a>
+				{/if}
+				<a href="{$urlt}&op=edit&id={$value[cid]}&pid={$pid}&tab={$value[type]}" class="btn btn-info btn-sm" title="编辑"><i class="fa fa-edit"></i></a> 
+				<a href="{$urlt}&op=delete&id={$value[cid]}&pid={$pid}&tab={$value[type]}" class="btn btn-danger btn-sm" title="删除" onclick="return confirm('本操作不可恢复，确认删除？');"><i class="fa fa-remove"></i></a>
+			</td>
+		</tr>
+		{/loop}
+		{if $pager}
+		<tr >
+			<td colspan="6">{$pager}</td>
+		</tr>
+		{/if}
+		<tr >
+			<td colspan="6" align="center">
+				<input type="checkbox" id="chkall" name="chkall" onclick="checkAll(this.form, 'ids')">&nbsp;全选 &nbsp;&nbsp;
+				<input type="radio" name="optype" value="1">&nbsp;修改&nbsp;&nbsp;
+				<input type="submit" name="listsubmit" value="提交" class="btn btn-primary">
+			</td>
+		 </tr>
+	  </table>
+	</div>
+	
+	</form>
+  </div>
+</div>
+{/if}
+
+{template 'common/footer'}

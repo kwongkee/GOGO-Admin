@@ -1,0 +1,176 @@
+{template "parking/base/header"}
+<style type="text/css">
+	.wx_box{ width:100%; max-width:768px; margin:0 auto; position:relative;}
+	.banner{width: 100%; position: relative;}
+	.notice_b{width: 100%;height:52px; overflow:hidden;position: absolute;bottom: 0; z-index: 99; opacity: 0.8;}
+	.notice{ padding:0.09rem 0.42rem 0.08rem 0.44rem; background:#000 url(../addons/ewei_shopv2/static/css/images/img/tips_icon.png) no-repeat 0.15rem 0.12rem; background-size:0.16rem auto; color:#fff; font-size:0.13rem; line-height:0.2rem; overflow:hidden; position:relative; height:0.4rem; }
+	.notice>div{ height:0.4rem; overflow:hidden;}
+	.notice ul{ float:left; overflow:hidden;}
+	.notice ul li{ padding-right:0.16rem; text-align:justify;}
+	.notice ul li a{ color:#fff; opacity: 1;}
+	.notice em{ display:block; width:0.42rem; position:absolute; right:0; top:0.09rem; height:0.4rem; text-align:center; line-height:0.4rem; background:url(../addons/ewei_shopv2/static/images/img/close.png) no-repeat center;
+	background-size:0.16rem auto; border-left:1px solid rgba(255,255,255,0.23);}
+	.focus{overflow:hidden;position:relative; height:1.6rem; background:#ccc;}
+	.focus img{ width:100%;height:1.6rem; vertical-align:middle;}
+	.focus ul{-webkit-padding-start:0px;}
+	.focus>ol{height:0.06rem;position:absolute;z-index:10;text-align:center; width:100%; bottom:0.1rem; font-size:0;}
+	.focus>ol>li{display:inline-block;width:0.06rem;height:0.06rem;background-color:#D5D0CC;border-radius:0.08rem; margin-right:0.06rem; border:1px solid #D5D0CC;}
+	.focus>ol>li.on{background-color:#ffffff; border:1px solid #3D8CE8;}
+	.focus>ol>li:last-child{ margin-right:0;}
+	.wx_logo{background: #fff; height: 0.5rem; width: 100%; text-align: center; line-height: 0.5rem; font-size: 0.18rem; color: #1b7ab6;}
+	.wx_logo span{position: absolute; left: 0.1rem; top: -0.01rem;}
+	.wx_logo img{width: 0.4rem; }
+	.nav{ height:0.65rem; line-height:0.5rem;overflow:hidden; background:#fff; font-size:0.14rem; padding: 2% 0 0;}
+	.nav li{ float:left; box-sizing:border-box; width:33%; background-size:0.15rem 0.15rem !important; text-indent:0rem; }
+	.nav li:nth-child(1){/* width:0.4rem; height: 0.4rem;*/ border-left:none; border-right:none; /*border-radius: 50%;*/ background: url(../addons/ewei_shopv2/static/css/images/img/lisicon_05.png) no-repeat 0.53rem 0.09rem;}
+	.nav li:nth-child(2){/* width:0.4rem; height: 0.4rem;*/ border-left:none; border-right:none; /*border-radius: 50%; */background: url(../addons/ewei_shopv2/static/css/images/img/lisicon_06.png) no-repeat 0.53rem 0.09rem;}
+	.nav li:nth-child(3){ /*width:0.4rem; height: 0.4rem;*/ border-left:none; border-right:none; /*border-radius: 50%;*/ background: url(../addons/ewei_shopv2/static/css/images/img/lisicon_07.png) no-repeat 0.53rem 0.09rem;}
+	.nav_icon01{ background:none;}
+	.nav_icon02{ background:none;}
+	.nav_icon03{ background:none;}
+	.nav_icon01 div{width:0.3rem; height: 0.3rem;border-radius: 50%; border: 1px solid #4aa8e4; margin: 0 0.45rem;}
+	.nav_icon02 div{width:0.3rem; height: 0.3rem;border-radius: 50%; border: 1px solid #e44a4a; margin: 0 0.45rem;}
+	.nav_icon03 div{width:0.3rem; height: 0.3rem;border-radius: 50%; border: 1px solid #e4c94a; margin: 0 0.45rem;}
+	.nav_p{text-align: center; line-height: 30px;}
+	.footer{ line-height:0.61rem; height:0.61rem;font-family: PingFang-SC-Bold;font-size:0.12rem;color: #333333;background:none;
+background-size:0.48rem auto;width:100%; position:absolute; bottom:0px; text-indent:1.22rem;}
+	.footer_placeholder{ height:0.61rem; width:100%;}
+
+/*底部滚动*/	
+	.mes{ width: 100%;height:35px; /*background:#000;*/ overflow:hidden;position: absolute;bottom: 0;opacity:.8;filter:alpha(opacity=60);}
+	.t_news{ height:19px; color:#fff; padding-left:10px; margin:8px 0; overflow:hidden; position:relative;}
+	.t_news b{ line-height:19px; font-weight:bold; display:inline-block;}
+	.t_news b img{width: 20%;}
+	.news_li,.swap{ line-height:19px; display:inline-block; position:absolute; top:0; left:0;}
+	.news_li a,.swap a{color:#333;}
+	.swap{top:19px;}	
+	
+	.bot{width: 100%; text-align: center; position: absolute;bottom: 40px;}
+	.bot img{width: 20%;}
+</style>
+
+<div class="wx_logo"><span><img src="../addons/ewei_shopv2/static/css/images/img/LOGO0523.png" alt="" /></span>增值服务</div>
+<div class="wx_box">
+	<div class="banner">
+    {if !empty($announcement)}
+    <div class="notice_b">
+    <div class="notice">
+        <div>
+            <ul>
+                {loop $announcement $index $item}
+                <li><a href="#">{$item['msg']}</a></li>
+                {/loop}
+            </ul>
+        </div>
+        <em></em>
+    </div>
+    </div>
+    {/if}
+
+    <!--focus-->
+    <div class="focus" id="focus">
+        <ul>
+            {if !empty($carousel)}
+            {loop $carousel $index $item}
+            <li><a href="{$item}"><img src="../addons/ewei_shopv2/static/images/img/{$index}" style="width:100%;"/></a>
+            </li>
+            {/loop}
+            {else}
+            <li><a href="#"><img src="../addons/ewei_shopv2/static/images/img/0.jpg" style="width:100%;" /></a></li>
+            <li><a href="#"><img src="../addons/ewei_shopv2/static/images/img/002.jpeg" style="width:100%;" /></a></li>
+            <li><a href="#"><img src="../addons/ewei_shopv2/static/images/img/003.jpeg" style="width:100%;" /></a></li>
+            {/if}
+        </ul>
+        <ol>
+            <li class="on"></li>
+            <li></li>
+            <li></li>
+        </ol>
+    </div>
+    </div>
+    <!--focus end-->
+    <ul class="nav">
+        <li class="nav_icon01"><a href="https://www.sobot.com/chat/pc/index.html?sysNum=0e3544a96d5e41f4919655542ba43428"><div></div><p class="nav_p">在线客服</p></a></li>
+        <li class="nav_icon02"><div></div><p class="nav_p">服务导航</p></li>
+        <li class="nav_icon03"><div></div><p class="nav_p">用户须知</p></li>
+    </ul>
+    <style type="text/css">
+    	.lis{width: 100%;margin: 6px auto;}
+    	/*.lis a{float: left;width: 45%;height: 45px;display: block;background: dodgerblue;color: white;
+    		margin: 8px auto;text-align: center;line-height: 45px;margin-left: 10px;border-radius: 5px;
+    		font-size: 16px;font-weight: bold;
+    	}*/
+    	.lis a{float: left;width: 49%;height: 100%;display: block; color: white;
+    		margin: 4px auto;text-align: center;line-height: 45px;margin-left: 0px;
+    		font-size: 16px;font-weight: bold;
+    	}
+    	.lis .lisright{float: right;}
+    	.lis_bule{background: #1b7ab6;}
+		.lis_orange{background: #de991e;}
+		.lis_red{background: #c6000b;}
+		.lis_green{background: #55986e;}
+		.lis a img{width: 30%; padding-top: 8px;}
+    </style>
+    
+    <div class="order">
+        <!--<h3 class="title_h3"><span>增值服务</span></h3>-->
+        
+        <div class="lis">
+        	<a href="javascript:alert('暂未开通');" class="lis_green"><img src="../addons/ewei_shopv2/static/css/images/img/lisicon_17.png" alt="" /><p>生活消费</p></a>
+        	<a href="https://shop.gogo198.cn/app/index.php?i=14&c=entry&do=shop&m=sz_yi;" class="lis_green lisright"><img src="../addons/ewei_shopv2/static/css/images/img/lisicon_18.png" alt="" /><p>网络购物</p></a>
+        	<a href="javascript:alert('暂未开通');" class="lis_green"><img src="../addons/ewei_shopv2/static/css/images/img/lisicon_19.png" alt="" /><p>政务办事</p></a>
+        	<a href="javascript:alert('暂未开通');" class="lis_green lisright"><img src="../addons/ewei_shopv2/static/css/images/img/lisicon_20.png" alt="" /><p>车主服务</p></a>
+        </div>
+    </div>
+    
+    <div class="bot">Technology by <img src="../addons/ewei_shopv2/static/images/img/footlogo.png" alt="" /></div>
+    <div class="footer">
+		<div class="mes">
+	    	<div class="t_news">
+				<ul class="news_li">
+					<li><a href="" target="_blank">版权所有 © Gogo|購購網</a></li>
+					<li><a href="" target="_blank">版权所有 © Gogo|任我停</a></li>
+					<li><a href="" target="_blank">版权所有 © Gogo|直邮易</a></li>
+				</ul>
+				<ul class="swap"></ul>
+			</div>
+	    </div>
+	</div>
+    <!--<div class="footer">版权所有 © Gogo|購購網 </div>-->
+    <div class="footer_placeholder"></div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        new Swipe(document.getElementById('focus'), {
+            speed: 1000,
+            auto: 1000,
+            callback: function () {
+                var lis = $(this.element).next("ol").children();
+                lis.removeClass("on").eq(this.index).addClass("on");
+            }
+        });
+    });
+    
+/*底部滚动*/    
+    function b(){	
+		t = parseInt(x.css('top'));
+		y.css('top','19px');	
+		x.animate({top: t - 19 + 'px'},'slow');	//19为每个li的高度
+		if(Math.abs(t) == h-19){ //19为每个li的高度
+			y.animate({top:'0px'},'slow');
+			z=x;
+			x=y;
+			y=z;
+		}
+		setTimeout(b,3000);//滚动间隔时间 现在是3秒
+	}
+	$(document).ready(function(){
+		$('.swap').html($('.news_li').html());
+		x = $('.news_li');
+		y = $('.swap');
+		h = $('.news_li li').length * 19; //19为每个li的高度
+		setTimeout(b,3000);//滚动间隔时间 现在是3秒
+		
+	})
+</script>
+{template "parking/base/footer"}

@@ -1,0 +1,227 @@
+{template 'header'}
+<div class="navbar navbar-inverse navbar-fixed-top">
+	<div class="container">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#">超级粉丝社区-未来无限可能</a>
+		</div>
+		<div class="navbar-collapse collapse">
+			<ul class="nav navbar-nav">
+				<li><a href="javascript:window.location.href=document.referrer">返回平台操作页面</a></li>
+				<!-- <li><a href="#about">About</a></li>
+				<li><a href="#contact">Contact</a></li>
+				<li class="dropdown">
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="#">Action</a></li>
+						<li><a href="#">Another action</a></li>
+						<li><a href="#">Something else here</a></li>
+						<li role="separator" class="divider"></li>
+						<li class="dropdown-header">Nav header</li>
+						<li><a href="#">Separated link</a></li>
+						<li><a href="#">One more separated link</a></li>
+					</ul>
+				</li> -->
+			</ul>
+		</div><!--/.nav-collapse -->
+	</div>
+</div>
+<div style="height:100px;">
+</div>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-2">
+			<div class="list-group" id="manage_tag_list" style="cursor:pointer;">
+				<!--<a class="list-group-item"   href="{php echo $this->createWebUrl('test')}" target="indexiframe">-->
+					<!--<span class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;&nbsp;测试-->
+				<!--</a>-->
+				<!-- 用户管理 -->
+				<a class="list-group-item"   href="{php echo $this->createWebUrl('userManageList')}" target="indexiframe">
+					<span class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;&nbsp;用户管理
+				</a>
+				<a class="list-group-item"  onclick="toggle_tag('userdraw')">
+					<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;&nbsp;提现管理
+				</a>
+				<div style="display:none" id='toggle_tag_userdraw'>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('UserDrawManage')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;提现申请
+					</a>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('UserDrawManageHistory')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;提现记录
+					</a>
+				</div>
+				<a class="list-group-item"  onclick="toggle_tag('lvb')">
+					<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;&nbsp;腾讯直播
+				</a>
+				<div style="display:none" id='toggle_tag_lvb'>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('LvbManage')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;频道列表
+					</a>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('set_lvbsecret')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;直播配置
+					</a>
+				</div>
+				<a class="list-group-item"  onclick="toggle_tag('letv')">
+					<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;&nbsp;乐视直播
+				</a>
+				<div style="display:none" id='toggle_tag_letv'>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('setletv')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;直播配置
+					</a>
+				</div>
+				<a class="list-group-item"   href="{php echo $this->createWebUrl('commentmanage')}" target="indexiframe">
+					<span class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;&nbsp;点评管理
+				</a>
+				<!-- 动态管理 -->
+				<a class="list-group-item" onclick="toggle_tag('moments')">
+					<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;&nbsp;动态管理
+				</a>
+				<div style="display:none" id='toggle_tag_moments'>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('momentsManageList')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;动态列表
+					</a>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('momentsDeleteList')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;已删除贴
+					</a>
+				</div>
+				<a class="list-group-item"  onclick="toggle_tag('chatroom')">
+					<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;&nbsp;房间管理
+				</a>
+				<div style="display:none" id='toggle_tag_chatroom'>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('chatroommanage')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;房间列表
+					</a>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('chatroomapprove')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;待审核房间
+					</a>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('chatroomdeny')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;未通过房间
+					</a>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('chatroomdeletetpl')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;已删除房间
+					</a>
+				</div>
+				<a class="list-group-item"  onclick="toggle_tag('giftmall')">
+					<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;&nbsp;礼物商城
+				</a>
+				<div style="display:none" id='toggle_tag_giftmall'>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('giftadd')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;礼物添加
+					</a>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('giftmall')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;礼物管理
+					</a>
+				</div>
+				<a class="list-group-item"  onclick="toggle_tag('feedback')">
+					<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;&nbsp;意见反馈
+				</a>
+				<div style="display:none" id='toggle_tag_feedback'>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('feedbacklist',array('status'=>'wait'))}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;待处理
+					</a>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('feedbacklist',array('status'=>'handle'))}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;已处理
+					</a>
+				</div>	
+				<a class="list-group-item"   href="{php echo $this->createWebUrl('multisendtpl')}" target="indexiframe">
+					<span class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;&nbsp;超级群发
+				</a>
+				<a class="list-group-item"   href="{php echo $this->createWebUrl('setrobot')}" target="indexiframe">
+					<span class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;&nbsp;机器人设置
+				</a>
+				<a class="list-group-item"   href="{php echo $this->createWebUrl('setadmin')}" target="indexiframe">
+					<span class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;&nbsp;绑定管理员
+				</a>
+				<a class="list-group-item" onclick="toggle_tag('page')">
+					<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;&nbsp;页面设置
+				</a>
+				<div style="display:none" id='toggle_tag_page'>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('setpageindex')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;模块首页
+					</a>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('setpagehall')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;大厅页面
+					</a>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('setpagemenu')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;底部菜单
+					</a>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('superpoint')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;超级小黑点
+					</a>
+				</div>
+				<a class="list-group-item" onclick="toggle_tag('settings')">
+					<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;&nbsp;系统设置
+				</a>
+				<div style="display:none" id='toggle_tag_settings'>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('settings')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;基本配置
+					</a>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('setcert')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;支付配置
+					</a>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('setsms')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;短信设置
+					</a>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('setvip')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;会员设置
+					</a>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('noticeset')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;消息模板
+					</a>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('signinset')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;签到设置
+					</a>
+					<a class="list-group-item"   href="{php echo $this->createWebUrl('filterset')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;过滤器设置
+					</a>
+					<!-- <a class="list-group-item"   href="{php echo $this->createWebUrl('setopt')}" target="indexiframe">
+						<span class="glyphicon glyphicon-minus"></span>&nbsp;&nbsp;&nbsp;升级优化
+					</a> -->
+				</div>
+			</div>
+		</div>
+		<div class="col-md-10">
+			<div class="panel panel-info">
+				<div class="panel-heading" id="panel_heading">
+					<span class="glyphicon glyphicon-th-large"></span>&nbsp;&nbsp;&nbsp;设置
+				</div>
+				<div class="panel-body">
+				<!-- 16:9 aspect ratio -->
+					<div class="embed-responsive embed-responsive-16by9">
+					  <iframe class="embed-responsive-item" src="{php echo $this->createWebUrl('userManageList')}" height="1000px;" name="indexiframe"></iframe>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+$(function() {
+	// 点击列表标签变色
+	$("#manage_tag_list a").click(function(){
+		$("#manage_tag_list a").attr("class","list-group-item");
+		$(this).attr("class","list-group-item active");
+		
+		$("#panel_heading").html($(this).html());
+	});
+})
+
+function toggle_tag(val) {
+		
+		var elem = $("#toggle_tag_"+val);
+		if(elem.is(':visible')) {
+			elem.hide('normal');
+		}else {
+			$("[id^=toggle_tag_]").hide();
+			elem.show('normal');
+		}
+	}
+
+		
+</script>
+{template 'footer'}

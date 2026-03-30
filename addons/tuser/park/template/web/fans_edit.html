@@ -1,0 +1,156 @@
+{template 'common/header'}
+<script>
+    require(['jquery', 'util', 'datetimepicker'], function ($, u) {
+    $('#birthday').datetimepicker({
+    format: 'Y-m-d',
+            language: 'zh-CN',
+            pickDate: true,
+            pickTime: false,
+            hourStep: 1,
+            autoclose: true,
+            inputMask: false,
+            timepicker: false,
+    });
+    });</script>
+<div class="clearfix">
+    <form id="theform" class="form form-horizontal" action="" method="post">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                编辑会员
+            </div>
+            <div class="panel-body">
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">会员ID</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <span class="form-control span7" style="border:none;box-shadow: none">{$fans_info['uid']}</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">微信昵称</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <span class="form-control span7" style="border:none;box-shadow: none">{$fans_info['nickname']}</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">剩余积分</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <span class="form-control span7" style="border:none;box-shadow: none">{$fans_info['left_credit']}</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">余额(分)</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <input type="text" id="scan_title" class="form-control span7" placeholder="" name="account" value="{$fans_info['account']}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">用户名</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <input type="text" id="scan_title" class="form-control span7" placeholder="" name="username" value="{$fans_info['username']}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">手机号</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <input type="text" id="scan_title" class="form-control span7" placeholder="" name="mobile" value="{$fans_info['mobile']}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">生日</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <input type="text" id="birthday" class="form-control span7" placeholder="" name="birthday" value="{$fans_info['birthday']}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">车牌号</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <select class="level form-control" data_id="{$row['plate_number0']}" name='plate_number0' style="width:80px;float: left;">
+                                {php foreach($plateNumbers as $k=>$plateNumber) {}
+                                <option value="{$plateNumber}" {if $fans_info['plate_number0']==$plateNumber}selected="selected"{/if}>{$plateNumber}</option>
+                                {php } }
+                            </select>
+                            <select class="level form-control" data_id="{$row['plate_number1']}" name='plate_number1' style="width:80px;float: left;margin-left:10px;">
+                                {php foreach($alphabets as $k=>$alphabet) {}
+                                <option value="{$alphabet}" {if $fans_info['plate_number1']==$alphabet}selected="selected"{/if}>{$alphabet}</option>
+                                {php } }
+                            </select>
+                            <input style="width:80px;float: left;margin-left:10px;" type="text" class="form-control span7" placeholder="" name="plate_number2" value="{$fans_info['plate_number2']}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">会员等级</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <select class="level form-control" data_id="{$row['uid']}" name='level'>
+                                {php foreach($levels as $k=>$level) {}
+                                <option value="{$k}" {if $fans_info['level']==$k}selected="selected"{/if}>{$level}</option>
+                                {php } }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">积分操作</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <input type="button" id="scan_title" class="btn credit_add" onclick="credit_operate({$fans_info['uid']}, 1)" placeholder="" value="增加积分">
+                            <input type="button" id="scan_title" class="btn creidt_cut" onclick="credit_operate({$fans_info['uid']}, 2)" placeholder="" value="减少积分">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
+                        <div class="col-md-2 col-lg-1">
+                            <input name="submit" type="submit" value="保存" class="btn btn-primary btn-block" />
+                            <input type="hidden" name="token" value="{$_W['token']}" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+            //用户发放积分
+                    function credit_operate(id, type) {
+                    if (type == 1) {
+                    var text = "添加积分";
+                    } else if (type == 2) {
+                    var text = "减少积分";
+                    }
+                    require(['jquery', 'util'], function ($, u) {
+                    var content = '<div class="panel panel-default text-center"><input type="text" id="scan_title" class="form-control span7 send_credit" placeholder="发放积分" name="credit"></div>';
+                            content += '备注<div class="panel panel-default text-center"><textarea class="form-control span7 desc"></textarea></div>';
+                            var footer =
+                            '<button type="button" class="btn btn-success" onclick="do_credit_operate(' + id + ',' + type + ')" >确定</button>' +
+                            '<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>';
+                            var diaobj = u.dialog(text, content, footer);
+                            diaobj.find('.btn-default').click(function () {
+                    diaobj.modal('hide');
+                    });
+                            diaobj.modal('show');
+                    });
+                    }
+            function do_credit_operate(id, type) {
+            var pars = {};
+                    pars.fans_id = id;
+                    pars.type = type;
+                    var credit = $(".send_credit").val();
+                    var desc = $(".desc").val();
+                    pars.credit = credit;
+                    pars.desc = desc;
+                    $.ajax({
+                    url: "{php echo $this->createWebUrl('ajax',array('sdo'=>'credit_operate'))}",
+                            type: "post",
+                            dataType: "html",
+                            data: pars,
+                            success: function (res) {
+                            $(".submit").attr("disabled", false);
+                                    if (res == "ok") {
+                            alert("操作成功");
+                                    window.location.reload(true);
+                            } else {
+                            alert(res);
+                            }
+                            }
+                    })
+            }
+</script>
+{template 'common/footer'}

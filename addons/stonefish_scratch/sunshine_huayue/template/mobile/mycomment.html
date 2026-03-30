@@ -1,0 +1,72 @@
+{template 'header'}
+	<!--
+	<div class="ui-header ui-header-wx ui-border-b">
+		<span class="ui-icon-return" onclick="window.location.href=document.referrer;" style="color:white;"></span>
+		<h1>留言列表</h1>
+		<a href="{php echo $this->createMobileUrl('index')}">
+			<i class="ui-icon-home" style="position:absolute;right:5px;top:0px;"></i>
+		</a>
+	</div>
+	-->
+	<div class="ui-container">
+		<ul class="ui-list ui-list-active ui-list-cover">
+			{loop $commentlist $item}
+			<li class="ui-border-t" >
+				<div class="ui-list-thumb" onclick="window.location.href='{php echo $this->createMobileUrl('detail',array('detail_openid'=>$item['user_openid']))}'">
+					{if $item['usericon']}
+					<span style="background-image:url({$item['usericon']})"></span>
+					{else}
+					<span style="background-image:url(http://placeholder.qiniudn.com/100x100)"></span>
+					{/if}
+				</div>
+				<div class="ui-list-info" onclick="doDelete('{$item['id']}')">
+					<p>{$item['username']}<span style="float:right">{$item['add_time']}</span></p>
+					<p style="color:black;">
+					{if $item['reply_openid']}
+					回复<a href='#'>{$item['reply_user']['username']}</a>:
+					{/if}
+					{$item['content']}
+					</p>
+				</div>
+			</li>
+			{/loop}
+		</ul>
+		<!-- comment input -->
+		<!-- <div class="ui-input-wrap ui-border-t" style="position:fixed;bottom:0px;width:100%">
+			<div class="ui-input ui-border-radius">
+				<input type="text" id="comment_content" data='' placeholder='评价'>
+			</div>
+			<button class="ui-btn ui-btn-chat" id="comment_btn" onclick="doComment()">发送</button>
+		</div> -->
+	</div>
+	<script type="text/javascript">
+	function doDelete(cid) {
+		if(!confirm('确认删除该条留言？')) {
+			return ;
+		}
+		$.ajax({
+				type:'post',
+				url:"{php echo $this->createMobileUrl('mycommentdelete')}",
+				data:{comment_id:cid},
+				success:function(d) {
+					if(d.res == '100') {
+						alert("删除成功");
+						window.location.href='';
+					}else{
+						alert(d.msg);
+					}
+				}
+			})
+	}
+
+	// 这里也不知道为什么必须加上才能变色
+		$(".ui-list-active li").on('touchstart',function() {
+			// $(this).css('background-color','#7E7E88');
+		})
+
+		$(".ui-list-active li").on('touchend',function() {
+			// $(this).css('background-color','white');
+		})
+
+	</script>
+{template 'footer'}

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {include file="common/meta"}
+    <link rel="stylesheet" href="./static/hadmin/layui/css/layui.css">
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeIn">
+    <button class="layui-btn" id="load"><i class="layui-icon"></i>导入</button>
+    <table class="layui-table">
+        <colgroup>
+            <col width="150">
+            <col  width="150">
+        </colgroup>
+        <thead>
+        <tr>
+            <th>会计科目</th>
+            <th>科目名称</th>
+            <th>余额方向</th>
+            <th>是否核算现金流量</th>
+            <th>是否核算外币</th>
+        </tr>
+        </thead>
+        <tbody>
+        {volist name="list" id="vo"}
+        <tr>
+            <td>{$vo.subject}</td>
+            <td>{$vo.account}</td>
+            <td>{$vo.credit}</td>
+            <td>{$vo.cash}</td>
+            <td>{$vo.foreign_currency}</td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+
+</div>
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/js/bootstrap.min.js?v=3.3.6"></script>
+<script src="./static/hadmin/layui/layui.all.js"></script>
+</body>
+<script>
+    layui.use(['upload','layer'], function () {
+        uploads = layui.upload;
+        layer = layui.layer;
+    });
+    $('#load').bind('click',function () {
+        layer.open({
+            type: 1,
+            area:['468px','214px'],
+            content: '    <div class="row">\n' +
+                '        <div class="col-sm-12">\n' +
+                '            <div class="ibox float-e-margins">\n' +
+                '                <div class="ibox-content">\n' +
+                '                    <div class="page-container">\n' +
+                '                        <p>上传会计科目编码文件(<a style="color: red;display:none;" href="/foll/public//static/快递100快递公司标准编码-20190813141135.xlsx">下载上传模板</a>)</p>\n' +
+                '                        <button type="button" class="layui-btn" id="file1">\n' +
+                '                            <i class="layui-icon">&#xe67c;</i>请上传Excel\n' +
+                '                        </button>\n' +
+                '                    </div>\n' +
+                '                </div>\n' +
+                '            </div>\n' +
+                '        </div>\n' +
+                '    </div>' //这里content是一个普通的String
+        });
+        uploads.render({
+            elem: '#file1' //绑定元素
+            ,accept:"file"
+            , url: '{:Url("admin/account/subject_upload")}' //上传接口
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            , done: function (res) {
+                layer.closeAll('loading');
+                if (res.code==0){
+                    parent.layer.msg(res.message, {icon: 6});
+                } else{
+                    parent.layer.msg(res.message, {icon: 5});
+                }
+            }
+            , error: function () {
+                //请求异常回调
+                // parent.layer.msg('请求异常', {icon: 6});
+            }
+        });
+    });
+</script>
+</html>

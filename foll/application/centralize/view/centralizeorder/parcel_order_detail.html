@@ -1,0 +1,233 @@
+{include file="public/header"}
+
+<style>
+    .disf {
+        display: flex;
+        align-items: center;
+    }
+
+    .layui-card-header {
+        background: #0a8ddf;
+        color: #fff;
+    }
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$data['id']}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">会员信息</div>
+                            <div class="layui-input-block">
+                                {$user_info['name']}（ID：{$user_info['id']}）
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">发往国家</div>
+                            <div class="layui-input-block">
+                                <select name="country_code" id="country_code" lay-verify="required" lay-search>
+                                    <option value="">请选择发往国家</option>
+                                    {foreach $country_info as $k=>$v}
+                                        <option value="2" {if $data['country_code']==$v['code_value']}selected{/if}>{$v['code_name']}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">发往仓库</div>
+                            <div class="layui-input-block">
+                                <select name="warehouse_id" id="warehouse_id" lay-verify="required" lay-search>
+                                    <option value="">请选择发往仓库</option>
+                                    {foreach $warehouse_info as $k=>$v}
+                                    <option value="2" {if $data['warehouse_id']==$v['id']}selected{/if}>{$v['warehouse_name']}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">快递公司</div>
+                            <div class="layui-input-block">
+                                <select name="express_id" id="express_id" lay-verify="required" lay-search>
+                                    <option value="">请选择快递公司</option>
+                                    {foreach $express_info as $k=>$v}
+                                    <option value="2" {if $data['express_id']==$v['id']}selected{/if}>{$v['name']}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">快递单号</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" name="express_no" id="express_no" lay-verify="required" value="{$data['express_no']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">包裹申报名称</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" name="package_name" id="package_name" lay-verify="required" value="">
+<!--                                <input type="text" class="layui-input" name="package_name" id="package_name" lay-verify="required" value="$data['package_name']">-->
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">包裹价值（￥）</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" name="package_money" id="package_money" lay-verify="required" value="">
+<!--                                <input type="text" class="layui-input" name="package_money" id="package_money" lay-verify="required" value="$data['package_money']">-->
+                            </div>
+                        </div>
+                        {if isset($data['gCateIdOne'])}
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">包裹分类</div>
+                            <div class="layui-input-block" >
+                                <div class="layui-col-xs6" style="display: flex;align-items: center;">
+                                    <select name="gCateIdOne" id="gCateIdOne" lay-verify="required" lay-search>
+                                        {foreach $jd_goods_category as $k=>$v}
+                                        <option value="2" {if $data['gCateIdOne']==$v['id']}selected{/if}>{$v['catName']}</option>
+                                        {/foreach}
+                                    </select>
+                                    <select name="gCateIdTwo" id="gCateIdTwo" lay-verify="required" lay-search>
+                                        {foreach $jd_goods_category as $k=>$v}
+                                        <option value="2" {if $data['gCateIdTwo']==$v['id']}selected{/if}>{$v['catName']}</option>
+                                        {/foreach}
+                                    </select>
+                                    <select name="gCateIdThree" id="gCateIdThree" lay-verify="required" lay-search>
+                                        {foreach $jd_goods_category as $k=>$v}
+                                        <option value="2" {if $data['gCateIdThree']==$v['id']}selected{/if}>{$v['catName']}</option>
+                                        {/foreach}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        {/if}
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">包裹属性</div>
+                            <div class="layui-input-block  layui-select-fscon">
+                                <div id="good_item" class="xm-select-demo"></div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">物品数量</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" name="package_good_num" id="package_good_num" lay-verify="required" value="">
+<!--                                <input type="text" class="layui-input" name="package_good_num" id="package_good_num" lay-verify="required" value="$data['package_good_num']">-->
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">包裹备注</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" name="package_remark" id="package_remark" lay-verify="required" value="{$data['package_remark']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">拆除快递包装</div>
+                            <div class="layui-input-block">
+                                {if $data['packingSwitch1']==1}是{else}否{/if}
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">拆除商品包装</div>
+                            <div class="layui-input-block">
+                                {if $data['packingSwitch2']==1}是{else}否{/if}
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">赠品丢弃</div>
+                            <div class="layui-input-block">
+                                {if $data['packingSwitch3']==1}是{else}否{/if}
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;display:none;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交
+                    </button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+<script src="./static/hadmin/assets/layui/xm-select.js"></script>
+<script type="text/javascript">
+    layui.use(['layer', 'form', 'laydate', 'upload'], function () {
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+
+        xmSelect.render({
+            el: '#good_item',
+            paging: true,
+            pageSize: 5,
+            filterable: true,
+            toolbar: {
+                show: true,
+            },
+            prop: {
+                name: 'title',
+                value: 'id',
+            },
+            autoRow: true,
+            data: {$good_item},
+            name: 'good_item',
+            layVerify: 'required',
+            layVerType: 'msg',
+            // initValue:[$data['good_item']]
+        });
+
+        form.on('submit(component-form-element)', function (data) {
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            if ($('#img_file-upload-list').children().length == 0) {
+                layer.msg('请上传轮播图！');
+                return false;
+            }
+
+            if (data.field['editorValue'] == '') {
+                layer.msg('请输入轮播图内容！');
+                return false;
+            }
+
+            $.ajax({
+                url: "{:Url('centralize/index/rotation_save')}",
+                method: 'post',
+                data: data.field,
+                dataType: 'JSON',
+                success: function (res) {
+                    layer.msg(res.msg, {time: 2000}, function () {
+                        if (res.code == 0) {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error: function (data) {
+                    layer.msg('系统错误', {time: 2000});
+                }
+            });
+            return false;
+        });
+    });
+
+    function delPic(obj) {
+        var layer = layui.layer, $ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除', '取消']
+        }, function () {
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function () {
+
+        });
+    }
+</script>
+</body>
+</html>

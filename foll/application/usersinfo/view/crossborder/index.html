@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{$order.title}</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+	<script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+	<style type="text/css">
+		.clear{clear: both;height: 8px;}
+		.money{color: red;font-weight: bold;font-size: 15px;}
+		.laytable-cell-1-0{ width: 80px; }
+		.laytable-cell-1-2{width: 185px;}
+		.laytable-cell-1-amount{width: 165px;}
+		.laytable-cell-1-4{ width: auto; }
+		
+		.laytable-cell-1-province{ width: 115px; }
+		.laytable-cell-1-city{ width: 80px; }
+		.laytable-cell-1-zone{ width: 80px; }
+		.fee{color: red;}
+		.tj{font-size: 15px;font-weight: bold;}
+		.tongji{margin-left: 14px;}
+		.laytable-cell-1-id{ width: 265px;}
+		.laytable-cell-1-username{ width: 155px;}
+		.laytable-cell-1-sex{ width: 155px;}
+		.laytable-cell-1-city{ width: 185px;}
+		.laytable-cell-1-sign{ width: 185px;}
+		.laytable-cell-1-classify{ width: 160px;}
+	</style>
+</head>
+
+<body>
+<div style="margin-top: 10px;"></div>
+<p><h2 style="text-align: center;color: green;">{$order.title}</h2></p>
+
+	<div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" lay-filter='demo'>
+		<div class="layui-table-box">
+			
+			<div class="layui-table-header">
+				<table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+					<thead>
+						<tr>
+							<th data-field="id"><div class="layui-table-cell laytable-cell-1-id" align="center"><span>用户ID</span></div></th>
+							<th data-field="username"><div class="layui-table-cell laytable-cell-1-username" align="center"><span>信息来源</span></div></th>
+							<th data-field="sex"><div class="layui-table-cell laytable-cell-1-sex" align="center"><span>注册信息</span></div></th>
+							<th data-field="city"><div class="layui-table-cell laytable-cell-1-city" align="center"><span>实名信息</span></div></th>
+							<th data-field="sign"><div class="layui-table-cell laytable-cell-1-sign" align="center"><span>交易信息</span></div></th>
+							<th data-field="classify"><div class="layui-table-cell laytable-cell-1-classify" align="center"><span>备注信息</span></div></th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+			
+			<div class="layui-table-body layui-table-main">
+				<table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+					<tbody>
+						{volist name="$order.lists" id="vo" key="index"}
+							<tr data-index="{$index}" class="">
+								<td data-field="id" align="center"><div class="layui-table-cell laytable-cell-1-id">{$vo.uiqueid}</div></td>
+								<td data-field="username" align="center"><div class="layui-table-cell laytable-cell-1-username">
+									{if condition="$vo.application eq 'parking'"}路内停车平台{elseif condition="$vo.application eq 'Crossborder'"}跨境电商平台{/if}
+								</div></td>
+								<td data-field="sex" align="center"><div class="layui-table-cell laytable-cell-1-sex">{$vo.mobile}</div></td>
+								<td data-field="city" align="center"><div class="layui-table-cell laytable-cell-1-city">
+									<a href="javascript:void(0);" class="layui-btn layui-btn-xs" hrs="{$vo.mobile}" id="auth">实名认证</a>
+								</div></td>
+								<td data-field="sign" align="center"><div class="layui-table-cell laytable-cell-1-sign">
+									<a class="layui-btn layui-btn-xs" lay-event='edit' hrs="{$vo.openid}" id="orderEdit">订单详情</a></div>
+								</td>
+								<td data-field="classify" align="center"><div class="layui-table-cell laytable-cell-1-classify">
+									{if condition="$vo.is_flag eq 'A'"}注册{elseif condition="$vo.is_flag eq 'U'"/}修改{elseif condition="$vo.is_flag eq 'D'"/}注销{/if}
+								</div></td>
+							</tr>
+						{/volist}
+						
+						<tr>
+							<td align="left" colspan="6">
+								<div class="tongji">
+									<span class="tj">统计【</span>
+									<span class="tj">用户总数：{$order.total} 人</span>
+									<span class="tj">今日增长数:{$order.GrowthNum} 人】</span>
+									<a href="javascript:void(0);" class="layui-btn layui-btn-xs layui-btn-danger" id="upload">下载导出数据</a>
+								</div>
+							</td>
+						</tr>
+						
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	
+<div class="layui-box layui-laypage layui-laypage-default">{$order.pages}11111</div>
+
+<script>
+layui.use(['layer','form','jquery','laypage','table','flow'],function() {
+		var $ = layui.jquery,form=layui.form,layer=layui.layer,laypage=layui.laypage,table=layui.table,element=layui.element,flow=layui.flow;
+		
+		//实名认证
+		$(document).on('click','#auth',function(vals) {
+			var v = vals.currentTarget;//获取document
+			var m = v.attributes.hrs.value;//选中ID 记录表ID
+			layer.open({
+				type:2,
+				title:'用户实名认证信息',
+				shade:0.3,
+				area:['500px','480px'],
+				content:"{:Url('usersinfo/realname')}&m="+m
+			});
+		});
+		
+		
+		//订单详情
+		$(document).on('click','#orderEdit',function(obj){
+			var o = obj.currentTarget;
+			var opid = o.attributes.hrs.value;
+			
+			layer.open({
+				type:2,
+				title:'订单详细',
+				shade:0.3,
+				area:['782px','580px'],
+				content:"{:Url('usersinfo/orderedit')}&opid="+opid
+			})
+		});
+		
+		
+		//下载用户数据
+		$(document).on('click','#upload',function(obj){
+				layer.confirm('您确定要下载数据吗?',{
+					icon:3,
+					btn:['确定','取消']
+				},function() {
+					
+					$('#upload').addClass('layui-hide');
+					$.post("{:Url('usersinfo/cuploads')}",{'gid':1},function(res){
+						console.dir(res);
+						if(res.code > 0){
+							$('#upload').removeClass('layui-hide');
+							layer.alert(res.msg,{icon:2});
+						} else {
+							layer.msg(res.msg);
+						}
+					},'json');
+					
+				});
+		});
+		
+});
+</script>
+</body>
+</html>

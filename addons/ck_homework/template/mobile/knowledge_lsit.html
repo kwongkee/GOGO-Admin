@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="format-detection" content="telephone=no">
+<title>{$srdb['name']}知识点 - {$config['webtitle']}</title>
+<script src="{$templateurl}js/jquery-1.8.0.min.js" language="javascript"></script>
+<link rel="stylesheet" href="{$templateurl}css/wap_weui.min.css?v=2.0.8" />
+<link rel="stylesheet" href="{$templateurl}css/font-awesome.min.css?v=2.0.8"/>
+<link rel="stylesheet" href="{$templateurl}css/index.css?v=2.0.8"/>
+</head>
+
+<body>
+<div class="tabbar tabbar_wrap page_wrap">
+  <div class="weui_tab">
+    <link href="{$templateurl}css/search.css?v=2.0.8" rel="stylesheet" />
+    
+    <!-- 顶部搜索框 -->
+    
+    <header class="m-header z-img-ready border-top">
+      <p class="header_logo">
+	  {if $config['logo2']}
+	  <span class="logo-pic" style="background-image:url({php echo tomedia($config['logo2']);});"></span>
+	  {/if}
+	  </p>
+	  
+	  <form action="./index.php" method="get">
+	  <input type="hidden" name="i" value="{$_GPC['i']}">
+	  <input type="hidden" name="c" value="{$_GPC['c']}">
+	  <input type="hidden" name="do" value="{$_GPC['do']}">
+	  <input type="hidden" name="m" value="{$_GPC['m']}">
+	  <input type="hidden" name="op" value="{$_GPC['op']}">
+	  <input type="hidden" name="craid1" value="{$_GPC['craid1']}">
+	  <input type="hidden" name="craid2" value="{$_GPC['craid2']}">
+	  <input type="hidden" name="craid3" value="{$_GPC['craid3']}">
+	  <input type="hidden" name="craid4" value="{$_GPC['craid4']}">
+	  <input type="hidden" name="craid5" value="{$_GPC['craid5']}">
+	  <button class="search_btn" id="search_btn" style="border:0px;">搜索</button>
+      <div class="header_search">
+        <div class="u-search"> <i class="icon-font i-search"></i>
+          <input type="text" id="searchInput" name="keyword" class="search_input z-abled" value="{$_GPC['keyword']}" autocorrect="off" placeholder="搜索知识点">
+        </div>
+      </div>
+	  </form>
+      
+      <div class="banjifld">
+          	<div style="overflow:scroll;">
+          	<font style="width:900px;">            
+            	{loop $classlist $value}
+            	<a href="{$urlt}&craid{$tab}={$value['cid']}" {if $cid == $value['cid']}class="active"{/if}>{$value['name']}</a>
+				{/loop}
+            </font>
+            </div>
+          </div>
+      
+    </header>
+    
+ 
+    
+    <!-- /筛选条件 --> 
+    
+    <!-- 列表 -->
+    
+    <div class="section">
+      <div style="margin:90px auto 10px;">
+        <div class="search-result-toast"> 共找到<span class="search-result-word">{$total}</span>个知识点 </div>
+        <ul id="js-course-list" class="course-list list-view" style="min-height:1px;">
+          
+            {loop $list $value}
+            <li class="lesson_list"><i class="blue-color"><i class="blue-color"><i class="blue-color"> <a href="{php echo $this->createMobileUrl('knowledge', array('op'=>'show','id'=>$value[id]));}" class="package">
+            <div class="package__cover-wrap">
+              <div class="package__cover" style="background-image: url({php echo tomedia($value['imgurl']);});"> <span class="package__cover-tips package__cover-tips--status">{$value['readnum']}人已学习</span> </div>
+            </div>
+            <div class="package__content">
+              <h3 class="package__name">{$value['titlename']}</h3>
+              <div class="package__info"> <span class="u-price">本知识点共{$total_quz[$value['id']]}道题</span> </div>
+              <div class="package__info"> <span>已做<i class="blue-color">{$total_quyz[$value['id']]}</i>道题</span>
+                <div class="package__course-num"><i class="blue-color">做错{$total_quycwz[$value['id']]}道题</i></div>
+                <i class="blue-color"> </i></div>
+              <i class="blue-color"> </i></div>
+            <i class="blue-color"> </i></a></i></i></i></li>
+			{/loop}
+			
+        </ul>
+        
+      </div>
+      
+    </div>
+    
+    <!-- /列表 --> 
+
+  </div>
+</div>
+
+
+<!--footer strat-->
+{template 'footer'}
+
+</body>
+</html>

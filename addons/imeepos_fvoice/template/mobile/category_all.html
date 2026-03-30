@@ -1,0 +1,28 @@
+{template 'common/header'}
+<div class="main">
+    <div id="categories">
+        {php $categorys = M('category')->getall(array('fid'=>0));}
+        {loop $categorys $category}
+        <div class="weui_cells">
+            <div class="weui_cell">
+                <div class="weui_cell_bd weui_cell_primary">
+                    <p>{$category['title']}</p>
+                </div>
+            </div>
+        </div>
+        <div style="padding-left:15px;padding-right:15px;padding-bottom:15px;">
+            {php $cates = M('category')->getall(array('fid'=>$category['id']))}
+            {loop $cates $cat}
+            <span style="display: inline-block;" data-href="{php echo $this->createMobileUrl('category',array('category_id'=>$cat['id']))}" class="weui_btn weui_btn_primary weui_btn_mini category" data-id="{php echo $cat['id']}">{$cat['title']}</span>
+            {/loop}
+        </div>
+        {/loop}
+    </div>
+</div>
+<script>
+    $(document.body).on('click','.category',function(){
+        window.location.href = $(this).data('href');
+    });
+</script>
+{template 'common/footerbar'}
+{template 'common/footer'}

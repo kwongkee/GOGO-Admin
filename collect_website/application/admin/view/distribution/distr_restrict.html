@@ -1,0 +1,86 @@
+{include file="common/header_inner_new"}
+
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element2">
+            <input type="hidden" name="id" value="{$id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">分销层次</div>
+                            <div class="layui-input-block disf">
+                                <input type="number" name="levels" class="layui-input" value="{$data['distr_restrict']['levels']}" placeholder="请输入限制层次" lay-verify="required">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">分销区域</div>
+                            <div class="layui-input-block">
+                                <input type="number" name="area" class="layui-input" value="{$data['distr_restrict']['area']}" placeholder="请输入分销区域" lay-verify="required">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">分销类别</label>
+                            <div class="layui-input-block disf">
+                                <select name="category" id="category" lay-verify="required">
+                                    <option value="1" {if $data['distr_restrict']['category']==1}selected{/if}>物流服务</option>
+                                    <option value="2" {if $data['distr_restrict']['category']==2}selected{/if}>仓储服务</option>
+                                    <option value="3" {if $data['distr_restrict']['category']==3}selected{/if}>电商服务</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload','colorpicker','element'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+        var element = layui.element;
+        var colorpicker = layui.colorpicker;
+
+        form.on('submit(component-form-element)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            $.ajax({
+                url:"{:Url('admin/distribution/distr_restrict')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

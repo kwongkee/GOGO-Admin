@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{$title}}</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<table class="layui-table">
+    <thead>
+    <tr class="ths">
+        <th>商户名称</th>
+        <th>验证票数</th>
+        <th>申报货值</th>
+        <th>身份验证</th>
+        <th>交易支付</th>
+        <th>订单申报</th>
+        <th>应付金额</th>
+        <th>止账日期</th>
+        <th>账单所属</th>
+        <th>编辑操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {volist name="data['data']" id="vo"}
+    <tr class="boys">
+        <td>{$vo.uname}</td>
+        <td>{$vo.ticketTotals}</td>
+        <td>{$vo.declsTotals}</td>
+        <td>{$vo.identifyTotals}</td>
+        <td>{$vo.paymentTotals}</td>
+        <td>{$vo.orderTotals}</td>
+        <td>{$vo.amountTotals}</td>
+        <td>{$vo.etime|date='Y-m-d H:i:s',###}</td>
+        <td>
+            {if condition="($vo.daytype == 'day')" }
+                日
+            {else/}
+                月
+            {/if}
+        </td>
+
+        <td>
+            <a href="#" onclick="exprotElist({$vo.id},'{$vo.email}');" class="layui-btn">编辑设置</a>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+
+<script type="text/javascript">
+    layui.use(['layer','jquery'],function(){
+        layer = layui.layer;
+        $ = layui.jquery;
+    });
+
+    // 申报
+    function exprotElist(ids,email)
+    {
+        layer.open({
+            type: 2,
+            title: '清算修改',
+            shadeClose: true,
+            shade: 0.3,
+            area: ['490px', '489px'],
+            content: "{:Url('Financed/Medits')}&ids="+ids+"&email="+email, //iframe的url
+            yes:function(){
+                setTimeout(function(){window.location.reload();},800);
+            },
+            end:function() {
+                setTimeout(function () {
+                    window.location.reload();
+                }, 800);
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

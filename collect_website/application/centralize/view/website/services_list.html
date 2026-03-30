@@ -1,0 +1,124 @@
+{include file="public/header"}
+<style>
+    .disf{display: flex;align-items: center;}
+    .del{margin-left:10px;}
+</style>
+
+<body style="padding:15px;box-sizing: border-box;">
+<form class="layui-form" action="" lay-filter="component" style="text-align: center;">
+    <input type="hidden" name="id" value="{$id}">
+    <input type="hidden" name="aid" value="{$data['id']}">
+
+    <div class="services_content">
+        {if empty($data['id'])}
+            <div class="layui-form-item">
+                <label class="layui-form-label">选择菜单</label>
+                <div class="layui-input-block">
+                    <select name="menu_id[]" lay-search>
+                        <option value="">请选择菜单</option>
+                        {volist name="menu" id="vo"}
+                        <option value="{$vo.id}">{$vo.title}</option>
+                        {/volist}
+                    </select>
+                </div>
+            </div>
+        {else}
+            {volist name="services" key="idx" id="vo"}
+                <div class="layui-form-item">
+                    <label class="layui-form-label">选择菜单</label>
+                    <div class="layui-input-block disf">
+                        <select name="menu_id[]" lay-search>
+                            <option value="">请选择菜单</option>
+                            {volist name="menu" id="vo2"}
+                            <option value="{$vo2.id}" {if $vo2.id==$vo}selected{/if}>{$vo2.title}</option>
+                            {/volist}
+                        </select>
+                        {if $idx!=0}
+                            <div class="layui-btn del layui-btn-danger layui-btn-xs" onclick="del(this)">删除</div>
+                        {/if}
+                    </div>
+                </div>
+            {/volist}
+        {/if}
+    </div>
+    <div class="layui-btn add layui-btn-primary" style="margin-bottom: 15px;">增加</div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    //Demo
+    layui.use(['layer','form','laydate','upload','colorpicker'], function(){
+        var laydate = layui.laydate;
+        var layer = layui.layer;
+        var form  = layui.form;
+        var $ = layui.jquery;
+        var upload = layui.upload;
+        var colorpicker = layui.colorpicker;
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            $.ajax({
+                url:"{:Url('centralize/website/services_list')}",
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (res) {
+                    layer.msg(res.msg);
+                    if(res.code==0){
+                        setTimeout(function () {
+                            window.location.reload();
+                        },2000);
+                    }
+
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            return false;
+        });
+
+        $('.add').click(function(){
+           let html = '<div class="layui-form-item">\n' +
+               '                <label class="layui-form-label">选择菜单</label>\n' +
+               '                <div class="layui-input-block disf">\n' +
+               '                    <select name="menu_id[]" lay-search>\n' +
+               '                        <option value="">请选择菜单</option>\n';
+                                       {volist name="menu" id="vo"}
+               html += '                        <option value="{$vo.id}">{$vo.title}</option>\n';
+                                       {/volist}
+               html += '                    </select>\n' +
+               '                <div class="layui-btn del layui-btn-danger layui-btn-xs" onclick="del(this)">删除</div>\n'+
+               '                </div>\n' +
+               '            </div>';
+           $('.services_content').append(html);
+           form.render(null,'component');
+        });
+
+    });
+
+    function del(t){
+        var layer = layui.layer,$ = layui.$;
+        $(t).parent().parent().remove();
+    }
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+{template 'common/header'}
+
+<!-- qrcode -->
+<script src="../addons/sz_yi/static/js/jquery.qrcode.min.js"></script>
+
+<title>揽收详情</title>
+<style type="text/css">
+    body {margin:0px; background:#efefef; -moz-appearance:none; -webkit-appearance: none;}
+    .order_topbar {height:44px; width:100%; background:#fff; border-bottom:1px solid #e3e3e3;}
+    .order_topbar .nav {height:44px; {if $_GPC['status']!=4 && $_GPC['status']!=5 }width:20%;{else}width:33%;{/if} line-height:44px; text-align:center; font-size:14px; float:left; color:#666;}
+    /*.order_topbar .nav {height:44px; {if $_GPC['status']!=4}width:20%;{else}width:50%;{/if} line-height:44px; text-align:center; font-size:14px; float:left; color:#666;}*/
+    .order_topbar .on {height:42px; color:#f15353; border-bottom:2px solid #f15353;}
+    .order_noinfo {height:20px; width:150px; background:url(img/order_img1.png) top center no-repeat; margin:50px auto 0px; padding-top:100px; line-height:20px; font-size:14px; text-align:center; color:#c9c9c9;}
+    .order_main {height:auto; width:94%; background:#fff; padding:0px 3%; margin-top:16px; border-bottom:1px solid #e2e2e2; border-top:1px solid #e2e2e2;}
+    .order_main .title {height:42px; width:100%; border-bottom:1px solid #e2e2e2; font-size:14px; line-height:42px; color:#666;}
+    .order_main .title span {height:42px; width:auto; float:right; color:#f15353;}
+    .order_main .good {height:50px; width:100%; padding:10px 0px; border-bottom:1px solid #eaeaea;}
+    .order_main .good .img {height:50px; width:50px; float:left;}
+    .order_main .good  .img img {height:100%; width:100%;}
+    .order_main .good  .info {width:100%;float:left; margin-left:-50px;margin-right:-60px;}
+    .order_main .good .info .inner { margin-left:60px;margin-right:60px; }
+    .order_main .good .info .inner .name {height:32px; width:100%; float:left; font-size:12px; color:#555;overflow:hidden;}
+    .order_main .good .info .inner .option {height:18px; width:100%; float:left; font-size:12px; color:#888;overflow:hidden;word-break: break-all}
+    .order_main .good span { color:#666;}
+    .order_main .good  .price { float:right;width:60px;;height:54px;margin-left:-60px;;}
+    .order_main .good  .price .pnum { height:20px;width:100%;text-align:right;font-size:14px; }
+    .order_main .good  .price .num { height:20px;width:100%;text-align:right;}
+    .order_main .info1 {height:42px; width:100%; border-bottom:1px solid #e2e2e2; font-size:14px; color:#999; line-height:42px; text-align:right;}
+    .order_main .info1 span {color:#666;}
+
+    .order_main .sub {height:50px; width:100%;}
+    .order_main .sub1 {height:30px; width:auto; padding:0px 10px; border:1px solid #ff771b; float:right; border-radius:5px; line-height:30px; font-size:14px; margin:10px 5px 10px 0px; color:#fff; background:#ff771b;}
+    .order_main .sub2 {height:30px; width:auto; padding:0px 10px; border:1px solid #5f6e8b; float:right; border-radius:5px; line-height:30px; font-size:14px; margin:10px 5px 10px 0px; color:#5f6e8b;}
+    select { width:80px;height:30px;position:absolute;left:0; filter:alpha(Opacity=0); opacity: 0;-webkit-appearance: none;background:#fff; -webkit-tap-highlight-color: transparent };
+    .order_no {height:40px; width:100%;  padding-top:180px; margin:50px 0px;}
+
+    .order_no {height:100px; width:100%; margin:50px 0px 60px; color:#BFBFBF; font-size:12px; text-align:center;}
+    .order_no_menu {height:40px; width:100%; text-align:center;}
+    .order_no_nav {height:34px;padding:6px 20px;background:#eee; border:1px solid #d4d4d4; border-radius:5px; text-align:center; line-height:34px; color:#666;font-size: 16px}
+    #order_loading { width:94%;padding:10px;color:#666;text-align: center;}
+    .no-icon .fa{ font-size: 80px;padding-bottom: 20px}
+    .no-icon span{color: #929292;line-height: 20px;font-size: 14px}
+
+    /*弹框*/
+    #popBox{position: fixed;display:none;width:70%;height:180px;min-height: 180px; left:15%;top:30%;z-index:11; background: #fff; border-radius: 5px; font-size: 16px;}
+	#popLayer{position: absolute;display:none;left:0;top:0;z-index:10;background:#000;-moz-opacity: 0.6;opacity:.60;filter: alpha(opacity=60);width: 100%; height: auto;/* 只支持IE6、7、8、9 */}
+	.popcon{font-size: 14px; color: #4a4a4a; line-height: 24px; /*width: 95%; */margin: 5px auto;text-align: center; }
+	.popcon p{padding: 15px 0; border-bottom: 1px solid #e8e8e8; width: 100%;}
+	.closed{text-align: right; width: 100%; height: 60px;/* border-bottom: 1px solid #ccc; background: #eee;*/ border-top-left-radius:5px; border-top-right-radius:5px;background-image: url('../addons/sz_yi/static/images/pack.png'); background-size:100% 100%;}
+	.closed span{position: absolute;left: 0;top: 50px;line-height: 40px; height: 40px; color: #4a4a4a; width: 100%;text-align: center; font-weight: bold;}
+	.closed a{color: #4a4a4a; line-height: 30px; margin-right: 10px;/*font-size: 14px;*/}
+	.laybut{background: none; border: none; color: white;}
+	.popcon button{padding: 10px 20px; margin: 15% 15px; border-radius: 5px; border: none; font-size: 14px; color: #fff;}
+	.wx{background-color: #00cc0f;}
+	.zfb{background-color: #1b7ab6;}
+  .collect_status{
+    color: #FFFFFF;
+    width: 80px;
+    float: right;
+    border-radius: 3px;}
+    .ok{background-color: #1ab394;border-color: #1ab394;}
+    .nook{background-color: #ed5565;border-color: #ed5565;}
+</style>
+
+{loop $orderdata $index $item}
+  <div class="order_main" pack_ordersn="{$item['pack_ordersn']}">
+    <div class="title" style="height:auto;">
+        包裹单号: {$item['pack_ordersn']} <br> 商城单号: {$item['shop_ordersn']}
+    </div>
+    {loop $item['good_list'] $indexs $items}
+      <div class="good" style="height:auto;">
+        {$items['title']}
+      </div>
+
+    {/loop}
+    <div class="good" style="height:150px;text-align:center;">
+      <div id="qrcode_{$item['pack_ordersn']}" style="float:left"></div>
+      {if $item['is_collect'] == 1}
+      <div class="collect_status ok">已揽收</div>
+      {else}
+      <div class="collect_status nook">未揽收</div>
+      {/if}
+
+      <script>
+          jQuery(function(){
+
+          jQuery('#qrcode_{$item['pack_ordersn']}').qrcode({
+            render: "canvas",
+            width: 150,
+            height: 150,
+            text: "{php echo $this->createMobileUrl('member/easydeliver_collect_code')}&pack_id={$id}&pack_ordersn={$item['pack_ordersn']}&collect_user={$collect_user['openid']}"
+          });
+      })
+      </script>
+
+    </div>
+  </div>
+{/loop}

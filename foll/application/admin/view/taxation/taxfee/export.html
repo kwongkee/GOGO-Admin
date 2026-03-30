@@ -1,0 +1,158 @@
+{include file="public/header"}
+<body style="padding: 10px;background: white;">
+<!-- 上级ID -->
+<style>
+    .box{
+        width: 30%;
+        height: 200px;
+        margin: 30px auto;
+        /*border: 1px solid red;*/
+        box-shadow:0px 0px 10px #ccc;
+        padding: 15px;
+    }
+    .exp{
+        margin-left: 25px;
+    }
+</style>
+<input type="hidden" id="pid" value="1">
+<div class="header">
+    <span>{$title}</span>
+    <a class="exp layui-btn layui-btn-warm" href="http://shop.gogo198.cn/Public/export/tax.xls">导出模板</a>
+    <div></div>
+</div>
+
+<script>
+    layui.use(['upload','form'], function(){
+        var upload = layui.upload;
+        var form = layui.form;
+        $   = layui.jquery;
+    });
+</script>
+
+<!--button class="layui-btn layui-btn-primary layui-btn-sm" style="float: right;margin: 5px 0px 5px 0px;" onclick="backs()">返回上级菜单</button-->
+
+<div class="box">
+
+    <form class="layui-form" enctype="multipart/form-data" method="post" action="">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">选择商户</label>
+            <div class="layui-input-inline">
+                <select name="uid" lay-verify="required" lay-filter="uids">
+                    <option value="">请选择</option>
+                    {volist name="userInfo" id="item"}
+                        <option value="{$item.id}">{$item.user_name}</option>
+                    {/volist}
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">选择提单</label>
+            <div class="layui-input-inline" id="insBol"></div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">导入文件</label>
+            <div class="layui-input-inline">
+                <input type="file" name="export" id="export" accept="application/vnd.ms-excel">
+            </div>
+        </div>
+
+        <div class="layui-form-item" style="padding-left: 40px;">
+            <button class="layui-btn layui-btn-xm layui-btn-normal" lay-submit lay-filter="formDemo">确认导入</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置数据</button>
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+    //Demo
+    layui.use('form', function(){
+        var form = layui.form,$=layui.jquery;
+        var url = "{:Url('admin/taxation/show')}";
+        var getBolurl = "{:Url('admin/taxation/getbol')}";
+
+        // 选择数据
+        form.on('select(uids)', function(data){
+            var uid = data.value;
+            // 删除下面的option
+            //$('#insBol').empty('select').remove();
+            $('#insBol').empty();
+            $.ajax({
+                url:getBolurl,
+                type:'POST',
+                data:{uid:uid},
+                success:function(e) {
+                    var res = JSON.parse(e);
+                    if(res.code <=0) {
+                        layer.msg(res.msg,{icon:2});
+                        return false;
+                    }
+
+                    var htmlStr = '<select name="boll" lay-verify="required" id="boll"><option>请选择</option>';
+                    // 处理数据；清空原有数据，新增新数据；
+                    $.each(res.data,function(index,item) {
+
+                        htmlStr += '<option value="'+item.bill_num+'">'+item.bill_num+'</option>';
+                        //boll
+                    })
+                    htmlStr += '</select>';
+
+                    $('#insBol').append(htmlStr);
+
+                    form.render('select');
+
+                }
+            })
+        });
+
+
+        //监听提交
+        form.on('submit(formDemo)', function(data) {
+
+            //layer.msg(JSON.stringify(data.field));
+            // var u = url + '&uids='+data.field.uids;
+            // window.location.href = u;
+
+            var urls = 'http://declare.gogo198.cn/api/exportTax';
+            var formData = new FormData();
+            formData.append("uid",data.field.uid);
+            formData.append("boll",data.field.boll);
+            formData.append("export",$('#export')[0].files[0]);
+
+            $.ajax({
+                url:urls,
+                dataType:'json',
+                type:'POST',
+                async:false,
+                data:formData,
+                processData:false,
+                contentType:false,
+                success:function(red) {
+                    if(red.code <=0) {
+                        layer.msg('上传失败',{icon:2})
+                        return false;
+                    }
+
+                    layer.msg('上传成功',{icon:1},function(){
+                        window.location.reload();
+                    })
+                },error:function(er){
+                    layer.msg('服务器错误',{icon:2})
+                }
+            })
+
+            console.log(formData)
+            console.log(data.field.boll)
+
+            return false;
+        });
+
+    });
+</script>
+
+</body>
+</html>

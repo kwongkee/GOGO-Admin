@@ -1,0 +1,196 @@
+{include file="public/header"}
+
+<body style="padding: 10px;">
+
+<script src="static/index/admin/js/jquery-1.8.0.min.js"></script>
+
+<form action="" class="layui-form" id="form1">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">分配商户</label>
+        <div class="layui-input-inline" onchange="changes()" style="width: 100px;">
+            <select name="publicId" lay-verify="" lay-filter="publicId"  id="publicId">
+                <option value="">公众号</option>
+                {volist name="account" id="vo"}
+                <option value="{$vo['uniacid']}">{$vo['name']}</option>
+                {/volist}
+            </select>
+        </div>
+
+        <div class="layui-form-mid">-</div>
+        <div class="layui-input-inline" id="showUid" style="width: 100px;">
+            <select name="merchatId" lay-verify="" lay-filter="merchatId"  id="merchatId">
+            </select>
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">包材企业</label>
+        <div class="layui-input-inline">
+            <select name="packageName" lay-verify="" lay-filter="packageName" id="packageName">
+                <option value="">请选择包材企业</option>
+                {volist name="package" id="vos"}
+                <option value="{$vos['id']}">{$vos['merchatName']}</option>
+                {/volist}
+            </select>
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">包材选择</label>
+        <div class="layui-input-inline">
+            <select name="packgeId" lay-verify="" id="packgeId">
+            </select>
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">分配数量</label>
+        <div class="layui-input-inline">
+            <input type="number" name="distriNum"  required  lay-verify="required" placeholder="请输入分配数量" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+
+</form>
+
+<div class="layui-form-item">
+    <div class="layui-input-block">
+        <button class="layui-btn" onclick="save()">确认分配</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    layui.use(['layer','form','laydate'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        form  = layui.form;
+        $ = layui.jquery;
+
+        laydate.render({
+            elem: '#Times' //指定元素
+        });
+
+        form.on('select(publicId)', function(data){
+
+            $.post("{:Url('admin/transport/getMerchat')}",{uniacid:data.value},function(red){
+
+                var res = JSON.parse(red);
+                var str = '';
+                if(res.code == 1) {
+                    str += '<option value="">选择商户</option>';
+
+                    $.each(res.data,function(i,item) {
+                        str += '<option value="'+item.uid+'">'+item.username+'</option>';
+                    })
+
+                } else {
+                    str += '<option value="">'+res.data+'</option>';
+                }
+
+                $('#merchatId').html(str);
+                form.render('select'); //刷新select选择框渲染
+
+            });
+        });
+
+        // 获取号码段
+        form.on('select(packageName)', function(data){
+
+            $.post("{:Url('admin/packages/getTrans')}",{id:data.value},function(red){
+
+                var res = JSON.parse(red);
+                var str = '';
+                if(res.code == 1) {
+                    str += '<option value="">选择包材</option>';
+
+                    $.each(res.data,function(i,item) {
+
+                        if(item.num != item.use) {
+                            str += '<option value="'+item.id+'">'+item.packgeName+'</option>';
+                        } else {
+                            str = '<option value="">noData</option>';
+                        }
+                    })
+
+                } else {
+                    str += '<option value="">'+res.data+'</option>';
+                }
+
+                $('#packgeId').html(str);
+                form.render('select'); //刷新select选择框渲染
+
+            });
+        });
+
+    });
+
+
+    // 分配确认
+    function save()
+    {
+        var publicId           = $("#publicId option:selected").val();
+        var merchatId          = $("#merchatId option:selected").val();
+        var packageName        = $("#packageName option:selected").val();
+        var packgeId           = $("#packgeId option:selected").val();
+        var distriNum          = $("input[name='distriNum']").val();
+
+        if(publicId == '') {
+            layer.msg('请选择公众号',{icon:2});
+            return false;
+        }
+        if(merchatId == '') {
+            layer.msg('请选择商户',{icon:2});
+            return false;
+        }
+
+        if(packageName == '') {
+            layer.msg('请选择包材企业',{icon:2});
+            return false;
+        }
+
+        if(packgeId == '') {
+            layer.msg('请选择包材',{icon:2});
+            return false;
+        }
+
+        if(distriNum == '') {
+            layer.msg('请输入分配的数量',{icon:2});
+            return false;
+        }
+
+        if(distriNum <= 0) {
+            layer.msg('分配的数量不正确，请检查！',{icon:2});
+            return false;
+        }
+
+        // 请求处理数据
+        $.post("{:Url('admin/packages/distriDoadd')}",{
+            publicId:publicId,
+            merchatId:merchatId,
+            packageName:packageName,
+            packgeId:packgeId,
+            distriNum:distriNum,
+            Method:'add',
+        },function(resd){
+
+            var res = JSON.parse(resd);
+            if(res.code == 1) {
+                layer.msg(res.msg,{icon:1});
+                setTimeout(function(){
+                    layer.closeAll();
+                    parent.window.location.reload();
+                },1000);
+            } else {
+                layer.msg(res.msg,{icon:2});
+            }
+
+        });
+    }
+</script>
+</body>
+</html>

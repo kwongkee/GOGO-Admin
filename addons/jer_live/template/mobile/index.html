@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <title>{if $config['live_title']}{$config['live_title']}{else}直播{/if}</title>
+    <meta name="format-detection" content="telephone=no, address=no">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width,user-scalable=no" />
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <link rel="stylesheet" href="../addons/jer_live/template/mobile/css/style.css?v=1">
+</head>
+<body>
+<script>
+    window.sysinfo = {
+    {if !empty($_W['uniacid'])}'uniacid': '{$_W['uniacid']}',{/if}
+    {if !empty($_W['acid'])}'acid': '{$_W['acid']}',{/if}{if !empty($_W['openid'])}'openid': '{$_W['openid']}',{/if}
+    {if !empty($_W['uid'])}'uid': '{$_W['uid']}',{/if}
+    'siteroot': '{$_W['siteroot']}',
+    'siteurl': '{$_W['siteurl']}',
+    'attachurl': '{$_W['attachurl']}',
+    'attachurl_local': '{$_W['attachurl_local']}',
+    'attachurl_remote': '{$_W['attachurl_remote']}',
+    'index_ajax_url': '{php echo murl("entry", array("m" => "jer_live", "do" => "index"), true, true)}',
+    'is_reward': '{$config["reward_status"]}',
+    'autoload_status': '{$config["autoload_status"]}',
+    'autoload_time': '{$config["autoload_time"]}',
+    'live_list_share_title': '{$config["live_list_share_title"]}',
+    'live_list_share_desc': '{$config["live_list_share_desc"]}',
+    'live_list_share_img': '{$config["live_list_share_img"]}',
+    {if defined('MODULE_URL')}'MODULE_URL': '{MODULE_URL}',{/if}
+    'cookie' : {'pre': '{$_W['config']['cookie']['pre']}'},
+    'wx_qrcode': '{php echo tomedia($config["wx_qrcode"])}',
+    'share_link':''
+    };
+
+    // jssdk config 对象
+    jssdkconfig = {php echo json_encode($_W['account']['jssdkconfig']);} || {};
+    // 是否启用调试
+    jssdkconfig.debug = false;
+    jssdkconfig.jsApiList = [
+        'checkJsApi',
+        'onMenuShareTimeline',
+        'onMenuShareAppMessage',
+        'onMenuShareQQ',
+        'onMenuShareWeibo',
+        'hideMenuItems',
+        'showMenuItems',
+        'hideAllNonBaseMenuItem',
+        'showAllNonBaseMenuItem',
+        'translateVoice',
+        'startRecord',
+        'stopRecord',
+        'onRecordEnd',
+        'playVoice',
+        'pauseVoice',
+        'stopVoice',
+        'uploadVoice',
+        'downloadVoice',
+        'chooseImage',
+        'previewImage',
+        'uploadImage',
+        'downloadImage',
+        'getNetworkType',
+        'openLocation',
+        'getLocation',
+        'hideOptionMenu',
+        'showOptionMenu',
+        'closeWindow',
+        'scanQRCode',
+        'chooseWXPay',
+        'openProductSpecificView',
+        'addCard',
+        'chooseCard',
+        'openCard',
+        'openAddress'
+    ];
+</script>
+
+<script type="text/javascript">
+    wx.config(jssdkconfig);
+    var $_share = {php echo json_encode($_share);};
+    if(typeof sharedata == 'undefined'){
+        sharedata = $_share;
+    } else {
+        sharedata['title'] = sharedata['title'] || $_share['title'];
+        sharedata['desc'] = sharedata['desc'] || $_share['desc'];
+        sharedata['link'] = sharedata['link'] || $_share['link'];
+        sharedata['imgUrl'] = sharedata['imgUrl'] || $_share['imgUrl'];
+    }
+    window.sysinfo.share_link = sharedata['link'] || $_share['link'];
+
+    wx.ready(function () {
+        wx.onMenuShareAppMessage(sharedata);
+        wx.onMenuShareTimeline(sharedata);
+        wx.onMenuShareQQ(sharedata);
+        wx.onMenuShareWeibo(sharedata);
+    });
+
+</script>
+
+<!--live Start-->
+<template id="live_template" v-cloak>
+    <div id="live">
+        <live_item :live_item="live_item"></live_item>
+        <div class="spinner" v-if="live_loading_status">
+            <div class="cube1"></div>
+            <div class="cube2"></div>
+        </div>
+    </div>
+</template>
+<template id="live_item_template" v-cloak>
+    <div class="live_item" v-for="(index, item) in live_item" v-touch:tap="to_message(item.id, index)">
+        <div class="title">
+            <div class="txt">{{ item.name }}</div>
+            <div class="title_bg"></div>
+        </div>
+        <div class="thumb"><img :src="item.thumb" ><div class="mask"></div></div>
+    </div>
+</template>
+<!--live End-->
+
+<!--message Start-->
+<template id="message_template" v-cloak>
+    <div id="live_show">
+        <div id="message_cover" v-if="liveData.live_type != 1">
+            <div id="message_cover_title" class="title">{{ liveData.name }}</div>
+            <div class="message_cover_bg" :style="{ backgroundImage: 'url(' + liveData.thumb + ')' }"></div>
+            <div class="mask"></div>
+        </div>
+        <div id="message_live_video" v-else>
+            <div class="ad_img" v-if="liveData.live_top_ad_img != ''"><a :href="liveData.live_top_ad_img_link"><img :src="liveData.live_top_ad_img" alt=""></a></div>
+            <template v-if="liveVideo.live_video_type === 0">
+                <iframe class="letv_iframe" :src="liveVideo.lstv_url" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>
+            </template>
+            <template v-if="liveVideo.live_video_type === 1">
+                <video controls="controls" id="baofeng-html5-player-video" class="h5video" onclick="playVideo('{{ liveVideo.url }}');" :src="liveVideo.url" x-webkit-airplay="allow" poster="{{ liveVideo.poster }}">
+                    <source :src="liveVideo.url" type="{{ liveVideo.mmime }}">
+                </video>
+            </template>
+
+            <template v-if="liveVideo.live_video_type === 2">
+                <video controls="controls" id="other-html5-player-video" class="h5video" onclick="playVideo('{{ liveVideo.url }}');" :src="liveVideo.url" x-webkit-airplay="allow"  poster="{{ liveVideo.poster }}">
+                    <source :src="liveVideo.url" type="{{ liveVideo.mmime }}">
+                </video>
+            </template>
+        </div>
+
+        <template v-if="empty.status">
+            <div class="empty_wrap">
+                <div class="empty_main">
+                    <div class="title">
+                        <span></span>
+                        <div class="txt">{{ empty.title }} </div>
+                    </div>
+                    <div class="content">{{ empty.desc }}</div>
+                </div>
+            </div>
+        </template>
+
+        <template v-if="liveData.live_type != 1" >
+            <message_item :message_item="message_item" :ban_status="ban_status" :lid="lid"></message_item>
+        </template>
+        <template v-else>
+            <comment_item :comment_item="comment_item" :ban_status="ban_status" :lid="lid" :comment_add_input="comment_add_input" :live-tab="liveTab" :live-data="liveData"></comment_item>
+        </template>
+        <div class="spinner" v-if="message_loading_status">
+            <div class="cube1"></div>
+            <div class="cube2"></div>
+        </div>
+    </div>
+</template>
+
+<template id="message_item_template" v-cloak>
+    <div id="message_item">
+        <div class="item" v-for="(index, item) in message_item">
+            <div class="user">
+                <div class="avatar">
+                    <img :src="item.avatar">
+                </div>
+                <div class="p_name">{{ item.nickname }}</div>
+                <div class="time">{{ item.createtime }}</div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="message">
+                <div class="content">
+                    {{ item.title }}
+                </div>
+                <div class="img" v-if="item.attachment.images" v-for="img in item.attachment.images">
+                    <img :src="img">
+                </div>
+                <div class="video" v-if="item.attachment.videos">
+                    <video :src="item.attachment.videos" controls="controls" preload="none"></video>
+                </div>
+            </div>
+            <div class="action">
+                <div class="pl" v-touch:tap="comm_status_toggle(index)">
+                    <div class="l">
+                        <img v-show="!item.comment_status" src="../addons/jer_live/template/mobile/img/comment.png">
+                        <img v-show="item.comment_status" src="../addons/jer_live/template/mobile/img/comment_alr.png">
+                    </div>
+                    <div class="r">{{ item.comment_count }}</div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="zan" v-touch:tap="zan_status_toggle(index)">
+                    <div class="l">
+                        <img v-show="!item.zan_status" src="../addons/jer_live/template/mobile/img/zan.png">
+                        <img v-show="item.zan_status" src="../addons/jer_live/template/mobile/img/zan_alr.png">
+                    </div>
+                    <div class="r">{{ item.zan_count }}</div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="comment" v-show="item.comment_status">
+                <div class="list">
+                    <dl class="clearfix" v-for="(comm_index, comm_item) in item.comment_list">
+                        <dt>
+                        <div class="avatar"><img :src="comm_item.avatar"></div>
+                        </dt>
+                        <dd>
+                            <p class="info">
+                                <span class="comm_name">{{ comm_item.nickname }}</span>
+                                <span class="comm_date">{{ comm_item.createtime }} </span>
+                            </p>
+                            <p class="comm_con">
+                                <span v-if="comm_item.renickname">回复：<span class="renickname">{{ comm_item.renickname }}</span></span>
+                                {{ comm_item.content }}
+                            </p>
+                        </dd>
+                    </dl>
+
+                    <div class="more" v-show="item.comment_more_status" v-touch:tap="comment_loading(index)">
+                        <img src="../addons/jer_live/template/mobile/img/click_loading.png">
+                    </div>
+
+                    <div class="loading" v-show="item.comment_loading_status">
+                        <div class="sk-folding-cube">
+                            <div class="sk-cube1 sk-cube"></div>
+                            <div class="sk-cube2 sk-cube"></div>
+                            <div class="sk-cube4 sk-cube"></div>
+                            <div class="sk-cube3 sk-cube"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form">
+                    <form v-on:submit.prevent="comment_add(index)">
+                        <div class="msg_input">
+                            <input type="text" v-if="!ban_status" v-model="item.comment_con_input" placeholder="有什么想说的吗~">
+                            <input type="text" v-else placeholder="您已被禁言..." disabled="disabled">
+                        </div>
+                        <div class="reply">
+                            <button type="submit" v-if="!ban_status" >评论</button>
+                            <button type="submit" v-else disabled="disabled">评论</button>
+                        </div>
+                        <div class="clearfix"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template id="comment_item_template" v-cloak>
+    <marquee behavior="scroll" scrollamount="5" v-if="liveData.live_marquee_status == '1'"><div class="marquee">{{{ liveData.live_marquee_content }}}</a></div></marquee>
+    <div id="comment_item">
+        <div class="tab_title">
+            <div :class="[tab_css.tit, tab[0] ? tab_css.act : '']" v-touch:tap="tab_change(0)">评论</div>
+            <div :class="[tab_css.tit, tab[1] ? tab_css.act : '']" v-touch:tap="tab_change(1)" v-if="liveTab.live_tab1_status == 1">{{ liveTab.live_tab1_name }}</div>
+            <div :class="[tab_css.tit, tab[2] ? tab_css.act : '']" v-touch:tap="tab_change(2)" v-if="liveTab.live_tab2_status == 1">{{ liveTab.live_tab2_name }}</div>
+            <div :class="[tab_css.tit, tab[3] ? tab_css.act : '']" v-touch:tap="tab_change(3)" v-if="liveTab.live_tab3_status == 1">{{ liveTab.live_tab3_name }}</div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="tab_content">
+            <div :class="[tab_css.con, tab[0] ? tab_css.act : '']">
+                <div id="comment_iteminfo">
+                    <div class="info">
+                        访问量：{{ liveData.view }}
+                    </div>
+                    <div class="zan" v-touch:tap="zan_status_toggle()">
+                        <div class="l">
+                            <img v-show="!liveData.zan_status" src="../addons/jer_live/template/mobile/img/zan.png">
+                            <img v-show="liveData.zan_status" src="../addons/jer_live/template/mobile/img/zan_alr.png">
+                        </div>
+                        <div class="r">{{ liveData.zan_count }}</div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div id="comment_item_list" class="list" >
+                    <dl class="clearfix" v-for="(comm_index, comm_item) in comment_item">
+                        <dt>
+                            <div class="avatar"><img :src="comm_item.avatar"></div>
+                        </dt>
+                        <dd>
+                            <p class="info">
+                                <span class="comm_name">{{ comm_item.nickname }}</span>
+                                <span class="comm_date">{{ comm_item.createtime }} </span>
+                            </p>
+                            <p class="comm_con">
+                                <span v-if="comm_item.renickname">回复：<span class="renickname">{{ comm_item.renickname }}</span></span>
+                                {{ comm_item.content }}
+                            </p>
+                        </dd>
+                    </dl>
+
+                    <div class="loading" v-show="comment_add_loading_status">
+                        <div class="sk-folding-cube">
+                            <div class="sk-cube1 sk-cube"></div>
+                            <div class="sk-cube2 sk-cube"></div>
+                            <div class="sk-cube4 sk-cube"></div>
+                            <div class="sk-cube3 sk-cube"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div :class="[tab_css.con, tab[1] ? tab_css.act : '']" v-if="liveTab.live_tab1_status == 1">{{{ liveTab.live_tab1_content }}}</div>
+            <div :class="[tab_css.con, tab[2] ? tab_css.act : '']" v-if="liveTab.live_tab2_status == 1">{{{ liveTab.live_tab2_content }}}</div>
+            <div :class="[tab_css.con, tab[3] ? tab_css.act : '']" v-if="liveTab.live_tab3_status == 1">{{{ liveTab.live_tab3_content }}}</div>
+        </div>
+        <div class="comment_add">
+            <form v-on:submit.prevent="comment_add()">
+                <div class="msg_input">
+                    <input type="text" v-if="!ban_status" v-model="comment_add_input" placeholder="有什么想说的吗~">
+                    <input type="text" v-else placeholder="您已被禁言..." disabled="disabled">
+                </div>
+                <div class="reply">
+                    <button type="submit" v-if="!ban_status" >评论</button>
+                    <button type="submit" v-else disabled="disabled">评论</button>
+                </div>
+                <div class="clearfix"></div>
+            </form>
+        </div>
+    </div>
+</template>
+<!--message End-->
+
+<!--message_add Start-->
+<template id="message_add_template" v-cloak>
+    <div id="message_add">
+        <div class="content">
+            <textarea name="content" v-model="content" placeholder="说点什么吧~"></textarea>
+        </div>
+        <div id="fileUpload">
+            <div class="img_list" v-for="(index, item) in view_list">
+                <div class="img"><img :src="item.url"></div>
+                <div class="rm"><img src="../addons/jer_live/template/mobile/img/rm.png" v-touch:tap="rm_item(index)"></div>
+                <div class="progress">
+                    <progress max="100" :value="item.progress"></progress>
+                </div>
+                <div class="progress_txt">{{ item.progress | toFixed }}%</div>
+                <div class="clearfix"></div>
+            </div>
+            <input type="file" name="img_file" class="hide" accept="image/*" capture="camera" id="fileUpload_img_file" />
+            <input type="file" name="video_file" class="hide" accept="video/*" id="fileUpload_video_file" />
+            <div class="fileUpload_btn">
+                <button type="button" class="btn" v-touch:tap="fileUpload_img_choose">上传图片</button>
+                <button type="button" class="btn" v-touch:tap="fileUpload_video_choose">上传视频</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <button type="button" class="btn" v-touch:tap="message_send">发布信息</button>
+            </div>
+        </div>
+
+    </div>
+</template>
+<!--message_add End-->
+
+<template id="charge_template" v-cloak>
+    <div id="charge">
+        <div class="empty_wrap">
+            <div class="empty_main">
+                <div class="title">
+                    <div class="txt">该内容需要付费才能观看</div>
+                </div>
+                {if $config['account_type'] == '0'}
+                <div class="content" v-touch:tap="pay(liveData.live_charge_price)" v-show="charge_content_status">
+                    点击付费{{ live_charge_price }}元
+                </div>
+
+                <div class="charge_qr" v-if="charge_qr_status">
+                    <div class="tip">请扫码支付~</div>
+                    <img :src="charge_qr_img" >
+                </div>
+                {else}
+                <div class="content" v-touch:tap="jsapi_pay(liveData.live_charge_price)">
+                    点击付费{{ live_charge_price }}元
+                </div>
+                {/if}
+            </div>
+        </div>
+    </div>
+</template>
+
+<div id="bottom_tool" :class="[{ sub3: is_sub == 3, sub4: is_sub == 4,sub5: is_sub == 5 }]" v-show="bottom_tool_status" transition="bottom_tool_expand" v-cloak>
+    <div class="sub" v-touch:tap="to_live()"><img src="../addons/jer_live/template/mobile/img/home.png"></div>
+
+    <div class="sub" v-touch:tap="show_info()" v-show="!info_status"><img src="../addons/jer_live/template/mobile/img/info.png"></div>
+    <div class="sub" v-touch:tap="show_info()" v-show="info_status"><img src="../addons/jer_live/template/mobile/img/info_alr.png"></div>
+
+    <template v-if="wx_qrcode != ''">
+        <div class="sub" v-touch:tap="show_qr()" v-show="!qr_status"><img src="../addons/jer_live/template/mobile/img/qr.png"></div>
+        <div class="sub" v-touch:tap="show_qr()" v-show="qr_status"><img src="../addons/jer_live/template/mobile/img/qr_alr.png"></div>
+    </template>
+
+    <div class="sub" v-touch:tap="refresh()"><img src="../addons/jer_live/template/mobile/img/refresh.png"></div>
+
+    <template v-if="scenes == 0 && is_reward == 1">
+        <div class="sub" v-touch:tap="show_reward()" v-show="!reward_status"><img src="../addons/jer_live/template/mobile/img/reward.png"></div>
+        <div class="sub" v-touch:tap="show_reward()" v-show="reward_status"><img src="../addons/jer_live/template/mobile/img/reward_alr.png"></div>
+    </template>
+
+    <div class="sub" v-if="scenes == '1'" v-touch:tap="to_return()"><img src="../addons/jer_live/template/mobile/img/return.png"></div>
+    <div class="sub" v-if="scenes == '2'" v-touch:tap="to_message_add(lid, i)"><img src="../addons/jer_live/template/mobile/img/add.png"></div>
+
+    <div class="info" v-show="info_status" transition="expand">
+        <div class="list">
+            <div class="item">
+                <div class="l time">直播时间：</div>
+                <div class="r">{{ info.starttime }} &nbsp;&nbsp;&nbsp;&nbsp; <span class="status">[{{ info.status }}]</span></div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="item">
+                <div class="l data">直播数据：</div>
+                <div class="r">
+                    查看数：{{ info.view }}&nbsp;&nbsp;&nbsp;&nbsp;
+                    评论数：{{ info.comment_count }}&nbsp;&nbsp;&nbsp;&nbsp;
+                    <template v-if="info.live_type == '0'">
+                        点赞数：{{ info.zan_count }}
+                    </template>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="item">
+                <div class="l title">直播主题：</div>
+                <div class="r">{{ info.name }}</div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="item">
+                <div class="l description">直播简介：</div>
+                <div class="r">{{ info.description }}
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <template v-if="info.live_type == '0'">
+                <div class="item">
+                    <div class="l presenter">直播主持：</div>
+                    <div class="r">
+                        <img :src="p.avatar" class="avatar" v-for="p in info.presenter">
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </template>
+        </div>
+    </div>
+    <div class="qr" v-show="qr_status" transition="expand">
+        <div class="title">
+            欢迎扫码关注
+        </div>
+        <div class="content">
+            <img :src="qr_img">
+        </div>
+    </div>
+    <div class="reward" v-show="reward_status" transition="expand" v-cloak>
+        <div class="title">
+            支持一下呗~
+        </div>
+        <div class="content">
+            <div v-show="zan_content_status">
+                {if $config['account_type'] == '0'}
+                    <div class="item" v-touch:tap="pay(10000)">100 <span>元</span></div>
+                    <div class="item" v-touch:tap="pay(5000)">50 <span>元</span></div>
+                    <div class="item" v-touch:tap="pay(2000)">20 <span>元</span></div>
+
+                    <div class="item" v-touch:tap="pay(500)">5 <span>元</span></div>
+                    <div class="item" v-touch:tap="pay(100)">1 <span>元</span></div>
+                    <div class="item" v-touch:tap="pay(10)">0.1 <span>元</span></div>
+                    <div class="clearfix"></div>
+                {else}
+                    <div class="item" v-touch:tap="jsapi_pay(10000)">100 <span>元</span></div>
+                    <div class="item" v-touch:tap="jsapi_pay(5000)">50 <span>元</span></div>
+                    <div class="item" v-touch:tap="jsapi_pay(2000)">20 <span>元</span></div>
+
+                    <div class="item" v-touch:tap="jsapi_pay(500)">5 <span>元</span></div>
+                    <div class="item" v-touch:tap="jsapi_pay(100)">1 <span>元</span></div>
+                    <div class="item" v-touch:tap="jsapi_pay(10)">0.1 <span>元</span></div>
+                    <div class="clearfix"></div>
+                {/if}
+            </div>
+            <div v-else class="text-center">
+                <p class="qr_tip">扫码或按住识别图中二维码付款</p>
+                <img :src="zan_qr_img">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="tip" v-show="tip_status" v-cloak>
+    <div id="tip_message">
+        <div class="tit">提示</div>
+        <div class="con">
+            <p>{{ content }}</p>
+            <button type="button" v-touch:tap="close_tip"> 确 定 </button>
+        </div>
+    </div>
+    <div id="tip_mask" class="black_mask"></div>
+</div>
+
+<div id="app" v-cloak>
+    <router-view keep-alive transition="fade" transition-mode="out-in"></router-view>
+</div>
+
+</body>
+<script src="../addons/jer_live/template/mobile/js/vue.js"></script>
+<script src="../addons/jer_live/template/mobile/js/hammer.js"></script>
+<script src="../addons/jer_live/template/mobile/js/vue-touch.js"></script>
+<script src="../addons/jer_live/template/mobile/js/vue-router.min.js"></script>
+<script src="../addons/jer_live/template/mobile/js/vue-resource.min.js"></script>
+<script src="../addons/jer_live/template/mobile/js/common.js"></script>
+<script src="../addons/jer_live/template/mobile/js/lrz.all.bundle.js"></script>
+<script src="{$_W['siteroot']}app/resource/js/app/util.js"></script>
+<script src="{$_W['siteroot']}app/resource/js/require.js"></script>
+<script type="text/javascript" charset="utf-8" src="http://yuntv.letv.com/player/live/blive.js"></script>
+
+<script src="../addons/jer_live/template/mobile/js/components/live.js"></script>
+<script src="../addons/jer_live/template/mobile/js/components/message.js?s={php echo rand(1000,9999);}"></script>
+<script src="../addons/jer_live/template/mobile/js/components/message_add.js"></script>
+<script src="../addons/jer_live/template/mobile/js/components/charge.js"></script>
+<script src="../addons/jer_live/template/mobile/js/components/bottom_tool.js"></script>
+<script src="../addons/jer_live/template/mobile/js/components/tip.js"></script>
+<script>
+    
+    Vue.config.debug = true;
+    var router = new VueRouter({});
+
+    router.map({
+        '/': {
+            name: 'live',
+            component: live
+        },
+        '/message': {
+            name: 'message',
+            component: message
+        },
+        '/message_add': {
+            name: 'message_add',
+            component: message_add
+        },
+        '/charge': {
+            name: 'charge',
+            component: charge
+        }
+    });
+
+    Vue.filter('toFixed', {
+        read: function(val) {
+            return val.toFixed(2)
+        }
+    });
+
+    router.redirect({
+        '*': '/'
+    });
+
+    router.start(Vue.extend({}), '#app');
+</script>
+
+
+</html>

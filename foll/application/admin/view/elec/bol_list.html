@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{$title}}</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<div class="demoTable">
+    提单搜索：
+    <div class="layui-inline">
+        <input class="layui-input" name="billNum" value="" id="billNum">
+    </div>
+    <button class="layui-btn" data-type="reload" onclick="searchBill();">搜索</button>
+    <button class="layui-btn" onclick="newLading();">新增提单合并</button>
+</div>
+<table class="layui-table">
+    <thead>
+    <tr class="ths">
+        <th>提单编号</th>
+        <th>提单创建时间</th>
+        <th>订单票数</th>
+        <th>操作员工</th>
+        <th>所属企业</th>
+        <th>关区代码</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {volist name="data['data']" id="vo"}
+    <tr class="boys">
+        <td>{$vo.bill_num}</td>
+        <td>{$vo.create_time}</td>
+        <td>{$vo.bill_votes}票</td>
+        <td>{$vo.user_name}</td>
+        <td>{$vo.company_name}</td>
+        <td>{$vo.customs_codes}</td>
+        <td>
+            <a href="{:Url('admin/elec/eleclist')}&bill_num={$vo.bill_num}" class="layui-btn">批次列表</a>
+            <a href="#" onclick="exprotElist('{$vo.bill_num}');" class="layui-btn">汇总导出</a>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+
+<script type="text/javascript">
+    layui.use(['layer','jquery'],function(){
+        layer = layui.layer;
+        $ = layui.jquery;
+    });
+
+    function exprotElist(id){
+        layer.open({
+            type: 1,
+            title:'选择导出格式',
+            content: '<a href="{:Url(\'admin/elec/export_excel\')}&bill_num='+id+'&type=1" onclick="loding();" class="layui-btn">格式一</a>' +
+                ' <a onclick="loding();" href="{:Url(\'admin/elec/export_excel\')}&bill_num='+id+'&type=2" class="layui-btn">格式二</a>' +
+                ' <a onclick="loding();" href="https://declare.gogo198.cn/customs/download_order_elist/'+id+'" class="layui-btn">国通</a>' +
+                ' <a onclick="loding();" href="https://declare.gogo198.cn/customs/download_order_elist4/'+id+'" class="layui-btn">桂江</a>'
+        });
+        return false;
+    }
+
+    function newLading() {
+        layer.open({
+            type:2,
+            area:['885px','504px'],
+            title:"新增提单",
+            content:"{:Url('admin/billladingordermerge/newbilllading')}"
+        });
+    }
+    function loding() {
+        layer.load();
+        setTimeout(function () {
+            layer.closeAll();
+        },5000);
+    }
+
+
+    function searchBill() {
+        var val = $('#billNum').val();
+        window.location.href="{:Url('admin/elec/bollist')}&billNum="+val;
+    }
+
+</script>
+</body>
+</html>

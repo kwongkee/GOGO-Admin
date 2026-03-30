@@ -1,0 +1,192 @@
+{template 'header'}
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-6">
+			<h4><span class='glyphicon glyphicon-circle-arrow-right'></span>&nbsp;&nbsp;图灵机器人开关</h4>
+			{if $this->settings['robot_key'] == 'open'}
+			<button class="form-control btn btn-sm btn-success" onclick="doSaveSet('robot_key','close')">已开启机器人</button>
+			{else}
+			<button class="form-control btn btn-sm btn-danger" onclick="doSaveSet('robot_key','open')">已关闭机器人</button>
+			{/if}
+			<p class="help-block">控制是否开启机器人,开启后请务必配置好下面设置项</p>
+			<h4><span class='glyphicon glyphicon-circle-arrow-right'></span>&nbsp;&nbsp;聊天触发频率</h4>
+			<input type="text" class="form-control" value="{php echo $this->settings['robot_rate']}" id='robot_rate' placeholder='例如：30'>
+			<p class="help-block">用于控制机器人触发的频率1-100，越大频率越高。1代表1/100的概率。100代表100%触发</p>
+			<button class="btn btn-sm btn-info" onclick="doSaveSet('robot_rate')">保存</button>
+			<br>
+			<h4><span class='glyphicon glyphicon-circle-arrow-right'></span>&nbsp;&nbsp;机器人接口地址</h4>
+			<label></label>
+			<input type="text" class="form-control" value="{php echo $this->settings['robot_url']}" id='robot_url' placeholder='修改前先咨询开发者，建议使用默认值'>
+			<p class="help-block">接口地址默认http://www.niurenqushi.com/app/simsimi/ajax.aspx?txt=</p>
+			<button class="btn btn-sm btn-info" onclick="doSaveSet('robot_url')">保存</button>
+			<br>
+			<h4><span class='glyphicon glyphicon-circle-arrow-right'></span>&nbsp;&nbsp;机器人创建</h4>
+			<div class="input-group input-group-sm">
+				<span class="input-group-addon">机器人昵称</span>
+				<input type="text" class="form-control" id="robot_nickname" value="{$info['nickname']}">
+			</div>
+			<br>
+			<div class="input-group">
+				<span class="input-group-addon">机器人性别</span>
+				<input type="text" class="form-control" id="robot_sex" value="{$info['sex']}">
+			</div>
+			<p class="help-block">1 代表男  2 代表女</p>
+			<br>
+			<div class="input-group">
+				<span class="input-group-addon">机器人年龄</span>
+				<input type="text" class="form-control" id="robot_age" value="{$info['age']}">
+			</div>
+			<br>
+			<p class="help-block"></p>
+			<label>机器人头像</label>
+			<script type="text/javascript">
+			function showImageDialog(elm, opts, options) {
+				require(["util"], function(util){
+					var btn = $(elm);
+					var ipt = btn.parent().prev();
+					var val = ipt.val();
+					var img = ipt.parent().next().children();
+					options = {'width':400,'extras':{'text':'ng-model=\'entry.thumb\''},'global':false,'class_extra':'','direct':true,'multiple':false};
+					util.image(val, function(url){
+						if(url.url){
+							if(img.length > 0){
+								img.get(0).src = url.url;
+							}
+							ipt.val(url.attachment);
+							ipt.attr("filename",url.filename);
+							ipt.attr("url",url.url);
+						}
+						if(url.media_id){
+							if(img.length > 0){
+								img.get(0).src = "";
+							}
+							ipt.val(url.media_id);
+						}
+					}, null, options);
+				});
+			}
+			function deleteImage(elm){
+				require(["jquery"], function($){
+					$(elm).prev().attr("src", "./resource/images/nopic.jpg");
+					$(elm).parent().prev().find("input").val("");
+				});
+			}
+			</script>
+			<div class="input-group ">
+				<input type="text" name="thumb" value="" id='robot_images' class="form-control ng-pristine ng-untouched ng-valid" autocomplete="off" disabled="disabled">
+				<span class="input-group-btn">
+					<button class="btn btn-default" type="button" onclick="showImageDialog(this);">选择图片</button>
+				</span>
+			</div>
+			<div class="input-group " style="margin-top:.5em;">
+				<img src="{$info['headimgurl']}" onerror="this.src='./resource/images/nopic.jpg'; this.title='图片未找到.'" class="img-responsive img-thumbnail" width="150"> <em class="close" style="position:absolute; top: 0px; right: -14px;" title="删除这张图片" onclick="deleteImage(this)">×</em>
+			</div>
+			<p class="help-block"></p>
+			<button class="btn btn-info form-control" onclick="doSaveInfo()">保存</button>
+		</div>
+		<div class="col-sm-6">
+			<h4><span class='glyphicon glyphicon-circle-arrow-right'></span>&nbsp;&nbsp;选择开启机器人的聊天室</h4>
+			<ul class="list-group">
+				{loop $chatroomlist $key $item}
+				{if $item['is_robot'] == 'y'}
+				<li class="list-group-item active" onclick="doSelectChatroom({php echo $item['id']},'n')">
+				{else}
+				<li class="list-group-item" onclick="doSelectChatroom({php echo $item['id']},'y')">
+				{/if}
+					<img width="90" height="48" src="{php echo $item['room_logo']}">&nbsp;&nbsp;{$item['room_name']}
+				</li>
+				{/loop}
+			</ul>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+function doSelectChatroom(id,is_robot) {
+	if(!id || !is_robot) {
+		alert("错误");
+		return;
+	}
+	$.ajax({
+		type:'post',
+		data:{
+			id:id,
+			is_robot:is_robot
+		},
+
+		url:"{php echo $this->createWebUrl('chatroomsetrobot')}",
+		success:function(d) {
+			if(d.res == '100') {
+				alert('保存成功');
+				window.location.href='';
+			}else {
+				alert(d.msg);
+			}
+		}
+	})
+}
+function doSaveSet(type,val) {
+
+	if(!type) {
+		return false;
+	}
+
+	if(type =='robot_rate') {
+		// val
+	}
+	if(type =='robot_rate') {
+		var robot_rate = $("#robot_rate").val();
+	}
+	if(type =='robot_url') {
+		var robot_url = $("#robot_url").val();
+	}
+
+	$.ajax({
+		type:'post',
+		data:{
+			dataType:type, // 数据类型区分
+			robot_rate:robot_rate,
+			robot_url:robot_url,
+			setval:val
+		},
+
+		url:"{php echo $this->createWebUrl('settingform')}",
+		success:function(d) {
+			if(d.res == '100') {
+				alert('保存成功');
+				window.location.href='';
+			}else {
+				alert(d.msg);
+			}
+		}
+	})
+}
+
+function doSaveInfo() {
+
+	var robot_nickname = $("#robot_nickname").val();
+	var robot_sex = $("#robot_sex").val();
+	var robot_age = $("#robot_age").val();
+	var robot_images = $("#robot_images").val();
+
+	$.ajax({
+		type:'post',
+		data:{
+			robot_nickname:robot_nickname,
+			robot_sex:robot_sex,
+			robot_age:robot_age,
+			robot_images:robot_images
+		},
+
+		url:"{php echo $this->createWebUrl('saverobotinfo')}",
+		success:function(d) {
+			if(d.res == '100') {
+				alert('保存成功');
+				window.location.href='';
+			}else {
+				alert(d.msg);
+			}
+		}
+	})
+}
+</script>
+{template 'footer'}

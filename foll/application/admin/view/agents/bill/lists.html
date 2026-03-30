@@ -1,0 +1,59 @@
+{include file="public/header"}
+<body style="padding: 10px;">
+
+<div class="header">
+    <span>有误账单列表</span>
+    <!--button class="layui-btn layui-btn-sm" onclick="add()">添加</button-->
+    <div></div>
+</div>
+
+<table class="layui-table">
+    <thead>
+    <tr>
+        <th>代理人</th>
+        <th>商户名</th>
+        <th>账单类型</th>
+        <th>账单日期</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    {volist name="data.lists" id="vo"}
+        <tr>
+            <td>{$vo.did|getAgents}</td>
+            <td>{$vo.uid|getDecls}</td>
+            <td>{$vo.type|billType}</td>
+            <td>{$vo.day}</td>
+            <td>
+                <button class="layui-btn layui-btn-sm" onclick="edit({$vo.did},{$vo.uid},'{$vo.day}')">编辑账单</button>
+            </td>
+        </tr>
+    {/volist}
+
+    </tbody>
+</table>
+
+</body>
+<script type="text/javascript">
+
+    layui.use(['layer'],function() {
+        layer = layui.layer;
+        $     = layui.jquery;
+    });
+
+    // 编辑操作
+    function edit(did,uid,day)
+    {
+        layer.open({
+            type:2,
+            title:'配置商户',
+            shade:0.3,
+            area:['1300px','620px'],
+            content:'{:Url("agents/bill/order")}&did='+did+'&uid='+uid+'&day='+day
+        });
+    }
+
+</script>
+</html>

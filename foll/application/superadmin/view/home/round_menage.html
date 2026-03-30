@@ -1,0 +1,51 @@
+{extend name='public/public' /}
+{block name='main'}
+<div class="layui-form">
+    <table class="layui-table">
+        <colgroup>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+        </colgroup>
+        <thead>
+        <tr>
+            <th>方案</th>
+            <th>轮次</th>
+            <th>中签数</th>
+            <th>抽签人</th>
+            <th>方式</th>
+            <th>地址</th>
+            <!--<th>操作</th>-->
+        </tr>
+        </thead>
+        <tbody>
+        {volist name='list' id='vo'}
+        {foreach $vo['round_num'] as $k=> $v}
+        <tr>
+            <td>{$vo.scheme_name}</td>
+            <td>{$v.name}</td>
+            <td>{$v.count}</td>
+            <td>{$v.lottery_user}</td>
+            <td>{$type[$vo['lottery_type']]}</td>
+            <td>{$vo.lottery_addr}</td>
+            <!--<td></td>-->
+        </tr>
+        {/foreach}
+        {/volist}
+        </tbody>
+    </table>
+    <div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+</div>
+
+<script src="./static/plugins/layui/layui.js"></script>
+<script>
+    //JavaScript代码区域
+    layui.use('layer', function(){
+        layer = layui.layer;
+
+    });
+
+</script>
+{/block}

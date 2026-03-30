@@ -1,0 +1,114 @@
+{template "parking/base/header"}
+{template "parking/base/myheader"}
+<div class="wx_box">
+	
+    <div class="license_Fee">
+        <h3 class="title_h3"><span>用户信息查询</span></h3>
+        
+		<div align="center">
+			<form class="layui-form" action="<?php echo mobileUrl('parking/queryuserinfo/parkinfo');?>" method="post">
+				
+			  	<div class="layui-form-item">
+				    <label class="layui-form-label" style="padding: 9px 6px;">订单编号：</label>
+				    <div class="layui-input-inline" style="margin-left: 94px;">
+				      <input type="text" name="ordersn" maxlength="30" required lay-verify="required" placeholder="请输入停车订单号" autocomplete="off" class="layui-input">
+				    </div>
+			  	</div>
+			  
+			  <div class="layui-form-item" style="text-align: center;">
+			    <div class="layui-input-block" style="margin-left: 0px;">
+			      <button class="layui-btn layui-btn-sm" lay-submit lay-filter="formDemo">立即查询</button>
+			      <button type="reset" class="layui-btn layui-btn-sm layui-btn-danger">信息重置</button>
+			    </div>
+			  </div>
+			  
+			</form>
+		</div>
+			 
+		<script>
+			//Demo
+			layui.use('form', function(){
+			  var form = layui.form;
+			  //监听提交
+			  form.on('submit(formDemo)', function(data) {
+			    return true;
+			  });
+			  
+			});
+		</script>
+        
+        
+        <dl>
+            <dd>
+                <p><img src="../addons/ewei_shopv2/static/images/img/user.png"><span>用户姓名</span>
+                    <i class="gray">
+                        <a href="javascript:void(0);" class="blue">{$userinfo['name']}</a>
+                    </i>
+                </p>
+                
+                <p><img src="../addons/ewei_shopv2/static/images/img/phone.png"><span>注册手机</span>
+                	{if isset($userinfo['mobile'])}
+                		<a href="tel:{{$userinfo['mobile']}}" class="blue">联系用户</a>
+                	{/if}
+                    <i class="gray">
+                    	<span class="blue">{$userinfo['mobile']}</span>
+                    </i>
+                </p>
+                
+                <p><img src="../addons/ewei_shopv2/static/images/img/auth.png"><span>签约类型</span>
+                    <i class="gray">
+                        <a href="javascript:void(0);" class="blue">{$userinfo['auth_type']}</a>
+                    </i>
+                </p>
+                
+                <p><img src="../addons/ewei_shopv2/static/images/img/yiwen.png"><span>授权状态</span>
+                    <i class="gray">
+                        <a href="javascript:void(0);" class="blue">{$userinfo['auth_status']}</a>
+                    </i>
+                </p>
+                
+                <p><img src="../addons/ewei_shopv2/static/images/img/car.png"><span>车牌号码</span>
+                    <i class="gray">
+                        <a href="javascript:void(0);" class="blue">{$userinfo['CarNo']}</a>
+                    </i>
+                </p>
+                
+                <p><img src="../addons/ewei_shopv2/static/images/img/card.png"><span>签约卡号</span>
+                    <i class="gray">
+                        <a href="javascript:void(0);" class="blue">{$userinfo['credit_accout']}</a>
+                    </i>
+                </p>
+                
+                <p><img src="../addons/ewei_shopv2/static/images/img/more.png"><span>更多订单</span>
+                    {if isset($userinfo['mobile'])}
+                    <i class="gray">
+                        <a href="javascript:void(0);" hrs="{php echo mobileUrl('parking/queryuserinfo/checkMore');}" id="check" class="blue">查看订单详情</a>
+                    </i>
+                    {/if}
+                </p>
+                
+                <input type="hidden" id="mo" value="{$userinfo['mobile']}" />
+                <input type="hidden" id="ud" value="{$userinfo['userid']}" />
+                <input type="hidden" id="ne" value="{$userinfo['name']}" />
+            </dd>
+        </dl>
+     
+   </div>
+    <div class="footer">Technology by </div>
+    <div class="footer_placeholder"> </div>
+    
+</div>
+<script type="text/javascript">
+	$('#check').on('click',function(obj){
+		var urls = obj.target.attributes.hrs.nodeValue;
+		var mobile = $('#mo').val();
+		var userid = $('#ud').val();
+		var name   = $('#ne').val();
+		console.dir(mobile);
+		
+		urls = urls + '&mo='+mobile+'&uid='+userid+'&name='+name;
+		window.location.href = urls;
+	});
+</script>
+{template "parking/base/mycomm"}
+{template "parking/base/footer"}

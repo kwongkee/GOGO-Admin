@@ -1,0 +1,243 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="common/meta"}
+</head>
+
+<body class="gray-bg">
+<div class="col-sm-12">
+    <div class="ibox float-e-margins">
+        <div class="ibox-content"  id="list2">
+            <form class="form-horizontal" method="post" action="{:Url('admin/AdminAdvertingSaves')}" onsubmit="return check_form()">
+            	<div class="form-group">
+                    <label class="col-sm-2 control-label">名称</label>
+                    <div class="col-sm-10">
+                    	<input type="hidden" class="role"  value=""/>
+                        <input type="text" name="adv_name" value="" class="form-control"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">公众号</label>
+                    <div class="col-sm-10">
+                        <select class="form-control m-b" name="uniacid" id="wechat">
+                        	<option value="">请选择...</option>
+                        	{volist name="wechats" id="v"}
+                                <option value="{$v['uniacid']}">{$v['name']}</option>
+                            {/volist}
+                        </select>
+                    </div>
+                </div> 
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">板块</label>
+                    <div class="col-sm-10">
+                        <select class="form-control m-b" name="board" id="board">
+                        	<option value="">请选择...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">位置</label>
+                    <div class="col-sm-10">
+                    	<input type="hidden" class="role"  value=""/>
+                        <input type="text" name="position" value="" class="form-control" id="plates"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">类别
+                    </label>
+                    <div class="col-sm-8">
+                        <div class="radio i-checks">
+                        	<input type="hidden" value="" class="static" />
+                            <label>
+                                <input type="radio" value="1" name="type" id="false"> <i></i>图片
+                            </label>
+                            <label>
+                                <input type="radio" value="2" name="type" > <i></i>图文
+                            </label>
+                            <label>
+                                <input type="radio" value="3" name="type" > <i></i>音频
+                            </label>
+                            <label>
+                                <input type="radio" value="4" name="type" > <i></i>视频
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">方式
+                    </label>
+                    <div class="col-sm-8">
+                        <div class="radio i-checks">
+                        	<input type="hidden" value="" class="static" />
+                            <label>
+                                <input type="radio" value="1" name="way"> <i></i>单播
+                            </label>
+                            <label>
+                                <input type="radio" value="2" name="way" > <i></i>轮播
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">收费</label>
+                    <div class="col-sm-10">
+                    	<input type="hidden" class="role"  value=""/>
+                        <input type="text" name="money" value="" class="form-control"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">加权系数</label>
+                    <div class="col-sm-10">
+                    	<input type="hidden" class="role"  value=""/>
+                        <input type="text" name="weighted" value="" class="form-control"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">状态
+                    </label>
+                    <div class="col-sm-8">
+                        <div class="radio i-checks">
+                        	<input type="hidden" value="" class="static" />
+                            <label>
+                                <input type="radio" value="1" name="condition"> <i></i>空闲
+                            </label>
+                            <label>
+                                <input type="radio" value="2" name="condition"> <i></i>非空闲
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                                <div class="form-group">
+                    <label class="col-sm-2 control-label">有效时间</label>
+                    <div class="col-sm-2">
+                    	<input type="hidden" class="role"  value=""/>
+                        <input type="text" class="form-control" id="starttime" name="s_time" value=""/>
+                        <input type="text" class="form-control" id="endtime" name="e_time" value=""/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">介绍</label>
+                    <div class="col-sm-10">
+                    	<input type="hidden" class="role"  value=""/>
+                        <textarea name="image" id="image" cols="30" rows="10"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-3 col-sm-8">
+                        <button class="btn btn-sm btn-info" type="submit" id="sub">添 加</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/js/bootstrap.min.js?v=3.3.6"></script>
+<!-- 自定义js -->
+<script src="./static/hadmin/js/content.js?v=1.0.0"></script>
+<!-- Bootstrap table -->
+<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="./static/hadmin/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="./static/hadmin/js/jquery.datetimepicker.full.js"></script>
+<script src="./static/hadmin/layui/layui.all.js"></script>
+<script>
+	var static = $(".static").val();
+	var role = $(".role").val();
+	$("#role").val(role);
+	if(static == 0){
+		$("#false").attr("checked","checked");
+	}else{
+		$("#true").attr("checked","checked");
+	}
+</script>
+<script type="text/javascript">
+    //KindEditor脚本
+    var editor;
+    KindEditor.ready(function(K) {
+        editor = K.create('#image', {
+        });
+    });
+    
+    KindEditor.ready(function(K) {
+	var editor1 = K.create('textarea[name="image"]', {
+		cssPath : './static/kindeditor/plugins/code/prettify.css',
+		uploadJson : './static/kindeditor/php/upload_json.php',
+		fileManagerJson : './static/kindeditor/php/file_manager_json.php',
+		allowFileManager : true,
+		afterCreate : function() {
+			var self = this;
+			K.ctrl(document, 13, function() {
+				self.sync();
+				K('form[name=example]')[0].submit();
+			});
+			K.ctrl(self.edit.doc, 13, function() {
+				self.sync();
+				K('form[name=example]')[0].submit();
+			});
+		}
+	});
+	prettyPrint();
+});
+</script>
+
+<!--验证-->
+<script>
+function form_check(obj){
+	var content = $('#'+obj).val()
+	console.log(content)
+	$.post('{:Url('admin/AdminAdvertingCheck/')}',{'obj':content},function(data){
+		layer.msg(data.msg);
+		if(data.status ==false){
+			return false;
+		}
+	})
+}
+
+function check_form(){
+	if($('#wechat').val()==''){
+		layer.msg('请选择公众号');
+		return false;
+	}
+
+}
+
+//获取公众号对应的板块
+$('#wechat').change(function(){
+	var uniacid = $(this).val();
+	$.post('{:Url('admin/AdminAdvertingGetMod/')}',{'uniacid':uniacid},function(data){
+		var obj = JSON.parse(data);
+		var str='<option value="">请选择...</option>';
+		for(i=0;i<obj.length;i++){
+			str+='<option value="'+obj[i]['id']+'">'+obj[i]['pagename']+'</option>';
+		}
+		$('#board').html(str)
+	})
+})
+//限制input 方式点击
+
+</script>
+<script type="text/javascript">
+	$('input[name="type"]').click(function(){
+		var type_val = $(this).val();
+		if(type_val >1){
+			$('input[name="way"]').attr('disabled','true');
+		}else{
+			$('input[name="way"]').removeAttr('disabled');		
+		}
+	})
+
+$('#starttime').datetimepicker({
+	lang:"ch",
+	format:"Y-m-d H:i",
+})
+$('#endtime').datetimepicker({
+	format:"Y-m-d H:i",
+})
+</script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>{if !empty($title['xiaochengxu'])}{$title['xiaochengxu']}{else}小程序-{$setting['company']}{/if}</title>
+<meta name="keywords" content="{$setting['keywords']}" />
+<meta name="description" content="{$setting['description']}" />
+{if !empty($setting['icon'])}
+<link rel="shortcut icon" href="{$_W['attachurl']}{$setting['icon']}" />
+{/if}
+<meta name="format-detection" content="telephone=no"/>
+<meta content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<meta content="yes" name="apple-mobile-web-app-capable" />
+<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+<meta content="telephone=no" name="format-detection" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+<link href="{MODULE_URL}template/style/css/common.css" type="text/css" rel="stylesheet">
+<link href="{MODULE_URL}template/style/css/style.css" type="text/css" rel="stylesheet">
+<script src="{MODULE_URL}template/style/js/jquery.js"></script>
+<script src="{MODULE_URL}template/style/js/wow.min.js"></script>
+<script src="{MODULE_URL}template/style/js/jquery.lazyload.js"></script>
+<script src="{MODULE_URL}template/style/js/comloding.js"></script>
+<script src="{MODULE_URL}template/style/js/common.js"></script>
+<!--[if lt IE 9]>
+<script src="{MODULE_URL}template/style/js/html5.js"></script>
+<![endif]-->
+<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<script type="text/javascript">
+  wx.config({
+	  debug: false,
+      appId: "{$jssdk['appId']}",
+      timestamp: "{$jssdk['timestamp']}",
+      nonceStr: "{$jssdk['nonceStr']}",
+      signature: "{$jssdk['signature']}",
+      jsApiList: [
+		'checkJsApi',
+        'onMenuShareTimeline',
+        'onMenuShareAppMessage'
+      ]
+  });
+  wx.ready(function () {
+  
+    var shareData = {
+    title: "{if !empty($title['xiaochengxu'])}{$title['xiaochengxu']}{else}首页-{$setting['company']}{/if}",
+    desc: "{$setting['keywords']}",
+    link: "{$jssdk['url']}",
+    imgUrl: "{if $setting['logo2']}{$_W['attachurl']}{$setting['logo2']}{elseif $fdset['logo2']}{$_W['attachurl']}{$fdset['logo2']}{else}{MODULE_URL}template/style/images/logo2.png{/if}",
+  };
+ 
+  wx.onMenuShareAppMessage({
+      title: shareData.title,
+      desc: shareData.desc,
+      link: shareData.link,
+      imgUrl:shareData.imgUrl,
+      success: function (res) {
+      }
+    });
+  wx.onMenuShareTimeline({
+      title: shareData.title+"---"+shareData.desc,
+      link: shareData.link,
+      imgUrl:shareData.imgUrl,
+      success: function (res) {
+      }
+    }); 
+  });
+</script>
+</head>
+
+<body>
+{template 'header'}
+<div class="container">
+    <div id="banner" class="banner" style="background:url({if !empty($banner['xiaochengxu'])}{$_W['attachurl']}{$banner['xiaochengxu']}{else}{MODULE_URL}template/style/images/xiaochengxu_banner.jpg{/if}) no-repeat center center; background-size:cover;">
+    	<div class="wrapper">
+        	<div class="jjfa_bantxt">
+            	<h2 class="wow fadeInUp">{if !empty($banner['xiaochengxutitle'])}{$banner['xiaochengxutitle']}{else}微信小程序{/if}<span></span></h2>
+                <div class="wow fadeInUp animated delay-2s bannerp">
+				{php echo $content}
+				</div>
+				<h3 class="wow fadeInUp animated delay-5s"><a class="ban_a" href="http://wpa.qq.com/msgrd?v=3&uin={$setting['qq']}&site=qq&menu=yes" target="_blank">快速创建</a></h3>
+            </div>
+        </div>
+    </div>
+    <div class="content bgf9">
+        <div class="wrapper">
+            <div class="ntitle"><h2>{if !empty($setting["titlexcxrk"])}{$setting["titlexcxrk"]}{else}小程序入口{/if}</h2><p>{if !empty($setting["titlexcxrken"])}{$setting["titlexcxrken"]}{else}MINI-CODE PRESENTATION{/if}</p></div>
+            <div class="xcx_xwbox">
+            	<ul>
+					{loop $rukous $rk}
+                	<li class="wow fadeInUp"><h3><img src="{$_W['attachurl']}{$rk['image']}" /></h3><h2>{$rk['title']}</h2><p>{$rk['abstract']}</p></li>
+                	{/loop}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="wrapper">
+            <div class="ntitle"><h2>{if !empty($setting["titlebfanzs"])}{$setting["titlebfanzs"]}{else}部分案例展示{/if}</h2><p>{if !empty($setting["titlebfanzsen"])}{$setting["titlebfanzsen"]}{else}MINI-CODE PRESENTATION{/if}</p></div>
+            <div class="icase_menu"><a {if $cid==0}class="active"{/if} href="{php echo $this->mogucms_url('xiaochengxu')}">全部</a>{loop $categorys $c}<a href="{php echo $this->mogucms_url('xiaochengxu',array('cid'=>$c['id']))}" {if $cid==$c['id']}class="active"{/if}>{$c['categoryname']}</a>{/loop}</div>
+            <div class="icase_ui">
+                <ul>
+					{loop $cases $case}
+                    <li class="wow fadeInUp">
+                        <h3><img src="{$_W['attachurl']}{$case['image']}" /><span><img src="{$_W['attachurl']}{$case['erweima']}" /></span></h3>
+                        <p>{$case['title']}</p>
+                    </li>
+                    {/loop}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="wrapper">
+            <div class="ntitle"><h2>{if !empty($setting["titlesykh"])}{$setting["titlesykh"]}{else}适用客户{/if}</h2><p>{if !empty($setting["titlesykhen"])}{$setting["titlesykhen"]}{else}SUITABLE USERS{/if}</p></div>
+            <div class="xcx_sykhbox">
+            	<ul>
+					{loop $customers $cm}
+                	<li class="wow fadeInUp"><h3><img src="{$_W['attachurl']}{$cm['image']}" /></h3><p>{$cm['title']}</p></li>
+					{/loop}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{template 'footer'}

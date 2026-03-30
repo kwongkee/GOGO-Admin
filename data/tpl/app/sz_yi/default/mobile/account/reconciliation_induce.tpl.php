@@ -1,0 +1,159 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/header', TEMPLATE_INCLUDEPATH)) : (include template('common/header', TEMPLATE_INCLUDEPATH));?>
+<!--<title>自定义收款</title>-->
+<style type="text/css">
+    body {margin:0px; background:#efefef; font-family:'微软雅黑'; -moz-appearance:none;}
+    .info_main {height:auto;  background:#fff; margin-top:14px; border-bottom:1px solid #e8e8e8; border-top:1px solid #e8e8e8;}
+    .info_main .line {margin:0 10px; height:40px; border-bottom:1px solid #e8e8e8; line-height:40px; color:#999;font-size:15px;}
+    .info_main .line .title {height:40px; width:80px; line-height:40px; color:#444; float:left; font-size:15px;}
+    .info_main .line .info { width:100%;float:right;margin-left:-80px; overflow: auto;white-space: nowrap;}
+    .info_main .line .inner { margin-left:80px; }
+    .info_main .line .inner input {height:39px; width:100%;display:block; padding:0px; margin:0px; border:0px; float:left; font-size:14px;}
+    .info_main .line .inner .user_sex {line-height:40px;}
+    .info_sub {height:44px; margin:14px 5px; background:#1E9FFF !important; border-radius:4px; text-align:center; font-size:16px; line-height:44px; color:#fff;}
+    .select { border:1px solid #ccc;height:25px;}
+    .disf{display:flex;}
+    /**合同文件**/
+    .info_main .images {float: left; width:auto;height:30px;margin-top:7px;}
+    .info_main .images .img { float:left; position:relative;width:30px;height:30px;border:1px solid #e9e9e9;margin-right:5px;}
+    .info_main .images .img img { position:absolute;top:0; width:100%;height:100%;}
+    .info_main .images .img .minus { position:absolute;color:red;width:8px;height:12px;top:-18px;right:-1px;}
+    .info_main .plus { float:left; width:30px;height:30px;border:1px solid #e9e9e9; color:#dedede;; font-size:18px;line-height:30px;text-align:center;margin-top:4px;}
+    .info_main .plus i { left:7px;top:7px;}
+
+    .table thead td{background-color: #ecf6fc !important;}
+
+    .bigautocomplete-layout{background:#fff;position:absolute;height: 200px;overflow: scroll;border:1px solid #000;}
+    .bigautocomplete-layout table tr td div{height: 30px;line-height: 30px;}
+    button, input, optgroup, select, textarea{font:unset !important;color:black !important;line-height:1.5 !important;}
+
+    .check-style-unequal-width {width: 8px;height: 20px;border-color: #009933;border-style: solid;border-width: 0 3px 5px 0;transform: rotate(45deg);}
+    a{text-decoration: none;text-underline: none;}
+    .noAdd{border-color:#ff2222 !important;}
+</style>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.core-2.5.2.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.core-2.5.2-zh.js" type="text/javascript"></script>
+<link href="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.core-2.5.2.css" rel="stylesheet" type="text/css" />
+<link href="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.animation-2.5.2.css" rel="stylesheet" type="text/css" />
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.datetime-2.5.1.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.datetime-2.5.1-zh.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.android-ics-2.5.2.js" type="text/javascript"></script>
+<link href="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.android-ics-2.5.2.css" rel="stylesheet" type="text/css" />
+
+<link href="../addons/sz_yi/template/mobile/default/static/js/star-rating.css" media="all" rel="stylesheet" type="text/css"/>
+<script src="../addons/sz_yi/template/mobile/default/static/js/star-rating.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/ajaxfileupload.js" type="text/javascript"></script>
+
+<link type="text/css" rel="stylesheet" href="../addons/sz_yi/template/pc/default/static/css/bootstrap.min.css" />
+<script type='text/javascript' src='../web/resource/js/lib/bootstrap.min.js'></script>
+<!--<link type="text/css" rel="stylesheet" href="../Public/js/bootstrap-multiselect.css" />-->
+<!--<script type='text/javascript' src='../Public/js/bootstrap-multiselect.js'></script>-->
+
+<div id="container">
+    <div class="page_topbar">
+        <div class="title">对账归纳</div>
+    </div>
+    <div class="info_main">
+        <!--选择批次号-->
+        <div class="batch_info">
+            <div class="line"><div class="title">商户</div><div class='info'><div class='inner'>
+                <?php  echo $decl_user['user_name'];?>
+            </div></div></div>
+            <div class="line"><div class="title">对账月份</div><div class='info'><div class='inner'>
+                <input type="text" id="batchs_date" placeholder="请选择对账所属月份" readonly="" value="<?php  echo $date;?>" style="height:38px;">
+            </div></div></div>
+        </div>
+
+    </div>
+    <div class="info_sub" style="margin-bottom:10px;">提交</div>
+    <div class="button back" onclick="javascript:history.back(-1);" style="height: 44px;margin: 14px 2%;width:96%;background: #aaa;border-radius: 4px;text-align: center;font-size: 16px;line-height: 44px;color: #fff;">返回</div>
+</div>
+
+<script language="javascript">
+    window.batch_ids = '<?php  echo $batch_ids;?>';
+    require(['tpl', 'core'], function(tpl, core) {
+        //时间
+        var currYear = (new Date()).getFullYear();
+        var opt = {};
+        opt.date = {preset: 'date'};
+        opt.datetime = {preset: 'date'};
+        opt.time = {preset: 'time'};
+        opt.default = {
+            theme: 'android-ics light', //皮肤样式
+            display: 'modal', //显示方式
+            mode: 'scroller', //日期选择模式
+            dateFormat: 'yyyy-mm',
+            dateOrder : 'yyyymm',
+            lang: 'zh',
+            showNow: true,
+            nowText: "今天",
+            startYear: currYear, //开始年份
+            endYear: currYear //结束年份
+        };
+        $("#batchs_date").scroller('destroy').scroller($.extend(opt['datetime'], opt['default']));
+
+        $('#batchs_date').change(function(){
+           let val = $(this).val();
+
+            $.ajax({
+                url:"<?php  echo $this->createMobileUrl('account/bookkeeping');?>",
+                type:'POST',
+                dataType:'json',
+                data:{'op':'reconciliation_induce','typ':1,'id':<?php  echo $user_id;?>,'date':val},
+                success:function(json) {
+                    if(json.status==1){
+                        if(json.result.dat.length==0){
+                            window.batch_ids='';
+                            alert(json.result.date+'的凭证批次号无已记账批次，不能对账！');
+                        }else{
+                            window.batch_ids=json.result.dat;
+                        }
+                    }else{
+                        alert(json.result.msg);return false;
+                    }
+                },error:function(json){
+                    alert('数据出错！');
+                }
+            });
+        });
+    });
+
+    $(function(){
+        $('.info_sub').click(function(){
+            //对账单信息
+            let batchs_date = $('#batchs_date').val();
+            // let batchs_id = window.ids;
+            let batchs_id = window.batch_ids==''?"":window.batch_ids;
+
+            if(batchs_id=='' || batchs_id==','){
+                alert('当前对账月的凭证批次号无已记账批次，不能对账!');
+                return;
+            }
+            if($('#batchs_date').isEmpty()){
+                alert('请选择对账所属月份!');
+                return;
+            }
+            if(confirm('对账后不可修改，确定对账吗？')){
+                $.ajax({
+                    url:"<?php  echo $this->createMobileUrl('account/bookkeeping');?>",
+                    type:'POST',
+                    dataType:'json',
+                    data:{'op':'reconciliation_induce','id':<?php  echo $user_id;?>,'batchs_id':batchs_id,'batchs_date':batchs_date},
+                    success:function(json) {
+                        if(json.status==-1){
+                            alert(json.result.msg);
+                        }else{
+                            alert(json.result.msg);
+                            setTimeout(function(){
+                                window.history.back(-1);
+                            },2000)
+                        }
+                    },error:function(json){
+                        alert('数据出错！');
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+<?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/footer', TEMPLATE_INCLUDEPATH)) : (include template('common/footer', TEMPLATE_INCLUDEPATH));?>

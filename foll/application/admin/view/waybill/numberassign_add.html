@@ -1,0 +1,121 @@
+{include file="public/header"}
+
+<body style="padding: 10px;">
+
+<form action="" class="layui-form" id="form1">
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">商家企业</label>
+        <div class="layui-input-inline">
+            <select name="getExpress" lay-verify="">
+                <option value="">请选择商家企业</option>
+                {volist name="merch" id="vo"}
+                <option value="{$vo['id']}-{$vo['mid']}">{$vo['nickname']}-{$vo['name']}</option>
+                {/volist}
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">物流企业</label>
+        <div class="layui-input-inline">
+            <select name="getLogi" lay-verify="">
+                <option value="">请选择物流企业</option>
+                {volist name="logistics" id="vo"}
+                <option value="{$vo['id']}-{$vo['decl_enter_code']}">{$vo['decl_enter_name']}</option>
+                {/volist}
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">号段起止</label>
+        <div class="layui-input-inline" style="width: 150px;">
+            <input type="text" name="expNums" placeholder="开始号码段：0001启" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-form-mid">-</div>
+        <div class="layui-input-inline" style="width: 150px;">
+            <input type="text" name="expNumd" placeholder="结束号码段：9999止" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <span style="font-size: 14px;color:#ff5555;margin-bottom:10px;">运单号码：198 + 物流企业编号（后2位） + 商家注册编号（后2位）+ 流水号（0001）</span>
+
+</form>
+
+<div class="layui-form-item">
+    <div class="layui-input-block">
+        <button class="layui-btn" onclick="save()">确认分配</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+
+        laydate.render({
+            elem: '#Times' //指定元素
+        });
+    })
+
+
+    // 添加管理员
+    function save()
+    {
+        var getMerch          = $("select[name='getExpress'] option:selected").val();
+        var getLogi          = $("select[name='getLogi'] option:selected").val();
+        var expNums             = $('input[name="expNums"]').val();
+        var expNumd             = $('input[name="expNumd"]').val();
+
+        if(getMerch == '') {
+            layer.msg('请选中商家企业',{icon:2});
+            return false;
+        }
+
+        if(getLogi == '') {
+            layer.msg('请选中物流企业',{icon:2});
+            return false;
+        }
+
+        if(expNums == '' || expNums.length!=4) {
+            layer.msg('请按规则输入起始号段',{icon:2});
+            return false;
+        }
+
+        if(expNumd == '' || expNumd.length!=4) {
+            layer.msg('请按规则输入截止号段',{icon:2});
+            return false;
+        }
+
+        if(expNumd<=expNums){
+            layer.msg('截止号不得小于起始号',{icon:2});
+            return false;
+        }
+
+        // 请求处理数据
+        $.post("{:Url('admin/waybill/numberassign_add')}",{
+            getMerch:getMerch,
+            getLogi:getLogi,
+            expNums:expNums,
+            expNumd:expNumd,
+        },function(resd){
+
+            var res = JSON.parse(resd);
+            if(res.code == 1) {
+                layer.msg(res.msg,{icon:1});
+                setTimeout(function(){
+                    layer.closeAll();
+                    parent.window.location.reload();
+                },1000);
+            } else {
+                layer.msg(res.msg,{icon:2});
+            }
+
+        });
+    }
+</script>
+</body>
+</html>

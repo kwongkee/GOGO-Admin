@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{$title}}</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<table class="layui-table">
+    <thead>
+    <tr class="ths">
+        <th>对账日预警值</th>
+        <th>对账月预警值</th>
+        <th>上次更新</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {volist name="data" id="vo"}
+    <tr class="boys">
+        <td>{$vo.day}</td>
+        <td>{$vo.month}</td>
+        <td>{$vo.uptime|date='Y-m-d Hi:is',###}</td>
+        <td>
+            <a href="#" onclick="edit('{$vo.id}');" class="layui-btn">编辑预警</a>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    layui.use(['layer','jquery'],function(){
+        layer = layui.layer;
+        $ = layui.jquery;
+    });
+
+    // 获取产品订单列表
+    function edit(id){
+        layer.open({
+            type:2,
+            title:'预警编辑',
+            shadeClose:true,
+            shade:0.3,
+            area:['600px','450px'],
+            content:"{:Url('admin/fina/edit')}&ids="+id,
+            yes:function(){
+                setTimeout(function(){window.location.reload();},800);
+            },
+            end:function(){
+                setTimeout(function(){window.location.reload();},800);
+            }
+        });
+    }
+
+    function loding() {
+        layer.load();
+        setTimeout(function () {
+            layer.closeAll();
+        },5000);
+    }
+
+
+</script>
+</body>
+</html>

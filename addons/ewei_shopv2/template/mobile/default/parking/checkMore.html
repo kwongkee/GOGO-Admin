@@ -1,0 +1,78 @@
+{template "parking/base/header"}
+<link rel="stylesheet" type="text/css" href="../addons/ewei_shopv2/static/layui/css/layui.css"/>
+<script type="text/javascript" src="../addons/ewei_shopv2/static/layui/layui.js"></script>
+<style type="text/css">
+	*{   
+	    /*-webkit-touch-callout:none;  /*系统默认菜单被禁用*/   
+	   /* -webkit-user-select:none; /*webkit浏览器*/   
+	    /*-khtml-user-select:none; /*早期浏览器*/   
+	    /*-moz-user-select:none;/*火狐*/   
+	    /*-ms-user-select:none; /*IE10*/   
+	    /*user-select:none; */ 
+	    
+	    -webkit-touch-callout: all;
+		-webkit-user-select: all;
+		-moz-user-select: all;
+		-ms-user-select: all;
+		user-select:text;
+		
+	}
+	
+	.main{width:98%;padding: 8px 8px;background: white;font-size: 14px;}
+	
+	.content{
+		color: cornflowerblue;
+		width: 100%;height:auto;
+		padding-bottom: 15px;
+		padding-top: 15px;
+		border-bottom: 1px solid green;
+	}
+	
+	.content div{
+		padding: 5px 5px;
+		/*border-bottom: 1px solid darkslateblue;*/
+	}
+	
+	.content span{
+		float: right;margin-right: 10px;color: green;
+	}
+	.hp{width: 100%;height: 25px;display: block;color: green;text-align: center;margin-top: 6px;}
+</style>
+<body>
+<div class="wx_box">
+	
+    <div class="license_Fee">
+        <h3 class="title_h3"><span>用户订单详细</span></h3>
+        
+        <div class="main">
+        	{loop $orderInfo $index $item}
+        	<div class="content">
+        		<div>订单编号：<span>{$item['ordersn']}</span></div>
+        		<div>停入车位：<span>{$item['number']}</span></div>
+        		<div>停入时间：<span>{php echo date('Y-m-d H:i:s',$item['starttime'])}</span></div>
+        		<div>驶离时间：<span>{php echo date('Y-m-d H:i:s',$item['endtime'])}</span></div>
+        		<div>停车状态：<span>{$item['status']}</span></div>
+        	</div>
+        	{/loop}
+        	
+        	<a class="hp" href="javascript:void(0);" hrs="{php echo mobileUrl('parking/queryuserinfo/main');}" id="back">返回上一页</a>
+        	
+        </div>
+        
+        <form action="" method="post" id="signPost">        	
+        	<input type="hidden" id="orderid" name="ordersn" value="{$orderInfo[0]['ordersn']}" />
+        </form>
+   </div>
+    <div class="footer">Technology by </div>
+    <div class="footer_placeholder"> </div>
+    
+</div>
+<script type="text/javascript">
+	$('#back').on('click',function(obj){
+		var urls = obj.target.attributes.hrs.nodeValue;
+		$('#signPost').attr('action',urls);
+		$('#signPost').submit();
+	});
+</script>
+</body>
+{template "parking/base/footer"}

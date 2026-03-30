@@ -1,0 +1,662 @@
+{template '_head'}
+
+<style>
+    .img_upload{
+        display: inline-block;
+        overflow:hidden;
+        width: 60px;
+        height:60px;
+        line-height: 60px;
+        text-align: center;
+    }
+</style>
+<body>
+<div class="top">
+    <div class="resbg"><img src="../addons/mer_chats/static/images/logo2.png" alt=""></div>
+</div>
+<div class="warrp">
+    <div class="content">
+        <div class="login_cont">
+
+            <div class="login_nav">
+                <div class="nav_slider">
+                    <a href="#" class="signup focus selects" value="company">企业商户</a>
+                    <a href="#" class="signin selects" value="personal">个人商户</a>
+                </div>
+            </div>
+
+            <!-- 企业商户 -->
+            <form enctype="multipart/form-data" id="form1">
+
+                <input type="hidden" id="typeCom" name="typeCom" value="company">
+
+                <div class="input_signup active">
+                    <div class="login-sel">
+                        商户类型：
+                        <select name="CusTypes" id="CusTypes">
+                            <option value="Territory" selected>中国境内商户</option>
+                            <option value="Abroad">中国境外商户</option>
+                        </select>
+                    </div>
+                    <div class="login-input">
+                        <label id="pmails">手机号码：</label>
+                        <input class="pmail" name="phone" type="text" aria-label="手机号（仅支持中国大陆）" placeholder="请输入手机号码">
+                    </div>
+                    <div class="login-input">&nbsp;&nbsp;
+                        验证码： <input type="text" name="yzm" placeholder="请输入验证码" maxlength="6" style="width: 40%;">
+                        <button id="alertBtn1" type="button" class="zbox-btn zbox-btn-blue zbox-btn-outlined code fr">获取验证码</button>
+                    </div>
+
+                    <div class="login-input">
+                        品牌名称：
+                        <input class="input" id="brandName" name="brandName" type="text" aria-label="品牌名称" placeholder="请输入品牌名称">
+                    </div>
+
+                    <div class="login-input enter">
+                        企业名称：
+                        <input class="input" name="enterName" type="text" placeholder="请输入企业注册名称">
+                    </div>
+
+                    <div class="login-input quali" style="display: none;">
+                        <span style="position: relative; top: -16px;">企业资质：</span>
+                        <a href="javascript:void(0);" class="a-upload">
+                            <input type="file" id="qualificationsr" accept="image/JPG,image/JPEG,image/PNG">上传资质
+                        </a>
+                        <a href="javascript:void(0);" class="img_upload">
+                            <input type="hidden" name="enterQuali" id="enterQuali" value="">
+                            <img src="" id="qualificationsd" alt="" width="80px" height="80px">
+                        </a>
+                    </div>
+
+                    <div class="login-input">
+                        <span style="position: relative; top: -16px;">品牌商标：</span>
+                        <a href="javascript:void(0);" class="a-upload">
+                            <input type="file" id="brandTrades" accept="image/JPG,image/JPEG,image/PNG">上传商标
+                        </a>
+                        <a href="javascript:void(0);" class="img_upload">
+                            <input type="hidden" name="brandTrade" id="brandTrade" value="">
+                            <img src="" id="img_upload" alt="" width="80px" height="80px">
+                        </a>
+                    </div>
+
+                    <div class="login-input">
+                        法人代表：
+                        <input class="input" id="legalRepre" name="legalRepre" type="text" placeholder="请输入法人代表名称">
+                    </div>
+                    <div class="login-input">
+                        管理人员：
+                        <input class="input" id="adminName" name="adminName" type="text" placeholder="请输入管理员名称">
+
+                    </div>
+                    <div class="login-sel">
+                        所在区域：
+                        <select name="Country" id="Country">
+                            <option value="中国">中国</option>
+                        </select>
+
+                        <select name="province" id="province">
+                            <option value="">选择省份</option>
+                            {loop $area $index $item}
+                                <option value="{$item['area_id']}">{$item['area_name']}</option>
+                            {/loop}
+                        </select>
+
+                        <span style="margin-left: 20%;">
+                            <select name="city" id="city">
+                                <option value="">选择城市</option>
+                            </select>
+                        </span>
+
+                        <select name="area" id="area">
+                            <option value="">选择区域</option>
+                        </select>
+                    </div>
+
+                    <input type="hidden" name="addr" class="addr" value="">
+
+                    <div class="login-btn">
+                        <button id="submit" type="button" class="zbox-btn zbox-btn-blue zbox-btn-outlined login">立即注册</button>
+                    </div>
+                </div>
+            </form>
+
+
+            <!-- 个人商户 -->
+            <form enctype="multipart/form-data" id="form2">
+
+                <input type="hidden" id="typeCom2" name="typeCom" value="company">
+
+                <div class="input_signin">
+                    <div class="login-sel">
+                        商户类型：
+                        <select name="CusTypes" id="CusTypes2">
+                            <option value="Territory" selected>中国境内个人</option>
+                            <option value="Abroad">中国境外个人</option>
+                        </select>
+                    </div>
+
+                    <div class="login-input">
+                        <span id="pmails2">手机号码：</span>
+                        <input class="input inpm" id="inpm" name="phone" type="text" placeholder="请输入手机号码">
+                    </div>
+
+                    <div class="login-input">
+                        验证码： <input type="text" name="yzm" id="yzm" placeholder="请输入验证码" maxlength="6" style="width: 40%;">
+                        <button id="alertBtn2" type="button" class="zbox-btn zbox-btn-blue zbox-btn-outlined code fr">获取验证码</button>
+                    </div>
+
+                    <div class="login-input">
+                        品牌名称：
+                        <input class="input" id="brandNames" name="brandNames" type="text" placeholder="请输入品牌名称">
+                    </div>
+
+                    <div class="login-input">
+                        管理员名称：
+                        <input class="input" name="adminName" type="text" placeholder="请输入管理员名称">
+                    </div>
+
+                    <div class="login-sel">
+                        所在区域：
+                        <select name="Country" id="Country2">
+                            <option value="中国" selected>中国</option>
+                        </select>
+                        <select name="province" id="province2">
+                            <option value="" selected>选择省份</option>
+                            {loop $area $index $item}
+                            <option value="{$item['area_id']}">{$item['area_name']}</option>
+                            {/loop}
+                        </select>
+
+                        <select name="city" id="city2">
+                            <option value="" selected>选择城市</option>
+                        </select>
+
+                        <select name="area" id="area2">
+                            <option value="" selected>选择区域</option>
+                        </select>
+                    </div>
+
+                    <input type="hidden" name="addr" class="addr" value="">
+
+                    <div class="login-btn">
+                        <button id="submit2" type="button" class="zbox-btn zbox-btn-blue zbox-btn-outlined login">立即注册</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div class="foot">
+    <p>版权所有 © Gogo|購購網    粤ICP备09003656号 </p>
+    <p>中国海关注册编码：44289609SL   跨境电商平台备案：C011000000332982</p>
+</div>
+
+<script>
+
+    // 选择省份，显示城市
+    $('#province').change(function(){
+        var pid = $(this).val();
+        if(!pid) {
+            $.DialogByZ.Alert({Title: "提示", Content: "选择的数据不能为空",BtnL:"确定",FunL:alerts})
+            return false;
+        }
+        $('#city option').remove();
+        // 获取城市名称地址地址
+        var urls = "{php echo url('entry',array('do'=>'city','m'=>'mer_chats'))}";
+        // Ajax  获取验证码
+        $.ajax({url:urls, type:'POST',
+            data:{'pid':pid},
+            success:function(red) {
+                // 获取成功改变按钮
+                var req = JSON.parse(red);
+                if(!req.code) {
+                    $.DialogByZ.Alert({Title: "提示", Content: req.msg,BtnL:"确定",FunL:alerts})
+                    return false;}
+                // 获取成功，进行赋值；
+                var str = '<option value="">选择城市</option>';
+                $.each(req.data,function(inx,val) {str += '<option value="'+val['area_id']+'">'+val['area_name']+'</option>';})
+                $('#city').append(str);
+            }
+        });
+    });
+
+    // 选择省份，显示城市
+    $('#province2').change(function(){
+        var pid = $(this).val();
+        if(!pid) {
+            $.DialogByZ.Alert({Title: "提示", Content: "选择的数据不能为空",BtnL:"确定",FunL:alerts})
+            return false;
+        }
+        $('#city2 option').remove();
+        // 获取城市名称地址地址
+        var urls = "{php echo url('entry',array('do'=>'city','m'=>'mer_chats'))}";
+        // Ajax  获取验证码
+        $.ajax({url:urls, type:'POST',
+            data:{'pid':pid},
+            success:function(red) {
+                // 获取成功改变按钮
+                var req = JSON.parse(red);
+                if(!req.code) {
+                    $.DialogByZ.Alert({Title: "提示", Content: req.msg,BtnL:"确定",FunL:alerts})
+                    return false;}
+                // 获取成功，进行赋值；
+                var str = '<option value="">选择城市</option>';
+                $.each(req.data,function(inx,val) {str += '<option value="'+val['area_id']+'">'+val['area_name']+'</option>';})
+                $('#city2').append(str);
+            }
+        });
+    });
+
+    // 选择城市，显示区域
+    $('#city').change(function(){
+        var pid = $(this).val();
+        if(!pid) {
+            $.DialogByZ.Alert({Title: "提示", Content: "选择的数据不能为空",BtnL:"确定",FunL:alerts})
+            return false;
+        }
+        $('#area option').remove();
+        // 获取城市名称地址地址
+        var urls = "{php echo url('entry',array('do'=>'city','m'=>'mer_chats'))}";
+        // Ajax  获取验证码
+        $.ajax({url:urls, type:'POST',
+            data:{'pid':pid},
+            success:function(red) {
+                // 获取成功改变按钮
+                var req = JSON.parse(red);
+                if(!req.code) {
+                    $.DialogByZ.Alert({Title: "提示", Content: req.msg,BtnL:"确定",FunL:alerts})
+                    return false;}
+                // 获取成功，进行赋值；
+                var str = '<option value="">选择区域</option>';
+                $.each(req.data,function(inx,val) {str += '<option value="'+val['area_id']+'">'+val['area_name']+'</option>';})
+                $('#area').append(str);
+            }
+        });
+    });
+
+    // 选择城市，显示区域
+    $('#city2').change(function(){
+        var pid = $(this).val();
+        if(!pid) {
+            $.DialogByZ.Alert({Title: "提示", Content: "选择的数据不能为空",BtnL:"确定",FunL:alerts})
+            return false;
+        }
+        $('#area2 option').remove();
+        // 获取城市名称地址地址
+        var urls = "{php echo url('entry',array('do'=>'city','m'=>'mer_chats'))}";
+        // Ajax  获取验证码
+        $.ajax({url:urls, type:'POST',
+            data:{'pid':pid},
+            success:function(red) {
+                // 获取成功改变按钮
+                var req = JSON.parse(red);
+                if(!req.code) {
+                    $.DialogByZ.Alert({Title: "提示", Content: req.msg,BtnL:"确定",FunL:alerts})
+                    return false;}
+                // 获取成功，进行赋值；
+                var str = '<option value="">选择区域</option>';
+                $.each(req.data,function(inx,val) {str += '<option value="'+val['area_id']+'">'+val['area_name']+'</option>';})
+                $('#area2').append(str);
+            }
+        });
+    });
+
+    var maxtime = 60; //倒计时60秒
+    function CountDown() {
+        if (maxtime >= 1) {
+            msg = maxtime+"秒后获取";
+            $('#alertBtn1').text(msg);
+            $('#alertBtn1').attr("disabled",true);
+            --maxtime;
+        } else {
+            clearInterval(timer);
+            $('#alertBtn1').text('获取验证码');
+            $('#alertBtn1').attr("disabled",false);
+        }
+    }
+
+    var maxtimes = 60; //倒计时60秒
+    function CountDowns() {
+        if (maxtimes >= 1) {
+            msg = maxtimes+"秒后获取";
+            $('#alertBtn2').text(msg);
+            $('#alertBtn2').attr("disabled",true);
+            --maxtimes;
+        } else {
+            clearInterval(timers);
+            $('#alertBtn2').text('获取验证码');
+            $('#alertBtn2').attr("disabled",false);
+        }
+    }
+
+    <!-- 获取验证码 -->
+    $("#alertBtn1").click(function() {
+        var val = $('.pmail').val();
+        // 类型
+        var types = $('#CusTypes').val();
+        var type = '';
+        if(types == 'Territory') { // 境内
+            type = 'phone';
+            if(val == '') {
+                $.DialogByZ.Alert({Title: "提示", Content: "手机号码不能为空",BtnL:"确定",FunL:alerts})
+                return false;
+            }
+        } else if(types == 'Abroad') { // 境外
+            type = 'email';
+            if(val == '') {
+                $.DialogByZ.Alert({Title: "提示", Content: "电子邮箱不能为空",BtnL:"确定",FunL:alerts})
+                return false;
+            }
+        }
+
+        // 获取验证码地址
+        var urls = "{php echo url('entry',array('do'=>'yzm','m'=>'mer_chats'))}";
+        // Ajax  获取验证码
+        $.ajax({url:urls, type:'POST',
+            data:{
+                'type':type,// 类型 手机，邮箱
+                'val':val,// 值
+            },
+            success:function(red) {
+                // 获取成功改变按钮
+                var req = JSON.parse(red);
+                if(!req.code) {
+                    $.DialogByZ.Alert({Title: "提示", Content: req.msg,BtnL:"确定",FunL:alerts})
+                    return false;
+                }
+                $.DialogByZ.Alert({Title: "提示", Content: req.msg,BtnL:"确定",FunL:alerts})
+                timer = setInterval("CountDown()", 1000);
+            }
+        });
+    })
+
+
+    <!-- 获取验证码 -->
+    $("#alertBtn2").click(function() {
+
+        var val = $('#inpm').val(); // 值
+        var type = $('#inpm').attr('name'); // 类型
+        // 类型
+        var types = $('#CusTypes').val();
+        if(types == 'Territory') { // 境内
+            if(val == '') {
+                $.DialogByZ.Alert({Title: "提示", Content: "手机号码不能为空",BtnL:"确定",FunL:alerts})
+                return false;
+            }
+        } else if(types == 'Abroad') { // 境外
+            if(val == '') {
+                $.DialogByZ.Alert({Title: "提示", Content: "电子邮箱不能为空",BtnL:"确定",FunL:alerts})
+                return false;
+            }
+        }
+
+        // 获取验证码地址
+        var urls = "{php echo url('entry',array('do'=>'yzm','m'=>'mer_chats'))}";
+        // Ajax  获取验证码
+        $.ajax({url:urls, type:'POST',
+            data:{
+                'type':type,// 类型 手机，邮箱
+                'val':val,// 值
+            },
+            success:function(red) {
+                // 获取成功改变按钮
+                var req = JSON.parse(red);
+                if(!req.code) {
+                    $.DialogByZ.Alert({Title: "提示", Content: req.msg,BtnL:"确定",FunL:alerts})
+                    return false;
+                }
+                $.DialogByZ.Alert({Title: "提示", Content: req.msg,BtnL:"确定",FunL:alerts})
+
+                timers = setInterval("CountDowns()", 1000);
+            }
+        });
+    })
+
+    // 弹窗事件
+    function alerts() {
+        $.DialogByZ.Close();
+    }
+
+    // 商户类型
+    $('#CusTypes').change(function(res) {
+        var types = res.target.value;
+        if(types == 'Territory') { // 境内商户
+            $('#pmails').text('手机号码：')
+            $('.pmail').attr('placeholder','请输入手机号码')
+            $('.pmail').attr('name','phone')
+            $('.quali').css('display','none')
+            $('.enter').css('display','block')
+
+        } else if(types == 'Abroad') { // 境外商户
+            $('#pmails').text('电子邮箱：')
+            $('.pmail').attr('placeholder','请输入电子邮箱')
+            $('.pmail').attr('name','email')
+            $('.pmail').attr('type','email')
+            $('.quali').css('display','block')
+            $('.enter').css('display','none')
+        }
+    });
+
+    // 商户类型
+    $('#CusTypes2').change(function(res) {
+        var types = res.target.value;
+        if(types == 'Territory') { // 境内商户
+            $('#pmails2').text('手机号码：')
+            $('.inpm').attr('placeholder','请输入手机号码')
+            $('.inpm').attr('name','phone')
+
+        } else if(types == 'Abroad') { // 境外商户
+            $('#pmails2').text('电子邮箱：')
+            $('.inpm').attr('placeholder','请输入电子邮箱')
+            $('.inpm').attr('name','email')
+        }
+    });
+
+    // 选择商户还是个人
+    $('.selects').click(function() {
+        var vals = $(this).attr('value');
+        $('#typeCom').val(vals);
+        $('#typeCom2').val(vals);
+    });
+
+    // 企业商户注册 企业注册提交表单
+    $('#submit').click(function () {
+
+        // 用户选择地址；拼接
+        var Country2 = $('#Country option:selected').text();
+        var province2 = $('#province option:selected').text();
+        var city2 = $('#city option:selected').text();
+        var area2 = $('#area option:selected').text();
+        // 拼接地址
+        var addr = Country2+province2+city2+area2;
+        $('.addr').val(addr);
+
+        var forms    = $('#form1').serializeArray();
+        var formData = $('#form1').serialize();
+        var types    = $('#CusTypes').val();
+
+        if(forms[1].value == 'Territory' && forms[2].value == '' ) {showErr('手机号码不能为空！');}
+        if(forms[1].value == 'Abroad' && forms[2].value == '' ) {showErr('电子邮箱不能为空！');}
+        if(forms[3].value == '') {showErr('验证码不能为空！');}
+        if(forms[4].value == '') {showErr('品牌名称不能为空！');}
+
+        if(types== 'Territory') {
+            if(forms[5].value == '') {showErr('企业名称不能为空！');}
+        } else if(types== 'Abroad') {
+            if(forms[6].value == '') {showErr('请上传企业资质！');}
+        }
+        if(forms[7].value == '') {showErr('请上传品牌商标！');}
+        if(forms[8].value == '') {showErr('请输入法人代表！');}
+        if(forms[9].value == '') {showErr('请输入管理员名称！');}
+        if(forms[10].value == '') {showErr('请选择国家！');}
+        if(forms[11].value == '') {showErr('请选择省份！');}
+        if(forms[12].value == '') {showErr('请选择城市！');}
+        if(forms[13].value == '') {showErr('请选择区域！');}
+        var url = "{php echo url('entry',array('do'=>'reg','m'=>'mer_chats'))}";
+        $.ajax({
+            url:url,
+            dataType:'json',
+            type:'POST',
+            async: false,
+            data: formData,
+            success: function(res) {
+
+                if (!res.code) {
+                    $.DialogByZ.Alert({Title: "注册失败", Content: res.msg,BtnL:"确定",FunL:alerts})
+                    return false;
+                }
+
+                $.DialogByZ.Alert({Title: "注册成功", Content:'注册成功，请耐心等待审核',BtnL:"确定",FunL:alerts})
+
+                setTimeout(function() {
+                    // 跳转到登陆页面
+                    window.location.href = "{php echo url('entry',array('do'=>'logins','m'=>'mer_chats'))}";
+                },1200);
+
+            },error:function(response) {
+                console.log(response);
+            }
+        });
+    })
+
+    // 个人商户注册 注册提交表单
+    $('#submit2').click(function () {
+
+        // 用户选择地址；拼接
+        var Country2 = $('#Country2 option:selected').text();
+        var province2 = $('#province2 option:selected').text();
+        var city2 = $('#city2 option:selected').text();
+        var area2 = $('#area2 option:selected').text();
+        // 拼接地址
+        var addr = Country2+province2+city2+area2;
+        $('.addr').val(addr);
+        var forms    = $('#form2').serializeArray();
+        var formData = $('#form2').serialize();
+
+        if(forms[1].value == 'Territory' && forms[2].value == '' ) {showErr('手机号码不能为空！');return false;}
+        if(forms[1].value == 'Abroad' && forms[2].value == '' ) {showErr('电子邮箱不能为空！');return false;}
+        if(forms[3].value == '') {showErr('验证码不能为空！');return false;}
+        if(forms[4].value == '') {showErr('品牌名称不能为空！');return false;}
+        if(forms[5].value == '') {showErr('输入管理员名称！');return false;}
+        if(forms[6].value == '') {showErr('请选择国家！');return false;}
+        if(forms[7].value == '') {showErr('请选择省份！');return false;}
+        if(forms[8].value == '') {showErr('请选择城市！');return false;}
+        if(forms[9].value == '') {showErr('请选择区域！');return false;}
+
+        var url = "{php echo url('entry',array('do'=>'RegPersonal','m'=>'mer_chats'))}";
+        $.ajax({
+            url:url,
+            dataType:'json',
+            type:'POST',
+            async: false,
+            data: formData,
+            success: function(res) {
+
+                if (!res.code) {
+                    $.DialogByZ.Alert({Title: "注册失败", Content: res.msg,BtnL:"确定",FunL:alerts})
+                    return false;
+                }
+
+                $.DialogByZ.Alert({Title: "注册成功", Content:'注册成功，请耐心等待审核',BtnL:"确定",FunL:alerts})
+
+                setTimeout(function() {
+                    // 跳转到登陆页面
+                    window.location.href = "{php echo url('entry',array('do'=>'logins','m'=>'mer_chats'))}";
+                },1200);
+
+            },error:function(response) {
+                console.log(response);
+            }
+        });
+    })
+
+    // 显示数据
+    function showErr(title) {
+        $.DialogByZ.Alert({Title: "提示", Content: title,BtnL:"确定",FunL:alerts})
+        return false;
+    }
+
+    // 图片上传改变事件  上传文件
+    $('#brandTrades').change(function() {
+        var crowd_file = $('#brandTrades')[0].files[0];
+
+        if(crowd_file == null) {
+            $.DialogByZ.Alert({Title: "提示", Content: '上传图片不能为空',BtnL:"确定",FunL:alerts})
+            return false;
+        }
+        // 文件上传
+        var formData = new FormData();
+        formData.append('file',crowd_file);
+        var url = "{php echo url('entry',array('do'=>'upload','m'=>'mer_chats'))}";
+        $.ajax({
+            url:url,
+            dataType:'json',
+            type:'POST',
+            async: false,
+            data: formData,
+            processData : false, // 使数据不做处理
+            contentType : false, // 不要设置Content-Type请求头
+            success: function(res){
+                if (!res.code) {
+                    $.DialogByZ.Alert({Title: "提示", Content: res.msg,BtnL:"确定",FunL:alerts})
+                    return false;
+                }
+                // 赋值路径
+                var path = '../'+res.path;
+                $('#brandTrade').val(path);
+                $('#img_upload').attr('src',path)
+
+            },
+            error:function(response){
+                console.log(response);
+            }
+        });
+
+    });
+
+    // 图片上传改变事件  资质
+    $('#qualificationsr').change(function() {
+        var crowd_file = $('#qualificationsr')[0].files[0];
+
+        if(crowd_file == null) {
+            $.DialogByZ.Alert({Title: "提示", Content: '上传图片不能为空',BtnL:"确定",FunL:alerts})
+            return false;
+        }
+        // 文件上传
+        var formData = new FormData();
+        formData.append('file',crowd_file);
+        var url = "{php echo url('entry',array('do'=>'upload','m'=>'mer_chats'))}";
+        $.ajax({
+            url:url,
+            dataType:'json',
+            type:'POST',
+            async: false,
+            data: formData,
+            processData : false, // 使数据不做处理
+            contentType : false, // 不要设置Content-Type请求头
+            success: function(res){
+                if (!res.code) {
+                    $.DialogByZ.Alert({Title: "提示", Content: res.msg,BtnL:"确定",FunL:alerts})
+                    return false;
+                }
+                // 赋值路径
+                var path = '../'+res.path;
+                $('#enterQuali').val(path);
+                $('#qualificationsd').attr('src',path)
+
+            },
+            error:function(response){
+                console.log(response);
+            }
+        });
+
+    });
+</script>
+
+<script type="text/javascript" src="../addons/mer_chats/static/js/login.js"></script>
+</body>
+</html>
+
+

@@ -1,0 +1,94 @@
+{include file="common/header"}
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<body>
+<blockquote class="layui-elem-quote layui-text">
+    优惠券管理
+</blockquote>
+<div class="x-nav">
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<div class="x-body">
+    <table id="table-checkbox" lay-filter="test"></table>
+</div>
+</body>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script type="text/html" id="barDemo">
+    {{#  if(d.apply_status == '完成'){ }}
+    <a class="layui-btn layui-btn-xs" lay-event="Receive">领用详情</a>
+    <a class="layui-btn layui-btn-xs" lay-event="use">核销详情</a>
+    {{#  } }}
+    {{#  if(d.check_status == '已通过'){ }}
+    <a class="layui-btn layui-btn-xs" lay-event="check">确认申请</a>
+    <a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="give">放弃申请</a>
+    {{#  } }}
+</script>
+<script type="text/javascript">
+    layui.use(['layer','form','jquery','laypage','table'],function(){
+        $ = layui.jquery;
+        layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var index = layer.load(1);
+        setTimeout(function () {
+            table.render({
+                elem: '#table-checkbox'
+                ,url: '{:Url("cardcouhcer/get_coupon_list")}'
+                ,height: 300
+                ,even: true //开启隔行背景
+                ,size: 'lg' //小尺寸的表格
+                ,cols: [[
+                    {field:'c_code', title: '卡卷代码', width:200}
+                    ,{field:'c_name', title: '卡卷名称', width:200}
+                    ,{field:'get_max', title: '领用限制', width:100}
+                    ,{field:'use_type',title: '使用类型', width:200}
+                    ,{field:'c_amount', title: '面额', width:100}
+                    ,{field:'c_total', title: '发放数量', width:100}
+                    ,{field:'s_time',title:'截止开始',width:200}
+                    ,{field:'e_time',title:'截止结束',width:200}
+                    ,{field:'apply_status', title: '申请状态', width:200}
+                    ,{field:'check_status', title: '审核状态', width:200}
+                    ,{field:'c_status', title: '卡卷状态', width:200}
+                    ,{field:'platform_sett', title: '平台结算', width:200}
+                    ,{field:'pay_status', title: '支付状态', width:200}
+                    ,{field:'issued_type', title: '手续费类型', width:200}
+                    ,{field:'issued_price', title: '发行手续费', width:100}
+                    ,{field:'create_time', title: '创建时间', width:200}
+                    ,{align:'center', fixed: 'right', toolbar: '#barDemo', width:300}
+                ]]
+                ,page: true
+                ,done:function () {
+                    layer.close(index);
+                }
+            });
+        },800);
+        //监听工具条
+        table.on('tool(test)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'check'){
+                check(data);
+            }else if(obj.event == 'give'){
+                give(data);
+            }
+        });
+        form.on('submit(component-form-element)', function(data){
+            submit_data(data.field);
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+
+    function check(data) {
+        axios.post("{:Url('cardvoucher/pay_coupon')}",{info:data}).then(function (resp) {
+            console.dir(resp);
+        }).catch(function (error) {
+            console.dir(error)
+        });
+    }
+
+
+    function give(data) {
+        console.dir(data);
+    }
+</script>
+</html>

@@ -1,0 +1,297 @@
+{template "parking/base/header"}
+<style type="text/css">
+	.wx_box{ width:100%; max-width:768px; margin:0 auto; position:relative;}
+	.banner{width: 100%; position: relative;}
+	.notice_b{width: 100%;height:52px; overflow:hidden;position: absolute;bottom: 0; z-index: 99; opacity: 0.8;}
+	.notice{ padding:0.09rem 0.42rem 0.08rem 0.44rem; background:#000 url(../addons/ewei_shopv2/static/css/images/img/tips_icon.png) no-repeat 0.15rem 0.12rem; background-size:0.16rem auto; color:#fff; font-size:0.13rem; line-height:0.2rem; overflow:hidden; position:relative; height:0.4rem; }
+	.notice>div{ height:0.4rem; overflow:hidden;}
+	.notice ul{ float:left; overflow:hidden;}
+	.notice ul li{ padding-right:0.16rem; text-align:justify;}
+	.notice ul li a{ color:#fff; opacity: 1;}
+	.notice em{ display:block; width:0.42rem; position:absolute; right:0; top:0.09rem; height:0.4rem; text-align:center; line-height:0.4rem; background:url(../addons/ewei_shopv2/static/images/img/close.png) no-repeat center;
+	background-size:0.16rem auto; border-left:1px solid rgba(255,255,255,0.23);}
+	.focus{overflow:hidden;position:relative; height:1.6rem; background:#ccc;}
+	.focus img{ width:100%;height:1.6rem; vertical-align:middle;}
+	.focus ul{-webkit-padding-start:0px;}
+	.focus>ol{height:0.06rem;position:absolute;z-index:10;text-align:center; width:100%; bottom:0.1rem; font-size:0;}
+	.focus>ol>li{display:inline-block;width:0.06rem;height:0.06rem;background-color:#D5D0CC;border-radius:0.08rem; margin-right:0.06rem; border:1px solid #D5D0CC;}
+	.focus>ol>li.on{background-color:#ffffff; border:1px solid #3D8CE8;}
+	.focus>ol>li:last-child{ margin-right:0;}
+	.wx_logo{background: #fff; height: 0.5rem; width: 100%; text-align: center; line-height: 0.5rem; font-size: 0.18rem; color: #1b7ab6;}
+	.wx_logo span{position: absolute; left: 0.1rem; top: -0.01rem;}
+	.wx_logo img{width: 0.4rem; }
+	.nav{ height:0.65rem; line-height:0.5rem;overflow:hidden; background:#fff; font-size:0.14rem; padding: 2% 0 0;}
+	.nav li{ float:left; box-sizing:border-box; width:33%; background-size:0.15rem 0.15rem !important; text-indent:0rem; }
+	.nav li:nth-child(1){/* width:0.4rem; height: 0.4rem;*/ border-left:none; border-right:none; /*border-radius: 50%;*/ background: url(../addons/ewei_shopv2/static/css/images/img/lisicon_05.png) no-repeat 0.53rem 0.09rem;}
+	.nav li:nth-child(2){/* width:0.4rem; height: 0.4rem;*/ border-left:none; border-right:none; /*border-radius: 50%; */background: url(../addons/ewei_shopv2/static/css/images/img/lisicon_06.png) no-repeat 0.53rem 0.09rem;}
+	.nav li:nth-child(3){ /*width:0.4rem; height: 0.4rem;*/ border-left:none; border-right:none; /*border-radius: 50%;*/ background: url(../addons/ewei_shopv2/static/css/images/img/lisicon_07.png) no-repeat 0.53rem 0.09rem;}
+	.nav_icon01{ background:none;}
+	.nav_icon02{ background:none;}
+	.nav_icon03{ background:none;}
+	.nav_icon01 div{width:0.3rem; height: 0.3rem;border-radius: 50%; border: 1px solid #4aa8e4; margin: 0 0.45rem;}
+	.nav_icon02 div{width:0.3rem; height: 0.3rem;border-radius: 50%; border: 1px solid #e44a4a; margin: 0 0.45rem;}
+	.nav_icon03 div{width:0.3rem; height: 0.3rem;border-radius: 50%; border: 1px solid #e4c94a; margin: 0 0.45rem;}
+	.nav_p{text-align: center; line-height: 30px;}
+	.footer{ line-height:0.61rem; height:0.61rem;font-family: PingFang-SC-Bold;font-size:0.12rem;color: #333333;background:none;
+background-size:0.48rem auto;width:100%; position:absolute; bottom:0px; text-indent:1.22rem;}
+	.footer_placeholder{ height:0.61rem; width:100%;}
+	.order_tab_button {
+    display: block;
+    margin: 0.21rem 0.15rem;
+    height: 0.53rem;
+    line-height: 0.53rem;
+    text-align: center;
+    color: #fff;
+    font-size: 0.16rem;
+    background: #1b7ab6;
+    border-radius: 0.02rem;
+    color: #fff;
+}
+	.license_Fee{ overflow:hidden;}
+	.license_Fee dl{ background:#fff; margin-top:0.07rem; margin-bottom: 0;}
+	.license_Fee dl dt{ height:0.44rem; line-height:0.44rem; padding:0 0.16rem; border-bottom:1px solid #E9E9E9; font-size:0.14rem; color:#666;}
+	.license_Fee dl dt span{color: #c6000b;}
+	.license_Fee dl dd{ padding:0 0.15rem;}
+	.license_Fee dl dd p{ line-height:0.5rem;border-bottom:1px solid #E9E9E9; overflow:hidden; font-size:0.14rem;}
+	.license_Fee dl dd p img{ float:left; width:0.26rem; position:relative; top:0.12rem; margin-right:0.11rem;}
+	.license_Fee dl dd p span{ float:left;}
+	.license_Fee dl dd p a{ float:right;margin-left:0.11rem;}
+	.license_Fee dl dd p i{ float:right; }
+	.license_Fee dl dd p:last-child{ border-bottom:0;}
+	.license_Fee dl:last-child{ margin-bottom:0;}
+	.license_Fee_arrow{ display:block; float:right; width:0.14rem; height:0.44rem; background:url(../addons/ewei_shopv2/static/css/images/img/arrow.png) no-repeat center; background-size:0.14rem auto;}
+	.license_Fee_arrow02{ transform:rotate(180deg);}
+	.blue{color: #1b7ab6;}
+	
+/*底部滚动*/	
+	.mes{ width: 100%;height:35px; /*background:#000;*/ overflow:hidden;position: absolute;bottom: 0;opacity:.8;filter:alpha(opacity=60);}
+	.t_news{ height:19px; color:#fff; padding-left:10px; margin:8px 0; overflow:hidden; position:relative;}
+	.t_news b{ line-height:19px; font-weight:bold; display:inline-block;}
+	.t_news b img{width: 20%;}
+	.news_li,.swap{ line-height:19px; display:inline-block; position:absolute; top:0; left:0;}
+	.news_li a,.swap a{color:#333;}
+	.swap{top:19px;}
+	
+	.bot{width: 100%; text-align: center; position: absolute;bottom: 40px;}
+	.bot img{width: 20%; display: initial;}
+</style>
+
+<body>
+<div class="wx_logo"><span><img src="../addons/ewei_shopv2/static/css/images/img/LOGO0523.png" alt="" /></span>扣费授权</div>
+<div class="wx_box">
+	<div class="banner">
+    {if !empty($announcement)}
+    <div class="notice_b">
+    <div class="notice">
+        <div>
+            <ul>
+                {loop $announcement $index $item}
+                <li><a href="#">{$item['msg']}</a></li>
+                {/loop}
+            </ul>
+        </div>
+        <em></em>
+    </div>
+    </div>
+    {/if}
+
+    <!--focus-->
+    <div class="focus" id="focus">
+        <ul>
+            {if !empty($carousel)}
+            {loop $carousel $index $item}
+            <li><a href="{$item}"><img src="../addons/ewei_shopv2/static/images/img/{$index}" style="width:100%;" /></a></li>
+            {/loop}
+            {else}
+            <li><a href="#"><img src="../addons/ewei_shopv2/static/images/img/0.jpg" style="width:100%;" /></a></li>
+            <li><a href="#"><img src="../addons/ewei_shopv2/static/images/img/002.jpeg" style="width:100%;" /></a></li>
+            <li><a href="#"><img src="../addons/ewei_shopv2/static/images/img/003.jpeg" style="width:100%;" /></a></li>
+            {/if}
+        </ul>
+        <ol>
+            <li class="on"></li>
+            <li></li>
+            <li></li>
+        </ol>
+    </div>
+    </div>
+    <!--focus end-->
+    <ul class="nav">
+        <li class="nav_icon01"><a href="https://www.sobot.com/chat/pc/index.html?sysNum=0e3544a96d5e41f4919655542ba43428"><div></div><p class="nav_p">在线客服</p></a></li>
+        <li class="nav_icon02"><div></div><p class="nav_p">服务导航</p></li>
+        <li class="nav_icon03"><div></div><p class="nav_p">用户须知</p></li>
+    </ul>
+    <!--focus end-->
+    <!--<ul class="nav">-->
+        <!--<li class="nav_icon01"><a href="https://www.sobot.com/chat/pc/index.html?sysNum=0e3544a96d5e41f4919655542ba43428">在线客服</a></li>-->
+        <!--<li class="nav_icon02">服务导航</li>-->
+        <!--<li class="nav_icon03">用户须知</li>-->
+    <!--</ul>-->
+    <div class="license_Fee">
+        <!--<h3 class="title_h3"><span>扣费授权</span></h3>-->
+        <dl>
+            <dt><span>第三方扣费授权</span><i class="license_Fee_arrow"></i></dt>
+            <dd>
+                <p><img src="../addons/ewei_shopv2/static/images/img/license_icon01.png"><span>微信支付</span>
+                    <i class="gray">
+                        {if !empty($tel['auth_type'])}
+                        {if in_array("Fwechat",$tel['auth_type']) && $tel['auth_status'] == 1}
+                        <a href="<?php echo mobileUrl('parking/auth/testwechat');?>" class="blue">去解约</a>
+                        {else}
+                        <a href="http://shop.gogo198.cn/payment/Frx/Wxsfree_gai.php?Tel={$tel['mobile']}" class="blue {$show}">去授权</a>
+                        {/if}
+                        {else}
+                        <a href="http://shop.gogo198.cn/payment/Frx/Wxsfree_gai.php?Tel={$tel['mobile']}" class="blue {$show}">去授权</a>
+                        {/if}
+                    </i>
+                </p>
+                
+                <p><img src="../addons/ewei_shopv2/static/images/img/yiwen.png"><span>查看解约流程</span>
+                    <i class="gray">
+                        <a href="<?php echo mobileUrl('parking/auth/testwechat');?>" class="blue">立即查看</a>
+                    </i>
+                </p>
+                
+                <!--<p><img src="../addons/ewei_shopv2/static/images/img/license_icon02.png"><span>支付宝支付</span><i class="gray">-->
+                    <!--{if !empty($tel['auth_type'])}-->
+                    <!--{if in_array("Falipay",$tel['auth_type'])}-->
+                    <!--<a href="#" class="blue {$show}">去解约</a>-->
+                    <!--{else}-->
+                    <!--<a href="#" class="blue {$show}">去授权</a>-->
+                    <!--{/if}-->
+                    <!--{else}-->
+                    <!--<a href="#" class="blue {$show}">去授权</a>-->
+                    <!--{/if}-->
+                <!--</i></p>-->
+            </dd>
+        </dl>
+        <dl>
+            <dt><span>银联卡扣费授权</span><i class="license_Fee_arrow"></i></dt>
+            <dd>
+                <p class="pp">
+                    <img src="../addons/ewei_shopv2/static/images/img/license_icon03.png">
+                    <span>银联标识信用卡</span>
+                    <i class="gray">
+                        {if !empty($tel['auth_type'])}
+                        
+                            {if in_array("FCreditCard",$tel['auth_type']) && $tel['auth_status'] == 1}
+                                <!--<a href="<?php echo mobileUrl('parking/auth/SignSurrender');?>" class="blue {$show}">去解约</a>-->
+                                <a href="<?php echo mobileUrl('parking/auth/SurrenList');?>" class="blue {$show}">去解约</a>
+                            {else}
+                            <a href="http://shop.gogo198.cn/payment/sign/Togrands_gai.php?Tel={$tel['mobile']}" class="blue {$show}">去授权</a>
+                            {/if}
+                            
+                        {else}
+                        <a href="http://shop.gogo198.cn/payment/sign/Togrands_gai.php?Tel={$tel['mobile']}" class="blue {$show}">去授权</a>
+                        {/if}
+                    </i>
+                </p>
+                <p class="pp"><img src="../addons/ewei_shopv2/static/images/img/license_icon04.png"><span>顺德农商行借记卡</span><i class="gray">
+                    {if !empty($tel['auth_type'])}
+                    {if in_array("FAgro",$tel['auth_type']) && $tel['auth_status'] == 1}
+                    <!--parking/auth/FagroSurrender-->
+                    <a href="<?php echo mobileUrl('parking/auth/SurrenList');?>" class="blue {$show}">去解约</a>
+                    {else}
+                    <a href="http://shop.gogo198.cn/payment/sign/Togrands_gai.php?Tel={$tel['mobile']}" class="blue {$show}">去授权</a>
+                    {/if}
+                    {else}
+                    <a href="http://shop.gogo198.cn/payment/sign/Togrands_gai.php?Tel={$tel['mobile']}" class="blue {$show}">去授权</a>
+                    {/if}
+                </i></p>
+            </dd>
+        </dl>
+    </div>
+    <a href="{php echo mobileUrl('parking/info/testparkmain')}" ><p class="order_tab_button" style="border-radius: 100px;">跳过这一步</p></a>
+    
+    <div class="bot">Technology by <img src="../addons/ewei_shopv2/static/images/img/footlogo.png" alt="" /></div>
+    <div class="footer">
+		<div class="mes">
+	    	<div class="t_news">
+				<ul class="news_li">
+					<li><a href="" target="_blank">版权所有 © Gogo|購購網</a></li>
+					<li><a href="" target="_blank">版权所有 © Gogo|任我停</a></li>
+					<li><a href="" target="_blank">版权所有 © Gogo|直邮易</a></li>
+				</ul>
+				<ul class="swap"></ul>
+			</div>
+	    </div>
+	</div>
+    <!--<div class="footer">版权所有 © Gogo|購購網 </div>-->
+    <div class="footer_placeholder"></div>
+    <!--弹出框-->
+    <div class="black_bg"></div>
+    <div class="popup">
+        <h3>请扫码关注注册</h3>
+        <p><img src="<?php echo $_W['account']['qrcode'];?>"></p>
+    </div>
+    <!--弹出框 end-->
+</div>
+</body>
+<script type="text/javascript">
+    var height = $(window).height();
+    $(".wx_box").css({"min-height":height});
+    $(function(){
+        new Swipe(document.getElementById('focus'), {
+            speed:500,
+            auto:3000,
+            callback: function(){
+                var lis = $(this.element).next("ol").children();
+                lis.removeClass("on").eq(this.index).addClass("on");
+            }
+        });
+    });
+    function timer(opj){
+        $(opj).find('ul').animate({
+            marginTop : "-0.4rem"
+        },500,function(){
+            $(this).css({marginTop : "0rem"}).find("li:first").appendTo(this);
+        })
+    }
+    var num = $('.notice').find('li').length;
+    if(num > 1){
+        var time=setInterval('timer(".notice")',3500);
+        $('.notice ul li a').hover(function(){
+            clearInterval(time);
+        }).mouseout(function(){
+            time = setInterval('timer(".notice")',3500);
+        });
+    };
+    $(".license_Fee_arrow").click(function(){
+        $(this).toggleClass("license_Fee_arrow02");
+        $(this).parents("dl").find("dd").toggle();
+    });
+    $(".showPopup").click(function(){
+        $(".black_bg,.popup").show();
+    });
+
+    $(".license_Fee_arrow").parents("dl").find("a").bind("click",function (e) {
+        if($(this).is('.showPopup')){
+            $(this).attr("href","#");
+           return false;
+        }
+    })
+    
+    
+/*底部滚动*/    
+    function b(){	
+		t = parseInt(x.css('top'));
+		y.css('top','19px');	
+		x.animate({top: t - 19 + 'px'},'slow');	//19为每个li的高度
+		if(Math.abs(t) == h-19){ //19为每个li的高度
+			y.animate({top:'0px'},'slow');
+			z=x;
+			x=y;
+			y=z;
+		}
+		setTimeout(b,3000);//滚动间隔时间 现在是3秒
+	}
+	$(document).ready(function(){
+		$('.swap').html($('.news_li').html());
+		x = $('.news_li');
+		y = $('.swap');
+		h = $('.news_li li').length * 19; //19为每个li的高度
+		setTimeout(b,3000);//滚动间隔时间 现在是3秒
+		
+	})
+</script>
+{template "parking/base/footer"}

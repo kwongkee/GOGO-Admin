@@ -1,0 +1,49 @@
+{template 'parking/base/header'}
+<body class="whiteBg">
+<div class="wx_box">
+    <div class="login">
+        <ul class="login_ul">
+            <li><input type="number" name="cardNo" value="" id="cardNo" placeholder="请输入银行卡号" /></li>
+            <li class="login_ul_li01">
+                <p><input type="text" name="name" value="" id="name" placeholder="请输入姓名"/></p>
+            </li>
+            <li class="login_ul_li02"><a href="#" class="btn-block" onclick="out({$_GPC['id']})">提交注销</a></li>
+        </ul>
+    </div>
+    <div class="footer">Technology by </div>
+    <div class="footer_placeholder"></div>
+    <div class="login_tips" style="display: none;"></div>
+</div>
+
+<script type="text/javascript">
+    function out(id) {
+        console.log(id);
+        $.post("{php echo mobileUrl('parking/user_month/month_out_handle')}",{
+            'id':id,
+            'cardNo':$("#cardNo").val(),
+            'name' : $("#name").val()
+        },function (res) {
+            var res = JSON.parse(res);
+            if (res.status==0){
+                $(".login_tips").css("display","block");
+                $(".login_tips").html(res.result.message);
+                timer();
+                setTimeout(function () {
+                    window.location.href="{php echo mobileUrl('parking/user_month')}";
+                },2000);
+            } else{
+                $(".login_tips").css("display","block");
+                $(".login_tips").html(res.result.message);
+                timer();
+            }
+            console.log(res);
+        });
+    }
+
+    function timer(){
+        setTimeout(function () {
+            $(".login_tips").css("display","none");
+        },1500);
+    }
+</script>
+{template 'parking/base/footer'}

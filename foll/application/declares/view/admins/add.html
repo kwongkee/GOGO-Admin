@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+	<script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+</head>
+<body style="padding: 10px;">
+	
+	<form class="layui-form">
+		<input type="hidden" name="uniacid" value="3">
+		<input type="hidden" name="id" value="{$data.item.id}">
+		<div class="layui-form-item">
+			<label class="layui-form-label">企业编号：</label>
+			<div class="layui-input-inline">
+				<input type="text" class="layui-input"  name="order_prix" value="{$data.item.order_prix}">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">手机号码：</label>
+			<div class="layui-input-inline">
+				<input type="text" class="layui-input" maxlength="11" name="user_mobile" value="{$data.item.user_mobile}" {$data.item.id>0?'readonly':''}>
+			</div>
+		</div>
+		
+		<div class="layui-form-item">
+			<label class="layui-form-label">您的姓名：</label>
+			<div class="layui-input-inline">
+				<input type="text" class="layui-input" name="user_name" value="{$data.item.user_name}">
+			</div>
+		</div>
+		
+		<div class="layui-form-item">
+			<label class="layui-form-label">电子邮箱：</label>
+			<div class="layui-input-inline">
+				<input type="email" class="layui-input" name="user_email" value="{$data.item.user_email}">
+			</div>
+		</div>
+		
+		<div class="layui-form-item">
+			<label class="layui-form-label">用户角色：</label>
+			<div class="layui-input-inline">
+				<select name="gid">
+					<option value="0"></option>
+					{volist name="data.groups" id="vo" }
+					<option value="{$vo.gid}" {$vo.gid == $data.item.role?'selected':''} >{$vo.title}</option>
+					{/volist}
+				</select>
+			</div>
+		</div>
+		
+		<!--  业务类型  -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">业务类型：</label>
+			<div class="layui-input-inline">
+				<input type="radio" name="busType" value="BC"  title="BC"  {if condition="$data.items.busType eq 'BC'"} checked {/if} >
+				<input type="radio" name="busType" value="BBC" title="BBC" {if condition="$data.items.busType eq 'BBC'"} checked {/if} >
+			</div>
+		</div>
+		
+		<!-- 商品备案结算方式  -->
+		<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+		  <legend style="margin-bottom: 10px;font-size: 15px;font-weight: bold;">结算方式(商品备案)</legend>
+		  
+		  	<div class="layui-form-item">
+				<label class="layui-form-label">结算方式：</label>
+				<div class="layui-input-block">
+					<input type="radio" name="setMothod" lay-filter="RecordMoney" value="good" title="元 / 商品" {if condition="$data.items.setMothod eq 'good'"} checked {/if}>
+					<input type="radio" name="setMothod" lay-filter="RecordMoney" value="pici" title="元 / 批次" {if condition="$data.items.setMothod eq 'pici'"} checked {/if}>
+				</div>
+			</div>
+		
+		  	<div class="layui-form-item">
+		  		<div class="layui-form-mid layui-word-aux" style="margin-left: 25px;">企业应付</div>
+				<label class="layui-form-label">备案<span id="pici">商品</span>数:</label>
+				<div class="layui-input-inline" style="width:60px;">
+					<input type="text" class="layui-input" name="banMoney" min="1" max="999" maxlength="3" value="{$data.items.banMoney}">
+				</div>
+				<div class="layui-form-mid" id="good" style="color: red;">元 / 商品</div>
+			</div>
+			
+		</fieldset>
+		<!-- 商品备案结算方式  END -->
+		
+		<!-- 服务费用 -->
+		<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+		  <legend style="margin-bottom: 10px;font-size: 15px;font-weight: bold;">企业应付(服务费用)</legend>
+		  
+		  	<div class="layui-form-item">
+		  		
+				<label class="layui-form-label">收付结算：</label>
+				<div class="layui-input-block">
+					<input type="radio" name="cserMothod" lay-filter="ServerMoney" value="Percentage" title="% / 结算" {if condition="$data.items.cserMothod eq 'Percentage'"} checked {/if}>
+					<input type="radio" name="cserMothod" lay-filter="ServerMoney" value="Element" title="元  / 结算" {if condition="$data.items.cserMothod eq 'Element'"} checked {/if}>
+				</div>
+			</div>
+			
+			<div class="layui-form-item">
+				<div class="layui-form-mid layui-word-aux" style="margin-left: 25px;">企业应付</div>
+				<label class="layui-form-label">订单<span id="ServerText">金额</span>的:</label>
+				<div class="layui-input-inline" style="width:60px;">
+					<input type="text" class="layui-input" name="cserMoney" min="1" max="999" maxlength="3" value="{$data.cserMoney}">
+				</div>
+				<div class="layui-form-mid" id="Server" style="color: red;">% / 结算</div>
+			</div>
+			
+		</fieldset>
+		
+		<!-- 验核费用 -->
+		<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+		  	<legend style="margin-bottom: 10px;font-size: 15px;font-weight: bold;">验核费用(身份认证)</legend>
+			
+			<div class="layui-form-item">
+				<div class="layui-form-mid layui-word-aux" style="margin-left: 20px;">企业应付</div>
+				<label class="layui-form-label">按验核人数: </label>
+				<div class="layui-input-inline" style="width: 60px;">
+					<input type="text" class="layui-input" name="authCopyMoney" min="1" max="100" maxlength="3" value="{$data.authCopyMoney}">
+				</div>
+				<span class="layui-form-mid" style="color: red;">元/人 结算</span>
+			</div>
+		</fieldset>
+		<!-- 验核费用 -->
+		
+		<!-- 交易费用 -->
+		<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+		  	<legend style="margin-bottom: 10px;font-size: 15px;font-weight: bold;">交易费用(支付单)</legend>
+			
+			<div class="layui-form-item">
+				<div class="layui-form-mid layui-word-aux" style="margin-left: 25px;">企业应付</div>
+				<label class="layui-form-label">订单金额的: </label>
+				<div class="layui-input-inline" style="width: 60px;">
+					<input type="text" class="layui-input" name="payCopyMoney" min="1" max="100" maxlength="3" value="{$data.payCopyMoney}">
+				</div>
+				<span class="layui-form-mid" style="color: red;">% 结算</span>
+			</div>
+			
+		</fieldset>
+		<!-- 交易费用 -->
+
+		<div class="layui-form-item">
+			<label class="layui-form-label">是否禁用</label>
+			<div class="layui-input-inline">
+				<input type="checkbox" lay-skin="parimary" value="1" name="status" title="禁用" {$data.item.status?'checked':''}>
+			</div>
+		</div>
+	</form>
+
+	<div class="layui-form-item">
+		<div class="layui-input-block">
+			<button class="layui-btn layui-btn-lx" onclick="save()">保存</button>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		layui.use(['layer','form','jquery'],function(){
+			form = layui.form;
+			layer = layui.layer;
+			$ = layui.jquery;
+			//结算方式(商品备案)
+			form.on('radio(RecordMoney)',function(data){
+				if(data.value == 'good'){
+					$('#pici').text('商品');
+					$('#good').text('元 / 商品');
+					$(this).attr('checked',true);
+					$(this).siblings().attr('checked',false);
+				} else {
+					$('#pici').text('批次');
+					$('#good').text('元 / 批次');
+					$(this).attr('checked',true);
+					$(this).siblings().attr('checked',false);
+				}
+			});//end
+			
+			//企业应付(服务费用) 
+			form.on('radio(ServerMoney)',function(data){
+				if(data.value == 'Percentage'){
+					$('#ServerText').text('金额');
+					$('#Server').text('% / 结算');
+					$(this).attr('checked',true);
+					$(this).siblings().attr('checked',false);
+				} else {
+					$('#ServerText').text('数量');
+					$('#Server').text('元 / 结算');
+					$(this).attr('checked',true);
+					$(this).siblings().attr('checked',false);
+				}
+			});//end
+			
+			//平台应付(服务费用)
+			form.on('radio(PlaSerMoney)',function(data){
+				if(data.value == 'Percentage'){
+					$('#pServerText').text('金额');
+					$('#pServer').text('% / 结算');
+					$(this).attr('checked',true);
+					$(this).siblings().attr('checked',false);
+				} else {
+					$('#pServerText').text('数量');
+					$('#pServer').text('元 / 结算');
+					$(this).attr('checked',true);
+					$(this).siblings().attr('checked',false);
+				}
+			});//end
+			
+			form.render();
+			
+		});
+
+		// 保存管理员
+		function save() {
+			var id 		 = parseInt($('input[name="id"]').val());
+			var username = $.trim($('input[name="user_mobile"]').val());
+			var gid 	 = $('select[name="gid"]').val();
+			var truename = $.trim($('input[name="user_name"]').val());
+			//var goodMoney = $.trim($('input[type=radio][name=RecordMoney]:checked').val());
+			var email 	 = $.trim($('input[type=email][name="user_email"]').val());
+			
+			//alert(email);
+			
+			if(username == ''){
+				layer.alert('请输入手机号码',{icon:2});
+				return false;
+			}
+			
+			if(!phone(username)){
+				layer.alert('请输入正确的手机号码',{icon:2});
+				return false;
+			}
+			
+			if(truename == ''){
+				layer.alert('请输入真实姓名',{icon:2});
+				return false;
+			}
+			
+			if(!emails(email)){
+				layer.alert('请输入正确的电子邮箱',{icon:2});
+				return false;
+			}
+			
+			if(gid == 0){
+				layer.alert('请选择角色',{icon:2});
+				return false;
+			}
+
+			$.post("{:Url('admins/save')}",$('form').serialize(),function(res){
+				console.dir(res);
+				if(res.code > 0){
+					layer.alert(res.msg,{icon:5});
+				} else {
+					layer.msg(res.msg,{icon:6});
+					setTimeout(function(){
+						parent.window.location.reload();
+					},1000);
+				}
+			});
+		}
+		
+		function emails(val){
+			var em = /^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/;
+			return em.test(val);
+		}
+		
+		function phone(val){
+			var ph = /^1(3|4|5|7|8)\d{9}$/;
+			return ph.test(val);
+		}
+	</script>
+</body>
+</html>

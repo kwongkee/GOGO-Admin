@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<div class="header">
+    <span>用户购买风险</span>
+    <!--<button class="layui-btn layui-btn-sm" onclick="add();">添加</button>-->
+    <div></div>
+</div>
+
+<table class="layui-table">
+    <thead>
+    <tr class="ths">
+        <th>ID</th>
+        <th>操作员工</th>
+        <th>订单票数</th>
+        <th>提单编号</th>
+        <th>批次编号</th>
+        <th>预提时间</th>
+        <th>申报状态</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+        {volist name="datas.lists" id="vo" key="k" }
+            <tr class="boys">
+                <td>{$k}</td>
+                <td>{$vo.user_name}</td>
+                <td>{$vo.succ_num} 票</td>
+                <td>{$vo.bill_num}</td>
+                <td>{$vo.batch_num}</td>
+                <td>{$vo.create_time}</td>
+                <td>{$vo.desc}</td>
+                <td>
+                    <a class="layui-btn layui-btn-sm" href="{:Url('admin/elec/getRisk')}&batch={$vo.batch_num}">查看风险</a>
+                    <button class="layui-btn layui-btn-sm layui-btn-danger" onclick="Confirm('{$vo.batch_num}')">确认风险</button>
+                    <a class="layui-btn layui-btn-sm layui-btn-warm" href="{:Url('admin/elec/expro_purch')}&batch_num={$vo.batch_num}">导出购买风险</a
+                </td>
+            </tr>
+        {/volist}
+    </tbody>
+</table>
+
+<div class="layui-box layui-laypage layui-laypage-default">{$datas.pages}</div>
+
+<script type="text/javascript">
+    layui.use(['layer','jquery'],function(){
+        layer = layui.layer;
+        $ = layui.jquery;
+    });
+
+    // 确认风险
+    function Confirm(batch) {
+
+        if(confirm('您确认购买风险吗？')) {
+
+            $.post("{:Url('admin/elec/okRisk')}",{
+                'batch':batch,
+            },function(res) {
+                if(res.code == 1) {
+                    alert(res.msg);
+                    setTimeout(function(){
+                        window.location.reload();
+                    },1500)
+                } else {
+                    alert(res.msg);
+                }
+            })
+        }
+    }
+
+</script>
+</body>
+</html>

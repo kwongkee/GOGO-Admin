@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>拒收编辑</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+</head>
+<body>
+<form class="layui-form" action="">
+    <input type="hidden" name="id" value="{$data['id']}">
+    <div class="layui-form-item">
+        <label class="layui-form-label">中文名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="name" required  lay-verify="required" placeholder="请输入中文名称" autocomplete="off" class="layui-input" value="{$data['name']}">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">英文名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="name_en" placeholder="请输入英文名称" autocomplete="off" class="layui-input" value="{$data['name_en']}">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">类型</label>
+        <div class="layui-input-block">
+            <select name="type">
+                <option value="1" {$data['type'] == 1 ? "selected" : ""}>品牌</option>
+                <option value="2" {$data['type'] == 2 ? "selected" : ""}>物品</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+        </div>
+    </div>
+</form>
+
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+
+<script>
+    //Demo
+    layui.use('form', function(){
+        var form = layui.form;
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            $.ajax({
+                url:"{:Url('admin/PostalTaxNumber/refuse_edit')}",
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (res) {
+                    layer.msg(res.msg, {
+                        icon: 1,
+                        time: 2000
+                    }, function(){
+                        parent.window.location.reload();
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                    });
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            // admin/customssystem/declMenuCreate
+            return false;
+        });
+    });
+</script>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{$title}</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<table class="layui-table">
+    <thead>
+    <tr class="ths">
+        <th>序号</th>
+        <th>商户名称</th>
+        <th>身份验证费率</th>
+        <th>支付报关费率</th>
+        <th>订单报关费率</th>
+        <th>清单申报费率</th>
+        <th>运单申报费率</th>
+        <th>添加时间</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {volist name="data['data']" id="vo" key='k'}
+    <tr class="boys">
+        <td>{$k}</td>
+        <td>{$vo.user_name}</td>
+        <td>{$vo.verfee}</td>
+        <td>{$vo.payfee}</td>
+        <td>{$vo.orderfee}</td>
+        <td>{$vo.elistfee}</td>
+        <td>{$vo.logisfee}</td>
+        <td>{$vo.c_time|date='Y-m-d H:i:s',###}</td>
+        <td>
+            <a href="#" onclick="exprotElist({$vo.id},'{$vo.user_name}');" class="layui-btn">编辑设置</a>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+
+<script type="text/javascript">
+    layui.use(['layer','jquery'],function(){
+        layer = layui.layer;
+        $ = layui.jquery;
+    });
+
+    // 申报
+    function exprotElist(ids,uname)
+    {
+        layer.open({
+            type: 2,
+            title: '清算费率设置',
+            shadeClose: true,
+            shade: 0.3,
+            area: ['490px', '589px'],
+            content: "{:Url('merchant/feeedits')}&ids="+ids+"&uname="+uname, //iframe的url
+            yes:function(){
+                setTimeout(function(){window.location.reload();},800);
+            },
+            end:function() {
+                setTimeout(function () {
+                    window.location.reload();
+                }, 800);
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

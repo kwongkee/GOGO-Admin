@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加支付通道</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+</head>
+<body>
+
+<form class="layui-form" action="">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <input type="hidden" name="customId" value="{$info['id']}">
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">商户名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="customName" value="{$info['name']}" readonly  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">支付渠道</label>
+        <div class="layui-input-block">
+            <select name="payChannelid" lay-filter="getMer" id="pay" lay-verify="required">
+                <option value="">请选择</option>
+                {volist name="paylist" id="vo"}
+                    <option value="{$vo.id}">{$vo.PayEntName}-{$vo.remark}</option>
+                {/volist}
+            </select>
+        </div>
+    </div>
+
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>选择商户号企业</legend>
+    </fieldset>
+
+    <!-- 商户号 -->
+    <div class="layui-form-item" id="selMer">
+
+        <!--div class="layui-input-block" >
+            <input type="radio" name="mid" lay-verify="required" autocomplete="off" class="layui-input">中国公司
+        </div-->
+
+    </div>
+
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">确认添加</button>
+            <button type="reset" class="layui-btn layui-btn-danger">重置数据</button>
+        </div>
+    </div>
+</form>
+
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+
+<script>
+    //Demo
+    layui.use('form', function(){
+        var form = layui.form;
+
+        form.on('select(getMer)',function(obj){
+            if(obj.value == '') {
+                layer.msg('请选择支付渠道');
+                return false;
+            }
+
+            // 请求获取数据
+            $.ajax({
+                url:"{:Url('paychannel/getMer')}",
+                type:'POST',
+                data:{id:obj.value},
+                success:function(res){
+                    if(res.code <= 0) {
+                        layer.msg(res.msg);
+                        return false;
+                    }
+
+                    $('#selMer').html(res.str);
+                    form.render();
+                }
+            })
+        })
+
+
+        //监听提交
+        form.on('submit(formDemo)', function(data) {
+            // 获取通道名称
+            var payChannelId = $('#pay option:selected').val();
+            if(payChannelId == '') {
+                layer.msg('请选择支付渠道');
+                return false;
+            }
+
+            var isMid = $("input[name='mid']:checked").val();
+            if(isMid==null || isMid == 'undefined') {
+                layer.msg('请选择商户号');
+                return false;
+            }
+
+            //data.field.payName = pay;
+            $.ajax({
+                url:"{:Url('paychannel/doadd')}",
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (red) {
+
+                    if(red.code <= 0) {
+                        layer.msg(red.msg);
+                        return false;
+                    }
+                    layer.msg(red.msg);
+                    setTimeout(function(){
+                        layer.closeAll();
+                        parent.window.location.reload();
+                    },1200)
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</html>

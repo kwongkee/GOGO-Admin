@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>海关申报系统菜单管理</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+</head>
+
+<style>
+    img{ width:20px;height:20px;}
+    .container{text-align: center;}
+    .switchBtn{width: 40%;height:50px;line-height: 35px;margin-top:50px;font-size:20px;font-weight:600;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+<!--    <div class="container">-->
+<!--        <div class="btn btn-primary switchBtn" onclick="openWindow('{:Url(\'admin/model/lora_train\')}')">训练微调</div>-->
+<!--        <br>-->
+<!--        <div class="btn btn-warning switchBtn">强化训练</div>-->
+<!--    </div>-->
+        <table id="auth-table" class="layui-table" lay-filter="auth-table"></table>
+
+        <!-- 操作列 -->
+        <script type="text/html" id="auth-state">
+            <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="add" onclick="openWindow('{{d.id}}');">立即管理</a>
+        </script>
+    </div>
+</div>
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+<script>
+    layui.config({
+        base: './static/hadmin/assets/module/'
+    }).extend({
+        treetable: 'treetable-lay/treetable'
+    }).use(['table', 'treetable'], function () {
+        var $ = layui.jquery;
+        var table = layui.table;
+        var treetable = layui.treetable;
+
+        // 渲染表格
+        layer.load(2);
+        treetable.render({
+            treeColIndex: 1,
+            treeSpid: 0,
+            treeIdName: 'id',
+            treePidName: 'pid',
+            elem: '#auth-table',
+            url: '{:Url("admin/model/internal_parameters")}',
+            page: true,
+            treeDefaultClose:true,
+            cols: [[
+                {type: 'numbers'},
+                {field: 'name',width:400, title: '名称'},
+                // {templet: '#auth-state', align: 'center', title: '操作'}
+                {align: 'center', title: '操作', templet:function(d){
+                    if(d.setting==1){
+                        return '<button class="layui-btn layui-btn-xs" lay-event="clickButton" onclick="openWindow('+d.id+',\''+d.name+'\',\''+d.url+'\');">立即管理</button>';
+                    }
+                    else{
+                        return '';
+                    }
+                }}
+            ]],
+            done: function () {
+                layer.closeAll('loading');
+            }
+        });
+    });
+
+    function openWindow(id=0,name='',url='') {
+        layer.open({
+            type: 2,
+            shadeClose:true,
+            cancel:function(){
+                //location.reload();
+            },
+            title:name,
+            area:['100%','100%'],
+            content: url+'&id='+id
+        });
+        return false;
+    }
+</script>
+</html>

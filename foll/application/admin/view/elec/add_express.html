@@ -1,0 +1,118 @@
+{include file="public/header"}
+
+<body style="padding: 10px;">
+
+<form action="" class="layui-form" id="form1">
+    <input type="text" name="id" value="{if isset($data['id'])}{$data['id']}{/if}" style="display:none;">
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">快递公司</label>
+        <div class="layui-input-inline">
+            <select name="code" id="code" lay-search>
+                <option value="">请选择快递公司</option>
+                {volist name='express' id='vo'}
+                    <option value="{$vo['code']}" {if isset($data['code'])}{$vo['code']==$data['code']?'selected':''}{/if}>{$vo['code']}-{$vo['name']}</option>
+                {/volist}
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">快递公司模板id</label>
+        <div class="layui-input-inline" style="width:250px;">
+            <input type="text" class="layui-input" name="temp_id" placeholder="请填写快递公司模板id" value="{if isset($data['temp_id'])}{$data['temp_id']}{/if}">
+        </div>
+    </div>
+
+    <!--<div class="layui-form-item">-->
+        <!--<label for="" class="layui-form-label">运单号API链接</label>-->
+        <!--<div class="layui-input-inline" style="width:250px;">-->
+            <!--<input type="text" class="layui-input" name="api_address" placeholder="运单号API链接" value="{if isset($data['api_address'])}{$data['api_address']}{/if}">-->
+        <!--</div>-->
+    <!--</div>-->
+
+    <!--<div class="layui-form-item">-->
+    <!--<label class="layui-form-label">号段起止</label>-->
+    <!--<div class="layui-input-inline" style="width: 150px;">-->
+    <!--<input type="text" name="expNums" placeholder="开始号码段：0001启" autocomplete="off" class="layui-input">-->
+    <!--</div>-->
+    <!--<div class="layui-form-mid">-</div>-->
+    <!--<div class="layui-input-inline" style="width: 150px;">-->
+    <!--<input type="text" name="expNumd" placeholder="结束号码段：9999止" autocomplete="off" class="layui-input">-->
+    <!--</div>-->
+    <!--</div>-->
+
+    <!--<span style="font-size: 14px;color:#ff5555;margin-bottom:10px;">运单号码：198 + 物流企业编号（后2位） + 商家注册编号（后2位）+ 流水号（0001）</span>-->
+
+</form>
+
+<div class="layui-form-item">
+    <div class="layui-input-block">
+        <button class="layui-btn" onclick="save()">提交</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+
+        laydate.render({
+            elem: '#Times' //指定元素
+        });
+    })
+
+
+    // 添加设备
+    function save()
+    {
+        var id = $('input[name="id"]').val();
+        var code          = $("select[name='code'] option:selected").val();
+        var temp_id             = $('input[name="temp_id"]').val();
+        var api_address             = $('input[name="api_address"]').val();
+
+        // if(type == '' || typeof(type)=='undefined') {
+        //     layer.msg('请选择设备类型',{icon:2});
+        //     return false;
+        // }
+
+        if(code == '') {
+            layer.msg('请选择快递公司',{icon:2});
+            return false;
+        }
+
+        if(temp_id == '') {
+            layer.msg('请填写模板id',{icon:2});
+            return false;
+        }
+
+        if(api_address == '') {
+            layer.msg('请填写运单号API链接',{icon:2});
+            return false;
+        }
+
+        // 请求处理数据
+        $.post("{:Url('admin/elec/addExpress')}",{
+            code:code,
+            temp_id:temp_id,
+            id:id,
+            api_address:api_address
+        },function(resd){
+            console.log(resd);
+            var res = resd;
+            if(res.code == 1) {
+                layer.msg(res.msg,{icon:1});
+                setTimeout(function(){
+                    layer.closeAll();
+                    parent.window.location.reload();
+                },1000);
+            } else {
+                layer.msg(res.msg,{icon:2});
+            }
+
+        });
+    }
+</script>
+</body>
+</html>

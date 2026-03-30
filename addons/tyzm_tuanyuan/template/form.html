@@ -1,0 +1,714 @@
+<style>
+.thumbadimg{border:1px;}
+.thumbnail>img{width:120px;height:120px;}
+.nav_1,.nav_2,.nav_3,.nav_4{display:none}
+</style>
+
+  <div class="panel panel-heading">
+<ul class="nav nav-pills">
+  <li role="presentation" data-tab="nav_0" class="active"><a href="javascript:;">活动设置</a></li>
+  <li role="presentation" data-tab="nav_1"><a href="javascript:;">参数设置</a></li>
+  <li role="presentation" data-tab="nav_2"><a href="javascript:;">界面设置</a></li>
+  <li role="presentation" data-tab="nav_5"><a href="javascript:;">奖品设置</a></li>
+  <li role="presentation" data-tab="nav_7"><a href="javascript:;">红包设置</a></li>
+  <li role="presentation" data-tab="nav_3"><a href="javascript:;">广告设置</a></li>
+  <li role="presentation" data-tab="nav_4"><a href="javascript:;">分享设置</a></li> 
+</ul>
+ </div>
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+  <div class="panel panel-default nav_tab nav_0">
+    <div class="panel-heading" role="tab" id="headingOne">
+      <h5 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">基本参数</a>
+      </h5>
+    </div>
+
+      <div class="panel-body">
+        <input type="hidden" name="reply_id" value="{$reply['id']}" />
+        <div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">活动标题</label>
+          <div class="col-sm-9">
+            <input class="form-control" type="text" value="{$reply['title']}" class="span2" name="title">
+            <div class="help-block">活动的标题</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">缩略图</label>
+          <div class="col-sm-9">
+            {php echo tpl_form_field_image('thumb',$reply['thumb'],'', $options);}
+            <div class="help-block">图文消息的缩略图</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">活动简介</label>
+          <div class="col-sm-9">
+            <textarea class="form-control" name="description">{$reply['description']}</textarea>
+            <div class="help-block">图文消息的简介</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">活动时间</label>
+          <div class="col-sm-4">
+            {php echo tpl_form_field_daterange('time', array('start'=>date('Y-m-d H:i:s',$reply['starttime']),'end'=>date('Y-m-d H:i:s',$reply['endtime'])), true)}
+            <div class="help-block">输入活动的起止时间</div>
+          </div>
+        </div>
+		<div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">活动状态</label>
+          <div class="col-sm-2">
+             <label><input type="radio" value="1" name="status" {if $reply['status'] == 1 }checked{/if}>正常</label>
+			 <label><input type="radio" value="0" name="status" {if $reply['status'] == 0 }checked{/if}>禁用</label>
+          </div>
+        </div>
+      </div>
+
+  </div>
+  <div class="panel panel-default nav_tab  nav_1">
+      <div class="panel-heading" role="tab" id="headingOne">
+      <h5 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">活动设置</a>
+      </h5>
+    </div>
+
+      <div class="panel-body">
+
+        <div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">是否关注</label>
+          <div class="col-sm-6">
+             <label><input type="radio" value="0" name="isfollow" {if $reply['isfollow'] == 0 }checked{/if}>不需要关注     </label>
+             <label><input type="radio" value="1" name="isfollow" {if $reply['isfollow'] == 1 }checked{/if}>参加需关注     </label>
+			 <label><input type="radio" value="2" name="isfollow" {if $reply['isfollow'] == 2 }checked{/if}>入座需关注     </label>
+			 <label><input type="radio" value="3" name="isfollow" {if $reply['isfollow'] == 3 }checked{/if}>参加与 入座都需要关注     </label>
+          </div>
+
+		  
+        </div>
+
+
+
+		
+		<div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">每桌人数</label>
+		  <div class="col-sm-4">
+            <div class="input-group">
+			  <label><input type="radio" value="6" name="desknum" {if $reply['desknum'] == 6 }checked{/if}>6人一桌　　    </label>
+              <label><input type="radio" value="8" name="desknum" {if $reply['desknum'] == 8 }checked{/if}>8人一桌　　    </label>
+              <label><input type="radio" value="10" name="desknum" {if $reply['desknum'] == 10 }checked{/if}>10人一桌　　  </label>
+            </div>
+			<div class="help-block">每桌显示人数。</div>
+          </div>
+        </div>
+        
+        
+		<div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">排行榜数量</label>
+		  <div class="col-sm-4">
+            <div class="input-group">
+              <input class="form-control" type="text" value="{$reply['rankingnum']}"name="rankingnum">
+              <span class="input-group-addon">人</span>
+            </div>
+			<div class="help-block">设置最大显示排行榜数量,0或默认不显示！</div>
+          </div>
+        </div>
+		
+		<div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">入桌消息提醒</label>
+          <div class="col-sm-6">
+             <label><input type="radio" value="0" name="ismsg" {if $reply['ismsg'] == 0 }checked{/if}>否    </label>
+             <label><input type="radio" value="1" name="ismsg" {if $reply['ismsg'] == 1 }checked{/if}>是    </label>
+			 <div class="help-block">选择“否”时，不给参加比赛用户发送被入桌客服信息。（需要开通客服信息接口权限）</div>
+          </div>
+        </div>
+		
+        <div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">自动锁定</label>
+          <div class="col-sm-8">
+            <div class="input-group">
+			 <span class="input-group-addon">每</span>
+              <input class="form-control" type="text" value="{$reply['perminute']}" class="span2" name="perminute">
+              <span class="input-group-addon">分钟超过</span>
+              <input class="form-control" type="text" value="{$reply['paddnum']}" class="span2" name="paddnum">
+              <span class="input-group-addon">人入桌，锁定</span>
+              <input class="form-control" type="text" value="{$reply['lockminutes']}" class="span2" name="lockminutes">
+              <span class="input-group-addon">分钟</span>
+            </div>
+			<div class="help-block">其中一个为0不锁定，修改锁定时间时，只生效后面的锁定，前面锁定的时间保持上一次设置的锁定时间！</div>
+          </div>
+        </div>
+
+
+
+		<div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">地区限制</label>
+          <div class="col-sm-8">
+            <input class="form-control" type="text" value="{$reply['area']}" class="span2" name="area">
+            <div class="help-block">请填写开放活动地区或城市，例如：北京市,上海市,湖南省,海南省,海口市等等。
+			可以支持，省，市县，区；
+			为空则不限制地区。多个地区用“,”分割。
+			
+			{if $this->module['config']['tencent_lbs_api_key']==""}
+			<div class="alert alert-danger" role="alert">设置接口（腾讯地图）API_KEY才能正常使用地区限制，<a href="{php echo url('profile/module/setting', array('m' => 'tyzm_tuanyuan'));}" target="_blank" >点击设置</a>。</div>
+			{/if}
+			
+			</div>
+          </div>
+        </div>
+
+	    <div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">未关注引导提示</label>
+          <div class="col-sm-9">
+            <input class="form-control" type="text" value="{$reply['followguide']}" class="span2" name="followguide">
+			<div class="help-block">设置关注入桌或参加时，未关注用户可见。</div>
+          </div>
+        </div>
+		<div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">虚拟中奖信息</label>
+          <div class="col-sm-9">
+            <textarea class="form-control" name="lotterylist"  rows="5">{$reply['lotterylist']}</textarea>
+			<div class="help-block">首页显示滚动中奖信息，一个一行！仅作虚拟显示，和真实数据没有关系！<br>
+			建议填写带*手机号，或是昵称。例如:137****9544或 那山更美。
+			
+			
+			</div>
+          </div>
+        </div>
+		<div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">默认留言</label>
+          <div class="col-sm-9">
+            <textarea class="form-control" name="usermessage"  rows="5">{$reply['usermessage']}</textarea>
+			<div class="help-block">入桌时默认显示留言，一个一行！随机显示！提高用户体验，用户一般懒得填。<br>			
+			</div>
+          </div>
+        </div>
+		<div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">核销密码</label>
+          <div class="col-sm-9">
+            <input class="form-control" type="number" pattern="[0-9]*" value="{$reply['password']}" class="span2" name="password">
+            <div class="help-block">用户获得奖品后，管理员可以通过“核销密码”在用户手机进行核销！只能填写正整数</div>
+          </div>
+        </div>
+	  </div>
+</div>
+  <div class="panel panel-default nav_tab  nav_2">
+    <div class="panel-heading" role="tab" id="headingTwo">
+      <h5 class="panel-title">
+        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">入桌设置</a>
+      </h5>
+    </div>
+
+      <div class="panel-body">
+	    <div class="form-group">
+            <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style='color:red'>*</span>桌布</label>
+            <div class="col-sm-9 col-xs-12">
+               	{php echo tpl_form_field_image('deskimg',$reply['deskimg']);}
+				<div class="help-block">桌布图片，必须为正方形图片，建议 200*200px。</div>
+            </div>
+        </div>
+		<div class="form-group">
+            <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style='color:red'>*</span>背景图片</label>
+            <div class="col-sm-9 col-xs-12">
+               	{php echo tpl_form_field_image('bgimg',$reply['bgimg']);}
+				<div class="help-block">背景图片</div>
+            </div>
+        </div>
+	    <!--div class="form-group">
+            <label class="col-xs-12 col-sm-3 col-md-2 control-label">背景色</label>
+            <div class="col-sm-9 col-xs-12">
+               	{php echo tpl_form_field_color('bgcolor', $reply['bgcolor'])}
+				<div class="help-block">全局背景颜色</div>
+            </div>
+        </div-->
+		<div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">领奖提示</label>
+          <div class="col-sm-9">
+            <input class="form-control" type="text" value="{$reply['accept']}" class="span2" name="accept">
+			<div class="help-block">用户获得奖品，并提交领奖信息后显示！</div>
+          </div>
+        </div>
+		<div class="form-group"> 
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">获奖填写信息</label>
+		  
+
+		  
+          <div class="col-sm-9">
+			<div class="alert alert-danger" role="alert">
+				<span class="" style="    text-align: left;">
+					<input type="checkbox" name="inp_1" value="1" {if $reply['inpcon']['inp_1']==1 } checked="checked" {/if}>姓名  &nbsp;
+					<input type="checkbox" name="inp_2" value="1" {if $reply['inpcon']['inp_2']==1 } checked="checked" {/if}>手机号  &nbsp;
+					<input type="checkbox" name="inp_3" value="1" {if $reply['inpcon']['inp_3']==1 } checked="checked" {/if}>微信号  &nbsp;
+					<input type="checkbox" name="inp_4" value="1" {if $reply['inpcon']['inp_4']==1 } checked="checked" {/if}>QQ号  &nbsp;
+					<input type="checkbox" name="inp_5" value="1" {if $reply['inpcon']['inp_5']==1 } checked="checked" {/if}>收货地址  &nbsp;
+				</span>
+			</div>
+			<div class="help-block">选中，则领奖时需要填写该信息！至少选中一项！</div>
+          </div>
+        </div>
+		<div class="form-group">
+			<label class="col-xs-12 col-sm-2 col-md-2  control-label">活动介绍</label>
+			<div class="col-sm-8">
+ {php echo tpl_ueditor('details', $reply['details']);}	
+				
+				<div class="help-block">活动详细说明</div>
+			</div>
+		</div>
+
+      </div>
+  </div>
+  <div class="panel panel-default nav_tab   nav_5">
+    <div class="panel-heading" role="tab" id="headingThree">
+      <h5 class="panel-title">
+        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">奖品设置</a>
+      </h5>
+    </div>
+ <div class="panel-body">
+
+		 <div class="row">
+
+{loop $prize $item}
+  <div class="col-sm-4 col-md-4 gzclas"><div class="thumbnail"><img src="{$item['prizeicon']}" class="" alt="点击上传图片"><input type="hidden" value="{$item['prizeicon']}" name="prizeicon[]"><span class="help-block">点击上传奖品图片，120*120px</span><div class="caption"><div class="form-group"><div class="input-group"><span class="input-group-addon">奖品名称</span><input type="text" placeholder="输入奖品名称" value="{$item['prizetitle']}" class="form-control" name="prizetitle[]"></div></div><div class="form-group"><div class="input-group"><span class="input-group-addon">助力人数</span><input type="text" placeholder="输入获得助力人数" value="{$item['prizepeople']}" class="form-control" name="prizepeople[]"></div></div><div class="form-group"><div class="input-group"><span class="input-group-addon">实际数量</span><input type="text" placeholder="输入奖品实际发放数量" value="{$item['prizenum']}" class="form-control" name="prizenum[]"></div></div><div class="form-group"><div class="input-group"><span class="input-group-addon">显示数量</span><input type="text" placeholder="输入奖品显示数量" value="{$item['prizeshownum']}" class="form-control" name="prizeshownum[]"></div></div><!--div class="form-group"><div class="input-group"><span class="input-group-addon">中奖概率</span><input type="text" placeholder="输入中奖概率" value="{$item['prizeodds']}" class="form-control" name="prizeodds[]"></div></div--><span class="help-block"></span><button type="button" class="btn btn-danger btn_del">删除</button></div></div></div>
+{/loop}
+<span id="prize_insert_flag" style="display: none"></span>
+</div>
+		<div class="form-group">
+
+			<div class="col-sm-9">
+				<button id="btn_add_prize" type="button" class="btn btn-warning">
+					<span class="glyphicon glyphicon-plus"></span> 添加
+				</button>
+			</div>
+			
+		</div> 
+		 
+			<script type="text/javascript">
+require(['jquery', 'util'], function($, util){
+					$(function(){
+						// 对象绑定点击事件
+						$('.thumbnail img').click(function(){
+						    thimg=$(this);
+							util.image('',function(data){
+								thimg.attr("src",data['url']);
+								thimg.next().val(data['url']);
+							},'',{'width'  :120,'height' : 120,'thumb': true} );
+						});
+	
+$('#btn_add_prize').bind('click', function(){
+		var content = '', v = '';
+    content += '<div class="col-sm-4 col-md-4 gzclas">';
+	content += '<div class="thumbnail">';
+      content += '<img src="" class="" alt="点击上传图片">';
+	  content += '<input type="hidden" value="" name="prizeicon[]">';
+	  content += '<span class="help-block">点击上传奖品图片，120*120px</span>';
+      content += '<div class="caption">';
+		  content += '<div class="form-group">';
+            content += '<div class="input-group">';
+              content += '<span class="input-group-addon">奖品名称</span>';
+			  content += '<input type="text" placeholder="输入奖品名称" value="" class="form-control" class="form-control span2" name="prizetitle[]">';
+            content += '</div>';
+          content += '</div>';
+		  
+		  content += '<div class="form-group"><div class="input-group"><span class="input-group-addon">助力人数</span><input type="text" placeholder="输入获得助力人数" value="" class="form-control" name="prizepeople[]"></div></div>';
+		  content += '<div class="form-group">';
+            content += '<div class="input-group">';
+              content += '<span class="input-group-addon">实际数量</span>';
+			  content += '<input type="text" placeholder="输入奖品实际发放数量" value="" class="form-control" class="form-control span2" name="prizenum[]">';
+            content += '</div>';
+          content += '</div>';
+		  content += '<div class="form-group">';
+            content += '<div class="input-group">';
+              content += '<span class="input-group-addon">显示数量</span>';
+			  content += '<input type="text" placeholder="输入奖品显示数量" value="" class="form-control" class="form-control span2" name="prizeshownum[]">';
+            content += '</div>';
+          content += '</div>';
+		  /*
+		 content += '<div class="form-group">';
+            content += '<div class="input-group">';
+              content += '<span class="input-group-addon">中奖概率</span>';
+			  content += '<input type="text" placeholder="输入中奖概率" value="" class="form-control" class="form-control span2" name="prizeodds[]">';
+            content += '</div>';
+          content += '</div>';
+		  */
+		content += '<span class="help-block"></span>';
+        content += '<button type="button" class="btn btn-danger btn_del">删除</button>';
+      content += '</div>';
+    content += '</div>';
+  content += '</div>';
+		$('#prize_insert_flag').before(content);
+		$('.btn_del').bind('click', function(){
+			var obj = $(this).parent().parent().parent();
+			obj.slideUp(300, function() {
+				obj.remove();
+			});
+		});
+		$('.thumbnail img').click(function(){
+				thimg=$(this);
+				util.image('',function(data){
+					thimg.attr("src",data['url']);
+					thimg.next().val(data['url']);
+				},'',{'width'  :120,'height' : 120,'thumb': true});
+		});
+	});
+//						
+					});
+				});
+				
+	function removeItem(obj) {
+	    $(obj).parent().parent().remove();
+	}
+	
+
+	
+               </script>
+		
+		     </div>
+			 
+    
+
+
+  </div>
+  <div class="panel panel-default nav_tab  nav_3">
+    <div class="panel-heading" role="tab" id="headingThree">
+      <h5 class="panel-title">
+        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">广告位设置</a>
+      </h5>
+    </div>
+      <div class="panel-body">
+        <div class="panel-body">
+		<div class="row">
+  <div class="col-md">
+  <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">幻灯片广告</h3>
+      </div>
+      <div class="panel-body">
+	  <div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">广告随机排序</label>
+          <div class="col-sm-6">
+             <label><input type="radio" value="0" name="randsider" {if $reply['randsider'] == 0 }checked{/if}>否    </label>
+             <label><input type="radio" value="1" name="randsider" {if $reply['randsider'] == 1 }checked{/if}>是    </label>
+			 <div class="help-block">选择随机排序时，每次进入，幻灯片的显示顺序按随机，否则按照后台上传的循序排列！</div>
+          </div>
+        </div>
+			{loop $addata $item}
+			<div>
+				<div class="form-group">
+				<label class="col-xs-12 col-sm-3 col-md-2 control-label">广告名称</label>
+				<div class="col-sm-9">
+					<input type="text" placeholder="广告名称" value="{$item['adtitle']}" class="form-control" name="adtitle[]">
+					<span class="help-block"></span>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-xs-12 col-sm-3 col-md-2 control-label">广告图片</label>
+				<div class="col-sm-9">
+					<div class=""><a href="javascript:;" class="thumbadimg"><img src="{$item['adimg']}" width="320" height="120" ><input type="hidden" value="{$item['adimg']}" name="adimg[]"></a></div>
+					<div class="help-block">建议选择320*120以上的图片</div>
+				</div>
+				
+			</div>
+			<div class="form-group">
+				<label class="col-xs-12 col-sm-3 col-md-2 control-label">广告URL</label>
+				<div class="col-sm-9">
+					<input type="text" value="{$item['adurl']}" placeholder="请输入广告url，带http://" class="form-control" name="adurl[]">
+					<span class="help-block"></span>
+				</div>
+			</div>
+			<div class="form-group"><label class="col-xs-12 col-sm-3 col-md-2 control-label"></label><div class="col-sm-9"><button type="button" class="btn btn-danger btn_del">删除</button></div></div>
+				<hr/>
+			</div>
+			
+			{/loop}
+
+		<span id="award_insert_flag" style="display: none"></span>
+		<div class="form-group">
+			<label class="col-xs-12 col-sm-3 col-md-2 control-label">
+			</label>
+			<div class="col-sm-9">
+				<button id="btn_add_ad" type="button" class="btn btn-warning">
+					<span class="glyphicon glyphicon-plus"></span> 添加广告幻灯片
+				</button>
+				<div class="help-block">不添加则不显示</div>
+			</div>
+			
+		</div>
+		     </div>
+			 <script type="text/javascript">
+				require(['jquery', 'util'], function($, util){
+					$(function(){
+						// 对象绑定点击事件
+						$('.thumbadimg img').click(function(){
+						    thimg=$(this);
+							util.image('',function(data){
+								thimg.attr("src",data['url']);
+								thimg.next().val(data['url']);
+							},'',{'width'  :320,'height' : 120,'thumb': true} );
+						});
+						$('.btn_del').bind('click', function(){
+			var obj = $(this).parent().parent().parent();
+			obj.slideUp(300, function() {
+				obj.remove();
+			});
+		});
+						
+	var ad_row_data = [
+		['广告名称', '<input type="text" placeholder="广告名称" class="form-control" name="adtitle[]">', '广告幻灯片显示，不设置则不显示'],
+		['广告图片', '<div class=""><a href="javascript:;" class="thumbadimg"><img src="{$reply['addimg']}" width="320" height="120" ><input type="hidden" value="{$reply['adimg']}" name="adimg[]"></a></div>', '建议选择320*120以上的图片'],
+		['广告URL', '<input type="text" placeholder="请输入广告url，带http://" class="form-control" name="adurl[]">', '填写带http://的URL链接，例如：http://www.baidu.com'],
+	];			
+$('#btn_add_ad').bind('click', function(){
+		var content = '', v = '';
+		content += '<div>';
+		for (var i=0; i<ad_row_data.length; i++) {
+			v = ad_row_data[i];
+			content += '<div class="form-group">';
+			content += '<label class="col-xs-12 col-sm-3 col-md-2 control-label">'+v[0]+'</label>';
+			content += '<div class="col-sm-9">';
+			content += v[1];
+			content += '<div class="help-block">'+v[2]+'</div>';
+			content += '</div>';
+			content += '</div>';
+		}
+		content += '<div class="form-group">';
+		content += '<label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>';
+		content += '<div class="col-sm-9">';
+		content += '<button type="button" class="btn btn-danger btn_del">删除</button>';
+		content += '</div>';
+		content += '</div>';
+		content += '<hr/>'; 
+		content += '</div>';
+		$('#award_insert_flag').before(content);
+		$('.btn_del').bind('click', function(){
+			var obj = $(this).parent().parent().parent();
+			obj.slideUp(300, function() {
+				obj.remove();
+			});
+		});
+		$('.thumbadimg img').click(function(){
+						    thimg=$(this);
+							util.image('',function(data){
+								thimg.attr("src",data['url']);
+								thimg.next().val(data['url']);
+							},'',{'width'  :320,'height' : 120,'thumb': true});
+		});
+	});
+//						
+					});
+				});
+               </script>
+    </div>
+		</div>
+
+</div>
+	</div>
+      </div>
+  </div> </div>
+  <div class="alert alert-danger nav_tab  nav_7" role="alert">
+    红包只发给入桌的用户，每次用户入桌后，可有一次抽奖机会！只支持认证服务号，或借权认证服务号。
+</div>
+
+ <div class="panel panel-default nav_tab  nav_7">
+    <div class="panel-heading" role="tab">
+      <h5 class="panel-title">
+        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">红包配置</a>
+      </h5>
+    </div>
+      <div class="panel-body">
+	    		
+		<div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">红包抽奖</label>
+          <div class="col-sm-6">
+             <label><input type="radio" value="0" name="isredpack" {if $reply['isredpack'] == 0 }checked{/if}>否    </label>
+             <label><input type="radio" value="1" name="isredpack" {if $reply['isredpack'] == 1 }checked{/if}>是    </label>
+			 <div class="help-block">开启红包抽奖时，入桌的用户，会弹出抽奖页面，概率和发送数量，可以在下面设置。只对入桌用户有效！</div>
+          </div>
+        </div>
+		<div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">红包总数</label>
+          <div class="col-sm-2">
+            <div class="input-group">
+              <input class="form-control" type="text" value="{$reply['redpackettotal']}" class="span2" name="redpackettotal">
+              <span class="input-group-addon">个</span>
+            </div>
+			<span class="help-block">活动总共发红包的总数</span>
+          </div> 
+        </div>
+			<div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">红包概率</label>
+          <div class="col-sm-2">
+            <div class="input-group">
+              <input class="form-control" type="text" value="{$reply['probability']}" class="span2" name="probability">
+              <span class="input-group-addon">%</span>
+            </div>
+			<span class="help-block">用户抽奖获得红包的概率，可以填写0.01 或2等数字。</span>
+          </div> 
+        </div>
+		<div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">每日红包个数</label>
+          <div class="col-sm-2">
+            <div class="input-group">
+              <input class="form-control" type="text" value="{$reply['redpacketnum']}" class="span2" name="redpacketnum">
+              <span class="input-group-addon">个</span>
+            </div>
+			<span class="help-block">每天领取红包个数</span>
+          </div> 
+        </div>
+		<div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">每人最多获得红包数</label>
+          <div class="col-sm-2">
+            <div class="input-group">
+              <input class="form-control" type="text" value="{$reply['everyonenum']}" class="span2" name="everyonenum">
+              <span class="input-group-addon">个</span>
+            </div>
+			<span class="help-block">每天领取红包个数</span>
+          </div> 
+        </div>
+		<div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">IP限制</label>
+          <div class="col-sm-2">
+            <div class="input-group">
+              <input class="form-control" type="text" value="{$reply['ipplace']}" class="span2" name="ipplace">
+              <span class="input-group-addon">个</span>
+            </div>
+			<span class="help-block">每天同一个ip，只能发X个红包</span>
+          </div>
+        </div>
+		<div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">获得红包地区</label>
+          <div class="col-sm-8">
+            <input class="form-control" type="text" value="{$reply['redpacketnum']}" class="span2" name="redpacketnum">
+            <div class="help-block">请填写获得红包地区或城市，例如：北京市,上海市,湖南省,海南省,海口市等等。
+			可以支持，省，市县，区；
+			为空则不限制地区。多个地区用“,”分割。
+			
+			{if $this->module['config']['tencent_lbs_api_key']==""}
+			<div class="alert alert-danger" role="alert">设置接口（腾讯地图）API_KEY才能正常使用地区限制，<a href="{php echo url('profile/module/setting', array('m' => 'tyzm_tuanyuan'));}" target="_blank" >点击设置</a>。</div>
+			{/if}
+			
+			</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">随机红包</label>
+          <div class="col-sm-4">
+            <div class="input-group">
+              <input class="form-control" type="text" value="{$reply['limitstart']}" class="span2" name="limitstart">
+              <span class="input-group-addon">-</span>
+              <input class="form-control" type="text" value="{$reply['limitend']}" class="span2" name="limitend">
+              <span class="input-group-addon">元</span>
+            </div>
+          </div>
+		  <span class="help-block">填写发红包的随机数额，大于1，小于200，可以填写1.01。</span>
+        </div>
+      </div>
+	  
+
+  </div>
+ <div class="panel panel-danger  nav_tab  nav_7">
+  <div class="panel-heading">
+    <h3 class="panel-title">红包文字设置</h3>
+  </div>
+  <div class="panel-body">
+    	  		<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger">*</span> 活动名称</label>
+					<div class="col-sm-8 col-xs-12">
+						<input type="text" class="form-control" name="act_name" value="{$reply['act_name']}"/>
+						<span class="help-block"></span>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger">*</span>商户名称</label>
+					<div class="col-sm-8 col-xs-12">
+						<input type="text" class="form-control" name="send_name" value="{$reply['send_name']}"/>
+						<span class="help-block">红包发送者名称</span>
+					</div>
+				</div> 
+
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger">*</span>红包祝福语</label>
+					<div class="col-sm-8 col-xs-12">
+						<input type="text" class="form-control" name="wishing" value="{$reply['wishing']}"/>
+						<span class="help-block">例如：感谢您参加猜灯谜活动，祝您元宵节快乐！</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger"></span><span class="text-danger">*</span>备注</label>
+					<div class="col-sm-8 col-xs-12">
+						<textarea name="remark" class="form-control js-a" cols="30" rows="3">{$reply['remark']}</textarea>
+						<span class="help-block">备注信息：猜越多得越多，快来抢！</span>
+					</div>
+				</div>
+  </div>
+</div>
+
+    <div class="panel panel-default nav_tab   nav_4">
+    <div class="panel-heading" role="tab" id="headingThree">
+      <h5 class="panel-title">
+        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">分享设置</a>
+      </h5>
+    </div>
+      <div class="panel-body">
+        <div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">分享标题</label>
+          <div class="col-sm-9">
+            <input class="form-control" type="text" value="{$reply['sharetitle']}" class="span2" name="sharetitle">
+            <div class="help-block">分享给好友或朋友圈时的标题</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">分享图片</label>
+          <div class="col-sm-9">
+            {php echo tpl_form_field_image('shareimg',$reply['shareimg'],'', $options);}
+            <div class="help-block">分享给好友或朋友圈时的图片</div>
+          </div>
+        </div>
+                <div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">分享描述</label>
+          <div class="col-sm-9">
+            <textarea class="form-control" name="sharedesc">{$reply['sharedesc']}</textarea>
+            <div class="help-block">分享给好友或朋友圈时的描述</div>
+          </div>
+        </div>
+      </div>
+
+  </div>
+</div>
+
+<script>
+
+
+
+$(document).ready(function(){
+
+
+  $('.btn_clear_ad').click(function(){ 
+	$("input[name='voteadimg']").val("");
+	$(".tanchuad .thumbadimg img").attr("src","");
+	$("input[name='voteadurl']").val("");
+  });
+    //Default Action  
+    $(".nav_tab").hide(); //Hide all content  
+    $(".nav-pills li:first").addClass("active").show(); //Activate first tab  
+    $(".nav_tab:first").show(); //Show first tab content  
+      
+    //On Click Event  
+    $(".nav-pills li").click(function() {  
+        $(".nav-pills li").removeClass("active"); //Remove any "active" class  
+        $(this).addClass("active"); //Add "active" class to selected tab  
+        $(".nav_tab").hide(); //Hide all tab content  
+        var activeTab = $(this).attr("data-tab"); //Find the rel attribute value to identify the active tab + content  
+        $("."+activeTab).show(); //Fade in the active content  
+        return false;  
+    });  
+  
+  	
+  window.initReplyController = function($scope) {
+    
+  };
+  window.validateReplyForm = function(form, $, _, util, $scope) {
+    
+    return true;
+  };
+});
+
+ 
+</script>

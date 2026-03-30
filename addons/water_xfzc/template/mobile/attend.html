@@ -1,0 +1,84 @@
+{template 'header'}
+<body ontouchstart="" class="platform_mobile">
+<div class="qsc-alert" style="display: none;">
+<i class="info-base64"></i><span></span>
+</div>
+<div class="modal qsc-modal qsc-modal-loading" id="qsc-modal-loading" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal-dialog middle">
+<div class="modal-content">
+<i class="icon-white icon-loading-base64"><i class="icon-white icon-loading-box-base64 icon-spin"></i></i><span>加载中</span>
+</div>
+</div>
+</div>
+<div class="modal qsc-modal qsc-modal-loading" id="qsc-modal-loading-new">
+<div class="modal-dialog middle">
+<div class="modal-content">
+<i class="icon-loading-base64"><i class="icon-loading-box-base64 icon-spin"></i></i><span>加载中</span>
+</div>
+</div>
+</div>
+<div class="content project-support">
+<form action="{php echo $this->createMobileUrl('dopay')}" method="POST" name="project-support" id="project-support">
+<input name="quantity" type="hidden" value="1">
+<input name="themeid" type="hidden" value="{$theme['id']}">
+<input name="memberid" type="hidden" value="{$memberid}">
+	<div class="qsc-list-group project-forhead">
+		<a href="{php echo $this->createMobileUrl('index',array('themeid'=>$theme['id'],'memberid'=>$memberid))}"
+			class="list-item">
+			<div class="project-thumb">
+				<img class="lazy-load" data-original="{$_W['attachurl']}{$theme['hlogo']}" src="../addons/water_xfzc/template/images/loading2.gif" width="48"
+					height="48" style="display: inline;">
+				<div class="project-thumb-title">
+					<span>{$theme['tname']}</span>
+				</div>
+				<i class="icon icon-arrow-right"></i>
+			</div>
+		</a>
+	</div>
+<div class="btn-group btn-block lib-radio reward-lib-radio" id="support-rewards" data-toggle="buttons">
+<h5>选择回报(可在我的礼物查看)</h5>
+    {php $index = 1;}
+    {loop $list $item}
+	<label for="reward-{$item['id']}" class="btn btn-block is_reward is_money {if $index == "1"}first active{/if}"  data-id="{$item['id']}"> 
+		<input type="radio" id="reward-{$item['id']}" name="goodsid" value="{$item['id']}" {if $index == "1"}checked="checked"{/if}> 
+		<i class="icon"> 
+			<img src="{$_W['attachurl']}{$item['jpimg']}" width="32" height="32">
+		</i> 
+		<span><h5>支持 <strong class="text-danger">{$item['gprice']}元</strong></h5><small>送{$item['gname']}</small>
+		</span>
+	</label> 
+	{php $index++;}
+	{/loop}
+</div>
+<div class="qsc-list-group support-quantity">
+<div class="qsc-form">
+<div class="input-row">
+<label class="control-label">数量</label>
+<input type="tel" name="quantity" pattern="[0-9]*" class="control-input" placeholder="填写支持的数量 (选填)" value="1" maxlength="6">
+</div>
+</div>
+</div>
+<div class="qsc-list-group">
+<h5>跟小伙伴们说一句话吧</h5>
+<div class="qsc-form">
+<div class="input-row input-cell">
+<textarea rows="3" name="comments" id="comments" class="control-input" placeholder="默认: 支持"></textarea>
+<input name="generate_comments" id="generate_comments" type="hidden" value="支持">
+</div>
+</div>
+</div>
+<div class="footer-btn">
+{if $samepeople == 1}
+<input type="button" disabled="disabled" class="btn btn-success btn-lg btn-block" value="不可以支持自己的活动">
+{elseif $maxpay == 1}
+<input type="button" disabled="disabled" class="btn btn-success btn-lg btn-block" value="每人最多支持{$system['fanszf']}次">
+{else}
+<input type="submit" name="submit" class="btn btn-success btn-lg btn-block" value="立即支持">
+{/if}
+<input name="payment" type="hidden" value="11">
+</div>
+</form>
+</div>
+<script type="text/javascript" src="../addons/water_xfzc/template/js/project.min.js"></script>
+
+</body></html>

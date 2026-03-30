@@ -1,0 +1,134 @@
+{template "parking/base/header"}
+
+<body>
+<div class="wx_box">
+    <div class="cashier">
+        <dl>
+            <dt>待支付：<i>￥{$total}元</i></dt>
+            <dd>
+                <h4>第三方支付</h4>
+                <p><em><img src="../addons/ewei_shopv2/static/images/img/license_icon01.png"/></em><span>微信支付</span><i class="cashier_check" type="wechat"></i></p>
+                <p><em><img src="../addons/ewei_shopv2/static/images/img/license_icon02.png"/></em><span>支付宝支付</span><i class="cashier_check" type="alipay"></i></p>
+            </dd>
+        </dl>
+        <input type="hidden" name="payType" id="payType" value="" />
+        {if $total != ''}
+        <p class="cashier_pay" id="pay">支付 ¥{$total}元</p>
+        {else}
+        <p class="cashier_pay cashier_pay_none">支付 ¥0.00元</p>
+        {/if}
+    </div>
+</div>
+<div class="popup_tips"></div>
+<form action="" method="post" id="wp"></form>
+
+<form action="" method="get" id="aliwp"></form>
+</body>
+<script type="text/javascript">
+    $(".cashier_check").click(function(){
+        $(this).toggleClass("cashier_checked");
+        $(this).parents("p").siblings("p").find(".cashier_check").removeClass("cashier_checked");
+        $(this).parents("dd").siblings("dd").find(".cashier_check").removeClass("cashier_checked");
+    });
+
+    $('.cashier_check').bind('click',function() {
+        if($(this).hasClass('cashier_checked')) {
+            $('#payType').val($(this).attr('type'))
+        }
+    })
+
+    var isRun = false
+    $('#pay').bind('click',function() {
+        if (isRun){
+            return false;
+        }
+        isRun=true;
+        var paytype = $('#payType').val();
+        if(paytype == '') {
+            alert('请选择支付方式');
+            return false;
+        } else {
+
+            // 微信支付
+            if(paytype == 'wechat') {
+
+                $.ajax({
+                    url:"{php echo mobileUrl('parking/prepaid/prepaidPay')}&num={$num}&type="+paytype,
+                    type:'POST',
+                    dataType:'json',
+                    data:{'ms':{$ms}},
+                    success:function(res) {
+                        console.log(res);
+                        if(res.status == 200) {
+                            var datas = JSON.parse(res.result.message);
+                            var inp = '';
+                            $.each(datas,function(inx,val){
+                                inp += '<input type="hidden" name="'+inx+'" value="'+val+'">';
+                            })
+
+                            $('#wp').append(inp);
+                            $('#wp').attr('action','http://shop.gogo198.cn/addons/ewei_shopv2/payment/wechat/pay.php');
+                            $('#wp').submit();
+
+                        } else {
+                            alert(res.result.message);
+                            setTimeout(function () {
+                                window.location.href="{php echo mobileUrl('parking/info')}&num={$num}";
+                            },2000);
+                        }
+                    }
+                })
+
+            } else { // 支付宝
+
+                $.ajax({
+                    url:"{php echo mobileUrl('parking/prepaid/prepaidPay')}&num={$num}&type="+paytype,
+                    type:'POST',
+                    dataType:'json',
+                    data:{'ms':{$ms}},
+                    success:function(res) {
+
+                        if(res.status == 200) {
+
+                            urls = 'http://shop.gogo198.cn/addons/ewei_shopv2/payment/wechat/alipay.php';
+                            var inp = '<input type="hidden" name="pay_url" value="'+res.result.message+'">';
+                            $('#aliwp').append(inp);
+                            $('#aliwp').attr('action',urls);
+                            $('#aliwp').submit();
+
+                        } else {
+                            alert(res.result.message);
+                            setTimeout(function () {
+                                window.location.href="{php echo mobileUrl('parking/info')}&num={$num}";
+                            },2000);
+                        }
+                    }
+                })
+            }
+
+
+
+            /*$(".popup_tips").html("加载中...");
+            $(".popup_tips").show();
+            $.ajax({
+                url:"{php echo mobileUrl('parking/prepaid/prepaidPay')}&num={$num}&type="+paytype,
+                type:'POST',
+                dataType:'json',
+                data:{'ms':{$ms}},
+                success:function(res) {
+                    $(".popup_tips").hide();
+                    if(res.status ==200){
+                        window.location.href = res.result.message;
+                    }else{
+                        alert(res.result.message);
+                        setTimeout(function () {
+                           window.location.href="{php echo mobileUrl('parking/info')}&num={$num}";
+                        },2000);
+                    }
+                }
+            });*/
+        }
+    })
+</script>
+
+{template "parking/base/footer"}

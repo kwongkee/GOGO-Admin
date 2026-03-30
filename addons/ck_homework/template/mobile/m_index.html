@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="Cache-Control" content="no-cache"/>
+<title>学生中心 - {$config['webtitle']}</title>
+<meta content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport" />
+<meta name="MobileOptimized" content="240" />
+<meta http-equiv="Expires" content="0" />
+<meta http-equiv="Cache-Control" content="no-cache" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta content="yes" name="apple-mobile-web-app-capable" />
+<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+<link rel="stylesheet" href="{$templateurl}css/yun_wap_member.css" type="text/css"/>
+<link rel="stylesheet" href="{$templateurl}css/wap_css.css" type="text/css"/>
+<style>
+.yuessjf a{display:block; color:#fff; border:1px solid #fff; border-radius:12px; padding:0 12px; line-height:20px;}
+.user_nav_box ul li span{ position:absolute; line-height:18px; font-size:12px; background:#f30; border-radius:12px; color:#fff; padding:0 6px; text-align:center; top:10px;}
+</style>
+<script src="{$templateurl}js/jquery-1.8.0.min.js" language="javascript"></script>
+</head>
+
+<body>
+<div class="body_wap">
+<header>
+  <div class="header_bg"> <a class="hd-lbtn" href="{php echo $this->createMobileUrl('index');}"><i class="header_top_l iconfont"></i></a>
+    <div class="header_h1">学生中心</div>
+  </div>
+</header>
+<div class="main_member_body">
+<div class="yuess">余额<br /><span>{$profile['credit2']}</span><a href="{php echo $this->createMobileUrl('topup');}">充值</a></div>
+<div class="yuessjf">积分<br /><span>{php echo number_format($profile['credit1']);}</span>
+  <a href="https://shop.gogo198.cn/app/index.php?i=3&c=entry&m=ewei_shopv2&do=mobile">兑换</a>
+{if strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger') === false }
+<a href="{php echo $this->createMobileUrl('logout');}">退出</a>
+{/if}<br />
+
+</div>
+  <div class="user_index_bg">
+    <div class="user_index_photo">
+    {$user_show['name']}<br />
+    <a href="{php echo $this->createMobileUrl('m_profile');}">
+    {if $user_show[headimg]}
+    <img src="{php echo tomedia($user_show[headimg]);}" border="0">
+    {else}
+    <img src="{$templateurl}images/weixin_friend.png" border="0" >
+    {/if}
+    </a>
+    </div>
+    <div class="user_index_name">我的学号：{$user_show['usernumber']} </div>
+    <div style="position:absolute; top:150px; width:100%;">
+      <div class="user_index_resume_no" >
+		{if $user_show[groupsid] > 0}
+		<a href="{php echo $this->createMobileUrl('m_viplevel', array('op'=>'show','tab'=>'continue','id'=>$user_show['groupsid']));}" class="user_index_resume_cj">{$level_list[$user_show[groupsid]]['level_name']}到期时间：{php echo date('Y-m-d H:i', $user_show['endtime']);} [续费]</a>
+		{else}
+		<a href="{php echo $this->createMobileUrl('m_viplevel');}" class="user_index_resume_cj">[购买VIP]</a>
+		{/if}
+		&nbsp;&nbsp;&nbsp;&nbsp;			
+	  </div>
+    </div>
+  </div>
+  <section>
+    <div class="m_index_msg">
+      <dl class="m_index_msg_list">
+        <a href="{php echo $this->createMobileUrl('m_homework');}">
+        <dt>{$total_workwz}</dt>
+        <dd>未完成的作业</dd>
+        </a>
+      </dl>
+      <dl class="m_index_msg_list">
+        <a href="{php echo $this->createMobileUrl('m_cwanswer');}">
+        <dt>+{$total_ctnews}</dt>
+        <dd>今日错题</dd>
+        </a>
+      </dl>
+      <dl class="m_index_msg_list">
+        <a href="{php echo $this->createMobileUrl('knowledge', array('op'=>'lsit','statep'=>1));}">
+        <dt>{$total_zsdw}</dt>
+        <dd>未掌握的知识点</dd>
+        </a>
+      </dl>
+    </div>
+  </section>
+  <div class="clear"></div>
+  <section>
+    <div class="user_nav_box average4">
+      <ul>
+        <li><a href="{php echo $this->createMobileUrl('m_theclass');}" ><i class="user_nav_box_icon user_nav_box_icon_jl"></i>我的班级</a></li>
+        <li><a href="{php echo $this->createMobileUrl('m_homework');}" ><span>{$total_workwz}</span><i class="user_nav_box_icon user_nav_box_icon_tz"></i>我的作业</a></li>
+        <li> <a href="{php echo $this->createMobileUrl('m_cwanswer');}"><i class="user_nav_box_icon user_nav_box_icon_sq"></i>错题集</a></li>
+        <li> <a href="{php echo $this->createMobileUrl('knowledge', array('op'=>'lsit','statep'=>1));}" ><i class="user_nav_box_icon user_nav_box_icon_sc "></i>未掌握的知识点</a></li>
+        <li> <a href="{php echo $this->createMobileUrl('knowledge', array('op'=>'lsit','statep'=>2));}"><i class="user_nav_box_icon user_nav_box_icon_eye"></i>已掌握的知识点</a></li>
+        <li><a href="{php echo $this->createMobileUrl('m_chongzuo');}"><i class="user_nav_box_icon user_nav_box_icon_jz"></i>我要做习题</a></li>
+        <li> <a href="{php echo $this->createMobileUrl('m_statistical');}"><i class="user_nav_box_icon user_nav_box_icon_jzsc"></i>统计分析</a></li>
+		<li> <a href="{php echo $this->createMobileUrl('m_problem');}"><span>{$total_tw}</span><i class="user_nav_box_icon user_nav_box_icon_sq"></i>向老师提问</a></li>
+      </ul>
+    </div>
+  </section>
+    <div class="clear"></div>
+<section>
+  <div class="yun_wap_notice sxl"><span class="yun_wap_notice_tit"><i class="yun_wap_notice_tit_s"></i></span>
+    <ul class="yun_wap_notice_list sxlist">
+	  {loop $list_notice $value}
+      <li><a href="{php echo $this->createMobileUrl('notice', array('op'=>'show','id'=>$value['id']));}">{$value['titlename']}</a></li>
+	  {/loop}
+    </ul>
+  </div>
+</section>
+<style>.tips{display:none;}</style>
+<div class="clear"></div>
+<section>
+  <div id="ad" class="flexslider">
+    <ul class="slides">
+		{loop $list_slide $value}
+		<li><a href="{$value[urlt]}" ><img alt="{$value[titlename]}" src="{php echo tomedia($value[imgurl]);}" width='100%'/></a></li>
+		{/loop}
+    </ul>
+  </div>
+</section>
+   <div class="clear"></div>
+  <section>
+    <div class="user_nav_box">
+      <div class="user_nav_box_tit"><span class="user_nav_box_tit_s">在线学习</span></div>
+      <ul>
+        <li><a href="{php echo $this->createMobileUrl('knowledge');}" ><i class="user_nav_box_icon user_nav_box_icon_jl"></i>知识点学习</a></li> 
+        <li> <a href="{php echo $this->createMobileUrl('m_zuowen', array('op'=>1));}"><i class="user_nav_box_icon user_nav_box_icon_look"></i>我写的作文</a></li>
+        <li><a href="{php echo $this->createMobileUrl('zuowen');}"><i class="user_nav_box_icon user_nav_box_icon_ask"></i>作文鉴赏</a></li>
+      </ul>
+    </div>
+  </section>
+  <div class="clear"></div>
+  <section>
+    <div class="user_nav_box">
+      <div class="user_nav_box_tit"><span class="user_nav_box_tit_s">账户信息</span></div>
+      <ul>
+        <li><a href="{php echo $this->createMobileUrl('m_profile');}"><i class="user_nav_box_icon user_nav_box_icon_info"></i>基本信息</a></li>
+        <li> <a href="{php echo $this->createMobileUrl('m_account');}"><i class="user_nav_box_icon user_nav_box_icon_dg"></i>财务管理</a></li>
+<!--        <li> <a href="{php echo $this->createMobileUrl('help', array('op'=>'lsit'));}"><i class="user_nav_box_icon user_nav_box_icon_dh"></i>帮助说明</a></li>-->
+        <li> <a href="https://chat.mqimg.com/dist/standalone.html?eid=44888&agentid=c71da6b41dc55c1b3445bce7146e2564"><i class="user_nav_box_icon user_nav_box_icon_dh"></i>客服中心</a></li>
+      </ul>
+    </div>
+  </section>
+  <div class="clear"></div>
+  <div class="ckfoot">{$copyright}</div>
+  
+</div>
+</div>
+<script src="{$templateurl}js/public.js" language="javascript"></script> 
+<script src="{$templateurl}js/jquery.flexslider-min.js"></script> 
+<script type="text/javascript">
+
+    $(function () {
+
+		$(".flexslider").flexslider({
+
+		slideshowSpeed: 3000, //展示时间间隔ms
+
+		animationSpeed: 3000, //滚动时间ms
+
+		touch: true //是否支持触屏滑动(比如可用在手机触屏焦点图)
+
+	});
+
+    }); 
+
+	marquee("2000",".sxl .sxlist");
+
+	function marquee(time,id){
+
+		$(function(){
+
+			var _wrap=$(id);
+
+			var _interval=time;
+
+			var _moving;
+
+			_wrap.hover(function(){
+
+				clearInterval(_moving);
+
+			},function(){
+
+				_moving=setInterval(function(){
+
+				var _field=_wrap.find('li:first');
+
+				var _h=_field.height();
+
+				_field.animate({marginTop:-_h+'px'},800,function(){
+
+				_field.css('marginTop',0).appendTo(_wrap);
+
+				})
+
+			},_interval)
+
+			}).trigger('mouseleave');
+
+		});
+
+	}
+
+</script> 
+<!--footer strat-->
+{template 'footer'}
+</body>
+</html>

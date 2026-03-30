@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    <title>跨境管理中心 - 登录</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <link href="./static/home/lib/hAdmin/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./static/home/lib/hAdmin/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="./static/home/lib/hAdmin/css/animate.css" rel="stylesheet">
+    <link href="./static/home/lib/hAdmin/css/style.css" rel="stylesheet">
+    <link href="./static/home/lib/hAdmin/css/login.css" rel="stylesheet">
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.bootcss.com/Swiper/3.4.2/js/swiper.jquery.min.js"></script>
+    <!--layui-->
+    <script src="./static/home/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./static/home/js/xadmin.js"></script>
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->
+    <script>
+        if (window.top !== window.self) {
+            window.top.location = window.location;
+        }
+    </script>
+	<style type="text/css">
+		.btn-success {
+		    color: #ffffff !important;
+		    background-color: #de9a20;
+		    border-color: #de9a20;
+		}
+		.btn-success:hover{
+			background-color: #de9a20;
+    		border-color: #de9a20;
+		}
+		.btn-success:active:hover{
+			background-color: #de9a20;
+    		border-color: #de9a20;
+		}
+		.login-logo{
+			margin: 8% auto 0;
+			text-align: center;
+		}
+		.signinpanel{
+			margin: 5% auto 0 auto;
+        }
+        @media screen and (min-width:768px) {
+        	body.signin{background: url(../public/static/home/lib/hAdmin/img/bg.jpg) no-repeat center; background-size: cover;}
+        	.signinpanel {margin: 7% 25% 0 auto;}
+        }
+        @media screen and (max-width:768px) {
+        	body.signin{background: url(../public/static/home/lib/hAdmin/img/mobile_login_01.jpg) no-repeat center; background-size: cover;}
+            .login-logo{ margin-top: 100px;}
+            .login-logo img{ width: 90%;}
+            .signinpanel, .signuppanel{width: 350px!important;}
+        }
+	</style>
+</head>
+
+<body class="signin">
+	<div class="login-logo"><img src="./static/home/lib/hAdmin/img/login-logo.png" alt="" width="400px" /></div>
+    <div class="signinpanel">
+        <div class="row">
+            <div class="col-sm-12">
+                <form method="post" action="{:Url('admin/loginUserVerif')}">
+                    <h4 class="no-margins" style="color: #333;;">登录</h4>
+                    <!--<p class="m-t-md" style="color: #333;">Gogo总后台登录</p>-->
+                    <input type="text" name="username" class="form-control uname" placeholder="用户名" id="username" required=""/>
+                    <input type="text" name="yzm" class="form-control pword m-b" placeholder="验证码" id="yzm" required=""/>
+                    <a href="#" onclick="sendYzm(this);return false;" style="float: right;padding-bottom:15px;" id="sendCode">发送验证码</a>
+     <!--               <a href="">忘记密码了？</a>-->
+                    <button class="btn btn-success btn-block">登录</button>
+                    <a class="btn btn-success btn-block" href="javascript:;" id="wxqrlogin">微信扫码登录</a>
+                    <a class="btn btn-success btn-block" href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx76d541cc3e471aeb&redirect_uri=http://shop.gogo198.cn/app/wxapp.php?type=3&response_type=code&scope=snsapi_base&state=123#wechat_redirect" id="wxapplogin">微信授权登录</a>
+                </form>
+            </div>
+        </div>
+        <div id="wx_qrcode" style="display: none;"></div>
+    </div>
+</body>
+<script src="https://res.wx.qq.com/connect/zh_CN/htmledition/js/wxLogin.js"></script>
+<script>
+	//倒计时
+	var n=60;
+    function timers(){
+//      console.log(1);
+        n-=1;
+        if(n==0){
+        	n=60
+            $("#sendCode").html("发送验证码");
+        }else{
+            $("#sendCode").html(n+"重试");
+            setTimeout(function () {
+                timers();
+            },1000);
+        }
+    }
+    
+    //发送验证码
+    function sendYzm(obj) {
+    	var username=$("#username").val();
+    	if(username==''){
+    		layer.msg('用户名不能为空');
+//			alert('用户名不能为空')
+    		return false;
+    	}else{
+    		var myreg=/^[1][3,4,5,7,8][0-9]{9}$/; //手机正则
+    		if (!myreg.test(username)){  
+//  			layer.msg('手机格式错误');
+
+    			
+                return false;  
+            }else{
+            	if(n==60){
+		        	timers();
+		            $.get("{:Url('admin/sendCode')}&username="+$("#username").val(),function (e) {
+		            	console.log(e)
+		                if(e.code==001){
+		                    layer.msg(e.msg);		                    
+		                }else{
+		                    layer.msg(e.msg);		                    
+		                }
+		            });
+	       		}
+            }
+    	}
+        return false;
+    }
+//  //用户登录
+//	function login(){
+//		var username=$('#username');
+//		var yzm=$('#yzm');
+//		$.get("{Url('admin/user_login')}&username="+username+'&yzm='+yzm,function(e){
+//			console.log(e)
+//		})
+//	}
+/*2021年1月12日 wxlogin*/
+var obj = new WxLogin({
+    id: "wx_qrcode",
+    appid: "wx56acdff97cef4e2b",
+    scope: "snsapi_login",
+    redirect_uri: encodeURIComponent("http://shop.gogo198.cn/app/wxqr.php?type=3"),
+    state: Math.ceil(Math.random()*1000),
+    style: "black",
+    href: ""});
+// 微信扫码登录
+$('#wxqrlogin').click(function(){
+    layer.open({
+        type: 1,
+        title: "微信扫码登录",
+        closeBtn: 1,
+        area: ['auto'],
+        shadeClose: true,
+        content: $('#wx_qrcode')
+    });
+});
+</script>
+<style type="text/css">
+/*pc*/
+@media  screen and (min-width: 769px) {
+    #wxapplogin{display:none;}
+    #wxqrlogin{display:none;}
+}
+/*h5*/
+@media  screen and (max-width: 768px) {
+    #wxapplogin{display:block;}
+    #wxqrlogin{display:none;}
+}
+</style>
+</html>

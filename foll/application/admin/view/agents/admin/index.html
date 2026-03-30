@@ -1,0 +1,102 @@
+{include file="public/header"}
+<body style="padding: 10px 0px 0px 0px;background-color: #f2f2f2;">
+
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+          <div class="layui-col-md12">
+            <div class="layui-card">
+              <div class="layui-card-header">
+                  代理商列表
+                  {if condition="$pid > 0"}
+                    <button class="layui-btn layui-btn-primary layui-btn-sm" style="float: right;margin: 5px 0px 5px 0px;" onclick="backs({$data.backs_id})">返回上级菜单</button>
+                {/if}
+                </div>
+              <div class="layui-card-body">
+                
+                <table class="layui-hide" id="mainTable" lay-size="sm"></table>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+</body>
+<script type="text/javascript">
+    layui.use(['layer','table'],function(){
+        layer = layui.layer;
+        $     = layui.jquery;
+        table = layui.table;
+
+        table.render({
+            elem: '#mainTable'
+            ,url: '{:Url("agents/admin/list")}'
+            ,cellMinWidth: 80
+            ,where:{pid: {$pid} }
+            ,cols: [[
+                {field:'id', width:80, title: 'ID'}
+                ,{field:'uname', width: 100, title: '用户名'}
+                ,{field:'uphone', width: 120, title: '手机号'}
+                ,{field:'g_id', width: 100, title: '角色'}
+                ,{field:'status', width: 100, title: '状态'}
+                ,{field:'c_time', width: 180, title: '注册时间'}
+                ,{width:180, align:'center', title: '操作', templet: function(d){
+                    var manage = '';
+                    manage += '<button class="layui-btn layui-btn-xs" onclick="childs('+ "'"+d.id+"'" +')">我的代理</button>';
+                    manage += '<button class="layui-btn layui-btn-xs" onclick="edit('+ "'"+d.id+"'" +')">编辑</button>';
+                    manage += '<button class="layui-btn layui-btn-danger layui-btn-xs" onclick="del('+ "'"+d.id+"'" +')">删除</button>';
+                    return [manage].join('');
+                } }
+            ]]
+            ,page: true
+        });
+    });
+
+    // 编辑操作
+    function edit(id)
+    {
+
+        var index = layer.open({
+            type:2,
+            title:'编辑管理员',
+            shade:0.3,
+            content:'{:Url("agents/admin/edit")}&id='+id
+        });
+        layer.full(index);
+    }
+
+    function del(id)
+    {
+        layer.confirm('确定要删除吗？',{icon:3,btn:['确定','取消']},function(){
+
+            $.post("{:Url('agents/admin/del')}",{id:id},function(res){
+                if(res.code == 1) {
+                    layer.msg(res.msg,{icon:1});
+                    setTimeout(function(){
+                        window.location.reload();
+                    },1000);
+                } else {
+                    layer.alert(res.msg,{icon:2});
+                }
+            },'json');
+        })
+    }
+
+    // 子菜单
+    function childs(mid)
+    {
+        //var host = '{$_SERVER["SERVER_NAME"]}{$_SERVER["REQUEST_URI"]}&pid='+mid;
+        var host = '{:Url("agents/admin/list")}&pid='+mid;
+        // 跳转
+        window.location.href = host;
+    }
+
+    //返回上级菜单
+    function backs(pid) {
+        //var host = '{$_SERVER["SERVER_NAME"]}{$_SERVER["REQUEST_URI"]}&pid='+pid;
+        var host = '{:Url("agents/admin/list")}&pid='+pid;
+        window.location.href = host;
+    }
+
+</script>
+</html>

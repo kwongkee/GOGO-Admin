@@ -1,0 +1,14 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/header', TEMPLATE_INCLUDEPATH)) : (include template('common/header', TEMPLATE_INCLUDEPATH));?>
+<link rel="stylesheet" href="../addons/sz_yi/static/warehouse/static_file/style.css" media="all">
+<link rel="stylesheet" href="../addons/sz_yi/static/warehouse/static_file/layui.css" media="all">
+<link rel="stylesheet" type="text/css" href="../addons/sz_yi/static/warehouse/static_file/hui.css" />
+<script type="text/javascript" src="../addons/sz_yi/static/warehouse/static_file/hui.js" charset="UTF-8"></script>
+<script src="../addons/sz_yi/static/warehouse/static_file/jquery-3.2.1.min.js"></script>
+<script src="../addons/sz_yi/static/warehouse/static_file/layui.js"></script>
+<!--https://decl.gogo198.cn/layuiadmin/layui-->
+<style>
+    *{font-size:15px;}
+    .disf{display:flex;align-items: center;}
+    .layui-btn-normal{background:#1790FF;}
+    div{overflow: visible;}
+</style>

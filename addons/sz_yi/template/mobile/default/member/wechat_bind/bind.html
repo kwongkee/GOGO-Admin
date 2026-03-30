@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<title>微信绑定</title>
+	<link rel="stylesheet" type="text/css" href="../addons/sz_yi/static/travel_express/css/hui.css" />
+	<link rel="stylesheet" type="text/css" href="../addons/sz_yi/static/travel_express/css/style.css" />
+	<style>
+        .hui-header h1{
+            padding: 0px 38px 0px 0;
+        }
+        .hui-list-text{
+            border-bottom: 1px solid #969696;
+            padding: 0 10px;
+            margin-left: 0px;
+        }
+        .hui-form-items-title {
+            width: 30%;
+        }
+        .hui-wrap{
+			margin-bottom: 60px;
+		}
+        
+    </style>
+</head>
+<body>
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1>微信绑定</h1>
+</header>
+
+<div class="hui-wrap">
+    <div class="hui-list" style="margin:10px 10px 0; background: #e4f6fe;">
+        <a href="javascript:;" style="height:auto; height:80px; padding-bottom:8px;">
+            <div class="hui-list-icons" style="width:110px; height:80px;">
+                <img src="{$_W['fans']['headimgurl']}" style="width:66px; margin:0px; border-radius:50%;" />
+            </div>
+            <div class="hui-list-text" style="height:79px; line-height:79px; color: #1b7ab6;">
+                微信昵称：{$_W['fans']['nickname']}
+                <!-- <div class="hui-list-info">
+                    <span class="hui-icons hui-icons-right"></span>
+                </div> -->
+            </div>
+        </a>
+    </div>
+    <form style="padding:0px 10px;" class="hui-form" id="form1">
+        <input type="hidden" name="uid" value="{$uri_info['uid']}">
+        <input type="hidden" name="type" value="{$uri_info['type']}">
+
+        <div style="padding: 15px 8px;width: 50%;margin: 20px auto 24px;display:flex;align-items:center;justify-content:center;">
+            <button type="button" class="hui-button hui-primary hui-fr" id="submitBtn" style="background: #1b7ab6 !important;">绑定</button>
+            <button type="button" class="hui-button hui-primary hui-fr" id="close" style="background: #ff5555 !important;margin-left:5px;">关闭</button>
+        </div>
+    </form>
+</div>
+</div>
+
+<script src="../addons/sz_yi/static/travel_express/js/hui.js" type="text/javascript" charset="utf-8"></script>
+<script src="../addons/sz_yi/static/travel_express/js/hui-form.js" type="text/javascript" charset="utf-8"></script>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<script type="text/javascript">
+hui.formInit();
+//表单元素数据收集演示
+hui('#submitBtn').click(function(){
+
+    hui.confirm('您确认要绑定该微信号吗？', ['取消','确定'], function(){
+        var data = hui.getFormData('#form1');
+    	hui.ajax({
+            url  : '{php echo $this->createMobileUrl("member/wechat_bind")}&op=submit',
+            type : 'POST',
+            data : {uid: data.uid, type: data.type },
+            beforeSend : function(){hui.loading();},
+            complete   : function(){hui.closeLoading();},
+            success : function(res){
+                hui.alert(res.result.msg,'好的', function(){
+                    // 关闭页面
+                    window.opener=null;
+                    window.open('','_self');
+                    window.close();
+                });
+            },
+            error : function(e){
+                hui.iconToast('系统错误', 'warn');
+            },
+            'backType' : "JSON"
+        });
+    },function(){
+        console.log('取消后执行...');
+    });
+
+
+    	
+    	
+    
+
+});
+hui('#close').click(function(){
+    wx.closeWindow();
+})
+</script>
+</body>
+</html>

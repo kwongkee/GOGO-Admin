@@ -1,0 +1,71 @@
+{template 'header'}
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-6">
+				<h4><span class='glyphicon glyphicon-circle-arrow-right'></span>&nbsp;&nbsp;过滤器开关设置</h4>
+				<label>过滤器开关</label>
+				{if $this->settings['filter'] == 'open'}
+				<button class="form-control btn btn-sm btn-success" onclick="doSave('filter','close')">已开启过滤</button>
+				{else}
+				<button class="form-control btn btn-sm btn-danger" onclick="doSave('filter','open')">已关闭过滤</button>
+				{/if}
+				<p class="help-block">开启后，将按照下面的规则进行非法词汇过滤</p>
+				<br>
+				<h4><span class='glyphicon glyphicon-circle-arrow-right'></span>&nbsp;&nbsp;非法词汇配置</h4>
+				<label>词汇配置</label>
+				<p class="help-block">可以添加不限制个数的词汇；词汇之间通过逗号，隔开（中文逗号）</p>
+				<textarea class="form-control" id="filter_content" rows="10" placeholder="单词A，单词B，">{$words}</textarea>
+				<p class="help-block">请严格按照逗号分隔</p>
+				<button class="form-control btn btn-sm btn-info" onclick="doSave('filter_content')">保存</button>
+			</div>
+			<div class="col-md-6">
+				<h4><span class='glyphicon glyphicon-circle-arrow-right'></span>&nbsp;&nbsp;非法词汇</h4>
+				<label>列表</label>
+				<p class="help-block">已经添加生效的词汇</p>
+				<ul class="list-group">
+					{loop $words_list $word}
+					<li class="list-group-item">{$word}</li>
+					{/loop}
+				</ul>
+			</div>
+		</div>
+		<br>
+	</div>
+	<script type="text/javascript">
+	function doSave(type,val) {
+
+		if(!type) {
+			return false;
+		}
+
+		// 开关
+		if(type == 'filter') {
+			
+		}
+		// 词汇内容
+		if(type == 'filter_content') {
+			var filter_content = $("#filter_content").val();
+		}
+		
+		$.ajax({
+			type:'post',
+			data:{
+				dataType:type, // 数据类型区分
+				filter_content:filter_content,
+				setval:val
+			},
+
+			url:"{php echo $this->createWebUrl('settingform')}",
+			success:function(d) {
+				if(d.res == '100') {
+					alert('保存成功');
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+
+	}
+	</script>
+{template 'footer'}

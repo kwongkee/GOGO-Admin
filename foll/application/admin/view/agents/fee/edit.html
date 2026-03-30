@@ -1,0 +1,95 @@
+{include file="public/header"}
+<body style="padding: 10px;">
+<form action="" class="layui-form">
+
+    <input type="hidden" name="rid" value="{$data.rid}">
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">申报失败</label>
+        <div class="layui-input-inline">
+            <input type="radio" name="isCharge" {if condition="$data.isCharge == 1"} checked {/if} lay-skin="primary" title="收费" value="1">
+            <input type="radio" name="isCharge" {if condition="$data.isCharge == 0"} checked {/if} lay-skin="primary" title="不收费" value="0">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">验证费率</label>
+        <div class="layui-input-inline">
+            <input type="text" class="layui-input" value="{$data['verfee']}" name="verfee">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">申报费率</label>
+        <div class="layui-input-inline">
+            <input type="text" class="layui-input" value="{$data['sbfee']}" name="sbfee">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">支付费率</label>
+        <div class="layui-input-inline">
+            <input type="text" class="layui-input" value="{$data['payfee']}" name="payfee">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">货值折扣</label>
+        <div class="layui-input-inline">
+            <input type="text" class="layui-input" value="{$data['payhfee']}" name="payhfee">
+        </div>
+    </div>
+
+
+</form>
+
+<div class="layui-form-item">
+    <div class="layui-input-block">
+        <button class="layui-btn" onclick="save()">保存</button>
+    </div>
+</div>
+
+
+</body>
+<script type="text/javascript">
+    layui.use(['layer','form'],function(){
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+    })
+
+
+    // 添加管理员
+    function save()
+    {
+        var uname    = $('input[name="uname"]').val();
+        var  gid     = $('select[name="gid"]').val();
+        var uphone   = $('input[name="uphone"]').val();
+        var status   = $('input[name="status"]:checked').val();
+
+        if(uname == '') {
+            layer.msg('代理商名称不能为空',{icon:2});
+            return false;
+        }
+
+        if(uname == '') {
+            layer.msg('手机号码不能为空',{icon:2});
+            return false;
+        }
+
+        // 请求处理数据
+        $.post("{:Url('agents/fee/doedit')}",$('form').serialize(),function(res){
+
+            if(res.code == 1) {
+                layer.msg(res.msg,{icon:1});
+                setTimeout(function(){
+                    window.location.reload = (parent.window.location.reload());
+                },2000);
+            } else {
+                layer.msg(res.msg,{icon:2});
+            }
+
+        });
+    }
+</script>
+</html>

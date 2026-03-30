@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="common/meta"}
+</head>
+
+<body class="gray-bg">
+<div class="col-sm-12">
+    <div class="ibox float-e-margins">
+        <div class="ibox-title" style="height:60px;">
+            <button type="button" class="btn btn-info btn-lg" style="width: 100px;" id="add">角色添加</button>
+        </div>
+        <div class="ibox-content">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>id</th>
+                    <th>名称</th>
+                    <th>权限</th>
+                    <th>状态</th>
+                    <th>备注</th>
+                    <th>时间</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name="data" id="vo"}
+                <tr>
+                    <td>{$vo.role_id}</td>
+                    <td class="text-navy">{$vo.name}</td>
+                    <td>读：{$statusType['read'][$vo.read]}<br>写：{$statusType['write'][$vo.write]}</td>
+                    <td class="text-navy">{$statusType['roleStatus'][$vo.status]}</td>
+                    <td>{$vo.remark}</td>
+                    <td>{$vo.create_time|date="Y-m-d",###}</td>
+                    <td><a class="btn btn-white btn-rounded" href="{:Url('admin/AdminCharacterEdit')}&id={$vo.id}">角色编辑</a><a class="btn btn-danger btn-rounded" href="{:Url('admin/AdminCharacterDel')}&id={$vo.id}">删除角色</a></td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- 自定义js -->
+<script src="./static/hadmin/js/content.js?v=1.0.0"></script>
+
+
+<!-- Bootstrap table -->
+<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="./static/hadmin/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="./static/hadmin/layui/layui.all.js"></script>
+<!-- Peity -->
+</body>
+<script>
+    var form = layui.form;
+    var  layer = layui.layer;
+    $("#add").click(function () {
+        layer.open({
+            type: 1,
+            skin: 'layui-layer-rim', //加上边框
+            area: ['837px', '227px'], //宽高
+            content:'<div class="col-md-6" style="margin-top:17px;"><div class="form-group"><label class="col-sm-3 control-label">角色名称：</label><div class="col-sm-9"><input type="text" name="" id="name" value="" class="form-control" placeholder="请输入文本"></div></div><div class="form-group"><label class="col-sm-3 control-label">权限：</label><div class="col-sm-9"><label class="radio-inline"><input type="radio" checked="" value="1" class="optionsRadios1" name="auth">可读</label><label class="radio-inline"><input type="radio" value="2" class="optionsRadios1" name="auth">可写</label></div></div><div class="form-group"><div class="col-sm-12 col-sm-offset-3" style="margin-top:24px;"><button class="btn btn-primary" type="submit" onclick="requestAdd()">保存内容</button></div></div></div><div class="col-md-6" style="margin-top:17px;"><div class="form-group"><label class="col-sm-3 control-label">备注：</label><div class="col-sm-9"><input type="text" name="" class="form-control" id="beizhu" value="" placeholder="请输入文本"></div></div><div class="form-group"><label class="col-sm-3 control-label" for="-NaN">角色状态：</label><div class="col-sm-9"><label class="radio-inline" ><input type="radio" checked="" value="1" class="optionsRadios" name="optionsRadios">启用</label><label class="radio-inline"><input type="radio" value="0" class="optionsRadios" name="optionsRadios">禁用</label></div></div></div>'
+        });
+    })
+</script>
+<script>
+    function requestAdd(){
+        var name=$("#name").val();
+        var Authority=$('input[name="auth"]:checked').val();
+        var status =$('input[name="optionsRadios"]:checked').val();
+        var beizhu=$("#beizhu").val();
+        $.post("{:Url('admin/AdminCharacterSave/')}",{"name":name,"authType":Authority,"roleStatus":status,"beizhu":beizhu},function (data) {
+            if(!data.status){
+                layer.msg(data.msg);
+                return false;
+            }
+            layer.msg(data.msg);
+        })
+    }
+</script>
+
+</html>

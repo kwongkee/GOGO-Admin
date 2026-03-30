@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {include file="common/meta"}
+    <link rel="stylesheet" href="./static/hadmin/layui/css/layui.css"></link>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <div class="page-container">
+                        <p>上传代码表文件</p>
+                        <button type="button" class="layui-btn" id="file1">
+                            <i class="layui-icon">&#xe67c;</i>请上传Excel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+<!--        <div class="col-sm-4">-->
+<!--            <div class="ibox float-e-margins">-->
+<!--                <div class="ibox-content">-->
+<!--                    <div class="page-container">-->
+<!--                        <p>上传正面清单文件</p>-->
+<!--                        <button type="button" class="layui-btn" id="file2">-->
+<!--                            <i class="layui-icon">&#xe67c;</i>请上传Excel-->
+<!--                        </button>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+    </div>
+
+</div>
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/js/bootstrap.min.js?v=3.3.6"></script>
+<!-- 自定义js -->
+<script src="./static/hadmin/js/content.js?v=1.0.0"></script>
+<script src="./static/hadmin/layui/layui.all.js"></script>
+</body>
+<script>
+    layui.use('upload', function () {
+        var upload = layui.upload;
+        var uploadInst = upload.render({
+            elem: '#file1' //绑定元素
+            ,accept:"file"
+            , url: '{:Url("admin/goods/code_file_upload")}' //上传接口
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            , done: function (res) {
+                layer.closeAll('loading');
+                if (res.code==0){
+                    parent.layer.msg(res.message, {icon: 6});
+                } else{
+                    parent.layer.msg(res.message, {icon: 5});
+                }
+            }
+            , error: function () {
+                //请求异常回调
+                // parent.layer.msg('请求异常', {icon: 6});
+            }
+        });
+        var uploadInst = upload.render({
+            elem: '#file2' //绑定元素
+            ,accept:"file"
+            , url: '{:Url("admin/goods/listcode_file_upload")}' //上传接口
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            , done: function (res) {
+                layer.closeAll('loading');
+                if (res.code==0){
+                    parent.layer.msg(res.message, {icon: 6});
+                } else{
+                    parent.layer.msg(res.message, {icon: 5});
+                }
+            }
+            , error: function () {
+                //请求异常回调
+                // parent.layer.msg('请求异常', {icon: 6});
+            }
+        });
+    });
+</script>
+</html>

@@ -1,0 +1,86 @@
+{include file="common/header_inner_new"}
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    #service_ids{width:200px;}
+    .addService,.delService{font-size:20px;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">开关类型</div>
+                            <div class="layui-input-block">
+                                <select name="type" id="type" lay-verify="required">
+                                    {volist name="type" id="vo"}
+                                    <option value="{$vo['id']}" {if $data['type']==$vo['id']}selected{/if}>{$vo['name']}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">开关方向</div>
+                            <div class="layui-input-block">
+                                <select name="direction_type" id="direction_type">
+                                    <option value="1" {if $data['direction_type']==1}selected{/if}>本地服务</option>
+                                    <option value="2" {if $data['direction_type']==2}selected{/if}>云端服务</option>
+                                    <option value="3" {if $data['direction_type']==3}selected{/if}>MaxKB服务</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload','colorpicker'],function(){
+        var laydate = layui.laydate
+            , layer = layui.layer
+            , form  = layui.form
+            , $ = layui.jquery
+            , upload = layui.upload
+            , colorpicker = layui.colorpicker;
+
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+
+            $.ajax({
+                url:"{:Url('admin/model/save_model_switch')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>

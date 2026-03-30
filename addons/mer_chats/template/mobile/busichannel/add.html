@@ -1,0 +1,170 @@
+{template '_headers'}
+<style>
+    select{
+        background: none !important;
+    }
+    .hides{
+        display: none;
+    }
+    button{
+        font-size: 22px !important;
+        letter-spacing: 1em !important;
+        font-weight: bold !important;
+    }
+</style>
+<div class="warp">
+    <div class="container">
+
+        <div class="shop-input">
+            电商类型：
+            <select name="channelid" id="" onchange="showForm(this)">
+                <option value="">请选择电商类型</option>
+                <option value="youzan">有赞</option>
+                <option value="pinduoduo">拼多多</option>
+                <option value="taobao">天猫</option>
+                <option value="tianmao">天猫</option>
+                <option value="jingdong">京东</option>
+            </select>
+        </div>
+
+
+        <form id="youzan" class="youzan hides">
+            <input type="hidden" name="channelId" class="channelId">
+
+            <div class="shop-input">
+                有赞店铺名称： <input type="text" name="storeName" placeholder="请输入有赞店铺名称">
+            </div>
+
+            <div class="shop-input">
+                有赞店铺ID： <input type="text" name="storeId" placeholder="请输入有赞店铺ID">
+            </div>
+
+            <input type="hidden" name="method" value="add">
+
+            <div class="login-btn">
+                <button id="alertBtn" onclick="submits('youzan')" type="button" class="zbox-btn zbox-btn-blue zbox-btn-outlined login">提交</button>
+            </div>
+
+        </form>
+
+
+
+        <form id="pinduoduo" class="pinduoduo hides">
+            <input type="hidden" name="channelId" class="channelId">
+
+            <div class="shop-input">
+                拼多多店铺名称： <input type="text" name="storeName" placeholder="请输入拼多多店铺名称">
+            </div>
+
+            <div class="shop-input">
+                拼多多店铺ID： <input type="text" name="storeId" placeholder="请输入拼多多店铺ID">
+            </div>
+
+            <input type="hidden" name="method" value="add">
+
+            <div class="login-btn">
+                <button  onclick="submits('pinduoduo')" type="button" class="zbox-btn zbox-btn-blue zbox-btn-outlined login">提交</button>
+            </div>
+
+        </form>
+
+
+        <form id="taobao" class="taobao hides">
+            <input type="hidden" name="channelId" class="channelId">
+
+            <div class="shop-input">
+                淘宝店铺名称： <input type="text" name="storeName" placeholder="请输入淘宝店铺名称">
+            </div>
+
+            <div class="shop-input">
+                淘宝店铺ID： <input type="text" name="storeId" placeholder="请输入淘宝店铺ID">
+            </div>
+
+            <input type="hidden" name="method" value="add">
+
+            <div class="login-btn">
+                <button  onclick="submits('taobao')" type="button" class="zbox-btn zbox-btn-blue zbox-btn-outlined login">提交</button>
+            </div>
+
+        </form>
+
+
+        <form id="tianmao" class="tianmao hides">
+            <input type="hidden" name="channelId" class="channelId">
+
+            <div class="shop-input">
+                天猫店铺名称： <input type="text" name="storeName" placeholder="请输入天猫店铺名称">
+            </div>
+
+            <div class="shop-input">
+                天猫店铺ID： <input type="text" name="storeId" placeholder="请输入天猫店铺ID">
+            </div>
+
+            <input type="hidden" name="method" value="add">
+
+            <div class="login-btn">
+                <button  onclick="submits('tianmao')" type="button" class="zbox-btn zbox-btn-blue zbox-btn-outlined login">提交</button>
+            </div>
+
+        </form>
+
+
+        <form id="jingdong" class="jingdong hides">
+            <input type="hidden" name="channelId" class="channelId">
+
+            <div class="shop-input">
+                京东店铺名称： <input type="text" name="storeName" placeholder="请输入京东店铺名称">
+            </div>
+
+            <div class="shop-input">
+                京东店铺ID： <input type="text" name="storeId" placeholder="请输入京东店铺ID">
+            </div>
+
+            <input type="hidden" name="method" value="add">
+
+            <div class="login-btn">
+                <button  onclick="submits('jingdong')" type="button" class="zbox-btn zbox-btn-blue zbox-btn-outlined login">提交</button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<script>
+
+    function showForm(obj) {
+        // 类名
+        var claName = $(obj).val();
+        // 先隐藏全部的
+        $('.hides').css('display','none');
+        $('.'+claName).css('display','block');
+
+        $('.channelId').val(claName);
+    }
+
+    function submits(forms) {
+
+        var url = "{php echo url('entry',array('do'=>'index','p'=>'busiChanneladds','m'=>'mer_chats'))}";
+        var formData = $('#'+forms).serialize();
+
+        $.ajax({
+            url:url,
+            type:'POST',
+            data:formData,
+            success:function(res){
+                var red = JSON.parse(res);
+                if(red.code != 1) {
+                    $.DialogByZ.Alert({Title: "提示", Content:red.msg,BtnL:"确定",FunL:alerts})
+                    return false;
+                }
+                $.DialogByZ.Alert({Title: "提示", Content:red.msg,BtnL:"确定",FunL:alerts})
+                setTimeout(function(){
+                    window.location.href = "{php echo url('entry',array('do'=>'index','p'=>'publicAccounts','m'=>'mer_chats'))}";
+                },1200);
+            }
+        })
+    }
+</script>
+
+{template '_footers'}

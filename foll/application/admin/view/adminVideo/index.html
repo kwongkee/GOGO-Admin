@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head> 
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+        <title>plupload上传视频等大文件</title>
+
+        <link href="./static/home/css/common.css" rel="stylesheet" type="text/css" />
+        <script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+        <script type="text/javascript" src="./static/home/js/jquery.min.js"></script>
+    </head>
+    <body>
+        <div class="demo clearfix" style="width:600px;margin:120px auto">
+            <a onclick="showVideoUploadBox($('#btn_video'))" id="btn_video" class="item"><i class="icon_emot_photo_video icon_video"></i><span>视频</span></a>
+        </div>
+        <!-- -------视频上传---------> -->
+        <div class="video_box_outside" id="video_box_outside" tabindex="2001">
+            <div class="video_box">
+                <a class="photo_upload_close"href="javascript:void(0);"onclick="fadeout_div('#video_box_outside')"></a>
+                <div id="video_upload_area">
+                    <div  class="video_notice">支持上传时长在15分钟以内的视频，请勿上传色情、反动等违法视频</div>
+                    <div class="video_textarea_upload" id="video_textarea_upload">
+                        <textarea id="video_text" onkeyup="checkVideoText(this.value)" placeholder="点击此处输入正文..." autocomplete="off" maxlength="130"></textarea>
+                        <div class="video_upload_words">
+                            <a class="video_upload_btn" id="video_upload_btn">+</a>
+                            <a class="video_name_box" id="video_name_box" href="javascript:void(0)">
+                                <img src="__PUBLIC__/images/icon_video.png" style="width:13.5px;height: 9px"/>
+                                <em id="video_file_name"></em>
+                                <span class="photo_upload_close" onclick="reupload_video()" href="javascript:void(0);"></span>
+                            </a>
+                        </div>
+                        <span id="video_words_num">0</span>
+                    </div>
+                </div>
+                <div class="layer_point">
+                    <dl id="video_loading" class="point clearfix" style="display: none;padding: 0 0 60px">
+                        <dt style="" id="loading_bar">
+                            <span class="loading_bar"><em id="percent" style="width: 27%;"></em></span>
+                            <span id="percentnum" class="S_txt2 load_num">27%</span>
+                        </dt>
+                        <dd>
+                            <p id="updesc">视频上传中...</p>
+                            <p class="S_txt2"><label id="uploading_tip">上传速度取决于您的网速，请耐心等待。</label><a href="javascript:void(0);" id="video_upload_cancel" onclick="video_upload_cancel()">取消上传</a>
+                            </p>
+                        </dd>
+                    </dl>
+                    <div id="video_success" style="display: none">
+                        <dl class="point clearfix">
+                            <dt>
+                                <span class="W_icon icon_succB"></span>
+                            </dt>
+                            <dd>
+                                <p id="upload_succ">视频上传成功</p>
+                            </dd>
+                        </dl>
+                        <div class="upload_know">
+                            <a class="btn" href="javascript:void(0);" onclick="fadeout_div('#video_box_outside')">我知道了</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="upload_video_area" id="upload_video_area">
+                    <a id="upload_video" class="btn disabled" href="javascript:void(0);">开始上传</a>
+                </div>
+                <div class="arrow_layer"><span class="arrow_top_area"><i class="arrow_top_bg"></i><em class="arrow_top"></em></span></div>
+            </div>
+            <div id="video_iput">123</div>
+        </div>
+        <script type="text/javascript" src="./static/plugins/plupload/plupload.full.min.js"></script>
+        <script type="text/javascript">
+                                //创建实例的构造方法
+                                var uploader_video = new plupload.Uploader({
+                                    runtimes: 'gears,html5,html4,silverlight,flash', //上传插件初始化选用那种方式的优先级顺序
+                                    browse_button: ['video_upload_btn'], // 上传按钮
+                                    url: "{:Url('admin/AdminVideoUploads')}", //远程上传地址
+                                    flash_swf_url: './static/js/plugins/plupload/Moxie.swf', //flash文件地址
+                                    silverlight_xap_url: './static/js/plugins/plupload/Moxie.xap', //silverlight文件地址
+                                    filters: {
+                                        max_file_size: '30mb', //最大上传文件大小（格式100b, 10kb, 10mb, 1gb）
+                                        mime_types: [//允许文件上传类型
+                                            {title: "files", extensions: "mpg,m4v,mp4,flv,3gp,mov,avi,rmvb,mkv,wmv"}
+                                        ]
+                                    },
+                                    //       chunk_size: "5mb", //分片上传文件时，每片文件被切割成的大小，为数字时单位为字节。也可以使用一个带单位的字符串，如"200kb"。当该值为0时表示不使用分片上传功能
+                                    multi_selection: false, //true:ctrl多文件上传, false 单文件上传
+                                    init: {
+                                        FilesAdded: function(up, files) { //文件上传前
+
+                                            $("#video_name_box").css({"display": "inline-block"});
+                                            $("#video_upload_btn").hide();
+                                            $("#video_file_name").text(files[0].name);
+                                            $("#upload_video").removeClass("disabled");
+
+                                            $("#upload_video").click(function() {
+                                                uploader_video.start(); //调用实例对象的start()方法开始上传文件，当然你也可以在其他地方调用该方法
+                                            })
+                                            $("#video_iput").attr("file_id", files[0]['id'])
+                                            //                    console.log(files);
+                                        },
+                                        UploadProgress: function(up, file) { //上传中，显示进度条
+                                            $("#video_loading").show();
+                                            $('#upload_video_area,#video_upload_area').hide();
+                                            var percent = file.percent;
+                                            $("#percent").css({"width": percent + "%"});
+                                            $("#percentnum").text(percent + "%");
+                                            $("#video_success").hide();
+
+                                        },
+                                        FileUploaded: function(up, file, info) { //文件上传成功的时候触发
+                                            $("#video_loading").hide();
+                                            $("#video_success").show();
+                                            var data = eval("(" + info.response + ")");//解析返回的json数据
+                                            $("#video_iput").html("<input type='text'id='video_file' name='video_file' value='" + data.url + "'/><input type='text'id='video_name' value='" + data.name + "'/>");
+                                        },
+                                        Error: function(up, err) { //上传出错的时候触发
+                                            alert(err.message);
+                                        }
+                                    }
+                                });
+                                uploader_video.init();
+//显示上传弹出层
+                                function showVideoUploadBox(obj) {
+                                    var left = obj.offset().left;
+                                    var top = obj.offset().top + 26;
+                                    var z_index_init = 1000;
+
+                                    $("#photo_upload_box_outside").css({"z-index": z_index_init});
+
+                                    $("#video_box_outside").css({"left": left, "top": top, "z-index": z_index_init + 1}).show();
+                                    $("#video_upload_area").show();
+                                    $("#video_loading,#video_success").hide();
+//                                    reupload_video();
+                                }
+                                function reupload_video() { //重新上传
+                                    $('#video_upload_btn').show();
+                                    $('#video_name_box').hide();
+                                    $("#upload_video_area").show().addClass("disabled");
+                                    $("#video_text").val("");
+                                    $("#video_words_num").text(0);
+                                    $("#video_success").hide();
+                                    $("#video_file,#video_name").val("");
+                                }
+
+                                function checkVideoText(value) {
+                                    var length = value.length;
+                                    var other = 130 - length;
+                                    if (length > 0) {
+                                        $("#video_words_num").html(other);
+                                    } else {
+                                        $("#video_words_num").html("<span class='red'>" + other + "</span>");
+                                    }
+                                }
+                                function video_upload_cancel() {  //取消上传
+                                    uploader_video.stop();
+                                    $("#video_loading,#video_name_box").hide();
+                                    $("#video_upload_area,#video_upload_btn").show();
+                                    $("#upload_video_area").show();
+                                    $("#upload_video").addClass("disabled");
+                                    $("#video_text").val("");
+                                    $("#video_words_num").text(0);
+                                    $("#video_success").hide();
+                                    $("#video_file,#video_name").val("");
+                                    var file_id = $("#video_iput").attr("file_id");
+                                    var obj_file = uploader_video.getFile(file_id);
+                                    uploader_video.removeFile(obj_file);
+                                }
+                                function fadeout_div(id) {
+                                    $(id).fadeOut();
+                                }
+        </script>
+        <!--<p style="color:red">温馨提示：上传成功返回的视频信息在 输入框隐藏值：video_file 和  video_name中</p>-->
+    </body>
+</html>

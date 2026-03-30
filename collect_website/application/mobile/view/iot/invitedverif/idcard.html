@@ -1,0 +1,66 @@
+{include file="iot/header"}
+<body>
+<style>
+    .tip {
+        display: none;
+        font-size: 14px;
+        position: absolute;
+        top: 45%;
+        left: 5%;
+        background: #000;
+        opacity: .5;
+        width: 90%;
+        color: #fff;
+        text-align: center;
+        padding: 5% 0;
+    }
+</style>
+<div class="whole">
+    <div class="header">
+        <div class="toplogo"><img src="./static/iot/images/top-logo.png" alt=""></div>
+        <h2 class="title">来访身份验证</h2>
+    </div>
+    <form action="">
+        <input type="hidden" name="code" id="code" value="{$code}">
+        <div class="content top">
+            <div class="box grey_bg">
+                <img src="./static/iot/images/icon_01.png" alt="" class="icon">
+                <input type="text" value="" name="phone" placeholder="请输入手机号码" class="box_input" id="phone">
+                <div class="tip" id="tip"></div>
+            </div>
+            <div class="box grey_bg">
+                <img src="./static/iot/images/icon_03.png" alt="" class="icon">
+                <input type="text" name="idname" id="idname" value="" placeholder="请输入你的姓名" class="box_input">
+            </div>
+            <div class="box grey_bg">
+                <img src="./static/iot/images/icon_04.png" alt="" class="icon">
+                <input type="text" name="idcard" id="idcard" value="" placeholder="请输入身份证号码" class="box_input">
+            </div>
+            <div class="btn" style="margin-top: 47%;"><a href="#" onclick="btn();return false;">提交</a></div>
+            <div class="remark">
+                <p>注：输入有效的手机号码</p>
+                <p class="remark_p">输入有效的身份证号码</p>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+<script src="./static/iot/js/jquery-1.11.0.min.js"></script>
+<script>
+    function btn(){
+        $.ajax({
+            url:"{:Url('iot/veridcard')}",
+            type:'POST',
+            data:{code:$('#code').val(), tel:$("#phone").val(), idname:$('#idname').val(), idcard:$('#idcard').val()},
+            dataType:"json",
+            success:function (res) {
+                console.dir(res);
+                showMsg(res.message);
+            },
+            error:function (jqXHR, textStatus, errorThrown) {
+                showMsg('服务链接失败');
+            }
+        });
+    }
+</script>
+</html>

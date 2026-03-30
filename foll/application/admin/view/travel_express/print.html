@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>自我邮打印配置</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <style>
+        form{
+            margin-top: 47px;
+            margin-right: 32px;
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form" action="">
+    <input type="hidden" name="id" value="{$printData['id']}">
+    <div class="layui-form-item">
+        <label class="layui-form-label">月结账号</label>
+        <div class="layui-input-block">
+            <input type="text" name="partner_id" value="{$printData['partner_id']}" required  lay-verify="required" placeholder="请输入月结账号" autocomplete="off" class="layui-input">
+            <p style="color: red;">京东或宅急送不需要<a href="https://poll.kuaidi100.com/manager/page/debugtools/eprint">（前往授权获取）</a></p>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">电子面单秘钥</label>
+        <div class="layui-input-block">
+            <input type="text" name="partner_key" value="{$printData['partner_key']}" placeholder="请输入电子面单秘钥" required  lay-verify="required" autocomplete="off" class="layui-input">
+            <p style="color: red;">京东或宅急送不需要<a href="https://poll.kuaidi100.com/manager/page/debugtools/eprint">（前往授权获取）</a></p>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">打印设备ID</label>
+        <div class="layui-input-block">
+            <input type="text" name="device_id" value="{$printData['device_id']}" placeholder="请输入打印设备ID" required  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">快递公司</label>
+        <div class="layui-input-block">
+            <select name="express_code" lay-verify="required" lay-search>
+                <option value=""></option>
+                {volist name='express' id='vo'}
+                <option value="{$vo.code}" {if $printData["express_code"]==$vo.code}selected="selected"{/if}>{$vo.name}</option>
+                {/volist}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">面单模板ID</label>
+        <div class="layui-input-block">
+            <input type="text" name="temp_id" value="{$printData['temp_id']}" placeholder="请输入面单模板ID" required  lay-verify="required" autocomplete="off" class="layui-input">
+            <p>说明:通过管理后台的打印摸版配置信息获取,选择100*180<a href="https://poll.kuaidi100.com/manager/page/template/eletemplate" style="color: red;">（点击获取）</a></p>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">发货人名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="company_name" value="{$printData['company_name']}" placeholder="请输入发货人名称" required  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">发货人电话</label>
+        <div class="layui-input-block">
+            <input type="text" name="company_tel" value="{$printData['company_tel']}" placeholder="请输入发货人电话" required  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">发货人地址</label>
+        <div class="layui-input-block">
+            <input type="text" name="address" value="{$printData['address']}" placeholder="请输入发货人地址" required  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即保存</button>
+        </div>
+    </div>
+</form>
+
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+
+<script>
+    layui.use('form', function(){
+        var form = layui.form;
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            $.ajax({
+                url:'{:Url("admin/travel_express/print")}',
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (res) {
+                    layer.msg(res.message);
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</html>

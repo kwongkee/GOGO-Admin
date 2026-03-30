@@ -1,0 +1,119 @@
+{template 'header'}
+	<!--
+	<div class="ui-header ui-header-wx ui-border-b">
+		<span class="ui-icon-return" onclick="window.location.href=document.referrer;" style="color:white;"></span>
+		<h1>留言列表</h1>
+		<a href="{php echo $this->createMobileUrl('index')}">
+			<i class="ui-icon-home" style="position:absolute;right:5px;top:0px;"></i>
+		</a>
+	</div>
+	-->
+	<div class="ui-container">
+		<ul class="ui-list ui-list-active ui-list-cover">
+			{loop $commentlist $item}
+			<li class="ui-border-t">
+				<div class="ui-list-thumb" onclick="window.location.href='{php echo $this->createMobileUrl('detail',array('detail_openid'=>$item['user_openid']))}'">
+					{if $item['usericon']}
+					<span style="background-image:url({$item['usericon']})"></span>
+					{else}
+					<span style="background-image:url(http://placeholder.qiniudn.com/100x100)"></span>
+					{/if}
+				</div>
+				<div class="ui-list-info" onclick="doReadyReply('{$item['user_openid']}','{$item['username']}','{$item['mid']}')">
+					<p>{$item['username']}<span style="float:right">{$item['add_time']}</span></p>
+					<p style="color:black;">
+					{if $item['reply_openid']}
+					回复<a href='#'>{$item['reply_user']['username']}</a>:
+					{/if}
+					{$item['content']}
+					</p>
+				</div>
+			</li>
+			{/loop}
+		</ul>
+		<!-- comment input -->
+		<div class="ui-input-wrap ui-border-t" style="position:fixed;bottom:0px;width:100%">
+			<div class="ui-input ui-border-radius">
+				<input type="text" id="comment_content" data='' placeholder='评价'>
+			</div>
+			<button class="ui-btn ui-btn-chat" id="comment_btn" onclick="doComment()">发送</button>
+		</div>
+	</div>
+	<script type="text/javascript">
+	var self_openid = "{php echo self::$openid}";
+		function doComment() {
+
+			var content = $("#comment_content").val();
+			if(!content) {
+				alert("^^请输入留言内容");
+				return;
+			}
+			// 判断是否是回复
+			var reply_openid = $("#comment_content").data('reply_openid') || '';
+			var mid = $("#comment_content").prop('mid') || '';
+
+			if(!reply_openid || !mid) {
+				alert("请先选择留言");
+				return;
+			}
+
+			$.ajax({
+				type:'post',
+				url:"{php echo $this->createMobileUrl('doComment')}",
+				data:{comment_content:content,comment_openid:"{$comment_openid}",reply_openid:reply_openid,mid:mid},
+				success:function(d) {
+					// 重置
+					$('#comment_content').data('reply_openid','');
+					$('#comment_content').prop('placeholder','评价');
+					if(d.res == '100') {
+						window.location.href='';
+					}else if(d.res == '101') {
+						alert("请先登陆");
+					}else if(d.res == '102') {
+						alert("留言失败");
+					}else{
+						alert(d.msg);
+					}
+					return ;
+				}
+			})
+		}
+
+		function doReadyReply(openid,username,mid) {
+
+			$("#comment_content").val('');
+			$('#comment_content').trigger('focus');
+			if(self_openid == openid)
+			{
+				return false;	
+			}
+			$('#comment_content').prop('placeholder','回复：'+username);
+			// 设置被回复的openid
+			$('#comment_content').data('reply_openid',openid);
+			$('#comment_content').prop('mid',mid);
+		}
+
+		// 如果脱离焦点，那么自动删除reply_openid
+		$('#comment_content').blur(function() {
+
+			if(!$("#comment_content").val()) {
+
+				$('#comment_content').data('reply_openid','');
+				$('#comment_content').prop('placeholder','评价');
+				$('#comment_content').prop('mid','');
+			}
+			
+		})
+
+		// 这里也不知道为什么必须加上才能变色
+		$(".ui-list-active li").on('touchstart',function() {
+			// $(this).css('background-color','#7E7E88');
+		})
+
+		$(".ui-list-active li").on('touchend',function() {
+			// $(this).css('background-color','white');
+		})
+
+
+	</script>
+{template 'footer'}

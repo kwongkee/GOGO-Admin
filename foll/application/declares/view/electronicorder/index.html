@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>商品备案</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        th{
+            padding:3px 12px;
+        }
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<div class="x-body">
+    <a href="javascript:;" class="layui-btn" onclick="sb()">申报</a>
+    <a href="javascript:;" class="layui-btn" onclick="exportExcel()">导出全部物流</a>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+            <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+    <table id="table-checkbox" lay-filter="test"></table>
+</div>
+
+<form class="layui-form"  style="display: none;" id="pi">
+<div class="layui-form-item" >
+    <label class="layui-form-label">输入框</label>
+    <div class="layui-input-block">
+        <input type="text" name="pici" value="" id="num" required  lay-verify="required" placeholder="请输入批次编号" autocomplete="off" class="layui-input">
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">条件</label>
+    <div class="layui-input-block">
+        <input type="radio" name="isType" value="1" title="支付申报失败">
+        <input type="radio" name="isType" value="2" title="支付申报成功" checked>
+    </div>
+</div>
+<div class="layui-form-item">
+    <div class="layui-input-block">
+        <a class="layui-btn" lay-submit lay-filter="formDemo" onclick="requestExpro();">立即导出</a>
+    </div>
+</div>
+</form>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>
+    <!--<a class="layui-btn layui-btn-xs" lay-event="way">导出物流报文</a>-->
+</script>
+
+<script type="text/javascript">
+
+    layui.use(['layer','form','jquery','upload','laypage','table'],function(){
+		$ = layui.jquery;
+		layer = layui.layer;
+		var form = layui.form;
+		upload = layui.upload;
+        var table = layui.table;
+        table.render({
+            elem: '#table-checkbox'
+            ,url: '{:Url("electronicorder/get_list")}'
+            ,cols: [[
+                {field:'batch_num', title: '批次'},
+                {field:'DeclEntNo', title: '申报企业编号'}
+                ,{field:'DeclEntName', title: '申报企业名称'}
+                ,{field:'EBEntNo', title: '电商企业编号'}
+                ,{field:'EBEntName',title: '电商企业名称', minWidth: 100}
+                ,{field:'EBPEntNo', title: '商平台企业编号'}
+                ,{field:'DeclTime', title: '申报时间'}
+                ,{align:'center', fixed: 'right', toolbar: '#barDemo'}
+            ]]
+            ,page: true
+        });
+        //监听工具条
+        table.on('tool(test)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'detail'){
+                qx(data.id);
+            }else if(obj.event === 'way'){
+                exportExcel(data.id);
+            }
+        });
+		//拖拽上传
+         // var uploadInst = upload.render({
+         //     elem: '#test10' //绑定元素
+         //     ,url: '{:Url("electronicorder/upload")}' //上传接口
+         //     ,done: function(res){
+         //         //上传完毕回调
+         //         if(res.code==-1){
+         //             layer.msg(res.msg, {icon: 2});
+         //             return false;
+         //         }
+         //         layer.msg(res.msg, {icon: 1});
+         //         setTimeout(function () {
+         //             layer.close(layer.index);
+         //         },1500);
+         //     }
+         //     ,error: function(){
+         //         layer.msg('服务异常', {icon: 3});
+         //     },
+         //     accept: 'file',
+         //     exts:'xls|xlsx|csv'
+         // });
+	});
+	//打开弹出层
+	// function uploads()
+	// {
+	// 	$('#show').css('display','block');
+	// 	layer.open({
+	// 		type:1,
+	// 		content:$('#forms'),
+	// 		cancel:function(){
+	// 			$('#show').css('display','none');
+	// 		},
+	// 	});
+	// }
+
+    function qx(id){
+	    layer.open({
+            type:2,
+            title:'明细',
+            area:['100%','100%'],
+            content:"{:Url('electronicorder/getOrderAllInfo')}&id="+id
+        })
+    }
+    function exportExcel(id) {
+        layer.open({
+            type:1,
+            title:'输入批号',
+            area:['40%','25%'],
+            content:$("#pi")
+        });
+    }
+function sb() {
+    layer.open({
+        type:2,
+        title:'电子订单申报',
+        area:['1000px','600px'],
+        content:"{:Url('electronicorder/pushDeclarationOrder')}"
+    })
+}
+
+
+function requestExpro(){
+    var num = document.getElementById("num").value;
+    var radio = document.getElementsByName("isType");
+    var type =null;
+    for (var i=0;i<radio.length;i++){
+        if (radio[i].checked){
+            type = radio[i].value;
+        }
+    }
+    layer.load(1, {shade: 0.3});
+    window.location.href = "{:Url('electronicorder/export_way_excel')}"+"&batch_num="+num+"&type="+type;
+    return false;
+}
+</script>
+</body>
+</html>

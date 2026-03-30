@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>面试测评首页</title>
+	<!--手机端需要添加-->
+	<!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+	<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+
+	<!--手机端需要添加---->
+	<link rel="stylesheet" type="text/css" href="../addons/sz_yi/static/interview_test/css/test_rx.css" />
+    <link rel="stylesheet" type="text/css" href="../addons/sz_yi/static/interview_test/css/home.css" />
+	<script src="../addons/sz_yi/static/interview_test/js/jquery-1.8.3.min.js"></script>
+	<script src="../addons/sz_yi/static/interview_test/js/jQuery.fontFlex.js"></script>
+	<style>
+		/* toast */
+        #hui-toast{width:100%; position:fixed; z-index:21; left:0; bottom:50px; text-align:center;}
+        #hui-toast-msg{margin:0 auto; line-height:22px; background:rgba(0,0,0,0.7); padding:10px; color:#FFFFFF; font-size:14px; text-align:center; max-width:200px; border-radius:6px; display:inline-block;}
+	</style>
+	<script>
+	$(document).ready(function(e) {
+		//320宽度的时候html字体大小是20px;、640宽度的时候html字体大小是40px;
+		$('html').fontFlex(20, 40, 16); 
+		//
+	     $(".dxt_box li").click(function(){
+			$(this).addClass("on").siblings().removeClass("on");
+			$(this).parent(".dxt_box").parent(".kcks_title_ts").attr("date-title",1);
+			$(this).parent(".dxt_box").parent(".last").attr("date-title",0); 	
+			});
+	});
+	</script>
+</head>
+<body class="home-bg">
+<div class="warp">
+	<div class="home-logo">
+		<img src="../addons/sz_yi/static/interview_test/images/logo.png" alt="">
+	</div>	
+	<div class="icon-pic"><img src="../addons/sz_yi/static/interview_test/images/icon02.png" alt=""></div>
+	<div class="txt-pic"><img src="../addons/sz_yi/static/interview_test/images/title.png" alt=""></div>
+	<button class="home-but" onclick="start();" type="button">开始测评</button>
+</div>
+<script src="../addons/sz_yi/static/travel_express/js/hui.js" type="text/javascript" charset="utf-8"></script>
+<script>
+	function start()
+	{
+		var url = '{php echo $this->createMobileUrl("member/interview_test")}&op=start';
+		hui.ajax({
+            url  : '{php echo $this->createMobileUrl("member/interview_test")}&op=check',
+            type : 'POST',
+			data : {},
+			datatype: "json",
+            success : function(res){
+                if(res.status==0){
+					window.location.href = url;
+                }else{
+                	hui.toast('您已测评过！');
+                }
+            },
+            error : function(e){
+                console.log(JSON.stringify(e));
+                hui.toast('系统错误');
+			},
+			'backType' : "JSON"
+		});
+			
+		
+	}
+</script>
+</body>
+</html>

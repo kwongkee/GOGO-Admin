@@ -1,0 +1,57 @@
+<?php
+
+define('IN_MOBILE', true);
+
+/*require '../framework/bootstrap.inc.php';
+load()->app('common');
+load()->model('app');
+require IA_ROOT . '/app/common/bootstrap.app.inc.php';
+global $_W;
+global $_GPC;*/
+
+$appid = 'wx56acdff97cef4e2b';
+//$AppSecret = '890b65d1eaac88349f3d033c31f10f93';
+$host = 'shop.gogo198.cn';
+
+$html = <<<EOX
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>微信扫码登陆</title>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style>
+    body{
+        margin: 15px auto;
+        text-align: center;
+        padding: 50px;
+    }
+</style>
+</head>
+<body>
+
+    <p id="Content"></p>
+    <span id="login_container"></span>
+    
+    <script src="https://res.wx.qq.com/connect/zh_CN/htmledition/js/wxLogin.js"></script>
+    <script>
+        var obj = new WxLogin({
+            id: "login_container",
+            appid: "{$appid}",
+            scope: "snsapi_login",
+            redirect_uri: encodeURIComponent("https://{$host}/app/wxRed.php"),
+            state: Math.ceil(Math.random()*1000),
+            style: "black",
+            href: ""});
+    </script>
+</body>
+</html>
+EOX;
+
+echo $html;
+
+?>
+
+

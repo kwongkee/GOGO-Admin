@@ -1,0 +1,262 @@
+{include file="public/header_new"}
+<style>
+    img{ width:20px;height:20px;}
+</style>
+<body class="gray-bg">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <h3 style="text-align: center;">流程管理</h3>
+                    <div id="toolbar" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;">
+                        <button type="button" href="javascript:;" onclick="save();" class="btn btn-default">
+                            新增流程
+                        </button>
+                    </div>
+                    <table id="table"
+
+                    /*默认排序项*/
+                    data-sort-name="id"
+                    data-sort-order="desc"
+                    /*工具栏相关*/
+                    data-toolbar="#toolbar"
+                    data-search="false"          /*搜索框*/
+                    data-search-on-enter-key="false"
+                    data-show-refresh="true"    /*刷新按钮*/
+                    /*分页相关*/
+                    data-side-pagination="server"
+                    data-pagination="true"      /*显示分页*/
+                    data-page-size="10"         /*每页显示条数*/
+                    /*移动端相关*/
+                    data-mobile-responsive="true"
+                    data-card-view="true"
+                    data-show-columns="true"
+                    /*radio or checkbox字段名称*/
+                    data-select-item-name="id" >
+
+                    <thead>
+                    <tr>
+                        <th data-field="checkbox"
+                            data-align="center"
+                            data-checkbox="true"></th>
+                        <th data-field="displayorders"
+                            data-align="center"
+                            data-sortable="true">序号</th>
+                        <th data-field="step"
+                            data-align="center"
+                            data-sortable="true">序号描述</th>
+                        <th data-field="content"
+                            data-align="center"
+                            data-sortable="true">流程描述</th>
+                        <th data-field="createtime"
+                            data-align="center"
+                            data-sortable="true">创建时间</th>
+                        <th data-field="manage"
+                            data-align="center"
+                            data-sortable="true"
+                            data-formatter="actionFormatter">操作</th>
+                    </tr>
+                    </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="manage_process" style="display: none;padding:10px;box-sizing: border-box;">
+        <input type="hidden" name="opera_id" id="opera_id" value="">
+        <input type="hidden" name="opera_name" id="opera_name" value="">
+        <div class="form-group">
+            <label for="level">列表</label>
+            <select name="level" id="level" class="form-control">
+                <option value="1">本级列表</option>
+                <option value="2">下级列表</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="opera">操作</label>
+            <select name="opera" id="opera" class="form-control">
+                <option value="9">——请选择——</option>
+                <option value="1">编辑</option>
+                <option value="2">删除</option>
+                <option value="3">新增</option>
+            </select>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var table;
+
+        $(document).ready(function(){
+            table = $('#table').bootstrapTable({
+                url: "{:url('centralize/index/gather_process_manage')}&pid={$pid}&system_id={$system_id}",
+                queryParams: queryParams,
+            });
+            $('.form-control').attr('placeholder','搜索仓库名称');
+
+            $('#level').change(function(){
+                let val = $(this).val();
+                let pid = $('#opera_id').val();
+                let name = $('#opera_name').val();
+                if(val==2){
+                    var index = layer.open({
+                        type: 2,
+                        title: name+'-流程列表',
+                        area:['100%','100%'],
+                        content: "{:url('centralize/index/gather_process_manage')}&system_id={$system_id}&pid="+pid
+                    });
+                }
+                if(val==2){
+                    $(this).find('option[value="1"]').attr('selected','true');
+                }
+            });
+
+            $('#opera').change(function(){
+                let val = $(this).val();
+                let pid = $('#opera_id').val();
+                let name = $('#opera_name').val();
+
+                if(val==1){
+                    edit(pid,name);
+                }else if(val==2){
+                    del(pid,name);
+                }else if(val==3){
+                    save_process(pid,name);
+                }
+
+                if(val!=9){
+                    $(this).find('option[value="9"]').attr('selected','true');
+                }
+            });
+        });
+
+        queryParams = function (params) {
+            var temp = {
+                sort: params.sort,
+                order: params.order,
+                limit: params.limit,            //页面大小
+                offset: params.offset,          //页码
+                search: params.search,
+            };
+            return temp;
+        };
+
+        //操作栏的格式化
+        function actionFormatter(value, row, index) {
+            var id = row.id;
+            var title = row.content;
+            var displayorders = row.displayorders;
+            var result = "";
+
+            result += '<button style="margin-right: 5px;" type="button" onclick="save_process('+id+',\''+title+'\')" class="btn btn-info btn-xs">新增流程</button>';
+            result += '<button style="margin-right: 5px;" type="button" onclick="manage_process('+id+',\''+title+'\')" class="btn btn-warning btn-xs">管理流程</button>';
+            // result += '<button style="margin-right: 5px;" type="button" onclick="child_list('+id+',\''+title+'\')" class="btn btn-info btn-xs">下级列表</button>';
+            // result += '<button style="margin-right: 5px;" type="button" onclick="save_child('+id+',\''+title+'\',\''+displayorders+'\')" class="btn btn-warning btn-xs">新增下级</button>';
+            // result += '<button style="margin-right: 5px;background:#0074E4;border:1px solid #0074E4;" type="button" onclick="save_common('+id+',\''+title+'\',\''+displayorders+'\')" class="btn btn-warning btn-xs">新增同级</button>';
+            // result += '<button style="margin-right: 5px;" type="button" onclick="edit('+id+',\''+title+'\')" class="btn btn-primary btn-xs">编辑</button>';
+            // result += '<button style="margin-right: 5px;" type="button" onclick="del('+id+',\''+title+'\')" class="btn btn-danger btn-xs">删除</button>';
+
+            return result;
+        }
+
+        function save_process(id,name){
+            var index = layer.open({
+                type: 2,
+                title: '新增流程',
+                area:['100%','100%'],
+                content: "{:url('centralize/index/save_process')}&system_id={$system_id}&pid="+id
+            });
+        }
+
+        function manage_process(id,name){
+            $('#opera_id').val(id);
+            $('#opera_name').val(name);
+            var index = layer.open({
+                type: 1,
+                title: '管理流程-'+name,
+                area:['50%','50%'],
+                content: $('.manage_process')
+            });
+        }
+
+        function edit(id,name){
+            var index = layer.open({
+                type: 2,
+                title: '查看-'+name,
+                area:['100%','100%'],
+                content: "{:url('centralize/index/save_process')}&system_id={$system_id}&id="+id
+            });
+            // layer.full(index);
+        }
+
+
+        function save(title) {
+            var index = layer.open({
+                type: 2,
+                title: '新增流程',
+                area:['100%','100%'],
+                content: "{:url('centralize/index/save_process')}&pid={$pid}&system_id={$system_id}"
+            });
+            // layer.full(index);
+        }
+
+        function save_common(pid,title,displayorders){
+            var index = layer.open({
+                type: 2,
+                title: title,
+                area:['100%','100%'],
+                content: "{:url('centralize/index/save_process')}&pid="+pid+"&displayorders="+displayorders
+            });
+        }
+
+        function save_child(pid,title,displayorders){
+            var index = layer.open({
+                type: 2,
+                title: title,
+                area:['100%','100%'],
+                content: "{:url('centralize/index/save_process')}&pid="+pid
+            });
+        }
+
+        function child_list(pid,title){
+            var index = layer.open({
+                type: 2,
+                title: title,
+                area:['100%','100%'],
+                content: "{:url('centralize/index/gather_process_manage')}&pid="+pid
+            });
+        }
+
+        function del(id,title){
+            layer.confirm('确认删除该流程吗？',function(index){
+                $.ajax({
+                    url: "<?php echo Url('centralize/index/del_process'); ?>",
+                    data:{'id':id},
+                    type:'post',
+                    cache:false,
+                    dataType:'json',
+                    success:function(data){
+                        if(data.code==0)
+                        {
+                            layer.msg(data.msg, {
+                                icon: 1,
+                                time: 2000
+                            }, function(){
+                                window.location.reload();
+                            });
+                            return true;
+                        }else {
+                            layer.msg(data.msg, {icon:2, time:2000});
+                            return false;
+                        }
+                    },
+                    error:function() {
+                        layer.msg('系统出错,请重试',{icon:2,time:1000});
+                    }
+                });
+            });
+        }
+
+    </script>
+</body>
+</html>

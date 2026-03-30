@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{$title}}</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+
+<body style="padding-top: 10px;">
+<table class="layui-table">
+    <thead>
+    <tr class="ths">
+        <th>批次编号</th>
+        <th>用户姓名</th>
+        <th>证件号码</th>
+        <th>电话号码</th>
+        <th>月票数</th>
+        <th>月总额</th>
+        <th>年票数</th>
+        <th>年总额</th>
+       
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+        {volist name="data['lists']" id="vo"}
+            <tr class="boys">
+                <td>{$vo.batch_num}</td>
+                <td>{$vo.RecipientName}</td>
+                <td>{$vo.OrderDocId}</td>
+                <td>{$vo.OrderDocTel}</td>
+                {if condition="($vo.monthStatus == 1)" }
+                    <td style="color: red;">{$vo.monthNum} 票</td>
+                {else /}
+                    <td>{$vo.monthNum} 票</td>
+                {/if}
+
+                {if condition="($vo.monthMStatus == 1)"}
+                    <td style="color: red;">{$vo.monthMoney} 元</td>
+                {else /}
+                    <td>{$vo.monthMoney} 元</td>
+                {/if}
+
+                {if condition="($vo.yearStatus == 1)"}
+                    <td style="color: red;">{$vo.yearNum} 票</td>
+                {else /}
+                    <td>{$vo.yearNum} 票</td>
+                {/if}
+
+                {if condition="($vo.yearMStatus == 1)"}
+                    <td style="color: red;">{$vo.yearMoney} 元</td>
+                {else /}
+                    <td>{$vo.yearMoney} 元</td>
+                {/if}
+              
+                <td>
+                    <a href="#" onclick="getRisk('{$vo.OrderDocId}');" class="layui-btn">查看购买产品</a>
+                </td>
+            </tr>
+        {/volist}
+    </tbody>
+</table>
+
+<div class="layui-box layui-laypage layui-laypage-default">{$data['pages']}</div>
+
+<script type="text/javascript">
+    layui.use(['layer','jquery'],function(){
+        layer = layui.layer;
+        $ = layui.jquery;
+    });
+
+    // 获取产品订单列表
+    function getRisk(idCard){
+        layer.open({
+            type:2,
+            title:'用户订单产品列表',
+            shadeClose:true,
+            shade:0.3,
+            area:['800px','450px'],
+            content:"{:Url('admin/elec/getrisk')}&idCard="+idCard,
+            yes:function(){},
+            end:function(){}
+        });
+    }
+
+    function loding() {
+        layer.load();
+        setTimeout(function () {
+            layer.closeAll();
+        },5000);
+    }
+
+
+</script>
+</body>
+</html>

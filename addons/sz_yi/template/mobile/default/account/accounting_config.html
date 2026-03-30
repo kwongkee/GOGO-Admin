@@ -1,0 +1,161 @@
+{template 'common/header'}
+<!--<title>自定义收款</title>-->
+<style type="text/css">
+    body {margin:0px; background:#efefef; font-family:'微软雅黑'; -moz-appearance:none;}
+    .info_main {height:auto;  background:#fff; margin-top:14px; border-bottom:1px solid #e8e8e8; border-top:1px solid #e8e8e8;}
+    .info_main .line {margin:0 10px; height:40px; border-bottom:1px solid #e8e8e8; line-height:40px; color:#999;font-size:15px;}
+    .info_main .line .title {height:40px; width:80px; line-height:40px; color:#444; float:left; font-size:15px;}
+    .info_main .line .info { width:100%;float:right;margin-left:-80px; overflow: auto;white-space: nowrap;}
+    .info_main .line .inner { margin-left:80px; }
+    .info_main .line .inner input {height:39px; width:100%;display:block; padding:0px; margin:0px; border:0px; float:left; font-size:14px;}
+    .info_main .line .inner .user_sex {line-height:40px;}
+    .info_sub {height:44px; margin:14px 5px; background:#1E9FFF !important; border-radius:4px; text-align:center; font-size:16px; line-height:44px; color:#fff;}
+    .select { border:1px solid #ccc;height:25px;}
+    .disf{display:flex;}
+    /**合同文件**/
+    .info_main .images {float: left; width:auto;height:30px;margin-top:7px;}
+    .info_main .images .img { float:left; position:relative;width:30px;height:30px;border:1px solid #e9e9e9;margin-right:5px;}
+    .info_main .images .img img { position:absolute;top:0; width:100%;height:100%;}
+    .info_main .images .img .minus { position:absolute;color:red;width:8px;height:12px;top:-18px;right:-1px;}
+    .info_main .plus { float:left; width:30px;height:30px;border:1px solid #e9e9e9; color:#dedede;; font-size:18px;line-height:30px;text-align:center;margin-top:4px;}
+    .info_main .plus i { left:7px;top:7px;}
+
+    .bigautocomplete-layout{background:#fff;position:absolute;height: 200px;overflow: scroll;border:1px solid #000;}
+    .bigautocomplete-layout table tr td div{height: 30px;line-height: 30px;}
+    button, input, optgroup, select, textarea{font:unset !important;color:black !important;line-height:1.5 !important;}
+    .sel{box-sizing: border-box;padding: 4px 10px;font-size: 14px;color: #fff;background: #1E9FFF;text-align:center;width: fit-content;margin: 0 auto;}
+    .table_title{width: 100%;background: #3c763d;color: #fff;font-size: 15px;padding: 5px;text-align: center;margin-top: 5px;}
+    .buss_add{padding:6px 14px;background:#1E9FFF;color:#fff;width:fit-content;font-size:15px;margin: 0 auto;}
+    .buss_del{padding:6px 14px;background:#ff5555;color:#fff;width:fit-content;font-size:15px;margin: 0 auto;}
+    a{text-decoration: none;text-underline: none;}
+</style>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.core-2.5.2.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.core-2.5.2-zh.js" type="text/javascript"></script>
+<link href="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.core-2.5.2.css" rel="stylesheet" type="text/css" />
+<link href="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.animation-2.5.2.css" rel="stylesheet" type="text/css" />
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.datetime-2.5.1.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.datetime-2.5.1-zh.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.android-ics-2.5.2.js" type="text/javascript"></script>
+<link href="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.android-ics-2.5.2.css" rel="stylesheet" type="text/css" />
+
+<link href="../addons/sz_yi/template/mobile/default/static/js/star-rating.css" media="all" rel="stylesheet" type="text/css"/>
+<script src="../addons/sz_yi/template/mobile/default/static/js/star-rating.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/ajaxfileupload.js" type="text/javascript"></script>
+
+<!--<link rel="stylesheet" href="../addons/sz_yi/static/css/layui.css">-->
+<script src="../addons/sz_yi/static/js/jquery.bigautocomplete.js"></script>
+<link type="text/css" rel="stylesheet" href="../addons/sz_yi/template/pc/default/static/css/bootstrap.min.css" />
+
+<div id="container">
+    <div class="page_topbar">
+        <div class="title">记账配置</div>
+    </div>
+    <div class="info_main">
+        <div class="line"><div class="title" style="background:#fff;z-index:99;">选择商户</div><div class="info"><div class="inner" style="z-index:98;">
+            <select name="user_id" id="user_id">
+                <option value="">请选择商户</option>
+                {loop $decl_user $v}
+                <option value="{$v['id']}">{$v['user_name']}</option>
+                {/loop}
+            </select>
+        </div></div></div>
+        <div class="line bill_account_id">
+            <div class="title">记账代理</div><div class='info'><div class='inner'>
+            <select name="accounting_id" id="accounting_id">
+                <option value="">请选择记账代理</option>
+                {loop $accounting $v}
+                <option value="{$v['fanid']}">{$v['nickname']}</option>
+                {/loop}
+            </select>
+        </div></div>
+        </div>
+        <div class="table_title">核定税种</div>
+        <table class="table table-striped" style="margin-bottom:0;table-layout:fixed;word-break: break-all;text-align:center;">
+            <tr>
+                <td>税种名称</td>
+                <td>操作</td>
+            </tr>
+            <tr>
+                <td style="text-align: center;">
+                    <select name="taxes_id" id="taxes_id" style="width:100%;">
+                        {loop $tax_category $v}
+                        <option value="{$v['id']}">{$v['name']}</option>
+                        {/loop}
+                    </select>
+                </td>
+                <td style="text-align: center;">
+                    <div class="buss_del" onclick="buss_del(this)">删除</div>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><div class="buss_add"  onclick="buss_add(this)">增加</div></td>
+            </tr>
+        </table>
+
+    </div>
+    <div class="info_sub" style="margin-bottom:10px;">确定</div>
+    <div class="button back" onclick="javascript:history.back(-1);" style="height: 44px;margin: 14px 2%;width:96%;background: #aaa;border-radius: 4px;text-align: center;font-size: 16px;line-height: 44px;color: #fff;">返回</div>
+</div>
+<script language="javascript">
+    require(['tpl', 'core'], function(tpl, core) {
+
+    });
+
+    function buss_del(t){
+        let len = $(t).parent().parent().parent().children().length;
+        if(len==3){
+            alert('最少保留一个！');return;
+        }
+        $(t).parent().parent().remove();
+    }
+
+    function buss_add(t){
+        let html = $(t).parent().parent().prev().html();
+        $(t).parent().parent().prev().after('<tr>'+html+'</tr>');
+    }
+
+    $(function(){
+        $('.info_sub').click(function(){
+            //对账单信息
+            let user_id = $('#user_id').val();
+            let accounting_id = $('#accounting_id').val();
+            //税种核定
+            let taxes_id = '';
+            $('select[name="taxes_id"]').each(function(){
+                if($(this).find('option:selected').val()!=''){
+                    taxes_id += $(this).val()+',';
+                }
+            });
+            if($('#user_id').isEmpty()){
+                alert('请选择商户');return;
+            }
+            if($('#accounting_id').isEmpty()){
+                alert('请选择记账代理');return;
+            }
+            if(taxes_id==',' || taxes_id=='' || typeof(taxes_id)=='undefined'){
+                alert('请添加核定税种');return;
+            }
+            $.ajax({
+                url:"<?php echo $this->createMobileUrl('account/manage');?>",
+                type:'POST',
+                dataType:'json',
+                data:{'op':'accounting_config','user_id':user_id,'accounting_id':accounting_id,'taxes_id':taxes_id},
+                success:function(json) {
+                    if(json.status==-1){
+                        alert(json.result.msg);
+                    }else{
+                        alert(json.result.msg);
+                        setTimeout(function(){
+                            window.location.reload();
+                        },2000)
+                    }
+                },error:function(json){
+                    alert('数据出错！');
+                }
+            });
+        });
+    });
+</script>
+
+{template 'common/footer'}

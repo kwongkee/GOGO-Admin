@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>管理设置</title>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<meta name="format-detection" content="address=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="{TEMPLATE_PATH}/wtCommon.css?v={php echo time();}">
+<link rel="stylesheet" href="{TEMPLATE_PATH}/live.css?v={php echo time();}">
+<script src="http://cdn.bootcss.com/zepto/1.1.6/zepto.min.js"></script>
+{php echo register_jssdk();}
+<script type="text/javascript">
+$(function(){
+	$(".adm_delete").click(function(){
+		var conf=confirm("确认删除吗?");
+		if(!conf){return;}
+		var manage_id=$(this).attr('attr-id');
+		var manage_handler=$(this);
+		$.post(location.href,{manage_id:manage_id},function(result){
+			if(result.success==1){
+				//alert('删除成功！');
+				manage_handler.parent().remove();
+			}
+		});
+	});
+});
+</script>
+</head>
+<body class="liveroom_bg">
+<div class="main_box_4" id="forumPageBox"> 
+{if $is_creater}
+		<ul class="nav_list">
+			<li class="invitate_people"><span class="list_btn_2"><a href="{$invite_url}">邀请管理员（请通过手机端发出邀请）</a></span></li>
+		</ul>
+{/if}
+	<p class="people_t">直播间管理员</p>
+		<dl class="people_info_box">
+				<dd><span class="people_pic"><img src="{$chat_room['create_avatar']}"></span><span class="people_name">{$chat_room['create_nickname']}</span><span class="people_title">直播间创建人</span></dd>
+				{loop $managers $manager}
+				<dd><span class="people_pic"><img src="{$manager['manage_avatar']}"></span><span class="people_name">{$manager['manage_nickname']}</span><span class="people_title">直播间管理员</span>
+				  {if $is_creater}
+				   <a href="javascript:;" class="adm_delete" attr-id="{$manager['id']}">删除</a></dd>
+		          {/if}
+		        {/loop}
+		</dl>
+	
+	<!--删除提示-->
+	<div class="geneBox admDeleteBox">
+		<div class="main">
+		<div class="gene_content">
+			确定要删除  <span class="nowname" style="display:inline;"></span> ?
+		</div>
+		<div class="gene_bottom both">
+			<span><a href="javascript:;" class="gene_btn gene_cancel">取消</a></span>
+			<span><a href="javascript:;" class="gene_btn gene_confirm" attr-id="">确定</a></span>
+		</div>
+		</div>
+	</div>
+</div>
+<div class="loadingBox"><span></span></div>
+</body></html>

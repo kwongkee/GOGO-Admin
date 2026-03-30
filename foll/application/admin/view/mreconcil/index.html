@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" href="./static/home/css/font.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/Swiper/3.4.2/css/swiper.min.css">
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.bootcss.com/Swiper/3.4.2/js/swiper.jquery.min.js"></script>
+    <script src="./static/home/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./static/home/js/xadmin.js"></script>
+    <title>银企账单对账</title>
+    <style type="text/css">
+    	.main{width: 100%;height: auto;}
+    	.title{font-weight: bold;text-align: center;background: silver;padding: 5px auto;height: 25px;line-height: 25px;}
+    	.heads{width: 100%;float: left;}
+    	.heads div{width: 25%;background:sandybrown;float:left;height:25px;line-height:25px;color:seagreen;font-weight:bold;font-size:14px;text-align: center;}    	
+    	
+    	/*color:seagreen;*/
+    	.headata{width: 100%;float: left;}
+    	.headata div{width: 24.7%;border-right: 1px solid silver;border-bottom: 1px solid silver; float: left;height: 25px;line-height: 25px;text-align:center;font-weight:bold;font-size:14px;}
+    	.headata div:last-child{border-right: 0px;}
+    	.headata .hea1{width: 13%;}
+    	.headata .hea2{width: 24%;}
+    	.headata .hea3{width: 15%;}
+    	.headata .hea4{width: 47%;}
+    	.heads .hea1{width: 13%;}
+    	.heads .hea2{width: 24%;}
+    	.heads .hea3{width: 15%;}
+    	.heads .hea4{width: 48%;}
+    	
+    	.eps{width: 100%;height: 26px; text-align: center;margin: 5px auto;}
+    	.eps div{float: left;margin: 0px 5px;}
+    	.explos{width: 122px;height: 26px;border: 1px solid salmon;border-radius: 5px;background: deepskyblue;text-align: center;line-height: 26px;}
+    	.Onexplos{width:90px;height: 26px;border: 1px solid salmon;border-radius: 5px;background: deepskyblue;text-align: center;line-height: 26px;} 	
+    	.Onexplod{width:90px;height: 26px;border: 1px solid salmon;border-radius: 5px;background:red;text-align: center;line-height: 26px;color:white;}
+    	
+    	.ones{width: 100%;text-align: center;}
+    	.dels{width: 100%;text-align: center;}
+    	.titles{display: inline-block;width: 100%;height: 30px;text-align: center;line-height: 30px;font-size: 16px;font-weight:bold;}
+    	
+    	
+    	.nodata{width: 100%;text-align: center;color:silver;font-size:18px;font-weight: bold;margin: 25% auto;}
+    	.errors{color: red;}
+    	.ok{color: seagreen;}
+    	.clear{clear: both;}
+    </style>
+</head>
+<body>
+	<div class="main">
+		<div class="title">{$title}</div>
+		<div class="clear"></div>
+		
+		<div class="heads">
+			<div class="hea1">类型</div>
+			<div class="hea2">时间</div>
+			<div class="hea3">金额</div>
+			<div class="hea4">商户单号</div>
+		</div>
+		
+		<div class="clear"></div>
+		
+		{if !empty($data)}
+			{foreach $data as $vo}
+				{if condition="$vo.data_type eq 'down'"}
+					<div class="headata errors">
+						<div class="hea1">{$vo.msg}</div>
+						<div class="hea2">{$vo.date}</div>
+						<!--div class="hea3 res">{$vo.checkMoney}</div-->
+						<div class="hea3">{$vo.pay_account}</div>
+						<input type="hidden" class="up" id="up" value="{$vo.upOrderId}" />
+						<div class="hea4">{$vo.upOrderId}</div>
+					</div>
+				{elseif condition="$vo.data_type eq 'upper' "/}
+					<div class="headata ok">
+						<div class="hea1">{$vo.msg}</div>
+						<div class="hea2">{$vo.date}</div>
+						<div class="hea3">{$vo.pay_account}</div>
+						<div class="hea4">{$vo.upOrderId}</div>
+					</div>
+				{/if}
+			{/foreach}
+			<p>差额金额：{$data[0]['checkMoney']}元</p>
+		{else/}
+			<div class="nodata">暂无差错数据</div>
+		{/if}
+		
+	</div>
+	
+	<div class="clear"></div>
+	
+	<div class="eps">
+		<input type="hidden" id="types" value="{$type}" />
+		<input type="hidden" id="isls" value="{$msg}" />
+		<input type="hidden" id="dates" value="{$dates}"/>
+		<div class="explos">导出昨日对账</div>
+		<div></div>
+		{if !empty($data)}
+			<div class="Onexplos" id="onex">自动平账</div>
+		{/if}
+	</div>
+
+<script>
+	//对账数据导出
+	$('.explos').click(function(){
+		var types = $('#types').val();
+		var dates = $('#dates').val();
+		if(types == '') {
+			alert('数据类型为空');
+			return false;
+		}
+		
+		$.ajax({
+        	type:"post",
+        	url:"http://shop.gogo198.cn/foll/public/index.php?s=mreconcil/dowlon",
+        	async:true,
+        	data:{'type':types,'dates':dates},
+        	success:function(res) {
+        		var res = JSON.parse(res);
+        		//console.dir(res)
+        		if(res.code < 1) {
+        			alert(res.msg);
+        			window.location.reload();
+        			return false;
+        		}
+        		alert(res.msg)
+        		window.location.reload();
+        	}
+        });
+		//alert('数据可以请求');
+	});
+	
+	/*
+	 * 显示隐藏表单
+	 */
+	/*$(document).ready(function(){
+		$('.Onexplod').click(function(){
+			$('.dels').toggle();
+		});
+	});*/
+	
+	
+	//一键平账    自动平账
+	$('.Onexplos').click(function() {
+
+		// yinchang
+	    $('#onex').hide();
+
+		var isls  = $('#isls').val();
+		var types = $('#types').val();
+		var dates = $('#dates').val();
+            if(types == '') {
+			alert('数据类型为空');
+			return false;
+		}
+
+		$.ajax({
+        	type:"post",
+        	url:"http://shop.gogo198.cn/foll/public/index.php?s=mreconcil/balance",
+        	async:true,
+        	data:{'type':types,'isls':isls,'dates':dates},
+        	success:function(res) {
+        		var res = JSON.parse(res);
+        		if(res.code == 11) {
+        			alert(res.msg)
+        			window.location.reload();
+        		} else {
+        			alert(res.msg);
+        			window.location.reload();
+        		}
+        	}
+        });
+	});
+	
+	
+
+	//修改差错金额
+    $('.res').click(function() {
+        var th = $(this);
+        var html = th.html();
+        var uporderid =th.siblings('#up').val();
+        var input = $("<input style='width:55px;' type='text' value='" + html + "'/>");
+        th.html(input);//附上input
+        //再次点击不变
+        input.click(function(){return false;});
+        //自动获取焦点 
+        input.trigger("focus");
+        //文本框失去焦点变回来
+        input.blur(function(){
+            var val = $(this).val();
+            if(val =='') {
+            	alert('数据值不能为空!')
+            	return false;
+            }
+            //console.dir(val);
+            if (val != html) { 
+                th.html(val);
+                //下面开始根据你的情况,在写ajax 
+                $.ajax({
+                	type:"post",
+                	url:"http://shop.gogo198.cn/foll/public/index.php?s=mreconcil/ajax",
+                	async:true,
+                	data:{'uporderid':uporderid,'payMoney':val},
+                	success:function(res) {
+                		var res = JSON.parse(res);
+                		if(res.code < 1){
+                			alert(res.msg);
+                			window.location.reload();
+                			return false;
+                		}
+                		
+                		alert(res.msg)
+                		window.location.reload();
+                	}
+                });
+            } else { 
+                th.html(val); 
+            } 
+        }) 
+    })
+</script>
+</body>
+</html>

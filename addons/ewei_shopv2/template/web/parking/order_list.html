@@ -1,0 +1,134 @@
+{template "parking/_header"}
+<div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">订单</a>
+        <a>
+          <cite>导航元素</cite></a>
+      </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<div class="x-body">
+    <div class="layui-row">
+        <form class="layui-form layui-col-md12 x-so" method="post" action="{php echo webUrl('parking/order')}">
+            <input class="layui-input" placeholder="开始日" name="start" id="start">
+            <input class="layui-input" placeholder="截止日" name="end" id="end">
+            <div class="layui-input-inline">
+                <select name="contrller">
+                    <option value="">支付状态</option>
+                    <option value="1">已支付</option>
+                    <option value="3">未支付</option>
+                    <option value="2">支付失败</option>
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <select name="paytype">
+                    <option value="">支付方式</option>
+                    <option value="alipay">支付宝</option>
+                    <option value="wechat">微信</option>
+                    <option value="Parks">信用卡</option>
+                </select>
+            </div>
+            <input type="text" name="ordernum"  placeholder="请输入订单号" autocomplete="off" class="layui-input" value="">
+            <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+    </div>
+    <xblock>
+        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
+        <span class="x-right" style="line-height:40px">共有数据：{$data['total']['num']}条</span>
+    </xblock>
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>
+                <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+            </th>
+            <th>订单编号</th>
+            <th>用户</th>
+            <th>总金额</th>
+            <th>应付金额</th>
+            <th>支付状态</th>
+            <th>支付类型</th>
+            <th>车位</th>
+            <th>总停时间分</th>
+            <th>下单时间</th>
+            <th >操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {loop $data['data'] $index $item}
+        <tr>
+            <td>
+                <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id="{$item['id']}"><i class="layui-icon">&#xe605;</i></div>
+            </td>
+            <td>{$item['ordersn']}</td>
+            <td>{$item['mobile']}</td>
+            <td>{$item['total']}</td>
+            <td>{$item['PayAmount']}</td>
+            <td>{$status[$item['pay_status']]}</td>
+            <td>{$pstatus[$item['pay_type']]}</td>
+            <td>{$item['number']}</td>
+            <td>{$item['duration']}</td>
+            <td><?php echo date("Y-m-d H:i:s",$item['create_time']);?></td>
+            <td class="td-manage">
+                <a title="删除" onclick="member_del(this,{$item['id']})" href="javascript:;">
+                    <i class="layui-icon">&#xe640;</i>
+                </a>
+            </td>
+        </tr>
+        {/loop}
+        </tbody>
+    </table>
+    <div class="page">
+        <div>
+          {$data['page']}
+        </div>
+    </div>
+
+</div>
+<script>
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#start' //指定元素
+        });
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#end' //指定元素
+        });
+    });
+
+    /*用户-删除*/
+    function member_del(obj,id){
+        layer.confirm('确认要删除吗？',function(index){
+           $.get("{php echo webUrl('parking/order/delete')}",{'did':id},function (data) {
+               if(data=='1'){
+                   $(obj).parents("tr").remove();
+                   layer.msg('已删除!',{icon:1,time:1000});
+               }
+           })
+        });
+    }
+
+
+
+    function delAll (argument) {
+
+        var data = tableCheck.getData();
+
+        layer.confirm('确认要删除吗？'+data,function(index){
+            //捉到所有被选中的，发异步进行删除
+         $.get("{php echo webUrl('parking/order/alldel')}",{'aId':data},function (res) {
+             if(res=='1'){
+                 layer.msg('删除成功', {icon: 1});
+                 $(".layui-form-checked").not('.header').parents('tr').remove();
+             }
+         })
+        });
+    }
+</script>
+{template "parking/_footer"}

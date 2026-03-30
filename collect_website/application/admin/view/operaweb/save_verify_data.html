@@ -1,0 +1,364 @@
+{include file="common/header_inner_new"}
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .layui-input-block{line-height: 38px;}
+    .phone,.other_navbar{display:none;}
+    .origin_data{background:#e6e6e6;}
+    .reduction_btn{margin-left:5px;}
+    
+    .info_div{display: grid;grid-template-columns: repeat(2,1fr);-moz-column-gap: 0px;column-gap: 0px;row-gap: 0px;}
+    
+    .fweight {font-weight: 800;}
+    .f22 {font-size: 22px !important;}
+    
+    .sel_div .layui-form-selected dl{width: 100%;}
+    .result_div{display:none;width: calc(100% - 0px);height: 200px;position: absolute;background: #fff;color: #000;font-size: 13px;overflow-y: scroll;z-index: 9;border: 1px solid #c7c6c6;padding: 5px 10px;box-sizing: border-box;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <span class="f22 fweight fhead">药品信息</span>
+                        <div class="info_div">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">通用名称</label>
+                                <div class="layui-input-block">
+                                    {if !empty($origin_data)}
+                                    {if $data['name']!=$origin_data['name']}
+                                    <div class="origin_data">
+                                        原数据：<span class="origin_info">{$origin_data['name']}</span><span class="layui-btn layui-btn-primary layui-btn-xs reduction_btn" onclick="reduction(this)">还原</span>
+                                    </div>
+                                    {/if}
+                                    {/if}
+                                    <input type="text" name="name" id="name" lay-verify="required" placeholder="药品通用名称" autocomplete="off" class="layui-input" value="{$data['name']}">
+                                    <div id="name_result" class="result_div" style="display: none;"></div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">英文名称</label>
+                                <div class="layui-input-block">
+                                    {if !empty($origin_data)}
+                                    {if $data['en_name']!=$origin_data['en_name']}
+                                    <div class="origin_data">
+                                        原数据：<span class="origin_info">{$origin_data['en_name']}</span><span class="layui-btn layui-btn-primary layui-btn-xs reduction_btn" onclick="reduction(this)">还原</span>
+                                    </div>
+                                    {/if}
+                                    {/if}
+                                    <div class="disf">
+                                        <input type="text" name="en_name" id="en_name" lay-verify="required" placeholder="英文名称" autocomplete="off" class="layui-input" value="{$data['en_name']}">
+                                    </div>
+                                    <div id="enname_result" class="result_div"></div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">拼音名称</label>
+                                <div class="layui-input-block">
+                                    {if !empty($origin_data)}
+                                    {if $data['py_name']!=$origin_data['py_name']}
+                                    <div class="origin_data">
+                                        原数据：<span class="origin_info">{$origin_data['py_name']}</span><span class="layui-btn layui-btn-primary layui-btn-xs reduction_btn" onclick="reduction(this)">还原</span>
+                                    </div>
+                                    {/if}
+                                    {/if}
+                                    <input type="text" name="py_name" lay-verify="required" placeholder="拼音名称" autocomplete="off" class="layui-input" value="{$data['py_name']}">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">药品描述</label>
+                                <div class="layui-input-block">
+                                    {if !empty($origin_data)}
+                                    {if $data['descs']!=$origin_data['descs']}
+                                    <div class="origin_data">
+                                        原数据：<span class="origin_info">{$origin_data['descs']}</span><span class="layui-btn layui-btn-primary layui-btn-xs reduction_btn" onclick="reduction(this)">还原</span>
+                                    </div>
+                                    {/if}
+                                    {/if}
+                                    <input type="text" name="descs" lay-verify="required" placeholder="药品描述" autocomplete="off" class="layui-input" value="{$data['descs']}">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">药品类型</label>
+                                <div class="layui-input-block">
+                                    {if !empty($origin_data)}
+                                    {if $data['lx_name']!=$origin_data['lx_name']}
+                                    <div class="origin_data">
+                                        原数据：<span class="origin_info">{$origin_data['lx_name']}</span><span class="layui-btn layui-btn-primary layui-btn-xs reduction_btn" onclick="reduction(this,2)">还原</span>
+                                    </div>
+                                    {/if}
+                                    {/if}
+                                    <div class="sel_div">
+                                        <select name="lx_name_sel" lay-filter="lx_name_sel" lay-search>
+                                            {volist name="type['yplx']" id="vo"}
+                                            <option value="{$vo['lx_name']}" {if $vo['lx_name']==$data['lx_name']}selected{/if}>{$vo['lx_name']}</option>
+                                            {/volist}
+                                            <option value="-1">没有类型，新增类型</option>
+                                        </select>
+                                    </div>
+                                    <input type="text" name="lx_name" lay-verify="" placeholder="药品类型" autocomplete="off" class="layui-input name_input" value="{$data['lx_name']}" style="display: none;">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">处方类型</label>
+                                <div class="layui-input-block">
+                                    {if !empty($origin_data)}
+                                    {if $data['cf_name']!=$origin_data['cf_name']}
+                                    <div class="origin_data">
+                                        原数据：<span class="origin_info">{$origin_data['cf_name']}</span><span class="layui-btn layui-btn-primary layui-btn-xs reduction_btn" onclick="reduction(this,2)">还原</span>
+                                    </div>
+                                    {/if}
+                                    {/if}
+                                    <div class="sel_div">
+                                        <select name="cf_name_sel" lay-filter="cf_name_sel" lay-search>
+                                            {volist name="type['cflx']" id="vo"}
+                                            <option value="{$vo['cf_name']}" {if $vo['cf_name']==$data['cf_name']}selected{/if}>{$vo['cf_name']}</option>
+                                            {/volist}
+                                            <option value="-1">没有类型，新增类型</option>
+                                        </select>
+                                    </div>
+                                    <input type="text" name="cf_name" lay-verify="" placeholder="处方类型" autocomplete="off" class="layui-input name_input" value="{$data['cf_name']}" style="display: none;">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">医保类型</label>
+                                <div class="layui-input-block">
+                                    {if !empty($origin_data)}
+                                    {if $data['yb_name']!=$origin_data['yb_name']}
+                                    <div class="origin_data">
+                                        原数据：<span class="origin_info">{$origin_data['yb_name']}</span><span class="layui-btn layui-btn-primary layui-btn-xs reduction_btn" onclick="reduction(this,2)">还原</span>
+                                    </div>
+                                    {/if}
+                                    {/if}
+                                    <div class="sel_div">
+                                        <select name="yb_name_sel" lay-filter="yb_name_sel" lay-search>
+                                            {volist name="type['yblx']" id="vo"}
+                                            <option value="{$vo['yb_name']}" {if $vo['yb_name']==$data['yb_name']}selected{/if}>{$vo['yb_name']}</option>
+                                            {/volist}
+                                            <option value="-1">没有类型，新增类型</option>
+                                        </select>
+                                    </div>
+                                    <input type="text" name="yb_name" lay-verify="" placeholder="医保类型" autocomplete="off" class="layui-input name_input" value="{$data['yb_name']}" style="display: none;">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">药物类别</label>
+                                <div class="layui-input-block">
+                                    {if !empty($origin_data)}
+                                    {if $data['lb_name']!=$origin_data['lb_name']}
+                                    <div class="origin_data">
+                                        原数据：<span class="origin_info">{$origin_data['lb_name']}</span><span class="layui-btn layui-btn-primary layui-btn-xs reduction_btn" onclick="reduction(this,2)">还原</span>
+                                    </div>
+                                    {/if}
+                                    {/if}
+                                    <div class="sel_div">
+                                        <select name="lb_name_sel" lay-filter="lb_name_sel" lay-search>
+                                            {volist name="type['ywlx']" id="vo"}
+                                            <option value="{$vo['lb_name']}" {if $vo['lb_name']==$data['lb_name']}selected{/if}>{$vo['lb_name']}</option>
+                                            {/volist}
+                                            <option value="-1">没有类型，新增类型</option>
+                                        </select>
+                                    </div>
+                                    <input type="text" name="lb_name" lay-verify="" placeholder="药物类别" autocomplete="off" class="layui-input name_input" value="{$data['lb_name']}" style="display: none;">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <span class="f22 fweight">药品目录</span>
+                        <table class="layui-table catelogue_table">
+                            <thead>
+                                <th style="width: 10%;">目录名称</th>
+                                <th>目录描述</th>
+                                <th style="width: 20%;">操作</th>
+                            </thead>
+                            <tbody>
+                                {if empty($data['catelogue_list'])}
+                                    <tr>
+                                        <td>
+                                            <input type="hidden" name="cate_ids[]" value="">
+                                            <div class="sel_div">
+                                                <select name="cate_selids[]" class="cate_selids" lay-filter="select_cateids">
+                                                    {volist name="catelogue_list" id="vo"}
+                                                        <option value="{$vo['name']}">{$vo['name']}</option>
+                                                    {/volist}
+                                                    <option value="-1">没有目录，新增目录</option>
+                                                </select>
+                                            </div>
+                                            <input type="text" name="cate_names[]" class="layui-input catename_input" placeholder="目录名称" value="" style="display:none;">
+                                        </td>
+                                        <td>
+                                            <textarea name="cate_descs[]" placeholder="目录描述" class="layui-textarea"></textarea>
+                                        </td>
+                                        <td>
+                                            <div class="layui-btn add_catelogue" onclick="add_catelogue(this)">增加</div>
+                                            <div class="layui-btn layui-btn-danger del_catelogue" onclick="del_catelogue(this)" style="display: none;">删除</div>
+                                        </td>
+                                    </tr>
+                                {else}
+                                    {volist name="data['catelogue_list']" key="key" id="vo"}
+                                        <tr>
+                                            <td>
+                                                <input type="hidden" name="cate_ids[]" value="{$vo['id']}">
+                                                <div class="sel_div">
+                                                    <select name="cate_selids[]" class="cate_selids" lay-filter="select_cateids">
+                                                        {volist name="catelogue_list" id="vo2"}
+                                                        <option value="{$vo2['name']}" {if $vo2['name']==$vo['name']}selected{/if}>{$vo2['name']}</option>
+                                                        {/volist}
+                                                        <option value="-1">没有目录，新增目录</option>
+                                                    </select>
+                                                </div>
+                                                <input type="text" name="cate_names[]" class="layui-input" placeholder="目录名称" value="{$vo['name']}" style="display: none;">
+                                            </td>
+                                            <td>
+                                                {if !empty($origin_data)}
+                                                {volist name="origin_data['catelogue_list']" id="vo2"}
+                                                {if $vo2['name']==$vo['name']}
+                                                    <div class="origin_data">
+                                                        原数据：<span class="origin_info">{$vo2['descs']}</span><span class="layui-btn layui-btn-primary layui-btn-xs reduction_btn" onclick="reduction(this,3)">还原</span>
+                                                    </div>
+                                                {/if}
+                                                {/volist}
+                                                {/if}
+                                                <textarea name="cate_descs[]" placeholder="目录描述" class="layui-textarea">{$vo['descs']}</textarea>
+                                            </td>
+                                            <td>
+                                                <div class="layui-btn add_catelogue" onclick="add_catelogue(this)">增加</div>
+                                                {if $key!=1}
+                                                    <div class="layui-btn layui-btn-danger del_catelogue" onclick="del_catelogue(this,{$vo['id']})">删除</div>
+                                                {/if}
+                                            </td>
+                                        </tr>
+                                    {/volist}
+                                {/if}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+
+        form.on('select(notice_method)',function(data){
+            let val = data.value;
+            if(val==1){
+                $('.email').show();
+                $('.phone').hide();
+            }else if(val==2){
+                $('.email').hide();
+                $('.phone').show();
+            }
+        });
+
+        form.on('submit(component-form-element)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            // if( $('#img_file-upload-list').children().length == 0 )
+            // {
+            //     layer.msg('请上传轮播图！');
+            //     return false;
+            // }
+
+            $.ajax({
+                url:"{:Url('admin/operaweb/save_verify_data')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+        // 轮播图文件
+        upload.render({
+            elem: '#img_file-upload'
+            ,url: '{:Url("admin/basic/upload_file")}'
+            ,accept: 'image'
+            ,data: { folder: 'centralize', type: 'website_rotate'}
+            ,multiple: false
+            ,number:1
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+
+                    $('#img_file-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="thumb[]" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+    });
+    
+    function reduction(t,type=1){
+        var layer = layui.layer,$ = layui.$,form = layui.form;
+        var txt = $(t).parent().find('.origin_info').text();
+        if(txt!=''){
+            if(type==1){
+                //input
+                $(t).parents(":eq(1)").find('.layui-input').val(txt);
+            }else if(type==2){
+                //select
+                let opt = $(t).parents(":eq(1)").find('.sel_div').find('select').find('option');       
+                for(let i=0;i<opt.length;i++){
+                    if(opt[i].text==txt){
+                        $(t).parents(":eq(1)").find('.sel_div').find('select').find('option').eq(i).attr('selected','selected');
+                    }
+                }
+                form.render(null,'component-form-element');
+            }else if(type==3){
+                //textarea
+                $(t).parents(":eq(1)").find('.layui-textarea').val(txt);
+            }  
+        }
+    }
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,233 @@
+{include file="header"}
+<link rel="stylesheet" href="./static/coupon/css/account.css" />
+
+<script>
+    var __CONTEXT_PATH='';
+    var __CONTEXT_O2O='http://d.mall.autohome.com.cn/o2ov2';
+    var __CONTEXT_B2C='http://d.mall.autohome.com.cn/b2c';
+</script>
+<script src="//x.autoimg.cn/com/co.ashx?path=|mall|seller|web|pc|js|jquery-1.12.4.min_9ca3f.js,|mall|seller|web|pc|js|jsrender.min_72786.js,|mall|seller|web|pc|js|json2.min_28a03.js,|mall|seller|web|pc|js|common_179ca.js,|mall|seller|web|pc|js|form_d8e15.js,|mall|seller|web|pc|js|jquery.cookie_a5283.js"></script>
+<script src="./static/coupon/javaex/lib/jquery-1.7.2.min.js"></script>
+<script src="./static/index/xadmin/lib/layui/layui.js" charset="utf-8"></script>
+<body>
+<div class="miniheader">
+    <div class="miniheader-inner">
+        <a class="miniheader-logo">
+        </a>
+    </div>
+</div>
+
+
+<div class="content">
+    <h1 class="fn-mt25 fn-tal">快速注册</h1>
+    <form id="f">
+        <ul class="step">
+            <li class="current">1.登录账号设置</li>
+            <li class="">3.商家信息设置</li>
+        </ul>
+
+        <div class="account">
+            <div class="account-form">
+
+                <div class="form" id="form1" >
+                    <dl>
+                        <dt><i class="c-red">*</i>用户名：</dt>
+                        <dd><input placeholder="请输入用户名"  maxlength="20" data-placeholder="请输入用户名" id="userName" name="userName" class="placeholder" type="text"   value=""></dd>
+                        <span class="account-error" id="userNameError"></span>
+                    </dl>
+
+                    <dl>
+                        <dt><i class="c-red">*</i>注册手机：</dt>
+                        <dd><input placeholder="请输入手机号" data-placeholder="请输入手机号" maxlength="11" name="busin_login_accout" id="phonenum" class="placeholder" type="text" value=""></dd>
+                        <span class="account-error" id="phoneError"></span>
+                    </dl>
+                    <dl>
+                        <dt><i class="c-red">*</i>手机验证码：</dt>
+                        <dd>
+                            <input placeholder="请输入验证码" class="sm-txt" data-placeholder="请输入验证码" name="captcha" id="captcha" class="placeholder" type="text" value="">
+                            <span class="verify-btn" id="sendCode">发送</span>
+                        </dd>
+                        <span class="account-error" id="captchaError"></span>
+                    </dl>
+                    <a class="btn btn-red fn-mt20" id="registSubmit">下一步</a>
+                </div>
+
+                <!--//店铺设置-->
+                <div class="form"  id='form2' style="display: none;">
+                    <dl>
+                        <dt><i class="c-red">*</i>商家名称：</dt>
+                        <dd><input placeholder="请输入商家名称"  maxlength="20" data-placeholder="请输入商家名称" id="busin_name" name="busin_name" class="placeholder" type="text" value=""></dd>
+                        <span class="account-error" id="businNameError"></span>
+                    </dl>
+                    <dl>
+                        <dt>门店地址：</dt>
+                        <dd><input placeholder="可空"  maxlength="20" data-placeholder="门店地址" id="busin_addr" name="busin_addr" class="placeholder" type="text" value=""></dd>
+                        <span class="account-error" id="businAddrError"></span>
+                    </dl>
+                    <dl>
+                        <dt>店铺url：</dt>
+                        <dd><input placeholder="可空"  maxlength="20" data-placeholder="可空" id="busin_url" name="busin_url" class="placeholder" type="text" value=""></dd>
+                        <span class="account-error" id="businrlError"></span>
+                    </dl>
+                    <dl>
+                        <dt>座机：</dt>
+                        <dd><input placeholder="可空"  maxlength="20" data-placeholder="可空" id="busin_tel" name="busin_tel" class="placeholder" type="text" value=""></dd>
+                        <span class="account-error" id="busin_telError"></span>
+                    </dl>
+                    <dl>
+                        <dt>logo：</dt>
+                        <dd><input  id="file" name="busin_logo" class="placeholder" type="file"></dd>
+                        <span class="account-error" id="logoError"></span>
+                    </dl>
+
+                    <dl>
+                        <dt><i class="c-red">*</i>是否有自家公众号：</dt>
+                        <dd>
+                            <input  class="is_public_account" name="is_public_account" class="placeholder" value="0" type="radio" checked>否
+                            <input  class="is_public_account" name="is_public_account" class="placeholder" value="1" type="radio">是
+                        </dd>
+                        <span class="account-error"></span>
+                    </dl>
+                    <a class="btn btn-red fn-mt20" id="curr">上一步</a>
+                    <a class="btn btn-red fn-mt20" id="registSubmit2">注册</a>
+                </div>
+
+            </div>
+        </div>
+    </form>
+</div>
+<div class="tip-400">
+    <em class=""></em><span class=""></span>
+</div>
+</div>
+</div>
+<script>
+    var isPhone = 1;
+    $(function () {
+        layui.use('layer', function(){
+            layer = layui.layer;
+        });
+        $('#registSubmit').bind('click',function () {
+            var phone = document.getElementById('phonenum').value;
+            var name  = document.getElementById('userName').value;
+            var captcha = document.getElementById('captcha').value;
+            if (phone!=''&&name!=''&&captcha!=''){
+                $('#form1').hide();
+                $('#form2').show();
+                $('.step li:first-child').removeClass('current');
+                $('.step li:last-child').addClass('current');
+
+            } else {
+                layer.msg('请填写完整数据');
+            }
+            return false;
+        });
+
+
+        $('#curr').bind('click',function () {
+            $('.step li:first-child').addClass('current');
+            $('.step li:last-child').removeClass('current');
+            $('#form1').show();
+            $('#form2').hide();
+        });
+
+
+        $('#sendCode').bind('click',function () {
+            if (isPhone!=1){
+                return false;
+            }
+            var phone = document.getElementById('phonenum').value;
+            if (!checkPhone(phone)){
+                $('#phoneError').html('手机号码有误,请重填');
+                return false;
+            }
+            $('#phoneError').html('');
+            resetCode();
+            var load = layer.load(2);
+            $.ajax({
+                url:'{:Url("coupon/send_code")}',
+                type:'get',
+                dataType:'json',
+                data:{tel:phone},
+                success:function (res) {
+                    layer.close(load);
+                    layer.msg(res.msg);
+                },
+                error:function (xhr,err) {
+                    layer.close(load);
+                    layer.msg(err);
+                }
+            })
+            return false;
+        });
+
+        $('#registSubmit2').bind('click',function () {
+            var form = new FormData(document.getElementById('f'));
+            var load = layer.load(2);
+            $.ajax({
+                url: '{:Url("coupon/reg")}',
+                type: 'POST',
+                cache: false,
+                data: form,
+                processData: false,
+                contentType: false
+            }).done(function(res) {
+                console.dir(res);
+                if (res.code==0){
+                    layer.close(load);
+                    layer.msg(res.msg);
+                    setTimeout(function () {
+                        window.location.href="{:Url('coupon/login')}";
+                    },3000);
+                } else{
+                    layer.close(load);
+                    layer.msg(res.msg);
+                }
+            }).fail(function(res) {
+                layer.close(load);
+                layer.msg(res.statusText);
+            });
+            return false;
+        });
+    });
+
+
+    // var phone = document.getElementById('userName').value;
+
+
+    function checkPhone(phone){
+        if(!(/^1[34578]\d{9}$/.test(phone))){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    function checkUserNmae() {
+        if($('#userName').val()==''){
+            $('#businNameError').html('请输入用户名');
+        }else{
+            $('#businNameError').html('');
+        }
+        return false;
+    }
+    function resetCode(){
+
+        $('#sendCode').html(60);
+        var second = 60;
+        var timer = null;
+        timer = setInterval(function(){
+            second -= 1;
+            if(second >0 ){
+                isPhone=0;
+                $('#sendCode').html(second);
+            }else{
+                second = 60;
+                isPhone=1;
+                $('#sendCode').html('发送');
+                window.clearInterval(timer);
+            }
+        },1000);
+    }
+</script>
+{include file="footer"}

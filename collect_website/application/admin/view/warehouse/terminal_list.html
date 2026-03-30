@@ -1,0 +1,188 @@
+{include file="public/header_new"}
+
+<style>
+    img{ width:20px;height:20px;}
+</style>
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <h3 style="text-align: center;">{if $type==1}【已配】仓库{elseif($type==2)}【未配】仓库{/if}终端管理</h3>
+                <div id="toolbar" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;">
+                    <button type="button" href="javascript:;" onclick="save();" class="btn btn-default">
+                        {if $warehouse_id>0}选择{else}添加{/if}终端
+                    </button>
+                </div>
+                <table id="table"
+
+                /*默认排序项*/
+                data-sort-name="id"
+                data-sort-order="desc"
+                /*工具栏相关*/
+                data-toolbar="#toolbar"
+                data-search="true"          /*搜索框*/
+                data-search-on-enter-key="false"
+                data-show-refresh="true"    /*刷新按钮*/
+                /*分页相关*/
+                data-side-pagination="server"
+                data-pagination="true"      /*显示分页*/
+                data-page-size="10"         /*每页显示条数*/
+                /*移动端相关*/
+                data-mobile-responsive="true"
+                data-card-view="true"
+                data-show-columns="true"
+                /*radio or checkbox字段名称*/
+                data-select-item-name="id" >
+
+                <thead>
+                <tr>
+                    <th data-field="checkbox"
+                        data-align="center"
+                        data-checkbox="true"></th>
+                    <th data-field="id"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">ID</th>
+                    <th data-field="warehouse_name"
+                        data-align="center"
+                        data-sortable="true">仓库名称</th>
+                    <th data-field="name"
+                        data-align="center"
+                        data-sortable="true">终端名称</th>
+                    <th data-field="typename"
+                        data-align="center"
+                        data-sortable="true">终端类型</th>
+                    <th data-field="manage"
+                        data-align="center"
+                        data-sortable="true"
+                        data-formatter="actionFormatter">操作</th>
+                </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var table;
+
+    $(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:url('admin/warehouse/terminal_list')}&warehouse_id={$warehouse_id}&type={$type}",
+            queryParams: queryParams,
+        });
+        $('.form-control').attr('placeholder','搜索终端名称');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.id;
+        var title = row.name;
+        var wid = row.warehouse_id;
+
+        var result = "";
+        if(row.warehouse_id>0){
+            <!--终端有仓库情况下-->
+            result += '<button style="margin-right: 5px;" type="button" onclick="edit_warehouse('+wid+',\''+title+'\')" class="btn btn-warning btn-xs">编辑仓库</button>';
+        }
+
+        if("{$type}"!=0){
+            <!--终端管理情况下-->
+            result += '<button style="margin-right: 5px;" type="button" onclick="edit('+id+',\''+title+'\')" class="btn btn-primary btn-xs">编辑</button>';
+        }
+        if(row.warehouse_id==0){
+            <!--配置仓库-->
+            result += '<button style="margin-right: 5px;" type="button" onclick="add_warehouse('+id+',\''+title+'\')" class="btn btn-warning btn-xs">配置仓库</button>';
+        }
+        result += '<button style="margin-right: 5px;" type="button" onclick="del('+id+',\''+title+'\')" class="btn btn-danger btn-xs">删除</button>';
+        return result;
+    }
+
+    function edit_warehouse(wid,name){
+        var index = layer.open({
+            type: 2,
+            title: '编辑仓库',
+            area:['100%','100%'],
+            content: "{:url('admin/warehouse/save_warehouse')}&id="+wid
+        });
+    }
+
+    function edit(id,name){
+        var url = "{:url('admin/warehouse/save_terminal')}&warehouse_id={$warehouse_id}&id="+id;
+
+        var index = layer.open({
+            type: 2,
+            title: '查看-'+name,
+            area:['100%','100%'],
+            content: url
+        });
+    }
+
+    function add_warehouse(id,name){
+        var index = layer.open({
+            type: 2,
+            title: '配置仓库',
+            area:['100%','100%'],
+            content: "{:url('admin/warehouse/save_printer_warehouse')}&id="+id
+        });
+    }
+
+    function save(title='{if $warehouse_id>0}选择{else}添加{/if}终端') {
+        var index = layer.open({
+            type: 2,
+            title: title,
+            area:['600px','500px'],
+            content: "{:url('admin/warehouse/save_terminal')}&warehouse_id={$warehouse_id}"
+        });
+        layer.full(index);
+    }
+
+    function del(id,title){
+        layer.confirm('确认删除该终端吗？',function(index){
+            $.ajax({
+                url: "<?php echo Url('admin/warehouse/del_terminal'); ?>",
+                data:{'id':id,'warehouse_id':"{$warehouse_id}"},
+                type:'post',
+                cache:false,
+                dataType:'json',
+                success:function(data){
+                    if(data.code==0)
+                    {
+                        layer.msg(data.msg, {
+                            icon: 1,
+                            time: 2000
+                        }, function(){
+                            window.location.reload();
+                        });
+                        return true;
+                    }else {
+                        layer.msg(data.msg, {icon:2, time:2000});
+                        return false;
+                    }
+                },
+                error:function() {
+                    layer.msg('系统出错,请重试',{icon:2,time:1000});
+                }
+            });
+        });
+    }
+
+</script>
+
+</body>
+</html>

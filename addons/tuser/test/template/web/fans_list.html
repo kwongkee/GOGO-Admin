@@ -1,0 +1,268 @@
+{template 'common/header'}
+<style>
+    .l_tableWrap .l_table_tit .l_formBar {
+        border: 0;
+        float: left;
+        font-size: 0;
+    }
+    .y_sele {
+        display: inline-block;
+        padding: 5px 0 12px 12px;
+    }
+    .y_sele_tit {
+        font-size: 14px;
+        padding: 0 0 0 10px;
+    }
+    .l_table_search{
+        margin-left: 10px;
+        margin-bottom: 5px;
+    }
+</style>
+<script>
+    require(['jquery', 'util', 'datetimepicker'], function ($, u) {
+        $('#rg_time_start').datetimepicker({
+            format: 'Y-m-d',
+            language: 'zh-CN',
+            pickDate: false,
+            pickTime: false,
+            hourStep: 1,
+            autoclose: true,
+            inputMask: true,
+            minView: "month",
+            timepicker: false,
+        });
+        $('#rg_time_end').datetimepicker({
+            format: 'Y-m-d',
+            language: 'zh-CN',
+            pickDate: false,
+            pickTime: false,
+            hourStep: 1,
+            autoclose: true,
+            inputMask: true,
+            minView: "month",
+            timepicker: false,
+        });
+    });
+</script>
+<div class="clearfix">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            用户列表
+        </div>
+        <div class="table-responsive panel-body" style="overflow:visible;">
+            <div class="l_table_tit clearfix">
+                <form method="get" action="" name="frm" class="l_formBar" id="frm1">
+                    <span class="y_sele_tit">手机号:</span>
+                    <div class="y_sele y_size02">
+                        <input type="text" class="form-control" name="mobile" value="{$_GPC['mobile']}">
+                    </div>
+                    <span class="y_sele_tit">注册时间:</span>
+                    <div class="y_sele y_size02">
+                        <input type="text" class="form-control" id="rg_time_start" name="rg_time_start" value="{$_GPC['rg_time_start']}">
+                    </div>
+                    <input type="hidden" name="c" value="{$_GPC['c']}" />
+                    <input type="hidden" name="a" value="{$_GPC['a']}" />
+                    <input type="hidden" name="eid" value="{$_GPC['eid']}" />
+                    <div class="y_sele y_size02">
+                        <input type="text" class="form-control" id="rg_time_end" name="rg_time_end" value="{$_GPC['rg_time_end']}">
+                    </div>
+                    <div class="btn-group l_table_search">
+                        <button type="submit" class="btn btn-success">搜 索</button>
+                    </div>
+                </form>
+            </div>
+            <div class="l_table_tit clearfix">
+                <span class="y_sele_tit">会员数</span>
+                <div class="y_sele y_size02">
+                    {$userNum}
+                </div>
+                <span class="y_sele_tit">完善资料数</span>
+                <div class="y_sele y_size02">
+                    {$reg2Num}
+                </div>
+                <span class="y_sele_tit">登记车牌数</span>
+                <div class="y_sele y_size02">
+                    {$reg2PlateNum}
+                </div>
+            </div>
+            <table class="table table-hover">
+                <tr>
+                    <th>ID</th>
+                    <th>昵称</th>
+                    <th>城市</th>
+                    <th>用户名</th>
+                    <th>手机</th>
+                    <th>余额</th>
+                    <th>会员等级</th>
+                    <th>使用积分</th>
+                    <th>剩余积分</th>
+                    <th>注册时间</th>
+                    <th>操作</th>
+                </tr>
+                {loop $list $row}
+                <tr>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['uid']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['nickname']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['city']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['username']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['mobile']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {php echo $row['account'];}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {php echo $levels[$row['level']]}  
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['use_credit']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['left_credit']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {if $row['reg_time']}  
+                            {php echo date("Y年m月d日",$row['reg_time']);}
+                            {/if}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            <a href='{php echo $this->createWebUrl("fans_edit",array("id"=>$row["uid"]))}'>编辑</a>
+                            <a href="javascript:void(0)" onclick="del_fans('{$row['uid']}')">删除</a>
+                        </p>
+                    </td>
+                </tr>
+                {/loop}
+            </table>
+        </div>
+        <div class="panel-body text-right">
+            {$pager}
+        </div>
+    </div>
+</div>
+
+<script>
+    function del_fans(id) {
+        if (confirm("确定删除吗？")) {
+            var pars = {};
+            pars.id = id;
+            $.ajax({
+                url: "{php echo $this->createWebUrl('ajax',array('sdo'=>'del_fans'))}",
+                type: "post",
+                dataType: "html",
+                data: pars,
+                success: function (res) {
+                    $(".submit").attr("disabled", false);
+                    if (res == "ok") {
+                        alert("操作成功");
+                        window.location.reload(true);
+                    } else {
+                        alert(res);
+                    }
+                }
+            })
+        }
+    }
+
+    //用户设置会员等级 
+    $(".level").change(function () {
+        $(".level_btn").show();
+    });
+
+    $(".level_btn").click(function () {
+        var pars = {};
+        pars.fans_id = $(this).prev().attr('data_id');
+        pars.level = $(this).prev().val();
+
+        $.ajax({
+            url: "{php echo $this->createWebUrl('ajax',array('sdo'=>'level'))}",
+            type: "post",
+            dataType: "html",
+            data: pars,
+            success: function (res) {
+                if (res == "ok") {
+                    alert("操作成功");
+                    window.location.reload(true);
+                } else {
+                    alert(res);
+                }
+            }
+        })
+    })
+
+
+    //用户发放积分
+    function credit_operate(id, type) {
+        if (type == 1) {
+            var text = "添加积分";
+        } else if (type == 2) {
+            var text = "减少积分";
+        }
+        require(['jquery', 'util'], function ($, u) {
+            var content = '<div class="panel panel-default text-center"><input type="text" id="scan_title" class="form-control span7 send_credit" placeholder="发放积分" name="credit"></div>';
+            content += '备注<div class="panel panel-default text-center"><textarea class="form-control span7 desc"></textarea></div>';
+            var footer =
+                    '<button type="button" class="btn btn-success" onclick="do_credit_operate(' + id + ',' + type + ')" >确定</button>' +
+                    '<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>';
+            var diaobj = u.dialog(text, content, footer);
+            diaobj.find('.btn-default').click(function () {
+                diaobj.modal('hide');
+            });
+            diaobj.modal('show');
+        });
+    }
+
+    function do_credit_operate(id, type) {
+        var pars = {};
+        pars.fans_id = id;
+        pars.type = type;
+        var credit = $(".send_credit").val();
+        var desc = $(".desc").val();
+        pars.credit = credit;
+        pars.desc = desc;
+        $.ajax({
+            url: "{php echo $this->createWebUrl('ajax',array('sdo'=>'credit_operate'))}",
+            type: "post",
+            dataType: "html",
+            data: pars,
+            success: function (res) {
+                $(".submit").attr("disabled", false);
+                if (res == "ok") {
+                    alert("操作成功");
+                    window.location.reload(true);
+                } else {
+                    alert(res);
+                }
+            }
+        })
+    }
+</script>
+{template 'common/footer'}

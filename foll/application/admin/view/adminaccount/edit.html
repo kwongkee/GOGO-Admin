@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="common/meta"}
+</head>
+
+<body class="gray-bg">
+<div class="col-sm-12">
+    <div class="ibox float-e-margins">
+        <div class="ibox-content"  id="list2">
+            <form class="form-horizontal" method="post" action="{:Url('admin/AdminAccount/edit')}">
+                <div class="form-group" style="margin-top:20px">
+                	<input type="hidden" name="id" value="{$userList.id}">
+                    <label class="col-sm-2 control-label">用户名：</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="username" value="{$userList.username}" placeholder="昵称" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">手机号：</label>
+                    <div class="col-sm-10">
+                        <input type="tel" name="tel" placeholder="手机号" value="{$userList.tel}"  class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">账户状态
+                    </label>
+
+                    <div class="col-sm-8">
+                        <div class="radio i-checks">
+                        	<input type="hidden" value="{$userList.user_status}" class="static" />
+                            <label>
+                                <input type="radio" value="1" name="user_status" id="true"> <i></i>正常
+                            </label>
+                            
+                             <label>
+                                <input type="radio" value="0" name="user_status" id="false"> <i></i>禁用
+                             </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">角色</label>
+                    <div class="col-sm-10">
+                    	<input type="hidden" class="role"  value="{$userList.role}"/>
+                        <select class="form-control m-b" name="role" id="role">
+                            {volist name="roleResule" id="vo"}
+                                <option value="{$vo.id}">{$vo.role_name}</option>
+                            {/volist}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-3 col-sm-8">
+                        <button class="btn btn-sm btn-info" type="submit">更 新</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/js/bootstrap.min.js?v=3.3.6"></script>
+<!-- 自定义js -->
+<script src="./static/hadmin/js/content.js?v=1.0.0"></script>
+<!-- Bootstrap table -->
+<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="./static/hadmin/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script>
+	var static = $(".static").val();
+	var role = $(".role").val();
+	$("#role").val(role);
+	if(static == 0){
+		$("#false").attr("checked","checked");
+	}else{
+		$("#true").attr("checked","checked");
+	}
+</script>
+</body>
+</html>

@@ -1,0 +1,235 @@
+{include file="common/header"}
+<div class="x-body">
+    <form class="layui-form">
+        <div class="layui-form-item">
+            <label for="username" class="layui-form-label">
+                <span class="x-red">*</span>收费方案
+            </label>
+            <div class="layui-input-inline">
+                <select id="shipping" name="ChargeClass" lay-verify="required">
+                    <option value="">请选择</option>
+                    {volist name="charge" id="vo"}
+                    <option value="{$vo.id}">
+                      {$vo.ChargeClass}
+                    </option>
+                    {/volist}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form">
+            <div style="margin-left:44px;margin-bottom:12px;">
+                <label>泊位地址：</label>
+                <div class="layui-inline">
+                    <select name="provin" lay-verify="required" lay-filter="prio">
+                        <option value="">请选择一个</option>
+                        {volist name="addr" id="vo"}
+                        <option value="{$vo['id']}:{$vo['name']}"> {$vo['name']}</option>
+                        {/volist}
+                    </select>
+                </div>
+                <div class="layui-inline">
+                    <select name="citys" lay-verify="required" lay-filter="ciy">
+                        <option value="">请选择一个</option>
+                    </select>
+                </div>
+                <div class="layui-inline">
+                    <select name="area" lay-verify="required"  class="valid" lay-filter="are">
+                        <option value="">请选择一个</option>
+                    </select>
+                </div>
+                <div class="layui-inline">
+                    <select name="town" lay-verify="required" class="valid" lay-filter="tow">
+                        <option value="">请选择一个</option>
+                    </select>
+                </div>
+                <div class="layui-inline">
+                    <select name="committee" lay-verify="required">
+                        <option value="">请选择一个</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div style="float:  left;margin-left: 46px;margin-top: 12px;font-size: 12px;">泊位道路：</div>
+                <div style="margin-left: -35px;float: left;">
+                <label for="username" class="layui-form-label">
+                    <span class="x-red">*</span>道路名称
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" name="road" value="" class="layui-input" placeholder="输入道路中文名称">
+                </div>
+                <label for="username" class="layui-form-label">
+                    <span class="x-red">*</span>道路编号
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" name="road_num" value=""  oninput="newParCode()" maxlength="2" class="layui-input" placeholder="2位道路自编号">
+                </div>
+                </div>
+            </div>
+            <div>
+                <div style="float: left;font-size:  13px;margin-left: 46px;">泊位添加：</div>
+                <div style="width:408px;float: left;margin-top:-9px;">
+                    <table class="layui-table" lay-size="sm">
+                        <colgroup>
+                            <col width="200">
+                            <col width="200">
+                            <col width="200">
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>设备编号</th>
+                            <th>泊位编号</th>
+                            <th>增减</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tds">
+                        <tr class="indexs" index="0">
+                            <td style="padding:2px 1px;">
+                                <input style="padding-left:5px;" type="text" name="devCode" oninput="changeDevCode(this)" maxlength="6" lay-verify="required" placeholder="6位设备编号"  class="layui-input devCode">
+                            </td>
+                            <td style="padding:2px 1px;"><div>
+                                <input style="float: left;width:38px;" type="text" name="ParkCode"  value=""  class="layui-input ParkCode" readonly></div>
+                                <div style="float: left;border-right: 1px solid red;"></div>
+                                <input style="float: left;width:106px;" type="text" name="customCode" oninput="changeCustomCode(this)"  lay-verify="required" maxlength="3" class="layui-input customCode" placeholder="泊位后3位自编码"></td>
+                            <td>
+                                <a class="layui-btn layui-btn-sm" style="height: 27px;line-height: 26px;" onclick="add(this)">添 加</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <input type="hidden" name="num" value="" id="numHidden">
+                </div>
+            </div>
+        <div class="layui-form-item">
+            <label for="L_repass" class="layui-form-label">
+            </label>
+            <button class="layui-btn" lay-filter="add" lay-submit="">
+                增加
+            </button>
+        </div>
+    </form>
+</div>
+<script>
+    var uniacid ={$unid};
+    layui.use(['form','layer'], function(){
+        $ = layui.jquery;
+        var form = layui.form
+            ,layer = layui.layer;
+        //自定义验证规则
+        form.verify({
+            nikename: function(value){
+                if(value.length != ''){
+                    return '不允许空';
+                }
+            }
+        });
+        //监听提交
+        form.on('submit(add)', function(data){
+            //发异步，把数据提交给php
+            layer.load(1, {shade: 0.3});
+            $.post("{:Url('index/park_save')}",{"data":data.field},function(data) {
+                console.dir(data);
+                setTimeout(function () {
+                    layer.closeAll();
+                },1000);
+                setTimeout(function () {
+                    if(data.code==10000){
+                        layer.msg(data.msg);
+                        setTimeout(function () {
+                            location.reload();
+                        },1500);
+                    }else{
+                        layer.msg(data.msg);
+                    }
+                },1200);
+            })
+            return false;
+        });
+        form.on('select(prio)',function(data){
+            $.get("{:Url('index/postion')}",{'pid':data.value},function(info){
+                var info=JSON.parse(info);
+                var h='';
+                h="<option value=''>请选择一个</option>";
+                for(var i=0;i<info.length;i++){
+                    h+="<option value='"+info[i].id+":"+info[i].name+"'>"+info[i].name+"</option>"
+                }
+                $("select[name='citys']").html('').append(h);
+                form.render('select');
+            });
+        });
+        form.on('select(ciy)',function(data){
+            $.get("{:Url('index/postion')}",{'pid':data.value},function(info){
+                var info=JSON.parse(info);
+                var h='';
+                h="<option value=''>请选择一个</option>";
+                for(var i=0;i<info.length;i++){
+                    h+="<option value='"+info[i].id+":"+info[i].name+"'>"+info[i].name+"</option>"
+                }
+                $("select[name='area']").html('').append(h);
+                form.render('select');
+            });
+        });
+        form.on('select(are)',function(data){
+            $.get("{:Url('index/postion')}",{'pid':data.value},function(info){
+                var info=JSON.parse(info);
+                var h='';
+                h="<option value=''>请选择一个</option>";
+                for(var i=0;i<info.length;i++){
+                    h+="<option value='"+info[i].id+":"+info[i].name+"'>"+info[i].name+"</option>"
+                }
+                $("select[name='town']").html('').append(h);
+                form.render('select');
+            });
+        });
+        form.on('select(tow)',function(data){
+            $.get("{:Url('index/postion')}",{'pid':data.value},function(info){
+                var info=JSON.parse(info);
+                var h='';
+                h="<option value=''>请选择一个</option>";
+                for(var i=0;i<info.length;i++){
+                    h+="<option value='"+info[i].id+":"+info[i].name+"'>"+info[i].name+"</option>"
+                }
+                $("select[name='committee']").html('').append(h);
+                form.render('select');
+            });
+        });
+    });
+    function newParCode(){
+        $(".ParkCode").val(uniacid+$("input[name=road_num]").val());
+    }
+    var _num ={};
+    var i=0;
+    function add(obj){
+        var _input ={};
+        $("#tds tr:last-child").find("td input").each(function (index,obj) {
+            _input[$(obj).attr("name")]=$(obj).val();
+        });
+        _num[i]=_input;i+=1;
+        $("#numHidden").val(JSON.stringify(_num));
+        var _td='<tr class="indexs" index="'+i+'"><td style="padding:2px 1px;"><input style="padding-left:5px;" type="text" name="devCode" oninput="changeDevCode(this)" maxlength="6" lay-verify="required" placeholder="6位设备编号"  class="layui-input devCode"></td><td style="padding:2px 1px;"><div><input style="float: left;width:38px;" type="text" name="ParkCode" value=""  class="layui-input ParkCode" readonly></div><div style="float: left;border-right: 1px solid red;"></div><input style="float: left;width:106px;" type="text" name="customCode" oninput="changeCustomCode(this)" lay-verify="required" maxlength="3" class="layui-input customCode" placeholder="泊位后3位自编码"></td><td><a class="layui-btn layui-btn-sm" style="height: 27px;line-height: 26px;width: 20px;padding-right: 29px;" onclick="add(this)">增</a><a class="layui-btn layui-btn-sm" style="height: 27px;line-height: 26px;width: 20px;padding-right: 29px;" onclick="minus(this)">减</a></td></tr>';
+        $("#tds").append(_td);
+        newParCode();
+    }
+    function minus(obj){
+        $(obj).parent().parent().remove();
+    }
+    function changeDevCode(obj){
+        var len=Object.keys(_num);
+        var index =$(obj).parent().parent('tr').index();
+        if(len.length>0){
+            _num[index]["devCode"]=$(obj).val();
+            $("#numHidden").val(JSON.stringify(_num));
+        }
+
+    }
+    function changeCustomCode(obj){
+        var len=Object.keys(_num);
+        var index =$(obj).parent().parent('tr').index();
+        if(len.length>0){
+            _num[index]["customCode"]=$(obj).val();
+            $("#numHidden").val(JSON.stringify(_num));
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,365 @@
+{include file="common/header_inner_new"}
+<style>
+
+</style>
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+
+<body style="padding:15px;box-sizing: border-box;">
+<form class="layui-form" action="">
+    <div class="layui-form-item">
+        <div class="layui-form-label">网站标志(125*55)</div>
+        <div class="layui-input-block">
+            <div class="layui-upload" style="margin-top: 10px;">
+                <button type="button" class="layui-btn" id="logo_file-upload">上传网站标志(一张)</button>
+                <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                    预览图：
+                    <div class="layui-upload-list" id="logo_file-upload-list">
+                        {if !empty($data['logo'])}
+                        <div style="display: inline-block;">
+                            <img onclick="seePic(this);" src="/{$data['logo']}" class="layui-upload-img" style="width:80px;height:80px;">
+                            <button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button>
+                            <input type="hidden" name="logo_file[]" value="{$data['logo']}">
+                        </div>
+                        {/if}
+                    </div>
+                </blockquote>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-form-label">内页图片(1440*640)</div>
+        <div class="layui-input-block">
+            <div class="layui-upload" style="margin-top: 10px;">
+                <button type="button" class="layui-btn" id="inpic_file-upload">上传内页图片(一张)</button>
+                <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                    预览图：
+                    <div class="layui-upload-list" id="inpic_file-upload-list">
+                        {if !empty($data['inpic'])}
+                        <div style="display: inline-block;">
+                            <img onclick="seePic(this);" src="/{$data['inpic']}" class="layui-upload-img" style="width:80px;height:80px;">
+                            <button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button>
+                            <input type="hidden" name="inpic_file[]" value="{$data['inpic']}">
+                        </div>
+                        {/if}
+                    </div>
+                </blockquote>
+            </div>
+        </div>
+    </div>
+    <fieldset class="layui-elem-field">
+        <legend>网站名称</legend>
+        <div class="layui-field-box">
+            <div class="layui-form-item">
+                <label class="layui-form-label">网站名称(简)</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name[zh]" value="{$data['name']['zh']}"  lay-verify="required" placeholder="请输入网站名称" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">网站名称(繁)</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name[cht]" value="{$data['name']['cht']}"  lay-verify="required" placeholder="请输入网站名称" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">网站名称(英)</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name[en]" value="{$data['name']['en']}"  lay-verify="required" placeholder="请输入网站名称" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </div>
+    </fieldset>
+    <fieldset class="layui-elem-field">
+        <legend>网站描述</legend>
+        <div class="layui-field-box">
+            <div class="layui-form-item">
+                <label class="layui-form-label">网站描述(简)</label>
+                <div class="layui-input-block">
+                    <input type="text" name="desc[zh]" value="{$data['desc']['zh']}"  lay-verify="required" placeholder="请输入网站描述" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">网站描述(繁)</label>
+                <div class="layui-input-block">
+                    <input type="text" name="desc[cht]" value="{$data['desc']['cht']}"  lay-verify="required" placeholder="请输入网站描述" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">网站描述(英)</label>
+                <div class="layui-input-block">
+                    <input type="text" name="desc[en]" value="{$data['desc']['en']}"  lay-verify="required" placeholder="请输入网站描述" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </div>
+    </fieldset>
+    <fieldset class="layui-elem-field">
+        <legend>网站关键词</legend>
+        <div class="layui-field-box">
+            <div class="layui-form-item">
+                <label class="layui-form-label">网站关键词(简)</label>
+                <div class="layui-input-block">
+                    <input type="text" name="keywords[zh]" value="{$data['keywords']['zh']}"  lay-verify="required" placeholder="请输入网站关键词" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">网站关键词(繁)</label>
+                <div class="layui-input-block">
+                    <input type="text" name="keywords[cht]" value="{$data['keywords']['cht']}"  lay-verify="required" placeholder="请输入网站关键词" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">网站关键词(英)</label>
+                <div class="layui-input-block">
+                    <input type="text" name="keywords[en]" value="{$data['keywords']['en']}"  lay-verify="required" placeholder="请输入网站关键词" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </div>
+    </fieldset>
+    <div class="layui-form-item">
+        <label class="layui-form-label">客服电话</label>
+        <div class="layui-input-block">
+            <input type="text" name="mobile" value="{$data['mobile']}"  lay-verify="required" placeholder="请输入客服电话" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">客服电邮</label>
+        <div class="layui-input-block">
+            <input type="text" name="email" value="{$data['email']}"  lay-verify="required" placeholder="请输入客服电邮" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-form-label">首页背景色</div>
+        <div class="layui-input-block">
+            <div id="color"></div>
+            <input type="hidden" name="color" value="{$data['color']}">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-form-label">内页背景色</div>
+        <div class="layui-input-block">
+            <div id="color_inner"></div>
+            <input type="hidden" name="color_inner" value="{$data['color_inner']}">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-form-label">网站字体色</div>
+        <div class="layui-input-block">
+            <div id="color_word"></div>
+            <input type="hidden" name="color_word" value="{$data['color_word']}">
+        </div>
+    </div>
+    <fieldset class="layui-elem-field">
+        <legend>版权信息</legend>
+        <div class="layui-field-box">
+            <div class="layui-form-item">
+                <div class="layui-form-label">版权信息(简)</div>
+                <div class="layui-input-block">
+                    <script id="copyright_zh" name="copyright_zh" type="text/plain" style="width:100%;height:100px;">
+                        {if !empty($data['copyright']['zh'])}
+                            {$data['copyright']['zh']|htmlspecialchars_decode|stripslashes}
+                        {/if}
+                    </script>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-form-label">版权信息(繁)</div>
+                <div class="layui-input-block">
+                    <script id="copyright_cht" name="copyright_cht" type="text/plain" style="width:100%;height:100px;">
+                        {if !empty($data['copyright']['cht'])}
+                            {$data['copyright']['cht']|htmlspecialchars_decode|stripslashes}
+                        {/if}
+                    </script>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-form-label">版权信息(英)</div>
+                <div class="layui-input-block">
+                    <script id="copyright_en" name="copyright_en" type="text/plain" style="width:100%;height:100px;">
+                        {if !empty($data['copyright']['en'])}
+                            {$data['copyright']['en']|htmlspecialchars_decode|stripslashes}
+                        {/if}
+                    </script>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    //Demo
+    layui.use(['layer','form','laydate','upload','colorpicker'], function(){
+        var laydate = layui.laydate;
+        var layer = layui.layer;
+        var form  = layui.form;
+        var $ = layui.jquery;
+        var upload = layui.upload;
+        var colorpicker = layui.colorpicker;
+
+        {if !empty($data['color'])}
+        colorpicker.render({
+            elem:'#color',
+            alpha:true,
+            size:'lg',
+            predefine:true,
+            color:'{$data["color"]}',
+            done:function(color){
+                $('input[name="color"]').val(color);
+            }
+        });
+        colorpicker.render({
+            elem:'#color_inner',
+            alpha:true,
+            size:'lg',
+            predefine:true,
+            color:'{$data["color_inner"]}',
+            done:function(color){
+                $('input[name="color_inner"]').val(color);
+            }
+        });
+        colorpicker.render({
+            elem:'#color_word',
+            alpha:true,
+            size:'lg',
+            predefine:true,
+            color:'{$data["color_word"]}',
+            done:function(color){
+                $('input[name="color_word"]').val(color);
+            }
+        });
+        {else}
+        colorpicker.render({
+            elem:'#color',
+            alpha:true,
+            size:'lg',
+            done:function(color){
+                $('input[name="color"]').val(color);
+            }
+        });
+        colorpicker.render({
+            elem:'#color_inner',
+            alpha:true,
+            size:'lg',
+            done:function(color){
+                $('input[name="color_inner"]').val(color);
+            }
+        });
+        colorpicker.render({
+            elem:'#color_word',
+            alpha:true,
+            size:'lg',
+            done:function(color){
+                $('input[name="color_word"]').val(color);
+            }
+        });
+        {/if}
+
+        UE.getEditor('copyright_zh', {
+            initialFrameHeight: 200,
+            serverUrl: 'static/cklein/plugins/ueditor/php/controller.php',
+        });
+        UE.getEditor('copyright_cht', {
+            initialFrameHeight: 200,
+            serverUrl: 'static/cklein/plugins/ueditor/php/controller.php',
+        });
+        UE.getEditor('copyright_en', {
+            initialFrameHeight: 200,
+            serverUrl: 'static/cklein/plugins/ueditor/php/controller.php',
+        });
+
+        setTimeout(function(){
+            console.log($('#edui1').find('body'));
+            $('#edui1').find('body').css('background','#666');
+        },3000);
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            $.ajax({
+                url:"{:Url('admin/operaweb/website_manage')}",
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (res) {
+                    layer.msg(res.msg);
+                    if(res.code==0){
+                        setTimeout(function () {
+                            window.location.reload();
+                        },2000);
+                    }
+
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            return false;
+        });
+
+        // 轮播图内页文件
+        upload.render({
+            elem: '#logo_file-upload'
+            ,url: '{:Url("admin/basic/upload_file")}'
+            ,accept: 'file'
+            ,data: { folder: 'centralize', type: 'website_index'}
+            ,multiple: false
+            ,number:1
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+
+                    $('#logo_file-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="logo_file[]" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+
+        upload.render({
+            elem: '#inpic_file-upload'
+            ,url: '{:Url("admin/basic/upload_file")}'
+            ,accept: 'file'
+            ,data: { folder: 'centralize', type: 'website_index'}
+            ,multiple: false
+            ,number:1
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+
+                    $('#inpic_file-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="inpic_file[]" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+</script>
+</body>
+</html>

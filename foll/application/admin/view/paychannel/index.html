@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 14px;color: #fff;
+            font-size: 16px;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<div class="header">
+    <span>商户支付通道列表</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{$info['cname']}
+    <button class="layui-btn" style="margin-right: 3%;" onclick="add({$info['id']},'{$info["cname"]}');">添加支付通道</button>
+    <a class="layui-btn" style="margin-right: 10%;" href="javascript:void(0);" onclick="black()">返回上一页</a>
+    <div></div>
+</div>
+
+<table class="layui-table">
+    <thead>
+    <tr class="ths">
+        <th>商户名称</th>
+        <th>支付通道名称</th>
+        <th>申领企业（商户号）</th>
+        <th>商户号</th>
+        <th>企业收款账户</th>
+        <th>企业会员号</th>
+        <th>企业用户姓名</th>
+        <th>更新时间</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {volist name="list" id="vo" key="k" }
+    <tr class="boys">
+        <td>{$vo.customName}</td>
+        <td>{$vo.payName}</td>
+        <td>{$merArr[$vo.merId]}</td>
+        <td>{$vo.merchatId}</td>
+        <td>{$vo.sysAccount}</td>
+        <td>{$vo.sysPartnerId}</td>
+        <td>{$vo.sysName}</td>
+        <td>{$vo.utime|date='Y-m-d H:i:s',###}</td>
+        <td>
+            <button class="layui-btn layui-btn-normal layui-btn-sm" onclick="Edit({$vo.id})">编辑</button>
+            <button class="layui-btn layui-btn-sm layui-btn-danger" onclick="Del({$vo.id})">删除</button>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    layui.use(['layer','jquery'],function(){
+        layer = layui.layer;
+        $ = layui.jquery;
+    });
+
+    // 申报
+    function add(id,name)
+    {
+        layer.open({
+            type: 2,
+            title: '添加支付通道',
+            shadeClose: true,
+            shade: 0.3,
+            area: ['600px', '560px'],
+            content: "{:Url('paychannel/add')}&id="+id+"&name="+name, //iframe的url
+            yes:function(){
+                //setTimeout(function(){window.location.reload();},800);
+            },
+            end:function() {
+                setTimeout(function () {
+                    //window.location.reload();
+                }, 800);
+            }
+        });
+    }
+
+    // 申报
+    function Edit(id)
+    {
+        layer.open({
+            type: 2,
+            title: '编辑支付通道',
+            shadeClose: true,
+            shade: 0.3,
+            area: ['600px', '560px'],
+            content: "{:Url('paychannel/edit')}&id="+id, //iframe的url
+            yes:function(){
+                //setTimeout(function(){window.location.reload();},800);
+            },
+            end:function() {
+                setTimeout(function () {
+                    //window.location.reload();
+                }, 800);
+            }
+        });
+    }
+
+
+    // 删除操作
+    function Del(ids) {
+        layer.confirm('确定要删除吗?',{
+            icon:3,
+            btn:['确定','取消']
+        },function(){
+            $.ajax({
+                url:"{:url('paychannel/del')}",
+                type:'post',
+                dataType:'json',
+                data:{'id':ids},
+                success:function(data) {
+                    var res = JSON.parse(data);
+                    if(res.code <= 0) {
+                        layer.msg(res.msg,{icon:2});
+                    }
+                    layer.msg(res.msg,{icon:1});
+                    setTimeout(function(){window.location.reload();},1000);
+                }
+            })
+        })
+    }
+
+    // 返回上一页
+    function black() {
+        window.history.go(-1);
+    }
+
+</script>
+</body>
+</html>

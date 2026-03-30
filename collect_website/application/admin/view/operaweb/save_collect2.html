@@ -1,0 +1,522 @@
+{include file="common/header_inner_new"}
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .seo_content,.url{display:none;}
+    .collectDate,.regular_collection,.everyDate,.everyWeek,.everyMonth,.everyYear,.exitDate,.project,.services,.order,.remark{display:none;}
+    .layui-form-item .layui-input-inline{width:800px;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">选择商户</div>
+                            <div class="layui-input-inline layui-select-fscon">
+                                <select name="merchid" id="merchid" lay-filter="merchid" lay-search>
+                                    {volist name="merch" id="vo"}
+                                    <option value="{$vo['id']}">{if !empty($vo['realname'])}{$vo['realname']}{else}{$vo['nickname']}{/if}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">交易形式</label>
+                                <div class="layui-input-inline layui-select-fscon">
+                                    <select name="trans_form" lay-filter="trans_form">
+                                        <option value="1">立即收款</option>
+                                        <option value="2">预约收款</option>
+                                        <option value="3">定期收款</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item collectDate">
+                                <label class="layui-form-label">选择时间</label>
+                                <div class="layui-input-inline layui-select-fscon">
+                                    <input type="text" name="advance_day" id="collectDate" lay-verify="datetime" class="layui-input" placeholder="请选择预约收款时间">
+                                </div>
+                            </div>
+                            <div class="layui-form-item regular_collection">
+                                <label class="layui-form-label">定期收款</label>
+                                <div class="layui-input-inline layui-select-fscon">
+                                    <select name="regular_type" lay-filter="regular_collection">
+                                        <option value="1">每日</option>
+                                        <option value="2">每周</option>
+                                        <option value="3">每月</option>
+                                        <option value="4">每年</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item everyDate">
+                                <label class="layui-form-label">选择时间</label>
+                                <div class="layui-input-inline layui-select-fscon">
+                                    <input type="text" name="every_day" id="everyDate" lay-verify="datetime" class="layui-input" placeholder="请选择每日收款时间">
+                                </div>
+                            </div>
+                            <div class="layui-form-item everyWeek">
+                                <label class="layui-form-label">选择时间</label>
+                                <div class="layui-input-inline layui-select-fscon disf">
+                                    <select name="week">
+                                        <option value="1">周一</option>
+                                        <option value="2">周二</option>
+                                        <option value="3">周三</option>
+                                        <option value="4">周四</option>
+                                        <option value="5">周五</option>
+                                        <option value="6">周六</option>
+                                        <option value="7">周日</option>
+                                    </select>
+                                    <input type="text" name="every_week" id="everyWeek" lay-verify="datetime" class="layui-input" placeholder="请选择每周收款时间">
+                                </div>
+                            </div>
+                            <div class="layui-form-item everyMonth">
+                                <label class="layui-form-label">选择时间</label>
+                                <div class="layui-input-inline layui-select-fscon disf">
+                                    <select name="month">
+                                        <option value="1">一号</option>
+                                        <option value="2">二号</option>
+                                        <option value="3">三号</option>
+                                        <option value="4">四号</option>
+                                        <option value="5">五号</option>
+                                        <option value="6">六号</option>
+                                        <option value="7">七号</option>
+                                        <option value="8">八号</option>
+                                        <option value="9">九号</option>
+                                        <option value="10">十号</option>
+                                        <option value="11">十一号</option>
+                                        <option value="12">十二号</option>
+                                        <option value="13">十三号</option>
+                                        <option value="14">十四号</option>
+                                        <option value="15">十五号</option>
+                                        <option value="16">十六号</option>
+                                        <option value="17">十七号</option>
+                                        <option value="18">十八号</option>
+                                        <option value="19">十九号</option>
+                                        <option value="20">二十号</option>
+                                        <option value="21">二十一号</option>
+                                        <option value="22">二十二号</option>
+                                        <option value="23">二十三号</option>
+                                        <option value="24">二十四号</option>
+                                        <option value="25">二十五号</option>
+                                        <option value="26">二十六号</option>
+                                        <option value="27">二十七号</option>
+                                        <option value="28">二十八号</option>
+                                        <option value="29">二十九号</option>
+                                        <option value="30">三十号</option>
+                                        <option value="31">三十一号</option>
+                                    </select>
+                                    <input type="text" name="every_month" id="everyMonth" lay-verify="datetime" class="layui-input" placeholder="请选择每月收款时间">
+                                </div>
+                            </div>
+                            <div class="layui-form-item everyYear">
+                                <label class="layui-form-label">选择时间</label>
+                                <div class="layui-input-inline layui-select-fscon">
+                                    <input type="text" name="every_year" id="everyYear" lay-verify="datetime" class="layui-input" placeholder="请选择每年收款时间">
+                                </div>
+                            </div>
+                            <div class="layui-form-item exitDate">
+                                <label class="layui-form-label">截止时间</label>
+                                <div class="layui-input-inline layui-select-fscon">
+                                    <input type="text" name="end_time" id="exitDate" lay-verify="datetime" class="layui-input" placeholder="请选择截止时间">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">交易类型</label>
+                                <div class="layui-input-inline layui-select-fscon">
+                                    <select name="trade_type" lay-filter="transaction_type">
+                                        <option value="1">商品</option>
+                                        <option value="2">项目</option>
+                                        <option value="3">服务</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item goods">
+                                <label class="layui-form-label">交易商品</label>
+                                <div class="layui-input-inline layui-select-fscon">
+                                    <select name="good_id">
+                                        <option value="1">商品1</option>
+                                        <option value="2">商品2</option>
+                                        <option value="3">商品3</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item project">
+                                <label class="layui-form-label">交易项目</label>
+                                <div class="layui-input-inline layui-select-fscon">
+                                    <input type="text" name="transaction_project" placeholder="请输入交易项目" autocomplete="off" class="layui-input" value="">
+                                </div>
+                            </div>
+                            <div class="layui-form-item services">
+                                <label class="layui-form-label">交易服务</label>
+                                <div class="layui-input-inline layui-select-fscon">
+                                    <table class="layui-table">
+                                        <thead>
+                                        <th>服务名称</th>
+                                        <th>服务内容</th>
+                                        <th>需付金额</th>
+                                        <th>操作</th>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>
+                                                <input type="text" name="service_name[]" placeholder="请输入服务名称" autocomplete="off" class="layui-input" value="">
+                                            </td>
+                                            <td>
+                                                <input type="text" name="service_abstract[]" placeholder="请输入服务内容" autocomplete="off" class="layui-input" value="">
+                                            </td>
+                                            <td>
+                                                <input type="text" name="service_price[]" placeholder="请输入需付金额" autocomplete="off" class="layui-input" value="">
+                                            </td>
+                                            <td class="disf">
+                                                <div onclick="add(this)" class="layui-btn layui-btn-xs layui-btn-normal">增加</div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">交易金额</label>
+                                <div class="layui-input-inline layui-select-fscon disf">
+                                    <select name="currency" lay-verify="required" lay-search>
+                                        {volist name="currency" id="vo"}
+                                        <option value="{$vo['code_value']}" {if $vo['code_value']==142}selected{/if}>{$vo['code_name']}</option>
+                                        {/volist}
+                                    </select>
+                                    <input type="number" name="trade_price" lay-verify="required" placeholder="请输入交易金额" autocomplete="off" class="layui-input" value="">
+                                </div>
+                            </div>
+<!--                            <div class="layui-form-item">-->
+<!--                                <label class="layui-form-label">付款人名称</label>-->
+<!--                                <div class="layui-input-inline layui-select-fscon">-->
+<!--                                    <input type="text" name="payer_name" lay-verify="required" placeholder="请输入付款人名称" autocomplete="off" class="layui-input" value="">-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            <div class="layui-form-item">-->
+<!--                                <label class="layui-form-label">付款人电话</label>-->
+<!--                                <div class="layui-input-inline layui-select-fscon">-->
+<!--                                    <input type="number" name="payer_tel" lay-verify="required" placeholder="请输入付款人电话" autocomplete="off" class="layui-input" value="">-->
+<!--                                </div>-->
+<!--                            </div>-->
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">付款依据</label>
+                                <div class="layui-input-inline layui-select-fscon">
+                                    <select name="basic" lay-filter="payment_basis">
+                                        <option value="1">合同</option>
+                                        <option value="2">订单</option>
+                                        <option value="3">说明</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="contract">
+                                <div class="layui-form-item contract">
+                                    <div class="layui-inline layui-select-fs">
+                                        <label class="layui-form-label">合同编号</label>
+                                        <div class="layui-input-inline layui-select-fscon">
+                                            <input type="text" name="contract_num"  placeholder="请输入合同编号" autocomplete="off" class="layui-input" value="">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item contract_file">
+                                    <div class="layui-inline layui-select-fs">
+                                        <label class="layui-form-label">合同文件</label>
+                                        <div class="layui-input-inline layui-select-fscon">
+                                            <div class="layui-upload">
+                                                <button type="button" class="layui-btn" id="contract_file-upload">上传合同文件</button>
+                                                <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                                                    预览图：
+                                                    <div class="layui-upload-list" id="contract_file-upload-list">
+
+                                                    </div>
+                                                </blockquote>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="order">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">订单编号</label>
+                                    <div class="layui-input-inline layui-select-fscon">
+                                        <input type="text" name="orderno" placeholder="请输入订单编号" autocomplete="off" class="layui-input" value="">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">订单链接</label>
+                                    <div class="layui-input-inline layui-select-fscon">
+                                        <input type="text" name="orderurl" placeholder="请输入订单链接" autocomplete="off" class="layui-input" value="">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item order_file">
+                                    <div class="layui-inline layui-select-fs">
+                                        <label class="layui-form-label">订单文件</label>
+                                        <div class="layui-input-inline layui-select-fscon">
+                                            <div class="layui-upload">
+                                                <button type="button" class="layui-btn" id="order_file-upload">上传订单文件</button>
+                                                <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                                                    预览图：
+                                                    <div class="layui-upload-list" id="order_file-upload-list">
+
+                                                    </div>
+                                                </blockquote>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item remark">
+                                <label class="layui-form-label">自定义说明</label>
+                                <div class="layui-input-inline layui-select-fscon">
+                                    <input type="text" name="description" placeholder="请输入自定义说明" autocomplete="off" class="layui-input" value="">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-inline layui-select-fs">
+                                    <label class="layui-form-label">付款期限</label>
+                                    <div class="layui-input-inline layui-select-fscon">
+                                        <input type="text" name="pay_term"  placeholder="请输入付款期限，单位（天）" autocomplete="off" class="layui-input" value="">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-inline layui-select-fs">
+                                    <label class="layui-form-label">逾期费用</label>
+                                    <div class="layui-input-inline layui-select-fscon" style="display: flex;align-items: center;">
+                                        <input type="text" name="pay_fee"  placeholder="0" autocomplete="off" class="layui-input" value="" style="width:30px;">%/天
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                        <div>
+                            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">立即提交</button>
+                            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                        </div>
+                    </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload'],function(){
+        var $ = layui.$
+            , layer = layui.layer
+            , form = layui.form
+            , laydate = layui.laydate
+            , upload = layui.upload;
+
+        var beginDate = laydate.render({//渲染开始时间选择
+            elem: '#collectDate', //通过id绑定html中插入的start
+            type: 'datetime',
+        });
+        var everyDate = laydate.render({//渲染开始时间选择
+            elem: '#everyDate', //通过id绑定html中插入的start
+            type: 'time',
+        });var everyWeek = laydate.render({//渲染开始时间选择
+            elem: '#everyWeek', //通过id绑定html中插入的start
+            type: 'time',
+        });var everyMonth = laydate.render({//渲染开始时间选择
+            elem: '#everyMonth', //通过id绑定html中插入的start
+            type: 'time',
+        });var everyYear = laydate.render({//渲染开始时间选择
+            elem: '#everyYear', //通过id绑定html中插入的start
+            type: 'datetime',
+        });
+        var exitDate = laydate.render({//渲染开始时间选择
+            elem: '#exitDate', //通过id绑定html中插入的start
+            type: 'datetime',
+        });
+
+        form.render(null, 'component-form-element');
+
+        //交易形式
+        form.on('select(trans_form)',function(data){
+            let val = data.value;
+            if(val==1){
+                $('.collectDate').hide();
+                $('.regular_collection').hide();
+            }else if(val==2){
+                $('.collectDate').show();
+                $('.regular_collection').hide();
+            }else if(val==3){
+                $('.collectDate').hide();
+                $('.regular_collection').show();
+            }
+        });
+        //定期方式
+        form.on('select(regular_collection)',function(data){
+            let val = data.value;
+            if(val==1){
+                $('.everyDate').show();
+                $('.exitDate').show();
+                $('.everyWeek').hide();
+                $('.everyMonth').hide();
+                $('.everyYear').hide();
+            }else if(val==2){
+                $('.everyDate').hide();
+                $('.exitDate').show();
+                $('.everyWeek').show();
+                $('.everyMonth').hide();
+                $('.everyYear').hide();
+            }else if(val==3){
+                $('.everyDate').hide();
+                $('.exitDate').show();
+                $('.everyWeek').hide();
+                $('.everyMonth').show();
+                $('.everyYear').hide();
+            }else if(val==4){
+                $('.everyDate').hide();
+                $('.exitDate').show();
+                $('.everyWeek').hide();
+                $('.everyMonth').hide();
+                $('.everyYear').show();
+            }
+            form.render(null, 'component-form-element');
+        });
+        //交易类型
+        form.on('select(transaction_type)',function(data){
+            let val = data.value;
+            if(val==1){
+                $('.goods').show();
+                $('.project').hide();
+                $('.services').hide();
+            }else if(val==2){
+                $('.goods').hide();
+                $('.project').show();
+                $('.services').hide();
+            }else if(val==3){
+                $('.goods').hide();
+                $('.project').hide();
+                $('.services').show();
+            }
+        });
+        //付款依据
+        form.on('select(payment_basis)',function(data){
+            let val = data.value;
+            if(val==1){
+                $('.contract').show();
+                $('.order').hide();
+                $('.remark').hide();
+            }else if(val==2){
+                $('.contract').hide();
+                $('.order').show();
+                $('.remark').hide();
+            }else if(val==3){
+                $('.contract').hide();
+                $('.order').hide();
+                $('.remark').show();
+            }
+        });
+
+        // 注册文件
+        upload.render({
+            elem: '#contract_file-upload'
+            ,url: '{:Url("admin/basic/upload_file")}'
+            ,accept: 'file'
+            ,data: { folder: 'centralize', type: 'website_collectreg'}
+            ,multiple: true
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+
+                    $('#contract_file-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="contract_file[]" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+        //订单文件
+        upload.render({
+            elem: '#order_file-upload'
+            ,url: '{:Url("admin/basic/upload_file")}'
+            ,accept: 'file'
+            ,data: { folder: 'centralize', type: 'website_collectorder'}
+            ,multiple: true
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+
+                    $('#order_file-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="orderdemo[]" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            $.ajax({
+                url:"{:Url('admin/operaweb/save_collect')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+
+    function add(t){
+        var $ = layui.$
+            , layer = layui.layer;
+
+        let html = ' <tr>\n' +
+            '                                    <td>\n' +
+            '                                        <input type="text" name="service_name[]" \n' +
+            '                                               placeholder="请输入服务名称" autocomplete="off" class="layui-input" value="">\n' +
+            '                                    </td>\n' +
+            '                                    <td>\n' +
+            '                                        <input type="text" name="service_abstract[]" \n' +
+            '                                               placeholder="请输入服务内容" autocomplete="off" class="layui-input" value="">\n' +
+            '                                    </td>\n' +
+            '                                    <td>\n' +
+            '                                        <input type="text" name="service_price[]" \n' +
+            '                                               placeholder="请输入需付金额" autocomplete="off" class="layui-input" value="">\n' +
+            '                                    </td>\n' +
+            '                                    <td class="disf">\n' +
+            '                                        <div onclick="add(this)" class="layui-btn layui-btn-xs layui-btn-normal">增加</div>\n' +
+            '                                        <div onclick="del(this);" class="layui-btn layui-btn-xs layui-btn-danger">删除</div>\n' +
+            '                                    </td>\n' +
+            '                                </tr>';
+        $(t).parent().parent().parent().append(html);
+    }
+
+    function del(t){
+        var $ = layui.$
+            , layer = layui.layer;
+        layer.confirm('确认要删除该行吗？',function(){
+            $(t).parent().parent().remove();
+            layer.closeAll('');
+        },function(){
+
+        });
+    }
+
+</script>
+</body>
+</html>

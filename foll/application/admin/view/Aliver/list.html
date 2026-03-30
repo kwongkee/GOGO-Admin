@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{$title}</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<div class="header">
+    <span></span>
+    <div></div>
+</div>
+
+<table class="layui-table">
+    <thead>
+    <tr class="ths">
+        <th>ID</th>
+        <th>批次编号</th>
+        <th>验证数量</th>
+        <th>验证类型</th>
+        <th>验证时间</th>
+        <th>验证状态</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {volist name="data.data" id="vo" key="k" }
+    <tr class="boys">
+        <td>{$k}</td>
+        <td>{$vo.batch_num}</td>
+        <td>{$vo.count} 票</td>
+        <td>{$vo.type}</td>
+        <td>{$vo.c_time}</td>
+        <td>
+            {if condition="$vo.status == 1" }
+                <button class="layui-btn layui-btn-sm layui-btn-normal" >验证成功</button>
+            {else /}
+                <button class="layui-btn layui-btn-sm layui-btn-warm" >验证失败</button>
+            {/if}
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+
+<script type="text/javascript">
+    layui.use(['layer','jquery'],function(){
+        layer = layui.layer;
+        $ = layui.jquery;
+    });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+{include file="public/header"}
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div class="layui-row layui-form-item">
+                        导入京东订单（<a href="https://shop.gogo198.cn/attachment/导入京东订单.xls" style="color:#ff2222;">下载模板</a>）
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div class="layui-row layui-form-item">
+                        <div class="layui-form-item">
+                            <div class="layui-col-md12">
+                                <label class="layui-form-label">上传excel：</label>
+                                <div class="layui-input-block">
+                                    <div class="layui-upload">
+                                        <button type="button" class="layui-btn" id="order_file-upload">文件上传</button>
+                                        <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                                            预览图：
+                                            <div class="layui-upload-list" id="order_file-upload-list"></div>
+                                        </blockquote>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','upload','laydate'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form
+        ,$ = layui.jquery
+        ,upload = layui.upload;
+
+        laydate.render({
+            elem: '#pay_time' //指定元素
+            ,format: 'yyyy-MM-dd HH:mm:ss'
+            ,type:'datetime'
+        });
+
+        form.on('submit(component-form-element)', function(data){
+            //layer.msg(JSON.stringify(data.field));
+            $.ajax({
+                url:"{:Url('admin/supplier/edit_order_status')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+        // 授权文件上传
+        upload.render({
+            elem: '#order_file-upload'
+            ,url: '{:Url("admin/Supplier/upload")}'
+            ,accept: 'file'
+            ,multiple: true
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                layer.msg(res.message,{time:2000},function(){
+                    if(res.code==0){
+                        parent.location.reload();
+                    }
+                });
+                // if(res.code == 1)
+                // {
+                //     var length = $('#order_file-upload-list').children().length;
+                //     $('#order_file-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -22px;top: -15px;">删除</button><input type="hidden" name="order_file['+length+']" value="'+res.file_path+'"></div>')
+                // }
+            }
+        });
+    });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>兑换审核</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <style>
+        form{
+            margin-top: 47px;
+            margin-right: 32px;
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form" action="">
+    <input type="hidden" name="id" value="{$data['id']}">
+    <div class="layui-form-item">
+        <label class="layui-form-label">账户信息</label>
+        <div class="layui-input-block">
+            <table class="layui-table">
+                <colgroup>
+                  <col width="150">
+                  <col width="150">
+                  <col width="200">
+                  <col>
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>人民币(CNY)</th>
+                    <th>美元(USD)</th>
+                    <th>港币(HKD)</th>
+                    <th>瑞士法郎(CHF)</th>
+                  </tr> 
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{$user_money['cny']}</td>
+                    <td>{$user_money['usd']}</td>
+                    <td>{$user_money['hkd']}</td>
+                    <td>{$user_money['chf']}</td>
+                  </tr>
+                </tbody>
+                <thead>
+                    <tr>
+                      <th>丹麦克朗(DKK)</th>
+                      <th>欧元(EUR)</th>
+                      <th>英镑(GBP)</th>
+                      <th>日元(JPY)</th>
+                    </tr> 
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{$user_money['dkk']}</td>
+                      <td>{$user_money['eur']}</td>
+                      <td>{$user_money['gbp']}</td>
+                      <td>{$user_money['jpy']}</td>
+                    </tr>
+                  </tbody>
+                  <thead>
+                    <tr>
+                      <th>澳元(AUD)</th>
+                      <th>加拿大元(CAD)</th>
+                      <th>挪威克朗(NOK)</th>
+                      <th>瑞典克朗(SEK)</th>
+                    </tr> 
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{$user_money['aud']}</td>
+                      <td>{$user_money['cad']}</td>
+                      <td>{$user_money['nok']}</td>
+                      <td>{$user_money['sek']}</td>
+                    </tr>
+                  </tbody>
+                  <thead>
+                    <tr>
+                      <th>新加坡元(SGD)</th>
+                      <th>新西兰元(NZD)</th>
+                    </tr> 
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{$user_money['sgd']}</td>
+                      <td>{$user_money['nzd']}</td>
+                    </tr>
+                  </tbody>
+              </table>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">卖出金额（账户）</label>
+        <div class="layui-input-inline">
+        </div>
+        <div class="layui-form-mid layui-word-aux" style="color: red!important">{$data['money']} ({$data['money_type']})</div>
+        <input type="hidden" name="money_type" value="{$data['money_type']}">
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">换汇手续费</label>
+        <div class="layui-input-inline">
+        </div>
+        <div class="layui-form-mid layui-word-aux" style="color: red!important">{$trade_fee} ({$user_rule['currency']})</div>
+        <input type="hidden" name="exchange_fee" value="{$trade_fee}">
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">实际卖出金额（账户）</label>
+        <div class="layui-input-inline">
+        </div>
+        <div class="layui-form-mid layui-word-aux" style="color: red!important"><?php echo $data['money']+$trade_fee;?> ({$data['money_type']})</div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">参考汇率</label>
+        <div class="layui-input-block">
+            <input type="number" name="reference_rate" autocomplete="off" class="layui-input" value="{$data['reference_rate']}" disabled>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">实际汇率</label>
+        <div class="layui-input-block">
+            <input type="number" name="rate" required  lay-verify="required" placeholder="请输入汇率 如：0.76" autocomplete="off" class="layui-input" value="{$data['rate']}">
+        </div>
+    </div>
+
+	<div class="layui-form-item">
+        <label class="layui-form-label">买入账户</label>
+        <div class="layui-input-block">
+            <div class="layui-form-mid layui-word-aux" style="color: red!important">{$data['buy_currency']}</div>
+        </div>
+	</div>
+	
+    <div class="layui-form-item">
+        <label class="layui-form-label">实际金额</label>
+        <div class="layui-input-block">
+            <input type="number" name="true_money" required  lay-verify="required" placeholder="实际卖出金额X汇率" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item" style="display:none;">
+        <label class="layui-form-label">结汇类型</label>
+        <div class="layui-input-block">
+            <div class="layui-form-mid layui-word-aux" >
+                {if $data['exchange_type']==1}
+                换汇后结汇至国内
+                {else if $data['exchange_type']==2}
+                换汇后转账至境外
+                {/if}
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">是否通过</label>
+        <div class="layui-input-block">
+          <input type="radio" name="status" value="1" title="通过" checked>
+          <input type="radio" name="status" value="2" title="不通过">
+        </div>
+      </div>
+      <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">不通过原因</label>
+        <div class="layui-input-block">
+          <textarea name="remark" placeholder="请输入不通过原因" class="layui-textarea"></textarea>
+        </div>
+      </div> 
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+        </div>
+    </div>
+</form>
+
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+
+<script>
+    layui.use('form', function(){
+        var form = layui.form;
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            
+            $.ajax({
+                url:'{:Url("admin/entrustDecl/exchange_info")}',
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (res) {
+                    layer.msg(res.message, {
+                                    icon: 1,
+                                    time: 2000
+                                }, function(){
+                                    parent.window.location.reload();
+                                    var index = parent.layer.getFrameIndex(window.name);
+                                    parent.layer.close(index);
+                                });
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</html>

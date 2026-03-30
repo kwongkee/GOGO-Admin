@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {include file="common/meta"}
+    <link rel="stylesheet" href="./static/hadmin/layui/css/layui.css"></link>
+</head>
+<body class="gray-bg">
+<div class="demoTable">
+    搜索：
+    <div class="layui-inline">
+        <input class="layui-input" name="code" id="code" autocomplete="off">
+    </div>
+    <button class="layui-btn" data-type="search" id="search" onclick="search();">搜索</button>
+    <button class="layui-btn" id="load" >上传导入</button>
+</div>
+<table class="layui-hide" id="list" lay-filter="list_filter"></table>
+</body>
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/layui/layui.all.js"></script>
+<script>
+
+    layui.use(['upload','form','table','layer'], function () {
+        layer = layui.layer;
+        upload = layui.upload;
+        form = layui.form;
+        table = layui.table;
+
+        //第一个实例
+        table.render({
+            elem: '#list'
+            ,id: 'listReload'
+            ,height: 512
+            ,url: "{:url('admin/HscodeTariffSchedule/getList')}" //数据接口
+            ,page: true //开启分页
+            // ,toolbar: '#toolbar' //开启头部工具栏，并为其绑定左侧模板
+            ,defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示'
+                ,layEvent: 'LAYTABLE_TIPS'
+                ,icon: 'layui-icon-tips'
+            }]
+            ,loading:true
+            ,cols: [[ //表头
+                {field: 'two', title: '第二位', width:80,event: 'two'}
+                ,{field: 'four', title: '第四位', width:80,event: 'four'}
+                ,{field: 'five', title: '第五位', width:80,event: 'five'}
+                ,{field: 'six', title: '第六位', width:80,event: 'six'}
+                ,{field: 'seven', title: '第七位', width: 100,event: 'seven'}
+                ,{field: 'eight', title: '第八位', width: 110,event: 'eight'}
+                ,{field: 'hscode', title: 'hs编码', width:120}
+                ,{field: 'ciq_code', title: 'CIQ代码', width: 150}
+                ,{field: 'ciq_name', title: 'CIQ代码中文名称', width: 200,}
+                ,{field: 'legal_first_unit', title: '法定第一单位', width: 120,}
+                ,{field: 'legal_second_unit', title: '法定第二单位', width: 120,}
+                ,{field: 'mfn_tax_rate', title: '最惠国进口税率', width: 120,}
+                ,{field: 'ordinary_tax_rate', title: '普通进口税率', width: 120,}
+                ,{field: 'provisional_tax_rate', title: '暂定进口税率', width: 120,}
+                ,{field: 'consumption_tax_rate', title: '消费税率', width: 120,}
+                ,{field: 'exit_tax_rate', title: '出口关税率', width: 120,}
+                ,{field: 'provisional_tariff_rate', title: '暂定出口关税率', width: 120,}
+                ,{field: 'export_tax_rebate_rate', title: '出口退税率', width: 120,}
+                ,{field: 'vat_rate', title: '增值税率', width: 120,fixed: 'right'}
+            ]]
+        });
+    });
+
+
+
+    table.on('tool(list_filter)', function(obj){
+        var data = obj.data;
+        var call_func = null;
+        var code = 0;
+        switch (obj.event) {
+            case "two":
+                call_func =  function(value, index) {
+                    layer.close(index);
+                    //这里发送修改的Ajax请求
+                    req(data.two,value);
+                }
+                code = data.two;
+                break;
+            case "four":
+                call_func =  function(value, index) {
+                    layer.close(index);
+                    //这里发送修改的Ajax请求
+                    req(data.four,value);
+                }
+                code = data.four;
+                break;
+            case "five":
+                call_func =  function(value, index) {
+                    layer.close(index);
+                    //这里发送修改的Ajax请求
+                    req(data.five,value);
+                }
+                code =data.five;
+                break;
+            case "six":
+                call_func =  function(value, index) {
+                    layer.close(index);
+                    //这里发送修改的Ajax请求
+                    req(data.six,value);
+                }
+                code = data.six;
+                break;
+            case "seven":
+                call_func =  function(value, index) {
+                    layer.close(index);
+                    //这里发送修改的Ajax请求
+                    req(data.seven,value);
+                }
+                code = data.seven;
+                break;
+            case "eight":
+                call_func =  function(value, index) {
+                    layer.close(index);
+                    //这里发送修改的Ajax请求
+                    req(data.eight,value);
+                }
+                code = data.eight;
+                break;
+        }
+        reqCodeRate(code,call_func);
+    });
+
+
+    function reqCodeRate(code,call_func) {
+        $.ajax({
+            url:"{:url('admin/HscodeTariffSchedule/getCodeRate')}&code="+code,
+            type:'GET',
+            dataType:"json",
+            success:function (res) {
+                layer.prompt({
+                    formType: 0
+                    ,title: '添加税率'
+                    ,value: res.result
+                },call_func);
+            }
+        });
+    }
+
+    function req(code,value) {
+        $.ajax({
+            url:"{:url('admin/HscodeTariffSchedule/updateRate')}&code="+code+"&rate="+value,
+            type:'GET',
+            dataType:"json",
+            success:function (res) {
+                layer.msg(res.msg);
+            }
+        });
+    }
+
+
+    function search() {
+        //执行重载
+        table.reload('listReload', {
+            page: {curr: 1}
+            ,where: {code: $('#code').val()
+            }
+
+        }, 'data');
+        return false;
+    }
+
+    // function importExcelFile() {
+    //     layer.open({
+    //         type: 2,
+    //         title:false,
+    //         area: ['800px','200px'],
+    //         content: "{:Url('admin/HscodeTariffSchedule/importExcelFile')}",
+    //         success: function(layero, index){
+    //             // var body = layer.getChildFrame('body', index);
+    //             // var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+    //         }
+    //     });
+    //     return false;
+    // }
+    $('#load').bind("click",function(){
+        layer.open({
+            type: 1,        //弹窗类型
+            title: false,   //显示标题
+            closeBtn: 1,     //是否显示关闭按钮
+            shadeClose: true, //显示模态窗口
+            area: ['390px', '189px'], //宽高
+            content: '<div class="col-sm-12" id="upload">\n' +
+                '        <div class="ibox float-e-margins">\n' +
+                '            <div class="ibox-content">\n' +
+                '                <div class="page-container">\n' +
+                '                    <button type="button" class="layui-btn" id="file2">\n' +
+                '                        <i class="layui-icon">&#xe67c;</i>请上传文件格式xlsx,最大上限1000条\n' +
+                '                    </button>\n' +
+                '                </div>\n' +
+                '            </div>\n' +
+                '        </div>\n' +
+                '</div>', //弹窗内容
+            cancel:function () {
+                window.location.reload();
+            }
+
+        });
+        var uploadInst = upload.render({
+            elem: '#file2' //绑定元素
+            ,accept:"file"
+            , url: '{:Url("admin/HscodeTariffSchedule/saveUploadExcelFile")}' //上传接口
+            ,data:{
+                code:function () {
+                    return $('#code').val();
+                }
+            }
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            , done: function (res) {
+                layer.closeAll('loading');
+                layer.alert(res.msg);
+                // if (res.code==0){
+                //     parent.layer.msg(res.message, {icon: 6});
+                // } else{
+                //     parent.layer.msg(res.message, {icon: 5});
+                // }
+            }
+            , error: function () {
+                //请求异常回调
+                parent.layer.msg('请求异常', {icon: 5});
+            }
+        });
+        form.render();
+        return false;
+    });
+</script>
+</html>
+

@@ -1,0 +1,367 @@
+{include file="common/header"}
+<style>
+    /**价格查询&包裹追踪**/
+    .index_query{width: 100%;height: 360px;border-radius: 30px;margin-top:180px;}
+    .index_query .hd{height:84px;}
+    .index_query .hd ul{padding:0 18px;}
+    .index_query .hd ul li{width: 50%;float:left;height:84px;line-height: 50px;padding-left: 12px;padding-top:20px;font-size: 18px;cursor: pointer;}
+    .index_query .hd ul li.on{border-bottom:rgb(186,33,38) solid 2px;}
+    .index_query .bd{margin-left:9px;margin-right: 9px;}
+
+    .index_query tr,td{padding:13px 5px;font-weight:500;color:#000;font-size: 13px;}
+    .index_query a{color:#F60;}
+    .index_query input{line-height:26px;border:#999 solid 1px;color:#666;padding:1px 3px;width:100%;}
+    .index_query .button{font-size: 16px;padding: 8px 35px;display: inline-block;line-height: 20px;transition: all 1s cubic-bezier(0.175,0.885,0.32,1) 0s;cursor: pointer;color:#FFF;}
+    .index_query .button:hover{background:#FFF;color:#000;}
+    .index_query .bd{margin-left:9px;margin-right: 9px;}
+    .index_query .bd .box{border-top:#333 solid 1px;}
+    .index_query .padding{display:none;}
+    .index_query .button.bg-blue{background:rgb(1,142,215);border-radius:30px;border:1px solid rgb(1,142,215);}
+
+    .dept_select{max-width:200px;}
+    .disf{display:flex;align-items: center;}
+    .line_content{width:100%;max-width:1200px;padding:20px;box-sizing: border-box;margin:0 auto;}
+    .example-popover{display: none;position: fixed;width:70%;height:70%;left:50%;top:50%;transform:translate(-50%,-50%);background:#eee;overflow:scroll;padding:10px 15px;box-sizing: border-box;}
+    @media screen and (min-width: 980px) and (max-width:1980px){
+        .line_content{margin-top:180px !important;}
+        .inner_container{overflow: unset !important;}
+    }
+    @media screen and (max-width: 768px){
+        .index_query{margin-top:100px;}
+        .line_content{max-width: 100%;}
+        .boxx{float: left;}
+    }
+    .back{background:#1790FF;width:fit-content;padding:8px 20px;box-sizing: border-box;border-radius: 15px;display: flex;align-items: center;margin-bottom:10px;cursor:pointer;}
+    .back .arrow{width:10px;height:10px;border-top:1px solid #fff;border-right:1px solid #fff;transform: rotate(226deg);}
+    .back span{margin-left:8px;}
+
+    .box_content .con_tit{font-size:18px;font-weight: 800;}
+    .box_content .item_line{display: flex;align-items: center;justify-content: space-between;margin-top:10px;}
+    .box_content .con_product{width:fit-content;display: inline-block;margin:15px 30px 0 0;}
+    .box_content .con_product div{display:inline-block;color:#fff;padding:0px 5px;box-sizing:border-box;border-radius: 5px;margin-right:2px;font-size:14px;}
+    /**text-decoration:underline;**/
+    .box_content .con_product span{cursor:pointer;text-decoration-color:#000;}
+    .box_content .true div{background:rgb(22,198,12);}
+    .box_content .false div{background:rgb(255,85,85);}
+
+    #table tbody tr td{padding:4px;}
+    .modal-backdrop{background:rgba(0,0,0,0.5);}
+</style>
+<div class="line_content" style="display: block;margin-top:65px;">
+    <div class="back" onclick="javascript:window.history.back(-1);"><div class="arrow"></div><span>返回上一页</span></div>
+    <div class="inner_container">
+        <div class="box_content">
+            <div class="con_tit">渠道信息</div>
+            <div class="item_line">
+                <div class="tit">渠道名称</div>
+                <div class="val">{$line['name']}</div>
+            </div>
+            <div class="item_line">
+                <div class="tit">渠道代码</div>
+                <div class="val">{$line['code']}</div>
+            </div>
+            <div class="item_line">
+                <div class="tit">预计时效(工作日)</div>
+                <div class="val">{$line['country_info']['sign_time']}</div>
+            </div>
+            {if $line['template_id']==11}
+                <div class="item_line">
+                    <div class="tit">基本邮费(元/千克)</div>
+                    <div class="val">￥{$line['country_info']['freight_cost']['base']}</div>
+                </div>
+                <div class="item_line">
+                    <div class="tit">挂号费(元/件)</div>
+                    <div class="val">￥{$line['country_info']['freight_cost']['opera']}</div>
+                </div>
+                <div class="item_line">
+                    <div class="tit">重量限制</div>
+                    <div class="val">{$line['country_info']['weight_strict']['lifting']}-{$line['country_info']['weight_strict']['weight_limit']}KG</div>
+                </div>
+            {/if}
+            {if $line['template_id']==1}
+                <div class="item_line">
+                    <div class="tit">运输方式</div>
+                    <div class="val">{$line['country_info']['transport_method']}</div>
+                </div>
+                {if !empty($line['country_info']['weight_advanced'])}
+                    <div class="item_line">
+                        <div class="tit">重量进阶</div>
+                        <div class="val">{$line['country_info']['weight_advanced']}</div>
+                    </div>
+                {/if}
+                {if !empty($line['country_info']['weight_strict']['large_weight'])}
+                    <div class="item_line">
+                        <div class="tit">重量限制</div>
+                        <div class="val">{$line['country_info']['weight_strict']['large_weight']}KG</div>
+                    </div>
+                {/if}
+                {if !empty($line['country_info']['weight_strict']['large_volumn_weight'])}
+                    <div class="item_line">
+                        <div class="tit">体积限制</div>
+                        <div class="val">{$line['country_info']['weight_strict']['large_volumn_weight']}cm³</div>
+                    </div>
+                {/if}
+                <table id="table" class="table table-hover table-bordered" style="white-space: nowrap;margin-top:10px;">
+                    <thead>
+                        <th>限重(KG)</th>
+                        <th>首重(元/KG)</th>
+                        <th>续重(元/KG)</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{$line['country_info']['freight_cost']['first_cost']['weight_interval']['sml']}-{$line['country_info']['freight_cost']['first_cost']['weight_interval']['big']}</td>
+                            <td>{$line['country_info']['freight_cost']['first_cost']['first_weight']}</td>
+                            <td>{$line['country_info']['freight_cost']['first_cost']['continue_weight']}</td>
+                        </tr>
+                        {if !empty($line['country_info']['freight_cost']['second_cost']['continue_weight'])}
+                            <tr>
+                                <td>{$line['country_info']['freight_cost']['second_cost']['weight_interval']['sml']}-{$line['country_info']['freight_cost']['second_cost']['weight_interval']['big']}</td>
+                                <td colspan="2">{$line['country_info']['freight_cost']['second_cost']['continue_weight']}</td>
+                            </tr>
+                        {/if}
+                        {if !empty($line['country_info']['freight_cost']['third_cost']['continue_weight'])}
+                            <tr>
+                                <td>{$line['country_info']['freight_cost']['third_cost']['weight_interval']['sml']}-{$line['country_info']['freight_cost']['third_cost']['weight_interval']['big']}</td>
+                                <td colspan="2">{$line['country_info']['freight_cost']['third_cost']['continue_weight']}</td>
+                            </tr>
+                        {/if}
+                        {volist name="line['country_info']['freight_cost']" key="k" id="vo"}
+                            {if ($k!=1 && $k!=2 && $k!=3)}
+                                <tr>
+                                    <td>{$vo['weight_interval']['sml']}-{$vo['weight_interval']['big']}</td>
+                                    <td colspan="2">{$vo['continue_weight']}</td>
+                                </tr>
+                            {/if}
+                        {/volist}
+                    </tbody>
+                </table>
+            {elseif($line['template_id']==2)}
+                {if !empty($line['country_info']['weight_advanced'])}
+                    <div class="item_line">
+                        <div class="tit">CBM进阶</div>
+                        <div class="val">{$line['country_info']['weight_advanced']}</div>
+                    </div>
+                {/if}
+                <table id="table" class="table table-hover table-bordered" style="white-space: nowrap;margin-top:10px;">
+                    <thead>
+                    <th>计费区间(CBM)</th>
+                    <th>费用(元/CBM)</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{$line['country_info']['freight_cost']['first_cost']['cubic_interval']['sml']}-{$line['country_info']['freight_cost']['first_cost']['cubic_interval']['big']}</td>
+                            <td>{$line['country_info']['freight_cost']['first_cost']['first_cubic']}</td>
+                        </tr>
+                        {if !empty($line['country_info']['freight_cost']['second_cost']['continue_weight'])}
+                        <tr>
+                            <td>{$line['country_info']['freight_cost']['second_cost']['cubic_interval']['sml']}-{$line['country_info']['freight_cost']['second_cost']['cubic_interval']['big']}</td>
+                            <td>{$line['country_info']['freight_cost']['second_cost']['continue_cubic']}</td>
+                        </tr>
+                        {/if}
+                        {if !empty($line['country_info']['freight_cost']['third_cost']['continue_weight'])}
+                        <tr>
+                            <td>{$line['country_info']['freight_cost']['third_cost']['cubic_interval']['sml']}-{$line['country_info']['freight_cost']['third_cost']['cubic_interval']['big']}</td>
+                            <td>{$line['country_info']['freight_cost']['third_cost']['continue_cubic']}</td>
+                        </tr>
+                        {/if}
+                        {volist name="line['country_info']['freight_cost']" key="k" id="vo"}
+                            {if ($k!=1 && $k!=2 && $k!=3)}
+                            <tr>
+                                <td>{$vo['cubic_interval']['sml']}-{$vo['cubic_interval']['big']}</td>
+                                <td colspan="2">{$vo['continue_cubic']}</td>
+                            </tr>
+                            {/if}
+                        {/volist}
+                    </tbody>
+                </table>
+            {/if}
+        </div>
+        <hr>
+        <div class="box_content">
+            <div class="con_tit">费用信息</div>
+            <div class="item_line">
+                <div class="tit">运费重量</div>
+                <div class="val">{$all_weight}KG</div>
+            </div>
+            {if !empty($all_volumn_weight)}
+                <div class="item_line">
+                    <div class="tit">体积重量</div>
+                    <div class="val">{$all_volumn_weight}KG</div>
+                </div>
+            {/if}
+            <div class="item_line">
+                <div class="tit">包裹体积</div>
+                <div class="val">{$all_area}CM³</div>
+            </div>
+            {if !empty($line['country_info']['volumn_weight'])}
+            <div class="item_line">
+                <div class="tit">体积重</div>
+                <div class="val">{$line['country_info']['volumn_weight']}</div>
+            </div>
+            {/if}
+            <div class="item_line">
+                <div class="tit">预估运费</div>
+                <div class="val" style="color:rgb(198,0,10);">￥<?php echo sprintf('%.2f',$total_money);?></div>
+            </div>
+            {if $line['template_id']!=2}
+            <div style="color:#ff2222;padding:5px 0;box-sizing: border-box;">*取实重与体积重较大值计算运费</div>
+            {/if}
+            <table id="table2" class="table table-hover table-bordered" style="white-space: nowrap;margin-top:10px;">
+                <thead>
+                <th>附加费信息</th>
+                <th>附加费详情</th>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>杂费项目</td>
+                    <td>
+                        {if $line['country_info']['sundry_fees']['sundry_name']!='请选择'}{$line['country_info']['sundry_fees']['sundry_name']}：{$line['country_info']['sundry_fees']['sundry_fee']}元{else}-{/if}
+                    </td>
+                </tr>
+                <tr>
+                    <td>超尺寸附加</td>
+                    <td>
+                        {if !empty($line['country_info']['oversize_cost']['single_size'])}单边尺寸超{$line['country_info']['oversize_cost']['single_size']}，加收{$line['country_info']['oversize_cost']['surcharge']}元/票<br>{/if}
+                        {if !empty($line['country_info']['oversize_cost']['no_surcharge'])}其他不合规尺寸附加费/公斤（材积重），加收{$line['country_info']['oversize_cost']['no_surcharge']}元/票{/if}
+
+                        {if empty($line['country_info']['oversize_cost']['single_size']) && empty($line['country_info']['oversize_cost']['no_surcharge'])}-{/if}
+                    </td>
+                </tr>
+                <tr>
+                    <td>超重附加</td>
+                    <td>
+                        {if !empty($line['country_info']['overweight_cost']['true_weight'])}实际重{$line['country_info']['overweight_cost']['true_weight']}kg，加收{$line['country_info']['overweight_cost']['surcharge']}元{else}-{/if}
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <hr>
+        <div class="box_content">
+            <div class="con_tit">其它限制</div>
+            <table id="table3" class="table table-hover table-bordered" style="white-space: nowrap;margin-top:10px;">
+                <thead>
+                <th>限制条件</th>
+                <th>限制详情</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>尺寸限制</td>
+                        <td>
+                            {if !empty($line['country_info']['size_strict']['unilateral'])}单边长度{$line['country_info']['size_strict']['unilateral']}cm<br>{/if}
+                            {if !empty($line['country_info']['size_strict']['multilateral_sum'])}多边总和{$line['country_info']['size_strict']['multilateral_sum']}cm<br>{/if}
+                            {if !empty($line['country_info']['size_strict']['multilateral_mul'])}多边总乘{$line['country_info']['size_strict']['multilateral_mul']}cm<br>{/if}
+                            {if !empty($line['country_info']['size_strict']['limit1'])}直径的两倍加上长度之和{$line['country_info']['size_strict']['limit1']}cm<br>{/if}
+                            {if !empty($line['country_info']['size_strict']['limit2'])}长度+2乘以宽+2乘以高{$line['country_info']['size_strict']['limit2']}cm<br>{/if}
+                            {if !empty($line['country_info']['size_strict']['long'])}长度{$line['country_info']['size_strict']['long']}cm<br>{/if}
+                            {if !empty($line['country_info']['size_strict']['width'])}宽度{$line['country_info']['size_strict']['width']}cm<br>{/if}
+                            {if !empty($line['country_info']['size_strict']['height'])}高度{$line['country_info']['size_strict']['height']}cm<br>{/if}
+                            {if !empty($line['country_info']['size_strict']['limit3'])}长+(宽+高)*2{$line['country_info']['size_strict']['limit3']}cm<br>{/if}
+                            {if !empty($line['country_info']['size_strict']['limit4'])}表面尺码总乘{$line['country_info']['size_strict']['limit4']}cm{/if}
+
+                            {if empty($line['country_info']['size_strict']['unilateral']) && empty($line['country_info']['size_strict']['multilateral_sum']) && empty($line['country_info']['size_strict']['multilateral_mul']) && empty($line['country_info']['size_strict']['limit1']) && empty($line['country_info']['size_strict']['limit2']) && empty($line['country_info']['size_strict']['long']) && empty($line['country_info']['size_strict']['width']) && empty($line['country_info']['size_strict']['height']) && empty($line['country_info']['size_strict']['limit3']) && empty($line['country_info']['size_strict']['limit4'])}-{/if}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>单票品名限制</td>
+                        <td>
+                            {if !empty($line['country_info']['proname_strict']['no_exceed'])}品名数量不超过{$line['country_info']['proname_strict']['no_exceed']}个<br>{/if}
+                            {if !empty($line['country_info']['proname_strict']['exceed'])}超{$line['country_info']['proname_strict']['exceed'][0]}个品名(≥)，加收{$line['country_info']['proname_strict']['exceed'][1]}元 /个{/if}
+
+                            {if empty($line['country_info']['proname_strict']['no_exceed']) && empty($line['country_info']['proname_strict']['exceed'])}-{/if}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>申报价值限制</td>
+                        <td>
+                            {if !empty($line['country_info']['declare_strict']['totalmoney'])}单票申报值不超过{$line['country_info']['declare_strict']['totalmoney']}({$line['country_info']['declare_strict']['currency']}){else}-{/if}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <hr>
+        <div class="box_content">
+            <div class="con_tit">物品类型</div>
+            <div style="margin-top:10px;">
+<!--                $line['accept_product']-->
+                {volist name="goods_value" id="vo"}
+                    {if isset($vo['is_selected'])}
+                    <div class="true con_product" onclick="javascript:introduce({$vo.id});"><div>√</div><span>{$vo.name}</span></div>
+                    {else}
+                        <div class="false con_product" onclick="javascript:introduce({$vo.id});"><div>×</div><span>{$vo.name}</span></div>
+                    {/if}
+                {/volist}
+            </div>
+        </div>
+        <hr>
+        <div class="box_content">
+            <div class="con_tit">渠道详情</div>
+            <div class="detail" style="margin-top:10px;word-break: break-all;">
+                {volist name="line['detail_content']" id="vo"}
+                    <span style="font-size:15px;">{$vo}</span><br/>
+                {/volist}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="exampleModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">title</h5>
+                <!--                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+            </div>
+            <div class="modal-body" style="height:450px;overflow: scroll;">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                <!--                    <button type="button" class="btn btn-primary">Save changes</button>-->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('.btn-secondary').click(function(){
+        $('#exampleModal').hide();
+    });
+
+    function introduce(id){
+        let goods_item = id;
+        $.ajax({
+            url: "/collect_website/public/?s=index/introduce",
+            data: {
+                'code': goods_item,
+                'wid': "<?php echo session('wid');?>"
+            },
+            type: 'post',
+            cache: false,
+            dataType: 'json',
+            success: function (data) {
+                if (data.code == 0) {
+                    let html = '<div>' +
+                        '    <h4>-属性说明</h4>'+
+                        '    <div style="margin-top:7px;padding:0 10px;box-sizing: border-box;">'+data.data.desc+'</div>'+
+                        '</div>';
+                        // '<div style="margin-top:10px;">' +
+                        // '    <h4>-常见品名</h4>'+
+                        // '    <div style="margin-top:7px;padding:0 10px;box-sizing: border-box;">'+data.data.names+'</div>'+
+                        // '</div>';
+                    $('.modal-body').html(html);
+                    $('#exampleModalLabel').html(data.data.name);
+                    $('#exampleModal').show();
+                    // $('.example-popover').show();
+                    // $('.example-popover').popover('show');
+                    // $('[data-toggle="popover"]').popover();
+                }
+            }
+        });
+    }
+
+</script>
+<script src="https://www.bootstrap.cn/static/bootstrap5/js/bootstrap.bundle.min.js"></script>
+{include file="common/footer"}
+

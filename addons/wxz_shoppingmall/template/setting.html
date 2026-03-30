@@ -1,0 +1,393 @@
+{template 'common/header'}
+<script>
+    require(['jquery', 'util', 'datetimepicker'], function ($, u) {
+        //完善资料送积分设置
+        $(".credit_reg2_credit2").change(function () {
+            var checked = $(this).is(":checked");
+            if (checked) {
+                $(".credit_reg2_credit_coupon_id_group").show();
+            } else {
+                $(".credit_reg2_credit_coupon_id_group").hide();
+            }
+        })
+
+        //完善资料送积分设置
+        $(".credit_reg2_credit1").change(function () {
+            var checked = $(this).is(":checked");
+            if (checked) {
+                $(".credit_reg2_credit_num_group").show();
+            } else {
+                $(".credit_reg2_credit_num_group").hide();
+            }
+        });
+
+        //停车场设置
+        $(".park_pay_type").change(function () {
+            var park_pay_type = $(this).val();
+            switch (park_pay_type) {
+                case '1':
+                    //按次
+                    $('.park_pay_type_count_credit_group').show();
+                    $(".park_pay_type_time_credit_group").hide();
+                    $(".park_pay_type_discount_group").hide();
+                    break;
+                case '2':
+                    //按时
+                    $(".park_pay_type_count_credit_group").hide();
+                    $(".park_pay_type_time_credit_group").show();
+                    $(".park_pay_type_discount_group").hide();
+                    break;
+                case '3':
+                    //微信支付
+                    $(".park_pay_type_count_credit_group").hide();
+                    $(".park_pay_type_time_credit_group").hide();
+                    $(".park_pay_type_discount_group").show();
+                    break;
+            }
+        });
+
+        //强制关注
+        $(".force_follow").change(function () {
+            var checked = $(this).is(":checked");
+            if (checked) {
+                $(".force_follow_div").show();
+            } else {
+                $(".force_follow_div").hide();
+            }
+        });
+
+        //从何时注册的新会员送优惠券
+        $('.reg2_credit_coupon_start_date').datetimepicker({
+            format: 'Y-m-d H:s',
+            language: 'zh-CN',
+            pickDate: false,
+            pickTime: false,
+            hourStep: 1,
+            autoclose: true,
+            inputMask: true,
+            minView: "month",
+        });
+        $('.reg2_credit_coupon_end_date').datetimepicker({
+            format: 'Y-m-d H:s',
+            language: 'zh-CN',
+            pickDate: false,
+            pickTime: false,
+            hourStep: 1,
+            autoclose: true,
+            inputMask: true,
+            minView: "month",
+        });
+    });
+</script>
+<div class="clearfix">
+    <form id="theform" class="form form-horizontal" action="" method="post">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                参数设置
+            </div>
+            <div class="panel-body">
+                <div class="panel-heading">
+                    系统导航
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">会员卡首页</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            {$_W['siteroot']}app/index.php?i={$_W['uniacid']}&c=entry&do=index&m={$_GPC['m']}
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">商户版首页</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            {$_W['siteroot']}app/index.php?i={$_W['uniacid']}&c=entry&do=index2&m={$_GPC['m']}
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">用户注册</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            {$_W['siteroot']}app/index.php?i={$_W['uniacid']}&c=entry&do=reg&m={$_GPC['m']}
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">用户完善资料</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            {$_W['siteroot']}app/index.php?i={$_W['uniacid']}&c=entry&do=reg2&m={$_GPC['m']}
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">商户列表</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            {$_W['siteroot']}app/index.php?i={$_W['uniacid']}&c=entry&do=shop_list&m={$_GPC['m']}
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">商户活动列表</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            {$_W['siteroot']}app/index.php?i={$_W['uniacid']}&c=entry&do=shop_activity_list&m={$_GPC['m']}
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">积分商城</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            {$_W['siteroot']}app/index.php?i={$_W['uniacid']}&c=entry&do=award_list&m={$_GPC['m']}
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">积分转赠</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            {$_W['siteroot']}app/index.php?i={$_W['uniacid']}&c=entry&do=credit_pass&m={$_GPC['m']}
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">我的消息</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            {$_W['siteroot']}app/index.php?i={$_W['uniacid']}&c=entry&do=user_msg&m={$_GPC['m']}
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">已兑换商品</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            {$_W['siteroot']}app/index.php?i={$_W['uniacid']}&c=entry&do=user_award_list_credit&m={$_GPC['m']}
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">已兑换优惠券</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            {$_W['siteroot']}app/index.php?i={$_W['uniacid']}&c=entry&do=user_award_list_coupon&m={$_GPC['m']}
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">小票上传记录</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            {$_W['siteroot']}app/index.php?i={$_W['uniacid']}&c=entry&do=user_ticket&m={$_GPC['m']}
+                        </span>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">拍摄小票</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            {$_W['siteroot']}app/index.php?i={$_W['uniacid']}&c=entry&do=user_upLoad_ticket&m={$_GPC['m']}
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">停车场入口</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            {$_W['siteroot']}app/index.php?i={$_W['uniacid']}&c=entry&do=park_pay&m={$_GPC['m']}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">用户充值入口</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            {$_W['siteroot']}app/index.php?i={$_W['uniacid']}&c=entry&do=recharge&m={$_GPC['m']}
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">用户缴费入口</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            {$_W['siteroot']}app/index.php?i={$_W['uniacid']}&c=entry&do=pay&m={$_GPC['m']}
+                        </span>
+                    </div>
+                </div>
+                
+                <br/>
+                <div class="panel-heading">
+                    系统参数
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">购物中心名称</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            <input type="text" id="scan_title" class="form-control span7" placeholder="" name="name" value="{$settings['name']}">
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">系统logo</label>
+                    <div class="col-sm-9 col-xs-12">
+                        {php echo tpl_form_field_image('logo_system',$settings['logo_system'])}
+                        <span>推荐尺寸(360x60)</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">购物中心logo</label>
+                    <div class="col-sm-9 col-xs-12">
+                        {php echo tpl_form_field_image('logo_buy',$settings['logo_buy'])}
+                        <span>推荐尺寸(360x60)</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">远程附件地址</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            <input type="text" value="{$settings['attach_url']}" name="attach_url" class="form-control attach_url"/>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">强制关注</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            <input type="checkbox" value="1" name="force_follow" class="force_follow" {if $settings['force_follow']==1 }checked="checked"{/if}/>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group force_follow_div" {if $settings['force_follow']!=1 }style="display:none"{/if}>
+                     <label class="col-xs-12 col-sm-3 col-md-2 control-label">引导关注链接</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            <input type="text" id="scan_title" class="form-control span7" placeholder="" name="force_follow_url" value="{$settings['force_follow_url']}">
+                        </span>
+                    </div>
+                </div>
+
+                <div class="panel-heading">
+                    短信接口配置（系统采用阿里大鱼通信接口）
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">appkey</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            <input placeholder="例: 24563183" type="text" id="scan_title" class="form-control span7" name="sms_appkey" value="{$settings['sms_appkey']}">
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">appSecret</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            <input placeholder="例: 37d120df9994a14d61e398ef383e4e63" type="text" id="scan_title" class="form-control span7" placeholder="" name="sms_appSecret" value="{$settings['sms_appSecret']}">
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">短信模版</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            <input type="text" placeholder="例: SMS_33485827" id="scan_title" class="form-control span7"  name="sms_tpl" value="{$settings['sms_tpl']}">
+                        </span>
+                        <em>大鱼后台短信内容配置: 验证码：${verify_code};，请在10分钟内完成验证。</em>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">短信签名</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            <input type="text" placeholder="例: 签名测试" id="scan_title" class="form-control span7"  name="sms_sign" value="{$settings['sms_sign']}">
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">用户最大每天发送短信次数（默认三次）</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            <input type="text"  id="scan_title" class="form-control span7"  name="sms_max_send_msg_num" value="{$settings['sms_max_send_msg_num']}">
+                        </span>
+                    </div>
+                </div>
+
+                <div class="panel-heading">
+                    会员相关
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">会员等级(,号隔开)</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            <input type="text" id="scan_title" class="form-control span7" placeholder="" name="fans_levels" value="{$settings['fans_levels']}">
+                        </span>
+                    </div>
+                </div>
+
+                <div class="panel-heading">
+                    积分配置
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">会员生日积分倍数</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            <input type="text" id="scan_title" class="form-control span7" placeholder="" name="credit_birth_credit" value="{$settings['credit_birth_credit']}">
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">完善资料赠送</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            积分: <input type="checkbox" value="1" name="credit_reg2_credit[]" class="credit_reg2_credit1" {if in_array(1,(array)$settings['credit_reg2_credit'])}checked="checked"{/if}/>
+                                       优惠券:<input type="checkbox" value="2" name="credit_reg2_credit[]" class="credit_reg2_credit2" {if in_array(2,(array)$settings['credit_reg2_credit'])}checked="checked"{/if}/>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group credit_reg2_credit_num_group"  {if !in_array(1,(array)$settings['credit_reg2_credit'])}style="display:none"{/if}>
+                     <label class="col-xs-12 col-sm-3 col-md-2 control-label">积分数量</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            <input type="text" id="scan_title" class="form-control span7" placeholder="" name="credit_reg2_credit_num" value="{$settings['credit_reg2_credit_num']}">
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group credit_reg2_credit_coupon_id_group"  {if !in_array(2,(array)$settings['credit_reg2_credit'])}style="display:none"{/if}>
+                     <label class="col-xs-12 col-sm-3 col-md-2 control-label">优惠券ID</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            <input type="text" id="scan_title" class="form-control span7" placeholder="" name="credit_reg2_credit_coupon_id" value="{$settings['credit_reg2_credit_coupon_id']}">
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group reg2_credit_coupon_date_group"  {if !in_array(2,(array)$settings['credit_reg2_credit'])}style="display:none"{/if}>
+                     <label class="col-xs-12 col-sm-3 col-md-2 control-label">从何时注册的新会员送优惠券</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <div style="float: left;">
+                            <input type="text" id="scan_title" class="form-control reg2_credit_coupon_start_date" style="width:150px;" placeholder="" name="reg2_credit_coupon_start_date" value="{$settings['reg2_credit_coupon_start_date']}">
+                        </div>
+                        <div style="margin-left: 10px;float: left;">
+                            <input type="text" id="scan_title" class="form-control reg2_credit_coupon_end_date" style="width:150px;" placeholder="" name="reg2_credit_coupon_end_date" value="{$settings['reg2_credit_coupon_end_date']}">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 80px;">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
+                    <div class="col-md-2 col-lg-1">
+                        <input name="submit" type="submit" value="保存" class="btn btn-primary btn-block" />
+                        <input type="hidden" name="token" value="{$_W['token']}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{template 'common/footer'}

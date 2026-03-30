@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8"> 
+    <title>会员注册</title>
+    <meta name="keywords" content=""> 
+    <meta name="description" content="" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"  content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta content="telephone=no" name="format-detection">
+    <link rel="stylesheet" type="text/css" href="{$modulePublic}skin2016/css/frozen.css" />
+    <link rel="stylesheet" type="text/css" href="{$modulePublic}skin2016/css/register.css" />
+    <link rel="stylesheet" type="text/css" href="{$modulePublic}skin2016/css/base.css" />
+</head>
+<body>
+    <header>
+        {if $pageContents[7]['img']}
+        <img src="{php echo $attach_url . '/'.$pageContents[7]['img']}" />
+        {else}
+        <img src="{$modulePublic}skin2016/img/top.png" />
+        {/if}
+    </header> 
+    <section>
+        <p class="ui-font-purple ui-font-form-t">验证身份信息</p>
+        <div class="ui-form ui-border-t">
+            <form action="" method="post" id="form" >
+                <div class="ui-form-item ui-border-b">
+                    <label>
+                        <img src="{$modulePublic}skin2016/img/icon-ren.png" class="ui-icon-img" />姓名
+                    </label>
+                    <input type="text"  name="username" value=""  placeholder="请输入姓名" >
+                    <a href="#" class="ui-icon-close"></a>
+                </div><div class="hint"></div>
+                <div class="ui-form-item ui-border-b">
+                    <label>
+                        <img src="{$modulePublic}skin2016/img/icon-mob.png" class="ui-icon-img" />手机号
+                    </label>
+                    <input type="text" name="mobile" value=""  placeholder="请输入手机号" >
+                    <a href="#" class="ui-icon-close"></a>
+                </div><div class="hint"></div>
+                <div class="ui-form-item ui-border-b">
+                    <label>
+                        <img src="{$modulePublic}skin2016/img/icon-mob.png" class="ui-icon-img" />手机号验证码
+                    </label>
+                    <input type="text" name="verify_code" value=""  style="width:60%;" placeholder="请输入手机号验证码" >
+                    <input type="button" value="获取验证码" style="width:30%;padding-left: 5px;" id="timer"/>
+                    <a href="#" class="ui-icon-close"></a>
+                </div><div class="hint"></div>
+                <div class="ui-btn-wrap">
+                    <button type="button" id="but" onclick="return checkfrom()" class="ui-btn-lg ui-btn-primary ui-bgcolor-purple">
+                        下一步
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+    <!--<script type="text/javascript" src="{$modulePublic}skin2016/lib/zepto.min.js"></script>
+    <script type="text/javascript" src="{$modulePublic}skin2016/js/frozen.js"></script>-->
+    <script src="{$modulePublic}skin2016/js/jquery.min.js"></script>
+    <script src="{$modulePublic}skin2016/js/layer.m.js"></script>
+    <script>
+                        //短信验证码
+                        var time = function (obj) {
+                            if (wait == 0) {
+                                obj.removeAttr("disabled");
+                                obj.val("获取验证码");
+                                wait = 60;
+                            } else {
+                                obj.attr("disabled", true);
+                                obj.val("重新发送(" + wait + ")");
+                                wait--;
+                                setTimeout(function () {
+                                    time(obj);
+                                }, 1000);
+                            }
+                        }
+
+                        $("#timer").click(function () {
+                            wait = 60;
+                            var mobile = $('input[name="mobile"]').val();
+                            var pars = {};
+                            if (!mobile) {
+                                alert("请填写手机号");
+                                return;
+                            }
+                            if (mobile == '' || !(/^1\d{10}$/).test(mobile)) {
+                                msg = '请输入有效的手机号码';
+                                alert(msg);
+                                return;
+                            }
+                            pars.mobile = mobile;
+                            $.post('{php echo $this->createMobileUrl("ajax",array("sdo"=>"mobile_code"))}', pars).success(function (dat) {
+                                if (dat == 'ok') {
+                                    time($("#timer"));
+                                } else {
+                                    alert(dat);
+                                }
+                            });
+                        })
+
+                        function loading() {
+                            layer.open({
+                                type: 2,
+                                content: '加载中...',
+                                shadeClose: false
+                            });
+                        }
+                        function alert(msg) {
+                            layer.open({
+                                content: msg,
+                                style: 'background-color:#09C1FF; color:#fff; border:none;text-align:center',
+                                time: 2
+                            });
+                        }
+
+                        //表单验证
+                        function checkfrom() {
+                            var username = $('input[name="username"]').val();
+                            var mobile = $('input[name="mobile"]').val();
+                            var verify_code = $('input[name="verify_code"]').val();
+//                            var mobileReg = /^0?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/;
+                            var mobileReg = /^1\d{10}$/;
+
+                            if (username == '') {
+                                layer.open({
+                                    content: '姓名不能为空',
+                                    btn: ['确定']
+                                });
+                                return false;
+                            }
+
+                            if (mobile == '') {
+                                layer.open({
+                                    content: '手机号码不能为空',
+                                    btn: ['确定']
+                                });
+                                return false;
+                            }
+                            if (mobileReg.test(mobile) == false) {
+                                layer.open({
+                                    content: '手机号码格式不正确',
+                                    btn: ['确定']
+                                });
+                                return false;
+                            }
+
+                            if (!verify_code) {
+                                layer.open({
+                                    content: '手机验证码不能为空',
+                                    btn: ['确定']
+                                });
+                                return false;
+                            }
+
+                            loading();
+                            $.post("{php echo $this->createMobileUrl('ajax',array('sdo'=>'regmsg'))}", {"username": username, "mobile": mobile, "verify_code": verify_code}, function (msg) {
+                                layer.closeAll();
+                                alert(msg.error_msg);
+                                var status = msg.error_code;
+                                var url = "{php echo $this->createMobileUrl('reg2')}";
+                                switch (status) {
+                                    case 1: // 新会员注册
+                                        window.location.href = url;
+                                        break;
+                                    case 2: // 实体会员绑定
+                                        layer.open({
+                                            content: '已经注册，只需绑定资料即可',
+                                            shadeClose: false,
+                                            btn: ['绑定资料'],
+                                            yes: function (index) {
+                                                window.location.href = url;
+                                                layer.close(index)
+                                            }
+                                        });
+                                        break;
+                                    case 3: //已经注册并且绑定资料，跳转到首页
+                                        window.location.href = "{php echo $this->createMobileUrl('index')}";
+                                        break;
+                                    case 0:
+                                        layer.open({
+                                            content: msg.error_msg,
+                                            btn: ['确定']
+                                        });
+                                        break;
+                                }
+                                /* if(msg.status){
+                                 var uniacid = "4";
+                                 layer.msg(msg.msg, 2, -1);
+                                 setTimeout("location.href='http://wx.cnsaga.com/app/index.php?i="+uniacid+"&c=entry&eid=1&wxref=mp.weixin.qq.com#wechat_redirect';",2000);
+                                 }else{
+                                 layer.msg(msg.msg, 2, -1);
+                                 }*/
+                            }, 'json');
+                            //            $('#form').submit();
+
+                        }
+    </script>
+    {template 'share'}
+</body>
+</html>

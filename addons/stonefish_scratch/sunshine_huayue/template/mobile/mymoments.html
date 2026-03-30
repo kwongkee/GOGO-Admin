@@ -1,0 +1,169 @@
+{template 'header'}
+	<div class="ui-container">
+		<div class="weui_panel weui_panel_access">	
+			{if !$list}
+			<h1 style="margin-top:100px;text-align:center;color:grey"><span class='fa fa-cab'></span>还没有添加动态~^^</h1>
+			{else}
+			<div class="weui_panel_bd" id="list_container">
+				{loop $list $item}
+				<div href="javascript:void(0)" class="weui_media_box weui_media_appmsg" style="-webkit-align-items:flex-start" id="moments_{$item['id']}" onclick="window.location.href='{php echo $this->createMobileUrl('momentdetail',array('mid'=>$item['id']))}'">
+					<div class="weui_media_hd">
+						<img class="weui_media_appmsg_thumb" src="{$uinfo['headimgurl']}">
+					</div>
+					<!-- <div class="weui_media_hd" style="width:60px;height:60px;line-height:20px;">
+						<h1 style="font-weight:bold">{$item['add_time']['year']}</h1>
+						<h1 style="font-weight:bold">{$item['add_time']['month']}</h1>
+					</div>  -->
+					<div class="weui_media_bd" >
+						<div  style="margin-bottom:5px;padding-bottom:5px;color:grey;">
+						{$uinfo['nickname']}
+						<span style="float:right;">{$item['add_time']}</span>
+						</div>
+						<h4>{$item['remark']}</h4>
+						<br>
+						<ul class="weui_uploader_files" style="overflow:hidden;">
+							{loop $item['albums'] $p}
+							<li class="weui_uploader_file" onclick="watchPic('{$p['img_url']}')">
+								<a href="javascript:void(0)">
+									<img src="{$p['img_url']}">
+								</a>
+							</li>
+							{/loop}
+						</ul>
+						<div style="color:grey;">
+							{if $page_type == 'self'}
+							<div onclick="doDelete('{$item['id']}')" style="display:inline-block;">删除</div>
+							{/if}
+							<div style="display:inline-block;float:right"><span class="fa fa-comment"></span>&nbsp;{$item['comment_count']}</div>
+						</div>
+					</div>
+				</div>
+				{/loop}
+				<script type="text/javascript">
+				var albumslist = [
+				 <?php 
+				 // -- php
+				 $picurls = array();
+				 foreach($list as $item)
+				 {
+				 	foreach($item['albums'] as $p) 
+				 	{
+				 			$picurls[] = "'".$p['img_url']."'";
+				 	}
+				 }
+				 echo join(',',$picurls);
+				 ?>
+				 ];
+				 </script>
+			</div>
+			{/if}
+		</div>
+		<div class="ui-loading-wrap" id="loading_more_layer" style="background-color:white;font-size:12px;display:none">
+		    <p>加载中...</p>
+		    <i class="ui-loading"></i>
+		</div>
+		<div id='bottom_sign'></div>
+	</div>
+	<script type="text/javascript">
+		// init page
+		var page = 2;
+		var load_key = true;
+		window.onscroll = function() {
+			var div_top = $("#bottom_sign").offset().top;
+			var scroll_top = $("body").scrollTop();
+			var window_height = $(window).height();
+
+			if(div_top - scroll_top <= window_height && load_key)
+			{
+				listload();
+			}
+		}
+		function listload() {
+			load_key = false;
+			$("#loading_more_layer").show();
+
+			$.ajax({
+				type:'post',
+				data:{'page':page,'user_openid':'{php echo $openid}'},
+				url : "{php echo $this->createMobileUrl('loadMomentList');}",
+				success :function(d) {
+				
+					if(d.res == '100') {
+						var html = '';
+						for(var i in d.list) {
+							html += '<div href="javascript:void(0)" class="weui_media_box weui_media_appmsg" style="-webkit-align-items:flex-start" onclick="window.location.href=\'{php echo $this->createMobileUrl('momentdetail')}&mid='+d.list[i].id+'\'">';
+							// html += '<div class="weui_media_hd" style="width:60px;height:60px;line-height:20px;">';
+							// html += '<h1 style="font-weight:bold">'+d.list[i].add_time.year+'</h1>';
+							// html += '<h1 style="font-weight:bold">'+d.list[i].add_time.month+'</h1>';
+							// html += '</div> ';
+							html += '<div class="weui_media_hd">';
+							html += '<img class="weui_media_appmsg_thumb" src="{php echo $uinfo['headimgurl']}">';
+							html += '</div>';
+							html += '<div class="weui_media_bd">';
+							html += '<div  style="margin-bottom:5px;padding-bottom:5px;color:grey;">{php echo $uinfo['nickname']}';
+							html += '<span style="float:right;">'+d.list[i].add_time+'</span>';
+							html += '</div>';
+							html += '<p style="margin-bottom:5px;">'+d.list[i].remark+'</p>';
+							html += '<ul class="weui_uploader_files" style="overflow:hidden;">';
+							for(var n in d.list[i].albums) {
+								html += '<li class="weui_uploader_file" onclick="watchPic(\''+d.list[i].albums[n].img_url+'\')">';
+								html += '<a href="javascript:void(0)">';
+								html += '<img src="'+d.list[i].albums[n].img_url+'">';
+								html += '</a>';
+								html += '</li>';
+
+								albumslist.push(d.list[i].albums[n].img_url);
+							}
+
+							html += '</ul>';
+							html += '<div style="color:grey;">'
+							if('{php echo $page_type}' == 'self') {
+								html += '<div onclick="doDelete('+d.list[i].id+')" style="display:inline-block;">删除</div>';	
+							}
+							html += '<div style="display:inline-block;float:right"><span class="fa fa-comment"></span>&nbsp;'+d.list[i].comment_count+'</div>';
+							html += '</div>';
+							html += '</div>';
+							html += '</div>';
+						}
+
+						$("#list_container").append(html);
+						page ++;
+						// loading 
+						load_key = true;
+					}
+					
+					$("#loading_more_layer").hide();
+				}
+			})
+		};
+
+		function doDelete(id) {
+			if(!id) {
+				return false;
+			}
+			if(!confirm('确认删除?'))
+			{
+				return false;
+			}
+			$.ajax({
+				type:'post',
+				data:{'mid':id},
+				url : "{php echo $this->createMobileUrl('mymomentsdelete');}",
+				success :function(d) {
+					if(d.res == '100') {
+						$("#moments_"+id).remove();
+					}else {
+						alert(d.msg);
+					}
+				}
+			})
+		}
+
+		function watchPic(url) {
+				wx.previewImage({
+					current:url,
+					 urls:albumslist
+				})
+			}
+	</script>
+{template 'footer'}

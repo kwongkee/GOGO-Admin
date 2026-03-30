@@ -1,0 +1,351 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/header', TEMPLATE_INCLUDEPATH)) : (include template('common/header', TEMPLATE_INCLUDEPATH));?>
+<!--<title>自定义收款</title>-->
+<style type="text/css">
+    body {margin:0px; background:#efefef; font-family:'微软雅黑'; -moz-appearance:none;}
+    .info_main {height:auto;  background:#fff; margin-top:14px; border-bottom:1px solid #e8e8e8; border-top:1px solid #e8e8e8;}
+    .info_main .line {margin:0 10px; height:40px; border-bottom:1px solid #e8e8e8; line-height:40px; color:#999;font-size:15px;}
+    .info_main .line .title {height:40px; width:80px; line-height:40px; color:#444; float:left; font-size:15px;}
+    .info_main .line .info { width:100%;float:right;margin-left:-80px; overflow: auto;white-space: nowrap;}
+    .info_main .line .inner { margin-left:80px; }
+    .info_main .line .inner input {height:39px; width:100%;display:block; padding:0px; margin:0px; border:0px; float:left; font-size:14px;}
+    .info_main .line .inner .user_sex {line-height:40px;}
+    .info_sub {height:44px; margin:14px 5px; background:#1E9FFF !important; border-radius:4px; text-align:center; font-size:16px; line-height:44px; color:#fff;}
+    .select { border:1px solid #ccc;height:25px;}
+    .disf{display:flex;}
+    /**合同文件**/
+    .info_main .images {/**display:inline-block;float:left;**/ width:fit-content;max-width:90%;height:38px;white-space:nowrap;overflow-x:scroll; }
+    .info_main .images .img { display:inline-block;/**float:left;**/ position:relative;width:30px;height:30px;border:1px solid #e9e9e9;margin-right:5px;margin-top:5px;}
+    .info_main .images .img img { position:absolute;top:0; width:100%;height:100%;}
+    .info_main .images .img .minus { position:absolute;color:red;width:8px;height:12px;top:-18px;right:-1px;}
+    .info_main .plus { /**float:left;display:inline-block;**/ width:30px;height:30px;border:1px solid #e9e9e9; color:#dedede;; font-size:18px;line-height:30px;text-align:center;margin-top:2px;}
+    .info_main .plus i { left:7px;top:7px;}
+
+    .bigautocomplete-layout{background:#fff;position:absolute;height: 200px;overflow: scroll;border:1px solid #000;}
+    .bigautocomplete-layout table tr td div{height: 30px;line-height: 30px;}
+    button, input, optgroup, select, textarea{font:unset !important;color:black !important;line-height:1.5 !important;}
+    .sel{box-sizing: border-box;padding: 4px 10px;font-size: 14px;color: #fff;background: #1E9FFF;text-align:center;width: fit-content;margin: 0 auto;}
+    a{text-decoration: none;text-underline: none;}
+</style>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.core-2.5.2.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.core-2.5.2-zh.js" type="text/javascript"></script>
+<link href="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.core-2.5.2.css" rel="stylesheet" type="text/css" />
+<link href="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.animation-2.5.2.css" rel="stylesheet" type="text/css" />
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.datetime-2.5.1.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.datetime-2.5.1-zh.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.android-ics-2.5.2.js" type="text/javascript"></script>
+<link href="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.android-ics-2.5.2.css" rel="stylesheet" type="text/css" />
+
+<link href="../addons/sz_yi/template/mobile/default/static/js/star-rating.css" media="all" rel="stylesheet" type="text/css"/>
+<script src="../addons/sz_yi/template/mobile/default/static/js/star-rating.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/ajaxfileupload.js" type="text/javascript"></script>
+
+<!--<link rel="stylesheet" href="../addons/sz_yi/static/css/layui.css">-->
+<script src="../addons/sz_yi/static/js/jquery.bigautocomplete.js"></script>
+<link type="text/css" rel="stylesheet" href="../addons/sz_yi/template/pc/default/static/css/bootstrap.min.css" />
+
+<div id="container">
+    <div class="page_topbar">
+        <div class="title">账单登记</div>
+    </div>
+    <div class="info_main">
+        <!--对账单提交-->
+        <div class="bill_info">
+            <div class="line"><div class="title" style="background:#fff;z-index:99;">账户类型</div><div class="info"><div class="inner" style="z-index:98;">
+                <span class="bill_account_type" data-val="1"><i class="fa fa-circle-o"></i> 企业账户</span>&nbsp;&nbsp;
+                <span class="bill_account_type" data-val="2"><i class="fa fa-circle-o"></i> 个人账户</span>&nbsp;&nbsp;
+                <span class="bill_account_type" data-val="3"><i class="fa fa-circle-o"></i> 支付账户</span>
+                <input type="text" name="bill_account_type" id="bill_account_type" value="" style="display: none;">
+            </div></div></div>
+            <div class="line bill_account_id">
+                <div class="title">银行账户</div><div class='info'><div class='inner'>
+                <select name="bill_account_id" id="bill_account_id">
+                    <option value="">请选择账户</option>
+                </select>
+            </div></div>
+            </div>
+            <div class="line"><div class="title">对账日期</div><div class='info'><div class='inner'>
+                <div class="disf" style="align-items: center;">
+                    <input type="text" id="bill_startDate" placeholder="启始日期" readonly="" value="" style="text-align: center;height:38px;">—<input type="text" id="bill_endDate" placeholder="截止日期" readonly="" value="" style="text-align: center;height:38px;">
+                </div>
+            </div></div></div>
+            <div class="line"><div class="title">账单余额</div><div class='info'><div class='inner'>
+                <div class="disf" style="align-items: center;">
+                    <select name="currency3" id="currency3" style="width:32%;margin-right:5px;">
+                        <option value="">请选择账单币种</option>
+                        <?php  if(is_array($currency)) { foreach($currency as $v) { ?>
+                        <option value="<?php  echo $v['code_value'];?>" <?php echo $v['code_value']==142?'selected':''?>><?php  echo $v['code_name'];?></option>
+                        <?php  } } ?>
+                    </select>
+                    <input type="number" id='bill_price' placeholder="账单余额"  style="width:32%;" value="" onkeyup="value=value.replace(/^\D*(\d*(?:\.\d{0,2})?).*$/g, '$1')"/>
+                    <!--<input type="number" id='trade_rate' placeholder="交易汇率"  style="width:32%;display:none;" value=""/>-->
+                </div>
+            </div></div></div>
+            <div class="line"><div class="title">对账单</div><div class='info'><div class='inner'>
+                <div class="pic img_info" data-ogid='0' data-max='99' style="height:38px;overflow-x: scroll;display: flex;align-items: center;">
+                    <div class="images">
+                    </div>
+                    <div class="plus" style="position:relative;" ><i class="fa fa-plus" style="position:absolute;"></i>
+                        <input type="file" name='imgFile0' id='imgFile0'  style="position:absolute;width:30px;height:30px;-webkit-tap-highlight-color: transparent;filter:alpha(Opacity=0); opacity: 0;" />
+                    </div>
+                </div>
+            </div></div></div>
+            <!--凭证类型-->
+            <div class="line">
+                <div class="title">凭证类型</div>
+                <div class="info"><div class="inner">
+                    <select name="submit_method" id="submit_method">
+                        <option value="">请选择凭证类型</option>
+                        <option value="1">纸质文件</option>
+                        <option value="2">电子文件</option>
+                    </select>
+                </div></div>
+            </div>
+            <!--备注信息-->
+            <div class="line" style="height:97px;line-height: 0;">
+                <div class="title">备注信息</div>
+                <div class="info"><div class="inner">
+                    <textarea name="diy_remark" id="diy_remark" cols="35" rows="4" style="width:290px;" placeholder="请输入此凭证备注信息"></textarea>
+                </div></div>
+            </div>
+        </div>
+
+    </div>
+    <div class="info_sub" style="margin-bottom:10px;">提交</div>
+    <div class="button back" onclick="javascript:history.back(-1);" style="height: 44px;margin: 14px 2%;width:96%;background: #aaa;border-radius: 4px;text-align: center;font-size: 16px;line-height: 44px;color: #fff;">返回</div>
+</div>
+
+<script id="tpl_img" type="text/html">
+    <div class='img' data-img='<%filename%>'>
+        <img src='<%url%>' onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png" />
+        <div class='minus'><i class='fa fa-minus-circle'></i></div>
+    </div>
+</script>
+<script language="javascript">
+    require(['tpl', 'core'], function(tpl, core) {
+        //时间
+        var currYear = (new Date()).getFullYear();
+        var opt = {};
+        opt.date = {preset: 'date'};
+        opt.datetime = {preset: 'date'};
+        opt.time = {preset: 'time'};
+        opt.default = {
+            theme: 'android-ics light', //皮肤样式
+            display: 'modal', //显示方式
+            mode: 'scroller', //日期选择模式
+            dateFormat: 'yyyy-mm-dd',
+            lang: 'zh',
+            showNow: true,
+            nowText: "今天",
+            startYear: currYear, //开始年份
+            endYear: currYear //结束年份
+        };
+        $("#bill_startDate").scroller('destroy').scroller($.extend(opt['datetime'], opt['default']));
+        $("#bill_endDate").scroller('destroy').scroller($.extend(opt['datetime'], opt['default']));
+
+        //选择凭证日期时判断当月有无提交税费申报
+        $('#bill_startDate,#bill_endDate').change(function(){
+            let val = $(this).val();
+
+            var myDate = new Date();
+            let year = myDate.getFullYear();
+            let month = myDate.getMonth()+1;
+
+            let now = year+'-'+(month+"").padStart('2','0');
+
+            let select_date = val.split('-');
+            var select_date2 = select_date[0]+'-'+select_date[1];
+
+            if(now<select_date2){
+                $(this).val("");
+                alert('不能大于当前月份！');return;
+            }
+
+
+            //提交“对账单”后，无法登记与汇总“对账月”产生的“凭证”。
+            $.ajax({
+                url: "<?php  echo $this->createMobileUrl('account/register');?>",
+                type: 'POST',
+                dataType: 'json',
+                data: {'op': 'pay_reg', 'add_reg': 4, 'date': select_date2},
+                success: function (json) {
+                    if(json.status==1){
+                        $('#bill_startDate').val("");
+                        $('#bill_endDate').val("");
+                        alert(json.result.msg);return;
+                    }
+                    // var data = json.result.data;
+                }
+            });
+        });
+
+        //xx账户收款
+        $('.bill_account_type').click(function(){
+            var $this = $(this);
+            var val = $this.data('val');
+            $('.bill_account_type').find('i').css('color', '#999').removeClass('fa-check-circle-o').addClass('fa-circle-o');
+            $(this).find('i').removeClass('fa-circle-o').addClass('fa-check-circle-o').css('color', '#0c9');
+            $('#bill_account_type').val(val);
+
+            $.ajax({
+                url:"<?php  echo $this->createMobileUrl('account/register');?>",
+                type:'POST',
+                dataType:'json',
+                data:{'op':'collect_reg','type':val},
+                success:function(json) {
+                    if (json.status == 1) {
+                        if(json.result.data!=''){
+                            let html = '<option value="">请选择账户</option>';
+                            let dat = json.result.data;
+
+                            for(var i2=0;i2<dat.length;i2++){
+                                html += '<option value="'+dat[i2].id+'">'+dat[i2].bank_account+'-'+dat[i2].bank_name+'-'+dat[i2].name+'</option>';
+                            }
+                            $('#bill_account_id').html(html);
+
+                        }else{
+                            if(confirm('系统监测到您还没有配置该类账户，是否现在立刻前往配置！')){
+                                window.location.href='./index.php?i=3&c=entry&do=account&m=sz_yi&p=register&op=basic_set';
+                            }else{
+                                let html='<option value="">请选择账户</option>';
+                                $('#bill_account_id').html(html);
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        //收款截图+入账回单文件
+        $('.minus_del').click(function() {
+            $(this).parent().remove();
+            core.json('util/uploader', {op: 'remove', file: $(this).parent().data('img')}, function(rjson) {
+                if (rjson.status == 1) {
+
+                }
+                $('.plus').show();
+            }, false, true);
+        });
+
+        $('.plus input').change(function() {
+            core.loading('正在上传');
+
+            var comment =$(this).closest('.img_info');
+            var ogid = comment.data('ogid');
+            var max = comment.data('max');
+
+            $.ajaxFileUpload({
+                url: core.getUrl('util/uploader'),
+                data: {file: "imgFile" + ogid,'op':'uploadFile'},
+                secureuri: false,
+                fileElementId: 'imgFile' + ogid,
+                dataType: 'json',
+                success: function(res, status) {
+                    core.removeLoading();
+                    if(res.status==0){
+                        alert(res.message);return;
+                    }
+                    var obj = $(tpl('tpl_img', res));
+                    $('.images',comment).append(obj);
+
+                    $('.minus',comment).click(function() {
+                        let t = $(this);
+                        let del_img = $(this).parent()[0].dataset.img;
+                        // $(obj).data('img')
+                        core.json('util/uploader', {op: 'remove', file: del_img}, function(rjson) {
+                            if (rjson.status == 1) {
+                                // $(obj).remove();
+                                t.parent().remove();
+                            }
+                            $('.plus',comment).show();
+                        }, false, true);
+                    });
+
+                    if ($('.img',comment).length >= max) {
+                        $('.plus',comment).hide();
+
+                    }
+                }, error: function(data, status, e) {
+                    core.removeLoading();
+                    core.tip.show('上传失败!');
+                }
+            });
+        });
+
+        $('#bill_endDate').change(function(){
+            //截止日期
+            let bill_startDate = new Date($('#bill_startDate').val());
+            let time1 = bill_startDate.getTime();
+            let bill_endDate = new Date($('#bill_endDate').val());
+            let time2 = bill_endDate.getTime();
+
+            if($('#bill_startDate').isEmpty()){$('#bill_endDate').val("");alert('请先选择启始日期');return;}
+            if(time2<time1){$('#bill_endDate').val("");alert('截止日期不能早于启始日期');return;}
+        });
+    });
+    $(function(){
+        $('.info_sub').click(function(){
+            //对账单信息
+            let bill_account_type = $('#bill_account_type').val();
+            let bill_account_id = $('#bill_account_id').val();
+            let bill_startDate = $('#bill_startDate').val();
+            let bill_endDate = $('#bill_endDate').val();
+            let currency3 = $('#currency3').val();
+            let bill_price = $('#bill_price').val();
+            var bill_file = [];
+            $('.img_info[data-ogid=0]').find('.img').each(function(){
+                bill_file.push($(this).data('img'));
+            });
+            let submit_method = $('#submit_method').val();
+            let diy_remark = $('#diy_remark').val();
+
+            //对账单信息
+            if( bill_file.length=='' || bill_file.length==0){
+                alert('请上传对账单文件!');
+            }
+            if($('#bill_account_type').isEmpty()){
+                alert('请选择账户类型!');
+                return;
+            }
+            if($('#bill_account_id').isEmpty()){
+                alert('请选择银行账户!');
+                return;
+            }
+            if($('#bill_startDate').isEmpty()){
+                alert('请选择对账单启始日期！');return;
+            }
+            if($('#bill_endDate').isEmpty()){
+                alert('请选择对账单截止日期！');return;
+            }
+            if($('#currency3').isEmpty()){
+                alert('请选择对账单余额币种！');return;
+            }
+            if($('#bill_price').isEmpty()){
+                alert('请选择对账单余额！');return;
+            }
+            if($('#submit_method').isEmpty()){
+                alert('请选择凭证类型！');return;
+            }
+
+            $.ajax({
+                url:"<?php  echo $this->createMobileUrl('account/register');?>",
+                type:'POST',
+                dataType:'json',
+                data:{'op':'bill_reg','bill_file':bill_file,'bill_account_type':bill_account_type,'bill_account_id':bill_account_id,'bill_startDate':bill_startDate,'bill_endDate':bill_endDate,'currency3':currency3,'bill_price':bill_price,'submit_method':submit_method,'diy_remark':diy_remark},
+                success:function(json) {
+                    if(json.status==-1){
+                        alert(json.result.msg);
+                    }else{
+                        alert(json.result.msg);
+                        setTimeout(function(){
+                            window.location.reload();
+                        },2000)
+                    }
+                },error:function(json){
+                    alert('数据出错！');
+                }
+            });
+        });
+    });
+</script>
+
+<?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/footer', TEMPLATE_INCLUDEPATH)) : (include template('common/footer', TEMPLATE_INCLUDEPATH));?>

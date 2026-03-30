@@ -1,0 +1,33 @@
+{template 'common/header'}
+<div class="main">
+	<ul class="nav nav-tabs">
+		<li{if $_GPC['do'] == 'record' } class="active"{/if}><a href="{php echo $this->createWebUrl('record',array('rid'=>$rid));}">参与记录</a></li>
+		<li{if $_GPC['do'] == 'invit' || $_GPC['do'] == '' } class="active"{/if}><a href="{php echo $this->createWebUrl('invit',array('rid'=>$rid));}">邀请记录</a></li>
+	</ul> 
+	<div class="panel panel-default">
+		<div class="panel-body table-responsive">
+		<table class="table table-hover">
+			<thead class="navbar-inner">
+				<tr>
+					<th style="width:150px;">昵称</th>
+					<th style="width:150px;">头像</th>
+					<th style="width:200px;" align="center">邀请码</th>
+					<th style="width:200px;" align="center">邀请时间</th>
+				</tr>
+			</thead>
+			<tbody>
+				{loop $list $row}
+				<tr>
+					<td>{$row['usernick']}</td>
+					<td><img alt="" src="{$row['userheadimg']}" width='auto' style="max-width:50px; max-height:50px;" height='auto'></td>
+					<td>{$row['invitcode']}</td>
+					<td>{$row['addtime']}</td>
+				</tr>
+				{/loop}
+			</tbody>
+		</table>
+	</div>
+	</div>
+	{$pager}
+</div>
+{template 'common/footer'}

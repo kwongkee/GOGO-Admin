@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="format-detection" content="telephone=no">
+<title>知识点 - {$config['webtitle']}</title>
+<script src="{$templateurl}js/jquery.min.js?v=2.0.8"></script>
+<script src="{$templateurl}js/common.js?v=2.0.8"></script>
+<link rel="stylesheet" href="{$templateurl}css/weui.min.css?v=2.0.8" />
+<link rel="stylesheet" href="{$templateurl}css/font-awesome.min.css?v=2.0.8"/>
+<link rel="stylesheet" href="{$templateurl}css/index
+.css?v=2.0.8"/>
+</head>
+
+<body>
+<div class="tabbar tabbar_wrap page_wrap">
+<div class="weui_tab">
+
+<link href="{$templateurl}css/lesson.css?v=2.0.8" rel="stylesheet" />
+<style type="text/css">
+	.fylesson_audio{width:90%; margin:0 auto 0 auto; padding:30px 0;}
+	.fylesson_audio p{padding:10px 0}
+	.course-intro-titlell{margin: 0;padding: 15px ;font-size: 14px;color: #555;line-height: 150%;}
+	.course-intro-titlell a{ display:block; line-height:28px; height:28px; overflow:hidden; color:#666; font-size:14px; border-bottom:1px dashed #f1f1f1;}
+	.course-intro-titlell strong{ font-weight: bold; font-family:"Palatino Linotype", "Book Antiqua", Palatino, serif;}
+	.course-intro-titlell .a{ text-align:center; font-size:12px; color:#999; background:#eee; margin-top:8px;}
+</style>
+<div class="content-inner">
+
+	<div class="video-wrap clearfix">
+	  <div id="videoarea" style="position:relative;"> 
+	  	{if $zid}
+		<video id="video" src="{$srdb_son['videourl']}" width="100%" height="auto" controls="controls" autobuffer="autobuffer">你的浏览器不支持audio/video元素</video>
+		{else}
+		<div class="abcc" style="background: url({$templateurl}images/g8cuyR2kRrfMKUmmSAAsYPsjudsU8k.jpg); background-size:100% auto">
+			<h1>{$srdb['titlename']}</h1>
+			<h2>
+				共<strong>{$total}</strong>个讲解
+				{if $srdb['paymoney'] > '0.00'}
+				，费用￥<strong>{$srdb['paymoney']}</strong>
+				{/if}
+			</h2>
+			<font>
+				<p><span>{$total_problem1}</span><i>单选题</i></p>
+				<p><span>{$total_problem2}</span><i>多选题</i></p>
+				<p><span>{$total_problem3}</span><i>填空题</i></p>
+				<p><span>{$total_problem4}</span><i>判断题</i></p>
+				<div class="clear"></div>
+			 </font>
+		 </div>
+		 {/if}
+	  </div>
+	</div>
+	
+	<ul class="course-tab">
+	  <li >知识点题库</li>
+	  <li class="curr">目录</li>
+	  <li>知识点错题</li>
+	</ul>
+	<script type="text/javascript">
+		
+		var parentid = Number({php echo $id;});
+		var amount = Number({php echo $shownumb;});
+		//显示
+		function more_ck(typeid) {
+			
+			var last = Number(document.getElementById("pasetale"+typeid).value);
+			$.post('{$sosourl}', {typeid:typeid,parentid:parentid,last:last,amount:amount}, function(data) {
+				res = JSON.parse(data);
+				var info = res.info;
+				if(res.msg == 'ok'){
+					var html = '';
+					for (i in info) {
+						html += '<a href="'+info[i][0]+'">'+info[i][1]+'</a> ';
+					}
+					$('#problemshow'+typeid).html(html);
+					
+					var pasetale = last + amount;
+					document.getElementById("pasetale"+typeid).value = pasetale;
+					var totalpy = Number(document.getElementById("total"+typeid).value);
+					if(pasetale >= totalpy){
+						document.getElementById('moreClick'+typeid).style.display = "none";
+					}
+;
+				}else{
+					alert('已加载完...');
+				}
+			});
+		}
+	</script>
+	<div class="course-container" style="padding-bottom:80px;">
+	
+		<div class="js-tab"  style="transform-origin:0px 0px 0px;opacity:1;transform:scale(1,1); display:none;">
+		  <input type="hidden" id="pasetale1" value="{$shownumb}">
+		  <input type="hidden" id="pasetale2" value="{$shownumb}">
+		  <input type="hidden" id="pasetale3" value="{$shownumb}">
+		  <input type="hidden" id="pasetale4" value="{$shownumb}">
+		  <input type="hidden" id="pasetale5" value="{$shownumb}">
+		  <input type="hidden" id="pasetale6" value="{$shownumb}">
+		  
+		  <input type="hidden" id="total1" value="{$total_problem1}">
+		  <input type="hidden" id="total2" value="{$total_problem2}">
+		  <input type="hidden" id="total3" value="{$total_problem3}">
+		  <input type="hidden" id="total4" value="{$total_problem4}">
+		  <input type="hidden" id="total5" value="{$total_problem5}">
+		  <input type="hidden" id="total6" value="{$total_problem6}">
+		  <ul class="course-introll">
+			<li>
+			  <h2 class="chapter-title">单选题</h2>
+			  <div class="course-intro-titlell">
+			  {loop $list_problem1 $value} 
+			  <a href="{php echo $this->createMobileUrl('knowledge', array('op'=>'showq','parentid'=>$id,'id'=>$value[id]));}">{php echo html_entity_decode($value['titlename']);}</a> 
+			  {/loop}
+			  {if $total_problem1 > $shownumb}
+			  <span id="problemshow1"></span>	
+			  <a id="moreClick1" class="a" onClick="more_ck('1')">加载更多...</a> 
+			  {/if}
+			  </div>
+			</li>
+			<li>
+			  <h2 class="chapter-title">多选题</h2>
+			  <div class="course-intro-titlell"> 
+			  {loop $list_problem2 $value} 
+			  <a href="{php echo $this->createMobileUrl('knowledge', array('op'=>'showq','parentid'=>$id,'id'=>$value[id]));}">{php echo html_entity_decode($value['titlename']);}</a> 
+			  {/loop}
+			  {if $total_problem2 > $shownumb}
+			  <span id="problemshow2"></span>	
+			  <a id="moreClick2" class="a" onClick="more_ck('2')">加载更多...</a> 
+			  {/if}
+			  </div>
+			</li>
+			<li>
+			  <h2 class="chapter-title">填空题</h2>
+			  <div class="course-intro-titlell"> 
+			  {loop $list_problem3 $value} 
+			  <a href="{php echo $this->createMobileUrl('knowledge', array('op'=>'showq','parentid'=>$id,'id'=>$value[id]));}">{php echo html_entity_decode($value['titlename']);}</a> 
+			  {/loop}
+			  {if $total_problem3 > $shownumb}	
+			  <span id="problemshow3"></span>
+			  <a id="moreClick3" class="a" onClick="more_ck('3')">加载更多...</a> 
+			  {/if}
+			  </div>
+			</li>
+			<li>
+			  <h2 class="chapter-title">判断题</h2>
+			  <div class="course-intro-titlell">
+			  {loop $list_problem4 $value} 
+			  <a href="{php echo $this->createMobileUrl('knowledge', array('op'=>'showq','parentid'=>$id,'id'=>$value[id]));}">{php echo html_entity_decode($value['titlename']);}</a> 
+			  {/loop}
+			  {if $total_problem4 > $shownumb}
+			  <span id="problemshow4"></span>	
+			  <a id="moreClick4" class="a" onClick="more_ck('4')">加载更多...</a> 
+			  {/if}
+			  </div>
+			</li>
+			<li>
+			  <h2 class="chapter-title">主观题</h2>
+			  <div class="course-intro-titlell"> 
+			  {loop $list_problem5 $value} 
+			  <a href="{php echo $this->createMobileUrl('knowledge', array('op'=>'showq','parentid'=>$id,'id'=>$value[id]));}">{php echo html_entity_decode($value['titlename']);}</a> 
+			  {/loop}
+			  {if $total_problem5 > $shownumb}
+			  <span id="problemshow5"></span>	
+			  <a id="moreClick5" class="a" onClick="more_ck('5')">加载更多...</a> 
+			  {/if}
+			  </div>
+			</li>
+		  </ul>
+		</div>
+	
+		<div class="js-tab" style="transform-origin:0px 0px 0px;opacity:1;transform:scale(1,1); ">
+		  <h2 class="chapter-title"><i></i>[共{$total}个讲解]</h2>
+		  <ul class="course-sections">
+		  	{loop $list $sec}
+			<li> <i class="section-icon section-icon-video"></i>
+			<a href="{php echo $this->createMobileUrl('knowledge', array('op'=>'show','id'=>$id,'zid'=>$sec['id']));}">
+			{$sec['title']}&nbsp;<span style="color:#128C62;"> [ {if $sec['sectiontype']==1}视频{elseif $sec['sectiontype']==2}图文{elseif $sec['sectiontype']==3}音频{/if} ]</span>&nbsp;{if $sec['is_free']==1}[ 免费 ]{else}<span style=" color:#FF6600;">[ 需付费 ]</span>{/if}</a>
+			 <i class="section-state-icon">{$sec['videotime']}</i> </li>
+			{/loop}
+		  </ul>
+		</div>
+	
+		<div class="js-tab" style="transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1); display: none;">
+		  <ul class="course-introll">
+			<li>
+			   <div class="course-intro-titlell">
+			  	  {loop $list_cuowu $value} 
+				  <a href="{php echo $this->createMobileUrl('knowledge', array('op'=>'showq','parentid'=>$id,'id'=>$value[id]));}">{php echo html_entity_decode($value['titlename']);}</a> 
+				  {/loop}
+			   </div>
+			</li>
+		  </ul>
+		</div>
+	
+	</div>
+
+</div>
+
+<div class="btn_mark">
+  <div class="btn_home"> <i class="mt15 fa fa-plus"></i> </div>
+  <div class="btn_mark_bg"></div>
+  <a class="btn_menu btn_index" href="{php echo $this->createMobileUrl('knowledge');}" title="知识点首页"><i class="mt12 fa fa-home"></i></a>
+  <a class="btn_menu btn_spread" href="{php echo $this->createMobileUrl('knowledge', array('op'=>'lsit','tab'=>1));}"><i class="mt12 fa fa-video-camera"></i></a>
+  <a class="btn_menu btn_course" href="{php echo $this->createMobileUrl('m_homework');}"><i class="mt12 fa fa-book"></i></a>
+  <a class="btn_menu btn_my" href="{php echo $this->createMobileUrl('m_index');}" title="会员中心"><i class="mt12 fa fa-user"></i></a>
+</div>
+<script type="text/javascript">
+	$(function() {
+		$(".btn_home").click(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			$(this).parent().toggleClass("active");
+			$(".btn_qq_box").toggle();
+		});
+
+		$(".btn_mark").click(function(e) {
+			$(this).toggleClass("active");
+			$(".btn_qq_box").toggle();
+		});
+	})
+</script> 
+
+<ul class="d-buynow">
+ <li class="btn-buy"><a href="{php echo $this->createMobileUrl('knowledge', array('op'=>'chongzuo','type'=>1,'parentid'=>$id));}" class="buy buy_now blue">
+    <p class="num">随机组卷</p>
+    </a></li>
+  <li class="btn-buy"><a href="{php echo $this->createMobileUrl('knowledge', array('op'=>'chongzuo','parentid'=>$id));}" class="buy buy_now red">
+    <p class="num">错题重做</p>
+    </a></li>
+</ul>
+<script type="text/javascript">
+	// “章节”、“详情”tab切换
+	$(".course-tab").on("click", 'li', function() {
+		var $currItem = $(this),
+		index = $currItem.index();
+		$currItem.addClass('curr').siblings().removeClass('curr');
+		$(".js-tab").hide().eq(index).show();
+	});
+</script> 
+
+</div>
+</div>
+
+</body>
+</html>

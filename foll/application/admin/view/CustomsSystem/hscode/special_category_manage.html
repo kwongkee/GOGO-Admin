@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {include file="common/meta"}
+    <link rel="stylesheet" href="./static/hadmin/layui/css/layui.css"></link>
+</head>
+<body class="gray-bg">
+<div class="demoTable">
+    <form class="layui-form">
+        <div class="layui-inline">
+            <label class="layui-form-label">编码</label>
+            <div class="layui-inline">
+                <input class="layui-input" name="code" id="code">
+            </div>
+        </div>
+    <div class="layui-inline">
+        <label class="layui-form-label">类别</label>
+        <div class="layui-inline">
+            <select name="cate" id="cate" lay-filter="cate">
+                <option value="">请选择</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+            </select>
+        </div>
+    </div>
+    <button class="layui-btn" onclick="search();return false;">搜索</button>
+    <button class="layui-btn" onclick="add();return false;">添加</button>
+    </form>
+</div>
+<table class="layui-hide" id="list" lay-filter="list_filter"></table>
+</body>
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/layui/layui.all.js"></script>
+<script type="text/html" id="list_filter">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script>
+
+    layui.use(['upload','form','table','layer'], function () {
+        layer = layui.layer;
+        upload = layui.upload;
+        form = layui.form;
+        table = layui.table;
+
+        //第一个实例
+        table.render({
+            elem: '#list'
+            ,id: 'listReload'
+            ,height: 512
+            ,url: "{:url('admin/HsCodeController/getSpecialCategory')}" //数据接口
+            ,page: true //开启分页
+            // ,toolbar: '#toolbar' //开启头部工具栏，并为其绑定左侧模板
+            ,defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示'
+                ,layEvent: 'LAYTABLE_TIPS'
+                ,icon: 'layui-icon-tips'
+            }]
+            ,loading:true
+            ,cols: [[ //表头
+                {field: 'id', title: 'id'},
+                {field: 'hscode_prefix', title: '前几位位编码',}
+                ,{field: 'cate_name', title: '分类名称'}
+                ,{field: 'cate_code', title: '分类编号'}
+                ,{field: 'create_time', title: '时间'}
+                ,{fixed: 'right', width: 165, align:'center', toolbar: '#list_filter'}
+            ]]
+        });
+        form.render();
+    });
+
+
+
+    table.on('tool(list_filter)', function(obj){
+        var data = obj.data,layEvent = obj.event; //获得 lay-event 对应的值
+        if(layEvent === 'del'){
+            layer.confirm('真的删除么', function(index){
+                obj.del(); //删除对应行（tr）的DOM结构
+                layer.close(index);
+                req('POST',JSON.stringify(data),"{:Url('admin/HsCodeController/delSpecialCategory')}");
+                //向服务端发送删除指令
+            });
+        } else if(layEvent === 'edit'){
+            edit(data);
+        }
+
+    });
+
+    function search() {
+        //执行重载
+        table.reload('listReload', {
+            page: {curr: 1}
+            ,where: {
+                code: $('#code').val(),
+                cate:$('#cate').val()
+            }
+        }, 'data');
+        return false;
+    }
+
+
+
+    function add() {
+        layer.open({
+            type: 1,
+            title:"添加类别",
+            area: ['568px','325px'],
+            content: '<form class="layui-form layui-form-pane" action="">\n' +
+                '  <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label">hscode</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="text" name="hscode_prefix" required  lay-verify="required" placeholder="前五位hscode" maxlength="5" autocomplete="off" class="layui-input">\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                '  <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label">类别名称</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="text" name="cate_name" required  lay-verify="required" placeholder="类别名称" autocomplete="off" class="layui-input">\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                '  <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label">编码</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <select name="cate_code" lay-verify="required">\n' +
+                '        <option value=""></option>\n' +
+                '        <option value="B">B</option>\n' +
+                '        <option value="C">C</option>\n' +
+                '        <option value="D">D</option>\n' +
+                '      </select>\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                '  <div class="layui-form-item">\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <button class="layui-btn" lay-submit lay-filter="form">立即提交</button>\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                '</form>',
+        });
+        form.render();
+        //监听提交
+        form.on('submit(form)', function(data){
+            req('POST',JSON.stringify(data.field),"{:url('admin/HsCodeController/addSpecialCategory')}");
+            return false;
+        });
+    }
+
+
+    function edit(data) {
+        layer.open({
+            type: 1,
+            title:"添加类别",
+            area: ['568px','325px'],
+            content: '<form class="layui-form layui-form-pane" action="">\n' +
+                '<input type="hidden" name="id" value="'+data.id+'"> <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label">hscode</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="text" name="hscode_prefix" value="'+data.hscode_prefix+'" required  lay-verify="required" placeholder="前五位hscode" maxlength="5"  class="layui-input">\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                '  <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label">类别名称</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="text" name="cate_name" value="'+data.cate_name+'" required  lay-verify="required" placeholder="类别名称" class="layui-input">\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                '  <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label">编码</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <select name="cate_code" lay-verify="required">\n' +
+                '        <option value=""></option>\n' +
+                '        <option value="B" '+(data.cate_code=="B"?"selected":"")+'>B</option>\n' +
+                '        <option value="C" '+(data.cate_code=="C"?"selected":"")+'>C</option>\n' +
+                '        <option value="D" '+(data.cate_code=="D"?"selected":"")+'>D</option>\n' +
+                '      </select>\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                '  <div class="layui-form-item">\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <button class="layui-btn" lay-submit lay-filter="form">立即提交</button>\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                '</form>',
+        });
+        form.render();
+        //监听提交
+        form.on('submit(form)', function(data){
+            req('POST',JSON.stringify(data.field),"{:url('admin/HsCodeController/editSpecialCategory')}");
+            return false;
+        });
+    }
+
+    function req(method='POST',data,url) {
+        $.ajax({
+            url:url,
+            type:method,
+            dataType:"json",
+            data:{data:data},
+            success:function (res) {
+                layer.msg(res.msg);
+                reload();
+            }
+        });
+    }
+
+    function reload() {
+        //执行重载
+        table.reload('listReload', {
+            page: {curr: 1}
+            ,where: {
+                code: $('#code').val(),
+                cate:$('#cate').val()
+            }
+
+        }, 'data');
+    }
+
+</script>
+</html>
+

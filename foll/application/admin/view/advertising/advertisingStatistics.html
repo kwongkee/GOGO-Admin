@@ -1,0 +1,237 @@
+{extend name="common/_header"}
+{block name="conten"}
+<div id="main" style="width: 50%;height:300px;float: left;"></div>
+<div id="main1" style="width: 50%;height:300px;float:right;"></div>
+<div id="main2" style="width: 100%;height:300px;"></div>
+<script src="https://cdn.bootcss.com/echarts/4.0.4/echarts-en.common.js"></script>
+<script>
+    (function () {
+        var myChart = echarts.init(document.getElementById('main'));
+        var myChart1 = echarts.init(document.getElementById('main1'));
+        var myChart2 = echarts.init(document.getElementById('main2'));
+        var date = ['2017/12/2','2017/12/3','2017/12/4','2017/12/5'];
+        var data=[1122,4322,212,312];
+        option = {
+            tooltip: {trigger: 'axis',
+                position: function (pt) {
+                    return [pt[0], '10%'];
+                }
+            },
+            title: {
+                left: 'center',
+                text: '总点击数',
+            },
+            toolbox: {
+                feature: {
+                    dataZoom: {
+                        yAxisIndex: 'none'
+                    },
+                    restore: {},
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: date
+            },
+            yAxis: {
+                type: 'value',
+                boundaryGap: [0, '100%']
+            },
+
+            series: [
+                {
+                    name:'点击率',
+                    type:'line',
+                    smooth:true,
+                    symbol: 'none',
+                    sampling: 'average',
+                    itemStyle: {
+                        normal: {
+                            color: 'rgb(255, 70, 131)'
+                        }
+                    },
+                    areaStyle: {
+                        normal: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                offset: 0,
+                                color: 'rgb(255, 158, 68)'
+                            }, {
+                                offset: 1,
+                                color: 'rgb(255, 70, 131)'
+                            }])
+                        }
+                    },
+                    data: data
+                }
+            ]
+        };
+        option1 = {
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b}: {c} ({d}%)"
+            },
+            legend: {
+                orient: 'vertical',
+                x: 'left',
+                data:['停车','商城','微信图文','自助','分时','预约']
+            },
+            series: [
+                {
+                    name:'访问来源',
+                    type:'pie',
+                    selectedMode: 'single',
+                    radius: [0, '30%'],
+
+                    label: {
+                        normal: {
+                            position: 'inner'
+                        }
+                    },
+                    labelLine: {
+                        normal: {
+                            show: false
+                        }
+                    },
+                    data:[
+                        {value:0, name:'微信端', selected:true},
+                    ]
+                },
+                {
+                    name:'访问来源',
+                    type:'pie',
+                    radius: ['40%', '55%'],
+                    label: {
+                        normal: {
+                            formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
+                            backgroundColor: '#eee',
+                            borderColor: '#aaa',
+                            borderWidth: 1,
+                            borderRadius: 4,
+                            // shadowBlur:3,
+                            // shadowOffsetX: 2,
+                            // shadowOffsetY: 2,
+                            // shadowColor: '#999',
+                            padding: [0, 7],
+                            rich: {
+                                a: {
+                                    color: '#999',
+                                    lineHeight: 22,
+                                    align: 'center'
+                                },
+                                // abg: {
+                                //     backgroundColor: '#333',
+                                //     width: '100%',
+                                //     align: 'right',
+                                //     height: 22,
+                                //     borderRadius: [4, 4, 0, 0]
+                                // },
+                                hr: {
+                                    borderColor: '#aaa',
+                                    width: '100%',
+                                    borderWidth: 0.5,
+                                    height: 0
+                                },
+                                b: {
+                                    fontSize: 16,
+                                    lineHeight: 33
+                                },
+                                per: {
+                                    color: '#eee',
+                                    backgroundColor: '#334455',
+                                    padding: [2, 4],
+                                    borderRadius: 2
+                                }
+                            }
+                        }
+                    },
+                    data:[
+                        {value:335, name:'微信图文'},
+                        {value:310, name:'停车'},
+                        {value:234, name:'自助'},
+                        {value:135, name:'预约'},
+                        {value:1048, name:'分时'},
+                        {value:251, name:'商城'},
+                    ]
+                }
+            ]
+        };
+        option2 = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    crossStyle: {
+                        color: '#999'
+                    }
+                }
+            },
+            toolbox: {
+                feature: {
+                    dataView: {show: true, readOnly: false},
+                    magicType: {show: true, type: ['line', 'bar']},
+                    restore: {show: true},
+                    saveAsImage: {show: true}
+                }
+            },
+            legend: {
+                data:['费用','流量','平均']
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    data: ['喜柏','Gogo','某'],
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    name: '商家',
+                    min: 0,
+                    max: 250,
+                    interval: 50,
+                    axisLabel: {
+                        formatter: '{value} ￥'
+                    }
+                },
+                {
+                    type: 'value',
+                    name: 'cps',
+                    min: 0,
+                    max: 25,
+                    interval: 5,
+                    axisLabel: {
+                        formatter: '{value} cps'
+                    }
+                }
+            ],
+            series: [
+                {
+                    name:'费用',
+                    type:'bar',
+                    data:[2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
+                },
+                {
+                    name:'流量',
+                    type:'bar',
+                    data:[2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3]
+                },
+                {
+                    name:'平均',
+                    type:'line',
+                    yAxisIndex: 1,
+                    data:[2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2]
+                }
+            ]
+        };
+        myChart.setOption(option);
+        myChart1.setOption(option1);
+        myChart2.setOption(option2);
+    })();
+</script>
+{/block}
+{extend name="common/_footer"}

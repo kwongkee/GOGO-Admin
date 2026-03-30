@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="common/meta"}
+</head>
+
+<body class="gray-bg">
+<div class="col-sm-12">
+    <div class="ibox float-e-margins">
+        <div class="ibox-title" style="height:60px;">
+            <button type="button" class="btn btn-info btn-lg" style="width: 100px;" id="add">角色添加</button>
+        </div>
+        <div class="ibox-content">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>应用名称app</th>
+                    <th>菜单名称</th>
+                    <th>控制器</th>
+                    <th>操作名称</th>
+                    <th>菜单类型</th>
+                    <th>状态</th>
+                    <th>url参数</th>
+                    <th>请求方式（日志生成）</th>
+                    <th>日志规则</th>
+                    <th>备注</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name="data" id="menu"}
+                <tr>
+                    <td class="text-navy">{$menu.app}</td>
+                    <td>{$menu.model}</td>
+                    <td>{$menu.action}</td>
+                    <td>{$menu.url_param}</td>
+                    <td class="text-navy">{$statusType['type'][$menu.type]}</td>
+                    <td class="text-navy">{$statusType['status'][$menu.status]}</td>
+                    <td>{$menu.url_param}</td>
+                    <td>{$menu.request}</td>
+                    <td>{$menu.log_rule}</td>
+                    <td>{$menu.remark}</td>
+                    <td><a href="{:Url('admin/businessAdminMenuAdd')}&id={$menu.id}" class="btn btn-default btn-rounded">添加子菜单</a><a href="{:Url('admin/businessAdminMenuEdit')}&id={$menu.id}" class="btn btn-default btn-rounded">编辑菜单</a><a href="javascript:;" class="btn btn-danger btn-rounded" onclick="confirm('确定删除吗？')?location.href='{$menu.id}':''" >删除菜单</a></td>
+                </tr>
+                {if !empty($menu.children)}
+                
+                	{volist name="$menu.children" id="chil_menu"}
+	                <tr>
+	                    <td style="border-top：1px solid #fff;" class="text-navy">－－&nbsp;&nbsp;&nbsp;{$chil_menu.app}</td>
+	                    <td style="border-top：none;">{$chil_menu.model}</td>
+	                    <td style="border-top：none;">{$chil_menu.action}</td>
+	                    <td style="border-top：none;">{$chil_menu.url_param}</td>
+	                    <td style="border-top：none;" class="text-navy">{$statusType['type'][$chil_menu.type]}</td>
+	                    <td style="border-top：none;" class="text-navy">{$statusType['status'][$chil_menu.status]}</td>
+	                    <td style="border-top：none;">{$chil_menu.url_param}</td>
+	                    <td style="border-top：none;">{$chil_menu.request}</td>
+	                    <td style="border-top：none;">{$chil_menu.log_rule}</td>
+	                    <td style="border-top：none;">{$chil_menu.remark}</td>
+	                    <td><a href="{:Url('admin/businessAdminMenuAdd')}&id={$chil_menu.id}" class="btn btn-default btn-rounded">添加子菜单</a><a href="{:Url('admin/businessAdminMenuEdit')}&id={chil_$menu.id}" class="btn btn-default btn-rounded">编辑菜单</a><a href="" class="btn btn-danger btn-rounded">删除菜单</a></td>
+	                </tr>
+	                {if !empty($menu.children)}
+                
+                	{volist name="$chil_menu.children" id="chil_menu_1"}
+	                <tr>
+	                    <td style="border-top：1px solid #fff;" class="text-navy">－－－－&nbsp;&nbsp;&nbsp;{$chil_menu.app}</td>
+	                    <td style="border-top：none;">{$chil_menu_1.model}</td>
+	                    <td style="border-top：none;">{$chil_menu_1.action}</td>
+	                    <td style="border-top：none;">{$chil_menu_1.url_param}</td>
+	                    <td style="border-top：none;" class="text-navy">{$statusType['type'][$chil_menu_1.type]}</td>
+	                    <td style="border-top：none;" class="text-navy">{$statusType['status'][$chil_menu_1.status]}</td>
+	                    <td style="border-top：none;">{$chil_menu_1.url_param}</td>
+	                    <td style="border-top：none;">{$chil_menu_1.request}</td>
+	                    <td style="border-top：none;">{$chil_menu_1.log_rule}</td>
+	                    <td style="border-top：none;">{$chil_menu_1.remark}</td>
+	                    <td><a href="{$chil_menu_1.id}" class="btn btn-default btn-rounded">编辑菜单</a><a href="{$chil_menu_1.id}" class="btn btn-danger btn-rounded">删除菜单</a></td>
+	                </tr>
+	                {/volist}
+                {/if}
+	                {/volist}
+                {/if}
+                
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- 自定义js -->
+<script src="./static/hadmin/js/content.js?v=1.0.0"></script>
+
+
+<!-- Bootstrap table -->
+<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="./static/hadmin/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="./static/hadmin/layui/layui.all.js"></script>
+<!-- Peity -->
+</body>
+<script>
+    var form = layui.form;
+    var  layer = layui.layer;
+    $("#add").click(function () {
+        layer.open({
+            type: 1,
+            skin: 'layui-layer-rim', //加上边框
+            area: ['837px', '227px'], //宽高
+            content:'<div class="col-md-6" style="margin-top:17px;"><div class="form-group"><label class="col-sm-3 control-label">角色名称：</label><div class="col-sm-9"><input type="text" name="" id="name" value="" class="form-control" placeholder="请输入文本"></div></div><div class="form-group"><label class="col-sm-3 control-label">权限：</label><div class="col-sm-9"><label class="radio-inline"><input type="radio" checked="" value="1" class="optionsRadios1" name="auth">可读</label><label class="radio-inline"><input type="radio" value="2" class="optionsRadios1" name="auth">可写</label></div></div><div class="form-group"><div class="col-sm-12 col-sm-offset-3" style="margin-top:24px;"><button class="btn btn-primary" type="submit" onclick="requestAdd()">保存内容</button></div></div></div><div class="col-md-6" style="margin-top:17px;"><div class="form-group"><label class="col-sm-3 control-label">备注：</label><div class="col-sm-9"><input type="text" name="" class="form-control" id="beizhu" value="" placeholder="请输入文本"></div></div><div class="form-group"><label class="col-sm-3 control-label" for="-NaN">角色状态：</label><div class="col-sm-9"><label class="radio-inline" ><input type="radio" checked="" value="1" class="optionsRadios" name="optionsRadios">启用</label><label class="radio-inline"><input type="radio" value="0" class="optionsRadios" name="optionsRadios">禁用</label></div></div></div>'
+        });
+    })
+</script>
+<script>
+    function requestAdd(){
+        var name=$("#name").val();
+        var Authority=$('input[name="auth"]:checked').val();
+        var status =$('input[name="optionsRadios"]:checked').val();
+        var beizhu=$("#beizhu").val();
+        $.post("{:Url('admin/businessAdminCharacterSave')}",{"name":name,"authType":Authority,"roleStatus":status,"beizhu":beizhu},function (data) {
+            if(!data.status){
+                layer.msg(data.msg);
+                return false;
+            }
+            layer.msg(data.msg);
+        })
+    }
+</script>
+
+</html>

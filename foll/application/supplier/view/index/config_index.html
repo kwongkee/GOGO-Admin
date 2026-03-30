@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>供应配置-企业信息</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <style>
+        .disf{display:flex;align-items: center;}
+        .layui-table th{ background-color: #1E9FFF;color:#fff; }
+        /**对接信息**/
+        .layui-select-title .layui-input{width:40%;}
+        .layui-form-select .layui-edge{right:61%;}
+        .layui-form-select dl{min-width:40%;}
+    </style>
+</head>
+<body>
+<form class="layui-form" action="" lay-filter="component-form-element1">
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                企业信息
+            </div>
+            <div class="layui-card-body" style="padding:15px;">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">企业名称</label>
+                    <div class="layui-input-block disf">
+                        <input type="text" name="enterprise_name" value="" placeholder="请输入企业名称" lay-verify="required" autocomplete="off" class="layui-input" style="width:40%;margin-right:10px;">
+                        <div class="layui-btn layui-btn-normal" onclick="search()">查询企业信息</div>
+                    </div>
+                </div>
+                <div class="qiye" style="display:none;">
+                    <!--工商照面-->
+                    <div class="layui-card-header" style="color:#fff;background:#F7931E;">
+                        工商照面
+                    </div>
+                    <input type="hidden" name="basic_info[enterprise_id]" id="enterprise_id" value="" class="layui-input">
+                    <input type="hidden" name="basic_info[domain]" id="domain" value="" class="layui-input">
+                    <input type="hidden" name="basic_info[econKindCode]" id="econKindCode" value="" class="layui-input">
+                    <input type="hidden" name="basic_info[type_new]" id="type_new" value="" class="layui-input">
+                    <table class="layui-table">
+                        <tr>
+                            <th>统一社会信用代码</th>
+                            <th>企业名称</th>
+                            <th>企业类型</th>
+                            <th>注册资本</th>
+                            <th>货币单位</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="text" name="basic_info[creditNo]" id="creditNo" value=""
+                                       lay-verify="required" autocomplete="off" class="layui-input">
+                            </td>
+                            <td>
+                                <input type="text" name="basic_info[name]" id="name" value="" lay-verify="required" autocomplete="off" class="layui-input">
+                            </td>
+                            <td>
+                                <input type="text" name="basic_info[econKind]" id="econKind" value="" lay-verify="required" autocomplete="off" class="layui-input">
+                            </td>
+                            <td>
+                                <input type="text" name="basic_info[registCapi]" id="registCapi" value="" lay-verify="required" autocomplete="off" class="layui-input">
+                            </td>
+                            <td>
+                                <input type="text" name="basic_info[currency_unit]" id="currency_unit" value="" lay-verify="required" autocomplete="off" class="layui-input">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>历史名称</th>
+                            <th>地址</th>
+                            <th>企业注册号</th>
+                            <th>经营范围</th>
+                            <th>营业开始日期</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="text" name="basic_info[historyNames]" id="historyNames" value="" autocomplete="off" class="layui-input">
+                            </td>
+                            <td>
+                                <input type="text" name="basic_info[address]" id="address" value="" lay-verify="required" autocomplete="off" class="layui-input">
+                            </td>
+                            <td>
+                                <input type="text" name="basic_info[regNo]" id="regNo" value="" lay-verify="required" autocomplete="off" class="layui-input">
+                            </td>
+                            <td>
+                                <input type="text" name="basic_info[scope]" id="scope" value="" lay-verify="required" autocomplete="off" class="layui-input">
+                            </td>
+                            <td>
+                                <input type="text" name="basic_info[termStart]" id="termStart" value="" lay-verify="required" autocomplete="off" class="layui-input">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>营业结束日期</th>
+                            <th>所属工商局</th>
+                            <th>企业法定代表人</th>
+                            <th>成立日期</th>
+                            <th>注销日期</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="text" name="basic_info[termEnd]" id="termEnd" value="" autocomplete="off" class="layui-input">
+                            </td>
+                            <td>
+                                <input type="text" name="basic_info[belongOrg]" id="belongOrg" value="" lay-verify="required" autocomplete="off" class="layui-input">
+                            </td>
+                            <td>
+                                <input type="text" name="basic_info[operName]" id="operName" value="" lay-verify="required" autocomplete="off" class="layui-input">
+                            </td>
+                            <td>
+                                <input type="text" name="basic_info[startDate]" id="startDate" value="" lay-verify="required" autocomplete="off" class="layui-input">
+                            </td>
+                            <td>
+                                <input type="text" name="basic_info[endDate]" id="endDate" value="" lay-verify="required" autocomplete="off" class="layui-input">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>核准日期</th>
+                            <th>经营状态</th>
+                            <th>组织机构号</th>
+                            <th>地区代码</th>
+                            <th>实缴资本</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="text" name="basic_info[checkDate]" id="checkDate" value="" autocomplete="off" class="layui-input">
+                            </td>
+                            <td>
+                                <input type="text" name="basic_info[status]" id="status" value="" lay-verify="required" autocomplete="off" class="layui-input">
+                            </td>
+                            <td>
+                                <input type="text" name="basic_info[orgNo]" id="orgNo" value="" lay-verify="required" autocomplete="off" class="layui-input">
+                            </td>
+                            <td>
+                                <input type="text" name="basic_info[districtCode]" id="districtCode" value="" lay-verify="required" autocomplete="off" class="layui-input">
+                            </td>
+                            <td>
+                                <input type="text" name="basic_info[actualCapi]" id="actualCapi" value="" autocomplete="off" class="layui-input">
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!--实际收益人-->
+                    <div class="beneficial">
+
+                    </div>
+
+                    <!--纳税类型-->
+                    <div class="taxpayerlist">
+
+                    </div>
+
+                    <!--海关登记-->
+                    <div class="customslist">
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-card-header">
+                对接信息
+            </div>
+            <div class="layui-card-body" style="padding:15px;">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">岗位</label>
+                    <div class="layui-input-block">
+                        <select name="loctNo" id="loctNo" lay-search lay-verify="required">
+                            <option value="">请选择岗位</option>
+                            {foreach $job as $val}
+                            <option value="{$val['id']}">{$val['name']}</option>
+                            {/foreach}
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">姓名</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="name" value="" placeholder="请输入姓名" lay-verify="required" autocomplete="off" class="layui-input" style="width:40%;">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">电话</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="phone" value="" placeholder="请输入电话" lay-verify="required" autocomplete="off" class="layui-input" style="width:40%;">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label"></label>
+                    <div class="layui-input-block">
+                        <img src="../../app/img/qrcode_for_gogo.jpg" alt="" style="width:258px;">
+                        <p style="font-size:15px;color:#ff2222;">* 请先关注公众号，以便以后消息通知到您。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="formDemo" style="width:80px;">确认</button>
+                    <!--<button type="reset" class="layui-btn layui-btn-danger">重置数据</button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+
+
+<script>
+    //Demo
+    layui.use(['element','form','upload','table'], function(){
+        var $ = layui.$
+            ,layer = layui.layer
+            ,upload = layui.upload
+            ,element = layui.element
+            ,table = layui.table
+            ,form = layui.form;
+        //监听提交
+        form.on('submit(formDemo)', function(data) {
+            $.ajax({
+                url:"{:Url('supplier/index/config_index')}",
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (res) {
+                    if(res.code <= 0) {
+                        layer.msg(res.msg);
+                        return false;
+                    }
+                    layer.msg(res.msg);
+                    setTimeout(function(){
+                        layer.closeAll();
+                        window.location.href='https://shop.gogo198.cn/foll/public/?s=supplier/index/config_docking&enterprise_id='+res.enterprise_id;
+                    },1200)
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            return false;
+        });
+    });
+
+    function search(){
+        var layer = layui.layer
+            ,form = layui.form;
+        var enterprise_name = $('input[name="enterprise_name"]').val();
+
+        if(enterprise_name==''){
+            layer.msg('请输入企业名称');
+            return false;
+        }
+
+        layer.load();
+        //工商照面
+        $.ajax({
+            url: 'https://declare.gogo198.cn/api/qxbquery/getBasicInfo?name=' + enterprise_name,
+            type: 'GET',
+            data: {},
+            success: function (res) {
+                // console.log(res);
+                if (res.status == 200) {
+                    layer.closeAll('loading');
+                    var items = res.data;
+                    if(items.length==0){
+                        $('.qiye').hide();
+                        layer.msg('查无数据！',{time:2000});
+                        return false;
+                    }
+                    $("#enterprise_id").val(res.data.id);
+                    $("#name").val(res.data.name);
+                    $("#econKind").val(res.data.econKind);
+                    $("#econKindCode").val(res.data.econKindCode);
+                    $("#registCapi").val(res.data.registCapi);
+                    $("#currency_unit").val(res.data.currency_unit);
+                    $("#type_new").val(res.data.type_new);
+                    $("#historyNames").val(res.data.historyNames);
+                    $("#address").val(res.data.address);
+                    $("#regNo").val(res.data.regNo);
+                    $("#scope").val(res.data.scope);
+                    $("#termStart").val(res.data.termStart);
+                    $("#termEnd").val(res.data.termEnd);
+                    $("#belongOrg").val(res.data.belongOrg);
+                    $("#operName").val(res.data.operName);
+                    $("#startDate").val(res.data.startDate);
+                    $("#endDate").val(res.data.endDate);
+                    $("#checkDate").val(res.data.checkDate);
+                    $("#status").val(res.data.status);
+                    $("#orgNo").val(res.data.orgNo);
+                    $("#creditNo").val(res.data.creditNo);
+                    $("#districtCode").val(res.data.districtCode);
+                    $("#domain").val(res.data.domain);
+
+                    $('.qiye').show();
+                }else{
+                    layer.msg(res.message,{time:2000});
+                }
+            }
+        });
+        //实际收益人
+        $.ajax({
+            url: 'https://declare.gogo198.cn/api/qxbquery/getBeneficiariesByName?name=' + enterprise_name,
+            type: 'GET',
+            data: {},
+            success: function (res) {
+                // console.log(res);
+                if (res.status == 200) {
+                    layer.closeAll('loading');
+                    $('.beneficial').empty();
+                    var items = res.data.items;
+                    if(items.length==0){
+                        layer.msg('查无数据！',{time:2000});
+                        return false;
+                    }
+                    for(var i=0;i<items.length;i++){
+                        var html = '<div class="layui-card-header" style="margin-top:15px;color:#fff;background:#F7931E;">\n' +
+                            '           受益人'+(i+1)+'\n' +
+                            '</div>' +
+                            '<table class="layui-table">\n' +
+                            '                            <tr>\n' +
+                            '                                <th>企业名称</th>\n' +
+                            '                                <th>受益人</th>\n' +
+                            '                                <th>受益所有人类型</th>\n' +
+                            '                                <th>股权占比</th>\n' +
+                            '                                <th>任职</th>\n' +
+                            '                            </tr>\n' +
+                            '                            <tr>\n' +
+                            '                                <td>\n' +
+                            '                                    <input type="text" name="beneficiaries['+i+'][enterprise]" value="'+items[i].enterprise+'" autocomplete="off" class="layui-input">\n' +
+                            '                                </td>\n' +
+                            '                                <td>\n' +
+                            '                                    <input type="text" name="beneficiaries['+i+'][beneficiary]" value="'+items[i].beneficiary+'" autocomplete="off" class="layui-input">\n' +
+                            '                                </td>\n' +
+                            '                                <td>\n' +
+                            '                                    <input type="text" name="beneficiaries['+i+'][type]" value="'+items[i].type+'" autocomplete="off" class="layui-input">\n' +
+                            '                                </td>\n' +
+                            '                                <td>\n' +
+                            '                                    <input type="text" name="beneficiaries['+i+'][percent]" value="'+items[i].percent+'" autocomplete="off" class="layui-input">\n' +
+                            '                                </td>\n' +
+                            '                                <td>\n' +
+                            '                                    <input type="text" name="beneficiaries['+i+'][title]" value="'+items[i].title+'" autocomplete="off" class="layui-input">\n' +
+                            '                                </td>\n' +
+                            '                            </tr>\n' +
+                            '                            <tr>\n'+
+                            '                                <th>受益人说明</th>\n' +
+                            '                                <th>条文依据</th>\n' +
+                            '                            </tr>\n'+
+                            '                            <tr>\n' +
+                            '                                <td>\n' +
+                            '                                    <input type="text" name="beneficiaries['+i+'][reason]" value="'+items[i].reason+'" autocomplete="off" class="layui-input">\n' +
+                            '                                </td>\n' +
+                            '                                <td>\n' +
+                            '                                    <input type="text" name="beneficiaries['+i+'][law_desc]" value="'+items[i].law_desc+'" autocomplete="off" class="layui-input">\n' +
+                            '                                </td>\n' +
+                            '                            </tr>\n'+
+                            '                        </table>';
+                        $(".beneficial").append(html);
+                    }
+
+
+                }else{
+                    layer.msg(res.message,{time:2000});
+                }
+            }
+        });
+        // 纳税类型
+        $.ajax({
+            url  : 'https://declare.gogo198.cn/api/qxbquery/getTaxpayerListByName?name='+enterprise_name,
+            type : 'GET',
+            data : {},
+            success : function(res){
+                console.log(res);
+                if(res.status == 200)
+                {
+                    $(".taxpayerlist").empty();
+                    var items = res.data;
+                    for (var i = 0; i < items.length; i++) {
+                        var html = '<div class="layui-card-header" style="margin-top:15px;color:#fff;background:#F7931E;">\n' +
+                            '           纳税人'+(i+1)+'\n' +
+                            '</div>' +
+                            '<table class="layui-table">\n' +
+                            '                            <tr>\n' +
+                            '                                <th>资格类型</th>\n' +
+                            '                                <th>登记时间</th>\n' +
+                            '                            </tr>\n' +
+                            '                            <tr>\n' +
+                            '                                <td>\n' +
+                            '                                    <input type="text" name="taxpayerlist['+i+'][qualification]" value="'+items[i].qualification+'" autocomplete="off" class="layui-input">\n' +
+                            '                                </td>\n' +
+                            '                                <td>\n' +
+                            '                                    <input type="text" name="taxpayerlist['+i+'][judge_date]" value="'+items[i].judge_date+'" autocomplete="off" class="layui-input">\n' +
+                            '                                </td>\n' +
+                            '                            </tr>\n' +
+                            '                        </table>';
+                        $(".taxpayerlist").append(html);
+                    }
+                }
+            },
+            error : function(e){
+                console.log(JSON.stringify(e));
+            }
+        });
+        // 海关登记
+        $.ajax({
+            url  : 'https://declare.gogo198.cn/api/qxbquery/getCustomsListByName?name='+enterprise_name,
+            type : 'GET',
+            data : {},
+            success : function(res){
+                console.log(res);
+                if(res.status == 200)
+                {
+
+                    $(".customslist").empty();
+                    var items = res.data;
+                    for (var i = 0; i < items.length; i++) {
+                        var html ='<div class="layui-card-header" style="margin-top:15px;color:#fff;background:#F7931E;">\n' +
+                            '           海关登记\n' +
+                            '</div>' +
+                            '<table class="layui-table">\n' +
+                            '                            <tr>\n' +
+                            '                                <th>企业名称</th>\n' +
+                            '                                <th>数据来源</th>\n' +
+                            '                                <th>海关编号</th>\n' +
+                            '                                <th>注册海关</th>\n' +
+                            '                                <th>经营类别</th>\n' +
+                            '                            </tr>\n' +
+                            '                            <tr>\n' +
+                            '                                <td>\n' +
+                            '                                    <input type="text" name="customslist['+i+'][ename]" value="'+items[i].ename+'" autocomplete="off" class="layui-input">\n' +
+                            '                                </td>\n' +
+                            '                                <td>\n' +
+                            '                                    <input type="text" name="customslist['+i+'][url]" value="'+items[i].url+'" autocomplete="off" class="layui-input">\n' +
+                            '                                </td>\n' +
+                            '                                <td>\n' +
+                            '                                    <input type="text" name="customslist['+i+'][customs_num]" value="'+items[i].customs_num+'" autocomplete="off" class="layui-input">\n' +
+                            '                                </td>\n' +
+                            '                                <td>\n' +
+                            '                                    <input type="text" name="customslist['+i+'][customs_reg]" value="'+items[i].customs_reg+'" autocomplete="off" class="layui-input">\n' +
+                            '                                </td>\n' +
+                            '                                <td>\n' +
+                            '                                    <input type="text" name="customslist['+i+'][business_category]" value="'+items[i].business_category+'" autocomplete="off" class="layui-input">\n' +
+                            '                                </td>\n' +
+                            '                            </tr>\n' +
+                            '                            <tr>\n'+
+                            '                                <th>注册日期</th>\n' +
+                            '                                <th>工商注册地址</th>\n' +
+                            '                                <th>行政区划</th>\n' +
+                            '                                <th>经济区划</th>\n' +
+                            '                                <th>特殊贸易区域</th>\n' +
+                            '                            </tr>\n'+
+                            '                            <tr>\n' +
+                            '                                <td>\n' +
+                            '                                    <input type="text" name="customslist['+i+'][reg_date]" value="'+items[i].reg_date+'" autocomplete="off" class="layui-input">\n' +
+                            '                                </td>\n' +
+                            '                                <td>\n' +
+                            '                                    <input type="text" name="customslist['+i+'][reg_area]" value="'+items[i].reg_area+'" autocomplete="off" class="layui-input">\n' +
+                            '                                </td>\n' +
+                            '                                <td>\n' +
+                            '                                    <input type="text" name="customslist['+i+'][administrative_divisions]" value="'+items[i].administrative_divisions+'" autocomplete="off" class="layui-input">\n' +
+                            '                                </td>\n' +
+                            '                                <td>\n' +
+                            '                                    <input type="text" name="customslist['+i+'][economic_regions]" value="'+items[i].economic_regions+'" autocomplete="off" class="layui-input">\n' +
+                            '                                </td>\n' +
+                            '                                <td>\n' +
+                            '                                    <input type="text" name="customslist['+i+'][special_area]" value="'+items[i].special_area+'" autocomplete="off" class="layui-input">\n' +
+                            '                                </td>\n' +
+                            '                            </tr>\n'+
+                            '                            <tr>\n'+
+                            '                                <th>行业种类</th>\n' +
+                            '                                <th>报关有效期</th>\n' +
+                            '                                <th>海关注销标志</th>\n' +
+                            '                                <th>年报情况</th>\n' +
+                            '                            </tr>\n'+
+                            '                            <tr>\n' +
+                            '                                <td>\n' +
+                            '                                    <input type="text" name="customslist['+i+'][industry_type]" value="'+items[i].industry_type+'" autocomplete="off" class="layui-input">\n' +
+                            '                                </td>\n' +
+                            '                                <td>\n' +
+                            '                                    <input type="text" name="customslist['+i+'][vail_date]" value="'+items[i].vail_date+'" autocomplete="off" class="layui-input">\n' +
+                            '                                </td>\n' +
+                            '                                <td>\n' +
+                            '                                    <input type="text" name="customslist['+i+'][cancel_flag]" value="'+items[i].cancel_flag+'" autocomplete="off" class="layui-input">\n' +
+                            '                                </td>\n' +
+                            '                                <td>\n' +
+                            '                                    <input type="text" name="customslist['+i+'][annual_report]" value="'+items[i].annual_report+'" autocomplete="off" class="layui-input">\n' +
+                            '                                </td>\n' +
+                            '                            </tr>\n'+
+                            '                        </table>';
+                        $(".customslist").append(html);
+                    }
+
+                }
+            },
+            error : function(e){
+                console.log(JSON.stringify(e));
+
+            }
+        });
+
+        form.render(null, 'component-form-element1');
+    }
+</script>
+</html>

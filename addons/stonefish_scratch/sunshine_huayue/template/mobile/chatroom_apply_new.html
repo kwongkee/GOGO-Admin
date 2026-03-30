@@ -1,0 +1,328 @@
+{template 'header'}
+{template 'mobilecheck'}
+<div class="container">
+	<div class="cell">
+		<div class="bd">
+			<div class="weui_panel weui_panel_access">
+				<div class="weui_panel_bd">
+					<a href="{php echo $this->createMobileUrl('headimgset')}" class="weui_media_box weui_media_appmsg">
+					<div class="weui_media_hd">
+						<img class="weui_media_appmsg_thumb" src="{php echo $userinfo['headimgurl']}">
+					</div>
+					<div class="weui_media_bd">
+						<h4>{php echo $userinfo['nickname']}</h4>
+					</div>
+					</a>
+				</div>
+			</div>
+			<div class="weui_cells_title">
+	        房间Logo （1张）
+	        </div>
+	        <div class="weui_cells weui_cells_form">
+	            <div class="weui_cell">
+	                <div class="weui_cell_bd weui_cell_primary">
+	                    <div class="weiui_uploader_bd">
+	                        <ul class="weui_uploader_files" id="uploader_files">
+	                        </ul>
+	                    </div>
+	                    <div class="weui_uploader_input_wrp" id="uploader_files_btn">
+	                        <button class="weui_uploader_input" onclick="doSelect()"></button>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+			<div class="weui_cells_title">
+		    房间信息
+		    </div>
+			<div class="weui_cells weui_cells_form">
+
+				<div class="weui_cell">
+					<div class="weui_cell_hd">
+						<label class="weui_label">名称</label>
+					</div>
+					<div class="weui_cell_bd">
+						<input class="weui_input"  type="text" placeholder="必填" id="room_name"/>
+					</div>
+				</div>
+			</div>
+		    <div class="weui_cells_title">
+		    房间类型
+		    </div>
+		    <div class="weui_cells weui_cells_radio" id="room_type">
+		        <label class="weui_cell weui_check_label" for="x11">
+		            <div class="weui_cell_bd weui_cell_primary">
+		                <p>普通聊天室</p>
+		            </div>
+		            <div class="weui_cell_ft">
+		                <input type="radio" value="normal" class="weui_check" name="radio_apply" id='x11'>
+		                <span class="weui_icon_checked"></span>
+		            </div>
+		        </label>
+		        {if $this->settings['lvb_isopen'] == 'open'}
+		        <label class="weui_cell weui_check_label" for="x12">
+		            <div class="weui_cell_bd weui_cell_primary">
+		                <p>腾讯云直播间</p>
+		            </div>
+		            <div class="weui_cell_ft">
+		                <input type="radio" value="lvb" class="weui_check" name="radio_apply" checked="" id='x12'>
+		                <span class="weui_icon_checked"></span>
+		            </div>
+		        </label>
+		        {/if}
+		        {if $this->settings['letv_isopen'] == 'open'}
+		         <label class="weui_cell weui_check_label" for="x13">
+		            <div class="weui_cell_bd weui_cell_primary">
+		                <p>乐视云直播间</p>
+		            </div>
+		            <div class="weui_cell_ft">
+		                <input type="radio" value="letv" class="weui_check" name="radio_apply" checked="" id='x13'>
+		                <span class="weui_icon_checked"></span>
+		            </div>
+		        </label>
+		        {/if}
+		    </div>
+		     <div class="weui_cells_tips">
+		    1、普通聊天室：语音+文字+图片聊天；支持@功能；支持红包打赏某人功能；<br>
+		    2、直播间：普通聊天室的所有功能+视频功能+打赏主播功能；
+		    </div>
+		    <div class="weui_cells_title">
+		    房间基本配置选项
+		    </div>
+		    <div class="weui_cells weui_cells_form">
+		    	<div class="weui_cell weui_cell_switch">
+		            <div class="weui_cell_hd weui_cell_primary">是否公开</div>
+		            <div class="weui_cell_ft">
+		                <input class="weui_switch" type="checkbox" id="is_public">
+		            </div>
+		        </div>
+		        <div class="weui_cell weui_cell_switch">
+		            <div class="weui_cell_hd weui_cell_primary">是否加密</div>
+		            <div class="weui_cell_ft">
+		                <input class="weui_switch" type="checkbox" id="is_secret">
+		            </div>
+		        </div>
+		        <div class="weui_cell" id="show_room_secret" style="display:none">
+					<div class="weui_cell_hd">
+						<label class="weui_label">密码</label>
+					</div>
+					<div class="weui_cell_bd">
+						<input class="weui_input"  type="text" placeholder="必填" id="room_secret"/>
+					</div>
+				</div>
+				<div class="weui_cell weui_cell_switch">
+		            <div class="weui_cell_hd weui_cell_primary">是否收费</div>
+		            <div class="weui_cell_ft">
+		                <input class="weui_switch" type="checkbox" id="is_money">
+		            </div>
+		        </div>
+		        <div class="weui_cell" id="show_room_money" style="display:none">
+					<div class="weui_cell_hd">
+						<label class="weui_label">金额</label>
+					</div>
+					<div class="weui_cell_bd">
+						<input class="weui_input"  type="text" placeholder="必填(元)" id="room_money"/>
+					</div>
+				</div>
+		       	<div class="weui_cell" id="show_room_money_day" style="display:none">
+					<div class="weui_cell_hd">
+						<label class="weui_label">天</label>
+					</div>
+					<div class="weui_cell_bd">
+						<input class="weui_input"  type="number" placeholder="有效天数（必填）" id="room_money_day"/>
+					</div>
+				</div>
+	    	</div>
+	    	<div class="weui_cells_tips">
+		  	1、公开房：展示在房间列表页，所有人都可以看到。<br>
+		  	2、加密房：进入房间需要输入密码。<br>
+		  	3、收费房：进入房间需要支付费用，并且需要设置有效期。<br>
+		    </div>
+	    	<div class="weui_cells_title">
+		    房间描述（用于房间的说明）
+		    </div>
+		    <div class="weui_cells weui_cells_form">
+			    <div class="weui_cell">
+		            <div class="weui_cell_bd weui_cell_primary">
+		                <textarea class="weui_textarea" placeholder="必填" id="room_desc" rows="5"></textarea>
+		            </div>
+			    </div>
+		    </div>
+		    <div class="weui_btn_area">
+			    	<a href="javascript:;" onclick="doUpload()" id='save_btn' class="weui_btn weui_btn_primary">提交申请</a>
+				</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	//  口令开关
+	$("#is_secret").click(function() {
+		var checked = $(this).prop('checked');
+		if(checked)
+		{
+			$("#show_room_secret").show();
+			// 关闭且隐藏付费框
+			$("#is_money").prop('checked',false);
+			$("#show_room_money_day").hide();
+			$("#show_room_money").hide();
+		}
+		else
+		{
+			$("#show_room_secret").hide();
+		}
+	});
+	//  收费开关
+	$("#is_money").click(function() {
+		var checked = $(this).prop('checked');
+		if(checked)
+		{
+			$("#show_room_money").show();
+			$("#show_room_money_day").show();
+			// 关闭且隐藏口令框
+			$("#is_secret").prop('checked',false);
+			$("#show_room_secret").hide();
+		}
+		else
+		{
+			$("#show_room_money_day").hide();
+			$("#show_room_money").hide();
+		}
+	});
+	// save 
+	function doSave(media_ids) {
+		var 
+			room_name = $("#room_name").val(),
+			room_desc = $("#room_desc").val(),
+			room_logo_media_ids = media_ids,
+			is_public = $("#is_public").prop('checked') ? 'y':'n',
+			is_secret = $("#is_secret").prop('checked') ? 'y':'n',
+			room_secret = $("#room_secret").val();
+			room_type = $("#room_type input:checked").val(),
+
+			// 房间收费
+			is_money = $("#is_money").prop('checked') ? 'y':'n',
+			room_money = $("#room_money").val(),
+			room_money_day = $("#room_money_day").val();
+
+
+		if(!room_name || !room_desc || (is_secret=='y' && !room_secret) || !room_type || (is_money=='y' && !room_money_day)) {
+			alert('请填写完整');
+			return ;
+		}
+
+		if(!room_logo_media_ids) {
+			alert('请上传logo');
+			return;
+		}
+
+		if(!confirm('确认提交审核')) {
+			return;
+		}
+
+		$.ajax({
+			type:'post',
+			data:{
+				room_name:room_name,
+				room_desc:room_desc,
+				room_logo_media_ids:room_logo_media_ids,
+				is_public:is_public,
+				is_secret:is_secret,
+				room_secret:room_secret,
+				room_type:room_type,
+				is_money:is_money,
+				room_money:room_money,
+				room_money_day:room_money_day
+			},
+			url:"{php echo $this->createMobileUrl('ChatRoomApplySubmit')}",
+			success:function(d) {
+				if(d.res == 100) {
+					alert("提交审核成功，等待管理员审核");
+					window.history.back();
+				}else {
+					alert(d.msg);
+				}
+			}
+		});
+	}
+
+    // 5.1 拍照、本地选图
+	var images = {
+		localId: [],
+		serverId: []
+	};
+
+	function doSelect () {
+        // 判断图片数量
+        if($('#uploader_files li').size() > 1)
+        {
+            alert("只能上传1张图片");
+            return;
+        }
+
+        wx.chooseImage({
+            count: 1, // 默认9
+            sizeType: ['compressed'], // 可以指定是原图还是压缩图，默认二者都有
+            sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+            success: function (res) {
+
+                for(var i in res.localIds) {
+                    images.localId.push(res.localIds[i]);
+                    addImg(res.localIds[i]);
+                }
+                images.count -= res.localIds.length;
+                if(!images.count)
+                {
+                    $("#uploader_files_btn").hide();
+                }
+            }
+        });
+    };
+    function addImg(localId) {
+        var html = "";
+        html += "<li class='weui_uploader_file' onclick='doDelete(this,\""+localId+"\")'>";
+        html += "<a><img src='"+localId+"'></a>";
+        html +="</li>";
+        $("#uploader_files").append(html);
+    }
+     function doDelete(obj,localId) {
+        if(!confirm('确认删除？')) {
+            return false;
+        }
+        // remove
+        images.localId.splice(images.localId.indexOf(localId),1);
+        images.count++;
+
+        $(obj).remove();
+    }
+	function doUpload () {
+        $("#save_btn").attr('disabled',true);
+        if (images.localId.length == 0) {
+            // doSave(0);
+            alert("请选择图片");
+            return;
+        }else {
+            var i = 0, length = images.localId.length;
+            images.serverId = [];
+            function upload() {
+                wx.uploadImage({
+                    localId: images.localId[i],
+                    success: function (res) {
+                        i++;
+                        images.serverId.push(res.serverId);
+                        if (i < length) {
+                            upload();
+                        }else{
+                            var media_ids = images.serverId.join(',')
+                            doSave(media_ids);
+                        }
+                    },
+                    fail: function (res) {
+                        alert(JSON.stringify(res));
+                    }
+                });
+            }
+            upload();
+        }
+    };
+
+	</script>
+{template 'footer'}

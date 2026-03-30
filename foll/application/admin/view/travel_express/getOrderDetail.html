@@ -1,0 +1,145 @@
+{include file="public/header_new"}
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <form action="{:url('admin/travel_express/orderCheck')}" method="post" class="form form-horizontal" id="form" >
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="ibox-content p-xl">
+                        <div class="row">
+                            <div class="col-sm-6">
+
+                            </div>
+                            <input type="hidden" name="ordersn" value="{$order_info['ordersn']}">
+                            <input type="hidden" name="order_id" value="{$order_info['id']}">
+                            <div class="col-sm-6 text-right">
+                                <h4>订单编号：</h4>
+                                <h4 class="text-navy">{$order_info['ordersn']}</h4>
+                                <address>
+                                            <strong>揽收方式：</strong><br>
+                                            {$order_info['select_text']}
+                                        </address>
+                                <p>
+                                    <span><strong>提交日期：</strong> {php}echo date('Y-m-d H:i:s',$order_info['create_time']);{/php}</span>
+                                </p>
+                                <p>
+                                    <span><strong>收货信息：</strong> {$order_info['collect_address']}</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive m-t">
+                            <table class="table invoice-table">
+                                <thead>
+                                    <tr>
+                                        <th>分类</th>
+                                        <th>类别</th>
+                                        <th>品牌</th>
+                                        <th>品名</th>
+                                        <th>系列/型号</th>
+                                        <th>材质/段数</th>
+                                        <th>规格</th>
+                                        <th>数量</th>
+                                        <th>总重量</th>
+                                        <th>图片</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {volist name="goods" id="vo"}
+                                    <tr>
+                                        <td>{$vo['cates']}</td>
+                                        <td>{$vo['cates_c']}</td>
+                                        <td>{if $vo['brand_cn']=='0'}{$vo['brand_cn_other']}{else/}{$vo['brand_cn']}{/if}-{if $vo['brand_en']=='0'}{$vo['brand_en_other']}{else/}{$vo['brand_en']}{/if}</td>
+                                        <td>{$vo['good_name']}</td>
+                                        <td>{$vo['model']}</td>
+                                        <td>{$vo['material']}</td>
+                                        <td>{$vo['specs']}{$vo['specs2']}/{$vo['specs3']}</td>
+                                        <td>{$vo['num']}</td>
+                                        <td>{$vo['weight']}</td>
+                                        <td>
+                                            {php}$imgfile = explode(",",rtrim($vo['imgfile'], ','));{/php}
+                                            {volist name="imgfile" id="vos"}
+                                                <img onclick="see('{$vos}');" src="{$vos}" width="50" height="50">
+                                            {/volist}
+                                        </td>
+                                        <td>
+                                            <div class="input-group m-b">
+                                                <input type="hidden" name="id[]" value="{$vo['id']}">
+                                                <select class="form-control m-b" name="status[]">
+                                                    <option value="1">通过</option>
+                                                    <option value="2">不通过</option>
+                                                </select>
+                                                <textarea name="remark[]" class="form-control" cols="20" rows="1"></textarea>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {/volist}
+                                
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="text-right">
+                            <button class="btn btn-primary" type="submit"> 保存</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script type="text/javascript">
+    function see(img) {
+        layer.open({
+            type: 1,
+            title: false,
+            closeBtn: 1,
+            area: ['auto'],
+            skin: 'layui-layer-nobg',
+            shadeClose: true,
+            content: '<img src="'+img+'">'
+        });
+    }
+
+    var form = $("#form").Validform({
+            tiptype:2,
+            postonce:true,
+            ajaxPost:true,
+            tiptype:function(msg,o,cssctl){
+                if(!o.obj.is("form"))
+                {
+                    var objtip=o.obj.siblings(".Validform_checktip");
+                    cssctl(objtip,o.type);
+                    objtip.text(msg);
+                }
+                else
+                {
+                    var objtip=o.obj.find("#msgtip");
+                    cssctl(objtip,o.type);
+                    objtip.text(msg);
+                }
+            },
+            callback:function(data){
+                if(data.status==1)
+                {
+                    layer.msg(data.message, {
+                                icon: 1,
+                                time: 2000
+                            }, function(){
+                                parent.window.table.bootstrapTable('refresh');
+                                var index = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(index);
+                            });
+                            return true;
+                }
+                else
+                {
+                    layer.msg(data.message, {icon:2, time:2000});
+                    return false;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

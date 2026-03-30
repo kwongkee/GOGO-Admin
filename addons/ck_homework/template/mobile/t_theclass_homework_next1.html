@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="Cache-Control" content="no-cache"/>
+<title>手动选题 - {$config['webtitle']}</title>
+<meta http-equiv="description" content="" />
+<meta name="renderer" content="webkit"/>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+<meta name="description" content="" id="description"/>
+<meta name="keywords" content=""/>
+<link rel="stylesheet" href="{$templateurl}css/css.css" type="text/css"/>
+<link href="{$templateurl}js/SpryAssets/SpryTabbedPanels.css" rel="stylesheet" type="text/css" />
+<script src="{$templateurl}js/jquery-1.8.0.min.js" language="javascript"></script>
+<script language="javascript" type="text/javascript">
+function checkAll(name) {
+	var form = document.formt; 
+	for(var i = 0; i < form.elements.length; i++) {
+		var e = form.elements[i];
+		if(e.name.match(name)) {
+			e.checked = form.elements['chkall'].checked;
+		}
+	}
+}
+function checkinfo() {
+		
+	var ids = document.getElementsByName('ids[]');
+	var ids_ck = 0;
+	for (i=0;i<ids.length;i++){
+	   if(ids[i].checked == true){
+		ids_ck++;
+	  }
+	}
+	if (ids_ck < 1){
+		alert("抱歉！请选择题目才能发布!");
+		return false; 
+	}
+	
+}
+</script> 
+</head>
+
+<body>
+<div class="kaoshizuoyetab">
+<form name="formt" action="{php echo $this->createMobileUrl('t_theclass_show');}&id={$id}" method="post" class="form" onSubmit="return checkinfo(this);">
+	<input name="token" type="hidden" value="{$_W['token']}" />
+	<input name="wid" type="hidden" value="{$_GPC['wid']}" />
+	<div class="xtdingba" >
+		<div class="a1" style="min-width:300px;">
+			<p>筛选题型</p>
+			<a href="{$urltk}&od={$od}" {if $typeid == ''}class="active"{/if}>全题型</a>
+			{loop $ptypeid_arll $row}
+			<a href="{$urltk}&od={$od}&typeid={$row}" {if $typeid == $row}class="active"{/if}>{$type_arr[$row]}</a>
+			{/loop}
+		</div>
+		<div class="clear"></div>
+		<div class="a2">
+			<a href="{php echo $this->createMobileUrl('t_question', array('tab'=>'add'));}">我要出题</a>
+			<input type="submit" name="sdsace_submit" value="确定发布" class="qd" style="float:left; background:#f60; color:#fff; line-height:24px; text-align:center; width:30%; border-radius:3px; margin:3px 1.5%; border:0px;">
+			<a class="qx" href="javascript:void(0);"><input type="checkbox" id="chkall" name="chkall" onclick="checkAll('ids')" >全选/取消</a>
+		</div>
+	</div>
+	<div class="heightclear"></div>
+
+    <div id="TabbedPanels1" class="TabbedPanels">
+		<ul class="TabbedPanelsTabGroup">
+			<li class="TabbedPanelsTab {if $od == '0'}TabbedPanelsTabSelected{/if}" tabindex="0" style="width:50%;"><a href="{$urltk}&typeid={$typeid}" style="display:block;">查看全部</a></li>
+			<li class="TabbedPanelsTab {if $od == '1'}TabbedPanelsTabSelected{/if}" tabindex="0" style="width:50%;"><a href="{$urltk}&od=1&typeid={$typeid}" style="display:block;">仅看我出的题</a></li>
+		</ul>
+    	<div class="TabbedPanelsContentGroup">
+	
+		  <div class="TabbedPanelsContent zhishidiantab">
+			<div class="warp_content clear">
+			  <div class="job_list_content">
+			  
+				<!--start-->
+				{if $list_questions}
+				{loop $list_questions $value}
+				<div class="job_list_box">
+					<label>          
+					<h3>{php echo html_entity_decode($value['titlename']);}</h3>
+					<div>
+						<span class="index_wap_joblist_comname_p">难度：{$level_arr[$value['level']]}</span>
+						<span class="index_wap_joblist_comname_p" style="color:#f30; margin-left:15px;">[ {$type_arr[$value['type']]} ]</span>
+						<span class="index_wap_joblist_comname_p" style="color:#f30; margin-left:15px;">
+						<a href="题目详情无编辑权限.html" style="background:#f60; color:#fff; padding:0px 3px; border-radius:3px;">查看题目</a>
+						</span>
+					</div> 
+					<input class="i1" type="checkbox" name="ids[]" value="{$value[id]}"/>
+					</label>
+				</div>
+				{/loop} 
+				{else}
+				<div class="job_list_box"><label> 抱歉！未找到相应题目！ </label></div>
+				{/if} 
+				<!--end-->
+				 
+			  </div>
+			</div>
+		  </div>
+      
+        </div>
+	  
+    </div>
+</form>	
+	
+</div>
+
+<div class="clear"></div>
+<div class="clear"></div>
+
+<!--footer strat-->
+{template 't_footer'}
+</body>
+</html>

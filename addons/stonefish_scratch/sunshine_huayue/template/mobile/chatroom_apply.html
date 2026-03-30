@@ -1,0 +1,203 @@
+{template 'header'}
+<style type="text/css">
+	input {
+		color:black;
+	}
+</style>
+	<div class="ui-container">
+		{if $err_msg['res'] != '100'}
+		{$err_msg['msg']}
+		{else}
+		<div class="ui-form ui-border-t">
+		    <form action="#">
+		    	 <div class="ui-form-item ui-border-b">
+		            <label>
+		                房主
+		            </label>
+		            <input type="text" disabled="disabled" value="{$userinfo['nickname']}">
+		        </div>
+		        <div class="ui-form-item ui-border-b">
+		            <label>
+		                房间名称
+		            </label>
+		            <input type="text" id='room_name' placeholder="必填">
+		            <a href="#" onclick="$(this).siblings('input').val('')" class="ui-icon-close">
+		            </a>
+		        </div>
+		        <div class="ui-form-item ui-form-item-textarea ui-border-b">
+		            <label>
+		                房间描述
+		            </label>
+		            <textarea placeholder="必填" id='room_desc'></textarea>
+		        </div>
+		          <div class="ui-form-item ui-form-item-switch ui-border-b">
+		            <p>
+		                对外公开可见
+		            </p>
+		            <label class="ui-switch">
+		                <input type="checkbox" id="is_public">
+		            </label>
+		        </div>
+		        <div class="ui-form-item ui-form-item-switch ui-border-b">
+		            <p>
+		                进入口令
+		            </p>
+		            <label class="ui-switch">
+		                <input type="checkbox" id="is_secret">
+		            </label>
+		        </div>
+		         <div class="ui-form-item ui-border-b" id="show_room_secret" style="display:none">
+		            <label>
+		                口令密码
+		            </label>
+		            <input type="text" id='room_secret' placeholder="必填">
+		            <a href="#" onclick="$(this).siblings('input').val('')" class="ui-icon-close">
+		            </a>
+		        </div>
+		    </form>
+		</div>
+		<br>
+		<div style="height:130px;width:200px;margin:0px auto;display:none;" id="room_logo_show">
+			<img src=""  style="height:130px;width:200px;">
+			<input type="hidden" id="room_logo">
+		</div>
+		<br>
+		<div class="ui-btn-wrap">
+			<button class="ui-btn ui-btn-primary" onclick="doSelect('logo')">上传聊天室logo</button>
+		</div>
+		<br>
+		<br>
+		<div class="ui-btn-wrap">
+			<button class="ui-btn-lg ui-btn-primary" onclick="doApply()">提交创建申请</button>
+		</div>
+		{/if}
+	</div>
+	<script type="text/javascript">
+	//  口令开关
+	$("#is_secret").click(function() {
+		var checked = $(this).prop('checked');
+		if(checked)
+		{
+			$("#show_room_secret").show();
+		}
+		else
+		{
+			$("#show_room_secret").hide();
+		}
+	});
+	// save 
+	function doApply() {
+		var 
+			room_name = $("#room_name").val(),
+			room_desc = $("#room_desc").val(),
+			room_logo = $("#room_logo").val(),
+			is_public = $("#is_public").prop('checked') ? 'y':'n',
+			is_secret = $("#is_secret").prop('checked') ? 'y':'n',
+			room_secret = $("#room_secret").val();
+
+		if(!room_name || !room_desc || (is_secret=='y' && !room_secret)) {
+			alert('请填写完整');
+			return ;
+		}
+
+		if(!room_logo) {
+			alert('请上传logo');
+			return;
+		}
+
+		if(!confirm('确认提交审核')) {
+			return;
+		}
+
+		$.ajax({
+			type:'post',
+			data:{
+				room_name:room_name,
+				room_desc:room_desc,
+				room_logo:room_logo,
+				is_public:is_public,
+				is_secret:is_secret,
+				room_secret:room_secret
+			},
+			url:"{php echo $this->createMobileUrl('ChatRoomApplySubmit')}",
+			success:function(d) {
+				if(d.res == 100) {
+					alert("提交审核成功，等待管理员审核");
+					window.history.back();
+				}else {
+					alert(d.msg);
+				}
+			}
+		});
+	}
+
+    // 5.1 拍照、本地选图
+	var images = {
+		localId: [],
+		serverId: []
+	};
+	// type 用于区分是上传的头像，还是幻灯片
+	function doSelect (type) {
+
+		num = type == 'logo' ? 1:9;
+		wx.chooseImage({
+			count: num, // 默认9
+			sizeType: ['original'], // 可以指定是原图还是压缩图，默认二者都有
+			sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+			success: function (res) {
+				images.localId = res.localIds;
+				alert('已选择 ' + res.localIds.length + ' 张图片');
+				doUpload(type);
+			}
+		});
+	};
+	// 5.3 上传图片
+	function doUpload (type) {
+		if (images.localId.length == 0) {
+			alert('请先使用 chooseImage 接口选择图片');
+			return;
+		}
+		var i = 0, length = images.localId.length;
+		images.serverId = [];
+		function upload() {
+			wx.uploadImage({
+				localId: images.localId[i],
+				success: function (res) {
+					i++;
+					images.serverId.push(res.serverId);
+					if (i < length) {
+						upload();
+					}
+					else
+					{
+						alert('已上传：' + i + '/' + length);
+						$.ajax({
+							type:'post',
+							url:"{php echo $this->createMobileUrl('UploadLogoByUser')}",
+							data:{'datatype':type,media_ids:images.serverId.join(',')},
+							success:function(d,s) {
+								// document.write(d);
+								if(d.res == 100)
+								{
+									$("#room_logo_show img").attr('src',d.imgurl);
+									$("#room_logo_show").show();
+									$("#room_logo_show input").val(d.imgurl);
+								}
+								else
+								{
+									alert(d.msg);
+								}
+							}
+						});
+					}
+				},
+				fail: function (res) {
+					alert(JSON.stringify(res));
+				}
+			});
+		}
+		upload();
+	};
+
+	</script>
+{template 'footer'}

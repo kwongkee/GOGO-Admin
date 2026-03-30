@@ -1,0 +1,257 @@
+{include file="public/header"}
+<style>
+    .subchannel{display:none;}
+    .disf{display:flex;align-items:center;justify-content: space-between;}
+</style>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="disf">
+        <button class="layui-btn" id="load"><i class="layui-icon"></i>通过接口更新数据</button>
+        <div class="disf" style="padding:10px 20px;box-sizing: border-box;">
+            <input type="text" class="layui-input" name="keyword" placeholder="请输入运输编码查询">
+            <div class="layui-btn layui-btn-md search">查询</div>
+        </div>
+    </div>
+    <table class="layui-table">
+        <colgroup>
+            <col width="150">
+            <col  width="150">
+        </colgroup>
+        <thead>
+        <tr>
+            <th>渠道代码</th>
+            <th>子渠道信息代码</th>
+            <th>运输编码</th>
+            <th>运输中文名称</th>
+            <th>运输英文名称</th>
+            <th>时效</th>
+<!--            <th>详情图</th>-->
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {volist name="list" id="vo"}
+        <tr>
+            <td>{$vo.Base_ChannelInfoID}</td>
+            <td>{$vo.subChannelInfoID}</td>
+            <td>{$vo.ChannelCode}</td>
+            <td>{$vo.CnName}</td>
+            <td>{$vo.EnName}</td>
+            <td>{$vo.RefTime}</td>
+<!--            <td><a href="https://admin.gogo198.cn/{$vo.detail}" target="_blank"><img src="https://admin.gogo198.cn/{$vo.detail}" style="width:50px;height:50px;"></a></td>-->
+            <td>
+<!--                <div class="layui-btn layui-btn-xs" onclick="upload('{$vo.ChannelCode}','{$vo.CnName}')" style="cursor:pointer;">上传</div>-->
+                <div class="layui-btn layui-btn-xs" onclick="edit('{$vo.ChannelCode}','{$vo.CnName}')" style="cursor:pointer;">编辑</div>
+                {if !empty($vo.subChannelInfoID)}
+                <div class="layui-btn layui-btn-xs layui-btn-success" style="background:#1790ff;" onclick="view('{$vo.ChannelCode}')" style="cursor:pointer;">查看</div>
+                {/if}
+            </td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+
+</div>
+<div class="subchannel" style="display: none;">
+    <form class="layui-form" action="" method="post" lay-filter="component-form-element" style="text-align: center;padding:10px;box-sizing: border-box;">
+        <input type="hidden" name="channelCode" id="channelCode" value="">
+        <div class="layui-form-item">
+            <div class="layui-form-label">子渠道信息代码</div>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" name="subChannelInfoID" lay-verify="required">
+            </div>
+        </div>
+        <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+    </form>
+</div>
+<div class="upload_img" style="display: none;">
+    <form class="layui-form" action="" method="post" lay-filter="component-form-element2">
+        <input type="hidden" name="channelCode2" id="channelCode2" value="">
+        <div class="layui-form-item">
+            <div class="layui-form-label">价格详情图</div>
+            <div class="layui-input-block">
+                <div class="layui-upload" id="contract_type" style="margin-top: 10px;">
+                    <button type="button" class="layui-btn" id="img_file-upload">上传价格详情图(一张)</button>
+                    <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                        预览图：
+                        <div class="layui-upload-list" id="img_file-upload-list">
+
+                        </div>
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+        <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">立即提交</button>
+    </form>
+</div>
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/js/bootstrap.min.js?v=3.3.6"></script>
+<script src="./static/hadmin/layui/layui.all.js"></script>
+</body>
+<script>
+    layui.use(['upload','layer','form'], function () {
+        var upload = layui.upload;
+        var layer = layui.layer;
+        var $ = layui.jquery;
+        var form = layui.form;
+
+        form.render('null','component-form-element');
+        // 轮播图文件
+        upload.render({
+            elem: '#img_file-upload'
+            ,url: '{:Url("admin/defaultInfo/upload_file")}'
+            ,accept: 'image'
+            ,data: { folder: 'centralize', type: 'line_price_file'}
+            ,multiple: false
+            ,number:1
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+
+                    $('#img_file-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="img_file[]" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+
+        form.on('submit(component-form-element)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            // if( $('#img_file-upload-list').children().length == 0 )
+            // {
+            //     layer.msg('请上传价格图详情！');
+            //     return false;
+            // }
+
+            $.ajax({
+                url:"{:Url('centralize/index/save_linepriceimg')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            window.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+        $('.search').click(function(){
+           let keyword = $('input[name="keyword"]').val();
+
+            window.location.href="{:Url('centralize/index/set_line')}&keyword="+keyword;
+        });
+    });
+    $('#load').bind('click',function () {
+        $.ajax({
+            type: "POST",
+            url: '{:Url("centralize/index/set_line")}',
+            dataType: "json",
+            data: {'pa':1},
+            timeout: 2000,
+            success: function (res) {
+                console.log(res);
+                layer.msg(res.msg,{time:2000}, function () {
+                    if (res.code == 0) {
+                        window.location.reload();
+                    }
+                });
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+            }
+        });
+    });
+
+    function upload(channelcode,name){
+        var upload = layui.upload
+            ,layer = layui.layer
+            , $ = layui.jquery;
+        $('#img_file-upload-list').html('');
+        $('.upload_img').find('#channelCode').val(channelcode);
+        layer.open({
+            type: 1,
+            shadeClose:true,
+            cancel:function(){
+                //location.reload();
+            },
+            title:'上传'+name,
+            area:['803px','530px'],
+            content: $('.upload_img')
+        });
+    }
+
+    function edit(channelcode,name){
+        var upload = layui.upload
+            ,layer = layui.layer
+            , $ = layui.jquery;
+        // $('#img_file-upload-list').html('');
+
+        $('.subchannel').find('#channelCode').val(channelcode);
+        layer.open({
+            type: 1,
+            shadeClose:true,
+            cancel:function(){
+                //location.reload();
+            },
+            title:'编辑'+name,
+            area:['803px','530px'],
+            content: $('.subchannel'),
+            end:function(){
+                $('.subchannel').hide()
+            }
+        });
+    }
+
+    function view(channelcode){
+        var upload = layui.upload
+            ,layer = layui.layer
+            , $ = layui.jquery;
+
+        $.ajax({
+            type: "POST",
+            url: '{:Url("centralize/index/view_line")}',
+            dataType: "json",
+            data: {'pa':1,'channelcode':channelcode},
+            timeout: 2000,
+            success: function (res) {
+                if(res.code==0){
+                    layer.open({
+                        type: 1,
+                        shadeClose:true,
+                        title:'查看'+channelcode,
+                        area:['803px','530px'],
+                        content: '<div style="background:#eee;padding:15px;box-sizing: border-box;">'+res.content+'</div>',
+                        end:function(){
+
+                        }
+                    });
+                }
+            },
+        });
+    }
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            // layer.closeAll();
+        }, function(){
+
+        });
+    }
+</script>
+</html>

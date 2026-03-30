@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>系统管理</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <style>
+        .icon_div{display:none;}
+    </style>
+</head>
+<body>
+<form class="layui-form" action="">
+    <input type="hidden" name="id" value="{$data['id']}">
+    <input type="hidden" name="pid" value="{$pid}">
+    <div class="layui-form-item">
+        <label class="layui-form-label">权限类别</label>
+        <div class="layui-input-block">
+            <select name="auth_type" lay-verify="required">
+                <option value="">请选择权限类别</option>
+                <option value="1" {if $data['auth_type']==1}selected{/if}>总后台</option>
+<!--                <option value="2" {if $data['auth_type']==2}selected{/if}>旧的商户端</option>-->
+                <option value="3" {if $data['auth_type']==3}selected{/if}>商户应用</option>
+                <option value="4" {if $data['auth_type']==4}selected{/if}>客服应用</option>
+                <option value="5" {if $data['auth_type']==5}selected{/if}>独立站应用</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="title" value="{$data['title']}" required  lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">菜单url</label>
+        <div class="layui-input-block">
+            <input type="text" name="url" value="{$data['url']}" placeholder="请输入" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">排序</label>
+        <div class="layui-input-block">
+            <input type="text" name="sort"  value="{$data['sort']}"  placeholder="0" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+<!--    <div class="layui-form-item">-->
+<!--        <label class="layui-form-label">级别</label>-->
+<!--        <div class="layui-input-block">-->
+<!--            <input type="text" name="level" value="{$data['level']}"  placeholder="0" autocomplete="off" class="layui-input">-->
+<!--        </div>-->
+<!--    </div>-->
+
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">状态</label>
+        <div class="layui-input-block">
+            <input type="radio" name="status" value="0" title="显示" {if $data['status']==0}checked{/if}>
+            <input type="radio" name="status" value="1" title="隐藏" {if $data['status']==1}checked{/if}>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">是否菜单</label>
+        <div class="layui-input-block">
+            <input type="radio" name="is_menu" value="1" title="否" {if $data['is_menu']==1}checked{/if}>
+            <input type="radio" name="is_menu" value="0" title="是" {if $data['is_menu']==0}checked{/if}>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">上级通知</label>
+        <div class="layui-input-block">
+            <input type="radio" name="up_notice" value="1" title="允许" {if $data['up_notice']==1}checked{/if}>
+            <input type="radio" name="up_notice" value="0" title="禁止" {if $data['up_notice']==0}checked{/if}>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">下级通知</label>
+        <div class="layui-input-block">
+            <input type="radio" name="down_notice" value="1" title="允许" {if $data['down_notice']==1}checked{/if}>
+            <input type="radio" name="down_notice" value="0" title="禁止" {if $data['down_notice']==0}checked{/if}>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">图标上传</label>
+        <div class="layui-input-block">
+            <input type="radio" name="icon_type" value="1" title="允许" {if $data['icon_type']==1}checked{/if} lay-filter="icon_type">
+            <input type="radio" name="icon_type" value="0" title="禁止" {if $data['icon_type']==0}checked{/if} lay-filter="icon_type">
+        </div>
+    </div>
+    <div class="layui-form-item icon_div" style="display:{if $data['icon_type']==1}block{else}none{/if}";>
+        <div class="layui-form-label">图标文件(200*200)</div>
+        <div class="layui-input-block">
+            <div class="layui-upload" style="margin-top: 10px;">
+                <button type="button" class="layui-btn" id="img_file-upload">上传图片(一张)</button>
+                <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;background:#e6e6e6;">
+                    预览图：
+                    <div class="layui-upload-list" id="img_file-upload-list">
+                        {if !empty($data['icon'])}
+                        <div style="display: inline-block;">
+                            <img onclick="seePic(this);" src="/{$data['icon']}" class="layui-upload-img" style="width:80px;height:80px;">
+                            <button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button>
+                            <input type="hidden" name="icon[]" value="{$data['icon']}">
+                        </div>
+                        {/if}
+                    </div>
+                </blockquote>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+        </div>
+    </div>
+</form>
+
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+
+<script>
+    //Demo
+    layui.use(['form','upload'], function(){
+        var form = layui.form,
+            upload = layui.upload;
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            $.ajax({
+                url:"{:Url('admin/rolePermission/save_menu')}",
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (res) {
+                    layer.msg(res.msg);
+                    if(res.code==0){
+                        setTimeout(function () {
+                            parent.location.reload();
+                        },2000);
+                    }
+
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            // admin/customssystem/declMenuCreate
+            return false;
+        });
+
+        form.on('radio(icon_type)',function(data){
+            let val = data.value;
+
+            if(val==1){
+                $('.icon_div').show();
+            }else{
+                $('.icon_div').hide();
+            }
+        });
+
+        // 轮播图文件
+        upload.render({
+            elem: '#img_file-upload'
+            ,url: '{:Url("admin/basic/upload_file")}'
+            ,accept: 'file'
+            ,data: { folder: 'customer', type: 'menu'}
+            ,multiple: false
+            ,number:1
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+
+                    $('#img_file-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="icon[]" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+</script>
+</html>

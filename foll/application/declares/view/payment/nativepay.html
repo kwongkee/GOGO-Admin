@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>人民币收银台</title>
+	<link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+	<script type="text/javascript" src="__STATIC__/plugins/layui/pageUtil.js"></script>
+	<script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+	
+	<style>
+		.header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+		.header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+		.header button{float: right;margin-top: -5px;}
+		#formli {width: 150%;float: left;line-height:36px;text-align: center;}
+		#formli li{float: left;}
+		/*response.setHeader("X-Frame-Options","SAMEORIGIN");*/
+	</style>
+	
+</head>
+<body style="padding: 10px;">
+	
+	<div class="header">
+		<span>人民币收银台</span>
+		<!--<button class="layui-btn layui-btn-xs" style="float: right;" onclick="add();">添加</button>-->
+		<div></div>
+	</div>
+	
+	<div style="margin: 15px 0px;"></div>
+	
+	<form class="layui-form layui-form-pane" name="submitForm" id="submitForm" method="post" action="https://uwebgatetest.hnapay.com/webgate/nativepay.htm">
+		
+		<!--<div class="layui-form-item">
+		    <label class="layui-form-label">请求URL</label>
+		    <div class="layui-input-block">-->
+		    	<!--onchange="$('#submitForm').attr('action', $('#URL').val())"-->
+		      <!--<select id="URl" lay-verify="required">
+		        <option value="https://uwebgatetest.hnapay.com/webgate/nativepay.htm">https://uwebgatetest.hnapay.com/webgate/nativepay.htm</option>
+				<option value="https://uwebgate.hnapay.com/webgate/nativepay.htm">https://uwebgate.hnapay.com/webgate/nativepay.htm</option>   
+		      </select>
+		    </div>
+	  	</div>-->
+		
+		<div class="layui-form-item">
+	  		<label class="layui-form-label">版本号:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" readonly name="version" value="1.0" placeholder="请输入版本号"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">版本号</div>
+	  	</div>
+	  	
+	  	<div class="layui-form-item">
+	  		<label class="layui-form-label">订单号:</label>
+	  		<div class="layui-input-inline">
+	  			<ul id="formli">
+	  				<li>
+	  					<input type="text" class="layui-input" maxlength="32" name="orderId" value="" placeholder="请输入订单号"/>
+	  				</li>
+	  				<li style="margin-left: 10px;">
+	  					<input type="button" value="生成订单号" class="layui-btn layui-btn-sm" onclick="setOrderId();" />
+	  				</li>
+	  			</ul>
+	  		</div>
+	  		<!--<div class="layui-form-mid layui-word-aux">订单编号</div>-->
+	  	</div>
+	  	
+	  	<!--<div class="layui-form-item">
+	  		<label class="layui-form-label">下单商户名:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="displayName" id="" value="" placeholder="请输入下单商户名"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">可空</div>
+	  	</div>-->
+	  	
+	  	<div class="layui-form-item">
+	  		<label class="layui-form-label">商品名称:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="goodsName" value="Surface NoteBook 15'" placeholder="请输入商品名称"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">商品名称</div>
+	  	</div>
+	  	
+	  	<div class="layui-form-item">
+	  		<label class="layui-form-label">商品数量:</label>
+	  		<div class="layui-input-block">
+	  			<input type="number" class="layui-input" name="goodsCount" value="1" placeholder="请输入商品数量"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">商品数量</div>
+	  	</div>
+	  	
+	  	<div class="layui-form-item">
+	  		<label class="layui-form-label">商品分类:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="goodsType" id="" value="01" placeholder="请输入商品分类"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">货物贸易下必填。 服装－00 食品－01电子产品－02 箱包－03 日用品－04 保健品－05 化妆品－06 家电－07</div>
+	  	</div>
+	  	
+	  	<div class="layui-form-item">
+	  		<label class="layui-form-label">订单提交时间:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="submitTime" id="" value="" placeholder="请输入订单提交时间"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">订单提交时间</div>
+	  	</div>
+	  	
+	  	<!--<div class="layui-form-item">
+	  		<label class="layui-form-label">订单失效时间:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="failureTime" id="" value="" placeholder="请输入订单失效时间"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">可空</div>
+	  	</div>-->
+	  	
+	  	<div class="layui-form-item">
+	  		<label class="layui-form-label">域名及IP:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="customerIp" value="120.78.202.118" placeholder="请输入域名及IP"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">域名及IP</div>
+	  	</div>
+	  	
+	  	<div class="layui-form-item">
+	  		<label class="layui-form-label">网站域名:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="siteId" value="www.usolvpay.com" placeholder="请输入网站域名"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">网站域名</div>
+	  	</div>
+	  	
+	  	<div class="layui-form-item">
+	  		<label class="layui-form-label">订单金额:</label>
+	  		<div class="layui-input-block">
+	  			<input type="number" class="layui-input" name="orderAmount" id="orderAmount" value="1" placeholder="请输入订单金额"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">以元为单位</div>
+	  	</div>
+		
+		<div class="layui-form-item">
+	  		<label class="layui-form-label">订单币种:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" readonly name="orderCurrencyCode" value="CNY" placeholder="请输入订单币种"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">订单币种</div>
+	  	</div>
+	  	
+	  	<div class="layui-form-item">
+	  		<label class="layui-form-label">交易类型:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="tradeType" value="0003" placeholder="请输入交易类型"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">0001-担保交易，0002-即时付款，
+0003-跨境支付，0004-货物贸易，
+0005-酒店住宿，0006-机票旅游，
+0007-留学教育，0008-国际会展，
+0009-国际会议，0010-物流支付，
+0011-国际汇款，0012-平台交易</div>
+	  	</div>
+	  	
+	  	
+	  	<!--<div class="layui-form-item">
+	  		<label class="layui-form-label">付款方账户号:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="payerAccount" value="" placeholder="请输入付款方账户号"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">可空</div>
+	  	</div>-->
+	  	
+	  	<div class="layui-form-item">
+	  		<label class="layui-form-label">付款方式:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" readonly name="payType" value="ALL" placeholder="请输入付款方式"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">付款方式</div>
+	  	</div>
+	  	
+	  	<!--<div class="layui-form-item">
+	  		<label class="layui-form-label">目标资金机构代码:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="orgCode" value="" placeholder="请输入目标资金机构代码"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">可空</div>
+	  	</div>-->
+	  	
+	  	<div class="layui-form-item">
+	  		<label class="layui-form-label">交易币种:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" readonly name="currencyCode" value="CNY" placeholder="请输入交易币种"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">交易币种</div>
+	  	</div>
+		
+		<div class="layui-form-item">
+	  		<label class="layui-form-label">结算币种:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" readonly name="settlementCurrencyCode" value="CNY" placeholder="请输入结算币种"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">结算币种</div>
+	  	</div>
+
+		<div class="layui-form-item">
+	  		<label class="layui-form-label">是否直连:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="directFlag" value="0" placeholder="请输入是否直连"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">0：非直连 （默认）,1：直连</div>
+	  	</div>
+
+		<div class="layui-form-item">
+	  		<label class="layui-form-label">资金来源借贷标识:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="borrowingMarked" value="0" placeholder="请输入资金来源借贷标识"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">0：无特殊要求（默认）,1：只借记,2：只贷记</div>
+	  	</div>
+	  	
+	  	<!--<div class="layui-form-item">
+	  		<label class="layui-form-label">优惠券标识:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="couponFlag" value="1" placeholder="请输入优惠券标识"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">1：可用 （默认）,0：不可用</div>
+	  	</div>-->
+	  	
+		<div class="layui-form-item">
+	  		<label class="layui-form-label">分账标识:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="shareFlag" value="0" placeholder="请输入分账标识"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">0：不分账（默认）, 1：分账（仅当交易类型(tradeType)为0004、或0012时可选）</div>
+	  	</div>
+	
+		<!--<div class="layui-form-item">
+	  		<label class="layui-form-label">分账订单信息:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="subMerchantOrderDetails" value="0" placeholder="请输入版本号"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">0：不分账（默认）, 1：分账（仅当交易类型(tradeType)为0004、或0012时可选）</div>
+	  	</div>-->
+	  	
+	  	<!--<div class="layui-form-item">
+	  		<label class="layui-form-label">平台商ID:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="platformId" value="" placeholder="请输入版本号"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">可空</div>
+	  	</div>-->
+	  	
+	  	<div class="layui-form-item">
+	  		<label class="layui-form-label">商户通知地址:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" readonly name="returnUrl" value="http://shop.gogo198.cn/foll/public/index.php?s=notify/returnUrl" placeholder="请输入版本号"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">商户通知地址</div>
+	  	</div>
+	  	
+	  	<div class="layui-form-item">
+	  		<label class="layui-form-label">商户回调地址:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" readonly name="noticeUrl" value="http://shop.gogo198.cn/foll/public/index.php?s=notify/noticeUrl" placeholder="请输入版本号"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">商户回调地址</div>
+	  	</div>
+	  	
+	  	<div class="layui-form-item">
+	  		<label class="layui-form-label">商户ID:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" readonly name="partnerId" value="10000000050" placeholder="请输入商户ID"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">商户ID或会员ID</div>
+	  	</div>
+		
+		<div class="layui-form-item">
+	  		<label class="layui-form-label">贸易详情标示:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="tradeDetailFlag" value="1" placeholder="请输入贸易详情标示"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">0-无明细文件（默认）。1-有明细文件。</div>
+	  	</div>
+	  	
+	  	<!--<div class="layui-form-item">
+	  		<label class="layui-form-label">收款人名称:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="payeeName" value="" placeholder="请输入收款人名称"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">可空</div>
+	  	</div>-->
+	  	
+	  	<!--<div class="layui-form-item">
+	  		<label class="layui-form-label">收款人国家地区英文码:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="regionEnCode" value="USA" placeholder="请输入收款人国家地区英文码"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">可空</div>
+	  	</div>-->
+	  	
+	  	<!--<div class="layui-form-item">
+	  		<label class="layui-form-label">收款人银行Swift码:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="payeeSwift" value="USA" placeholder="请输入版本号"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">可空</div>
+	  	</div>-->
+	  	
+	  	<!--<div class="layui-form-item">
+	  		<label class="layui-form-label">收款人账号:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="payeeAccount" value="USA" placeholder="请输入版本号"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">可空</div>
+	  	</div>-->
+	  	
+	  	<!--<div class="layui-form-item">
+	  		<label class="layui-form-label">收款人地址:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="payeeAddress" value="USA" placeholder="请输入版本号"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">可空</div>
+	  	</div>-->
+	  	
+	  	<!--<div class="layui-form-item">
+	  		<label class="layui-form-label">货运机构:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="freightOrg" value="UPS" placeholder="请输入货运机构"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">可空</div>
+	  	</div>-->
+	  	
+	  	<!--<div class="layui-form-item">
+	  		<label class="layui-form-label">货运机构网址:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="freightWebsite" value="www.ups.com" placeholder="请输入货运机构网址"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">可空</div>
+	  	</div>-->
+	  	
+	  	<!--<div class="layui-form-item">
+	  		<label class="layui-form-label">运单号:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="waybillNo" value="E0001001" placeholder="请输入运单号"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">可空</div>
+	  	</div>-->
+	  	
+	  	<!--<div class="layui-form-item">
+	  		<label class="layui-form-label">商户用户名:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="customerId" value="10001001" placeholder="请输入商户用户名"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">可空</div>
+	  	</div>-->
+	  	
+	  	<!--<div class="layui-form-item">
+	  		<label class="layui-form-label">商户用户类型:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="customerType" value="" placeholder="请输入商户用户类型"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">可空</div>
+	  	</div>-->
+	  	
+	  	<!--<div class="layui-form-item">
+	  		<label class="layui-form-label">商户用户姓名:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="customerName" value="" placeholder="请输入商户用户姓名"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">可空</div>
+	  	</div>-->
+	  	
+	  	<!--<div class="layui-form-item">
+	  		<label class="layui-form-label">商户用户证件号:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="customerIdNo" value="" placeholder="请输入商户用户证件号"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">可空</div>
+	  	</div>-->
+	  	
+		<!--<div class="layui-form-item">
+	  		<label class="layui-form-label">商户用户手机号:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="customerTel" value="" placeholder="请输入商户用户手机号"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">可空</div>
+	  	</div>-->
+		
+		<!--<div class="layui-form-item">
+	  		<label class="layui-form-label">交易凭证附件:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="attachment" value="" placeholder="请输入交易凭证附件"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">可空</div>
+	  	</div>-->
+		
+		<!--<div class="layui-form-item">
+	  		<label class="layui-form-label">扩展字段:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="remark" value="" placeholder="请输入扩展字段"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">可空</div>
+	  	</div>-->
+	  	
+	  	<!--<div class="layui-form-item">
+	  		<label class="layui-form-label">贸易详情:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="tradeDetail" value="" placeholder="请输入贸易详情"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">可空</div>
+	  	</div>-->
+	  	
+	  	<div class="layui-form-item">
+	  		<label class="layui-form-label">编码方式:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" readonly="readonly" name="charset" value="1" placeholder="请输入版本号"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">报文编码格式1：UTF-8</div>
+	  	</div>
+		
+		<div class="layui-form-item">
+	  		<label class="layui-form-label">编码方式:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" readonly="readonly" id="signType" name="signType" value="2" placeholder="请输入版本号"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">1：RSA 方式  2：MD5 方式</div>
+	  	</div>
+		
+		<!--<div class="layui-form-item">
+	  		<label class="layui-form-label">签名源串:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" id="signData" value="2" />
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">签名源串</div>
+	  	</div>-->
+<!--	  	<input type="hidden" id="signData" size="50"> -->
+		<input type="hidden" name="signMsg" id="signMsg" value="" />
+	</form>
+	
+	<div class="layui-form-item">
+		<div class="layui-input-block">
+			<button class="layui-btn layui-btn-lx" id="submitBtn" onclick="save()">保 存</button>
+			<input type="reset" class="layui-btn layui-btn-danger layui-btn-lx" value="重 置" />
+		</div>
+	</div>
+	
+	
+	<script type="text/javascript">
+		layui.use(['layer','form','jquery'],function(){
+			var form = layui.form;
+			layer = layui.layer;
+			$ = layui.jquery;
+		});
+		
+		function setOrderId(){
+			genOrderId('orderId','submitTime','failureTime');
+	  	}
+		
+		function setSignData(){
+			var paramNames = 'attachment,borrowingMarked,charset,couponFlag,currencyCode,customerId,customerIp,directFlag,displayName,failureTime,freightOrg,freightWebsite,goodsCount,goodsName,goodsType,noticeUrl,orderAmount,orderCurrencyCode,orderId,orgCode,partnerId,payType,payeeAccount,payeeAddress,payeeName,payeeSwift,payerAccount,platformId,regionEnCode,remark,reserve1,reserve2,reserve3,reserve4,reserve5,returnUrl,settlementCurrencyCode,shareFlag,signType,siteId,subMerchantOrderDetails,submitTime,tradeDetail,tradeType,version,waybillNo';
+			$("#signData").val(genSignData(paramNames));
+			alert($("#signData").val());
+		}
+		
+			// 提交数据
+		function save() {
+			
+			$.post("{:Url('payment/nativePost')}",$('#submitForm').serialize(),function(res){
+				console.log(res);
+				if(res.code == 1) {
+					$("#submitBtn").attr('disabled',true);//禁用按钮
+					
+					$("#orderAmount").val(res.money);
+					$("#signMsg").val(res.msg);
+					//提交表单
+					$("#submitForm").submit();
+					
+				} else {
+					
+					$("#submitBtn").attr('disabled',false);//禁用按钮
+					layer.msg(res.msg);
+				}
+			},'json');
+		}
+	</script>
+</body>
+</html>

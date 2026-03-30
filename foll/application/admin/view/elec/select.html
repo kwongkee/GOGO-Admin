@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+    <div class="header">
+        <span>电子支付企业选择</span>
+        <!--<button class="layui-btn layui-btn-sm" onclick="add();">添加</button>-->
+        <div></div>
+    </div>
+    <form class="layui-form layui-form-pane" action="post">
+
+        <div class="layui-form-item"></div>
+
+        <input type="hidden" name="batch_num" value="{$batch_num}">
+        <input type="hidden" name="uid" value="{$uid}">
+
+        <div class="layui-form-item">
+
+            <label class="layui-form-label">支付企业</label>
+
+            <div class="layui-input-block">
+                <select name="pay_id" lay-verify="required">
+                    <option value=""></option>
+                    {volist name="payList" id="vo"}
+                        <option value="{$vo.PayType}"> {$vo.PayEntName}-{$vo.remark} </option>
+                    {/volist}
+                </select>
+            </div>
+        </div>
+
+        <p style="text-align: center;color:dodgerblue;">以下为空代表原主体</p>
+        <div class="layui-form-item">
+
+            <label class="layui-form-label">是否更换</label>
+
+            <div class="layui-input-block">
+                <select name="changeBody">
+                    <option value="no">否</option>
+                    <option value="yes">是</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width: 142px;">申报企业编号</label>
+            <div class="layui-input-inline" style="width: 77%">
+                <input type="text" name="decl_ent_no" id="decl_ent_no" value="" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width: 142px;">申报企业名称</label>
+            <div class="layui-input-inline" style="width: 77%">
+                <input type="text" name="decl_ent_name" id="decl_ent_name" value="" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width: 142px;">edi账号</label>
+            <div class="layui-input-inline" style="width: 77%">
+                <input type="text" name="edi" id="edi" value="" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+
+            <label class="layui-form-label" style="width: 142px;">电商企业编号</label>
+            <div class="layui-input-inline" style="width: 77%">
+                <input type="text" name="ebent_no" id="ebent_no" value="" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width: 142px;">电商企业名称</label>
+
+            <div class="layui-input-inline" style="width: 77%">
+                <input type="text" name="ebent_name" id="ebent_name" value="" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width: 142px;">电商平台编号</label>
+            <div class="layui-input-inline" style="width: 77%">
+                <input type="text" name="ebp_ent_no" id="ebp_ent_no" value="" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+
+            <label class="layui-form-label" style="width: 142px;">电商平台名称</label>
+
+            <div class="layui-input-inline" style="width: 77%">
+                <input type="text" name="ebp_ent_name" id="ebp_ent_name" value="" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width: 142px;">电商平台域名</label>
+            <div class="layui-input-inline" style="width: 77%">
+                <input type="text" name="internet_domain_name" id="internet_domain_name" value="" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" id="sub" lay-submit lay-filter="formDemo">立即申报</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置信息</button>
+            </div>
+        </div>
+    </form>
+
+    <script>
+
+        var flag = false;
+        //Demo
+        layui.use(['layer','jquery','form'],function(){
+            layer = layui.layer;
+            var form = layui.form
+            $ = layui.jquery;
+            //监听提交
+            form.on('submit(formDemo)', function(data){
+                if(flag) {
+                    return false;
+                }
+                // layer.msg(JSON.stringify(data.field));
+                var batch_num = data.field.batch_num;
+                var uid    = data.field.uid;
+                var pay_id    = data.field.pay_id;
+                $('#sub').attr('disabled',true);
+                flag = true;
+                if (data.field.changeBody=="no"){
+                    $.ajax({
+                        url:"https://decl.gogo198.cn/api/elec/declares",
+                        type:'post',
+                        dataType:'json',
+                        data:{
+                            'batch_num':batch_num,
+                            'pay_id':pay_id,
+                            'uid':uid,
+                        },
+                        success:function(data) {
+                            if(data.code <= 0) {
+                                layer.msg(data.msg,{icon:2});
+                                $('#sub').attr('disabled',false);
+                                flag = false;
+                                return false;
+                            }
+
+                            layer.msg(data.msg,{icon:1});
+                            setTimeout(function() {
+                                var index = parent.layer.getFrameIndex(window.name);
+                                // 关闭父级窗口
+                                parent.layer.close(index);
+                                window.location.reload();
+                            },1200);
+
+                        },
+                        error:function(er) {
+                            layer.msg('提交错误',{icon:2});
+                        }
+                    });
+                }else{
+                    $.ajax({
+                        url: "{:Url('admin/SubjectConversion/save')}",
+                        type:'POST',
+                        data:data.field,
+                        success:function (resp) {
+                            if (resp.code==1){
+                                layer.msg(resp.message,{icon:2});
+                                return false;
+                            }
+                            $.ajax({
+                                url:"https://decl.gogo198.cn/api/elec/declares",
+                                type:'post',
+                                dataType:'json',
+                                data:{
+                                    'batch_num':batch_num,
+                                    'pay_id':pay_id,
+                                    'uid':uid,
+                                },
+                                success:function(data) {
+                                    if(data.code <= 0) {
+                                        layer.msg(data.msg,{icon:2});
+                                        $('#sub').attr('disabled',false);
+                                        flag = false;
+                                        return false;
+                                    }
+
+                                    layer.msg(data.msg,{icon:1});
+                                    setTimeout(function() {
+                                        var index = parent.layer.getFrameIndex(window.name);
+                                        // 关闭父级窗口
+                                        parent.layer.close(index);
+                                        window.location.reload();
+                                    },1200);
+
+                                },
+                                error:function(er) {
+                                    layer.msg('提交错误',{icon:2});
+                                }
+                            });
+
+                        },error:function (xhr) {
+                            layer.msg('提交错误',{icon:2});
+                        }
+                    });
+                }
+                // $.ajax({
+                //     url:"http://declare.gogo198.cn/api/elec/declares",
+                //     type:'post',
+                //     dataType:'json',
+                //     data:{
+                //         'batch_num':batch_num,
+                //         'pay_id':pay_id,
+                //         'uid':uid,
+                //     },
+                //     success:function(data) {
+                //         if(data.code <= 0) {
+                //             layer.msg(data.msg,{icon:2});
+                //             $('#sub').attr('disabled',false);
+                //             flag = false;
+                //             return false;
+                //         }
+                //
+                //         layer.msg(data.msg,{icon:1});
+                //         setTimeout(function() {
+                //             var index = parent.layer.getFrameIndex(window.name);
+                //             // 关闭父级窗口
+                //             parent.layer.close(index);
+                //             window.location.reload();
+                //         },1200);
+                //
+                //     },
+                //     error:function(er) {
+                //         //console.log(er)
+                //     }
+                // })
+                return false;
+            });
+        });
+    </script>
+</body>
+</html>

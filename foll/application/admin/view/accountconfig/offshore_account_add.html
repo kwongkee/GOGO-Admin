@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>新增境外账户</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <style>
+        form{
+            margin-top: 47px;
+            margin-right: 32px;
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form" action="">
+    
+    <div class="layui-form-item">
+        <label class="layui-form-label">配置名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="config_name" required  lay-verify="required" placeholder="如xx银行配置" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">账户类型</label>
+        <div class="layui-input-block">
+          <input type="radio" name="account_types" value="1" title="全球账户" checked="">
+          <input type="radio" name="account_types" value="2" title="本地账户">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">银行代码/银行识别码</label>
+        <div class="layui-input-block">
+            <input type="text" name="swift_bic" placeholder="请输入银行代码/银行识别码" required  lay-verify="required" autocomplete="off" class="layui-input">
+            
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">银行账号</label>
+        <div class="layui-input-block">
+            <input type="text" name="account_number" placeholder="请输入银行账号" required  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    
+    <div class="layui-form-item">
+        <label class="layui-form-label">账号名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="account_name" placeholder="请输入账号名称" required  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">银行名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="bank_name" placeholder="请输入银行名称" required  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">银行地址</label>
+        <div class="layui-input-block">
+            <input type="text" name="bank_address" placeholder="请输入银行地址" required  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">国家地区</label>
+        <div class="layui-input-block">
+            <input type="text" name="country_region" placeholder="请输入国家地区" required  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">账户类型</label>
+        <div class="layui-input-block">
+            <input type="text" name="account_type" placeholder="请输入账户类型" required  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">银行代码</label>
+        <div class="layui-input-block">
+            <input type="text" name="bank_code" placeholder="请输入银行代码" required  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">分行代码</label>
+        <div class="layui-input-block">
+            <input type="text" name="branch_code" placeholder="请输入分行代码" required  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">可接受货币</label>
+        <div class="layui-input-block">
+            <input type="text" name="acceptable_currencies" placeholder="请输入可接受货币" required  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">附件</label>
+        <div class="layui-input-block">
+            <div class="layui-upload" id="contract_type" style="margin-top: 10px;">
+              <button type="button" class="layui-btn" id="files-upload">上传附件</button> 
+              <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                  预览图：
+                  <div class="layui-upload-list" id="files-upload-list"></div>
+              </blockquote>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即保存</button>
+        </div>
+    </div>
+</form>
+
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+
+<script>
+    layui.use(['form','upload'], function(){
+        var form = layui.form,upload = layui.upload;
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+
+            if( !data.field['files'] || data.field['files'] == '')
+            {
+                layer.msg('请先上传附件');
+                return false;
+            }else{
+                $.ajax({
+                    url:'{:Url("admin/accountConfig/offshore_account_add")}',
+                    type:"POST",
+                    dataType:"json",
+                    data:data.field,
+                    success:function (res) {
+                        layer.msg(res.message, {
+                                        icon: 1,
+                                        time: 2000
+                                    }, function(){
+                                        parent.window.location.reload();
+                                        var index = parent.layer.getFrameIndex(window.name);
+                                        parent.layer.close(index);
+                                    });
+                    },
+                    error:function (xhr) {
+                        layer.msg('链接服务错误..');
+                    }
+                });
+            }
+            return false;
+        });
+
+        upload.render({
+            elem: '#files-upload'
+            ,url: '{:Url("admin/accountConfig/file_upload")}'
+            ,accept: 'file'
+            ,multiple: false
+            ,before: function(obj){
+                layer.load();
+            }
+            ,done: function(res){
+                layer.closeAll('loading');
+                if(res.code == 1)
+                {
+                    $('#files-upload-list').append('<div style="display: inline-block;"><img src="'+ res.path +'" class="layui-upload-img"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="files" value="'+res.path+'"></div>')
+                }
+            }
+        });
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+        btn: ['删除','取消']
+        }, function(){
+        $(obj).parent().remove();
+        layer.closeAll();
+        }, function(){
+
+        });
+    }
+</script>
+</html>

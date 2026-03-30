@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>商业发票</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="Content-Language" content="zh-CN" />
+        <link rel="stylesheet" href="./static/doc/invoice2.css" />
+        <style>
+        	body{font-size: 12pt !important;}
+        	#printId{font-size: 12pt !important;}
+            .invoice-mid{height: 40em;}
+            .seal{left: 0mm; top:-5mm;}
+            body{color: #505050;}
+            .invoice-top-left{height: auto;}
+			.diyform input{border:1px solid #333 !important;padding:5px 5px;box-sizing:border-box;}
+			.layui-form-label{width:100px;}
+			.goodsinfo input{
+				font-size: 12pt;
+				color: #000;
+				font-family: "arial, helvetica, sans-serif";
+				text-align: center;
+				background:none;
+				width:100px;
+			}
+			.layui-upload-file{display:none;}
+			.layui-btn{
+				background-color: #009688;
+				color: #fff;
+				white-space: nowrap;
+				text-align: center;
+				font-size: 14px;
+				border: none;
+				border-radius: 2px;
+				cursor: pointer;
+				padding:4px 6px;
+				box-sizing:border-box;
+			}
+        </style>
+    </head>
+    <body>
+		<div class="page root">
+			<div class="page_box">
+				<div id="printId">
+					<div class="content">
+						<div>
+                            <div class="invoice-bg">
+                
+                                <div class="invoice-top">
+                                	<div class="invoice-pic"><img src="./static/doc/images/logo.png" alt="" /></div>
+                                    
+                                </div>
+                                
+                                <div class="invoice-mid flex-grow-1">
+                                	<h1 class="invoice-title">COMMERCIAL INVOICE</h1>
+                                	<div class="inv-con">
+	                                	<div class="invoice-top-left" style="padding: 2mm 0;">
+	                                        <div class="top-left"><strong>Invoice to:</strong>&nbsp;&nbsp;</div>
+	                                        <div class="top-left-txt">
+	                                            <p class="top-title company_name">{$default_buyer['company_name']}</p>
+	                                            <p class="top-add company_address">{$default_buyer['company_address']}</p>
+	                                        </div>
+	                                    </div>
+	                                    <div class="invoice-top-right" style="padding: 2mm 0;">
+		                                    <div class="invoice-num"><strong>Invoice NO.：</strong><span class="pdf_sn">{$doc_data['pdf_sn']}</span></div>
+		                                    <div class="invoice-date">Date:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="date">{php} echo date('d / m / Y',$doc_data['create_at']);{/php}</span></div>
+	                                    </div>
+                                    </div>
+                                	
+                                	<div style="height: 123mm;">
+	                                    <table class="invoice-table">
+	                                    <tr>
+	                                        <th class="td1">SL.</th>
+	                                        <th class="td2" style="text-align: left;">Item Description</th>
+	                                        <th class="td3">Price</th>
+	                                        <th class="td4">Qty.</th>
+	                                        <th class="td5">Total</th>
+	                                    </tr>
+                                        
+                                        {foreach name="order_goods" item="v" key="k"}
+	                                        <tr class="goodsinfo">
+	                                            <td class="td1">{$k+1}</td>
+	                                            <td class="td2 gname{$k+1}" style="text-align: left;" onclick="changeGName('gname{$k+1}')">{$v['item_name']}</td>
+	                                            <td class="td3">
+                                                    CNY <span class="goods_price_cny"><input type="text" name="" id="" value="{$v['goods_price_cny']}" /></span>
+	                                            </td>
+	                                            <td class="td4 goods_qty"><input type="text" name="" id="" value="{$v['goods_qty']}" /></td>
+	                                            <td class="td5 goods_total_price_cny">
+                                                    CNY <input type="text" name="" id="" value="{$v['goods_total_price_cny']}" />
+	                                            </td>
+                                            </tr>
+                                        {/foreach}
+	                                    </table>
+                                    </div>
+                                    <div class="bottom-txt" style="/*margin-top: 107mm;*/ text-align: center;">Thank you for your business</div>
+                                </div>
+                                
+                                <div class="invoice-bottom">
+                                    <div class="bottom-left">
+                                        
+                                        <div class="bottom-info">
+                                            <h3 class="info-title">Payment Info:</h3>
+                                            <table class="info-table">
+	                                    		<tr>
+	                                    			<td class="w1">Account NO.:</td>
+	                                    			<td class="w2 account">22810420410</td>
+	                                    		</tr>
+	                                    		<tr>
+	                                    			<td class="w1">A/C Name:</td>
+	                                    			<td class="w2 AcName">Foshan Ju Ming Business Information Service Co. Ltd.</td>
+	                                    		</tr>
+	                                    		<tr>
+	                                    			<td class="w1">Bank Details:</td>
+	                                    			<td class="w2 bank">Standard Chartered Bank (Hong Kong) Limited</td>
+	                                    		</tr>
+	                                    	</table>
+                                        </div>
+                                    </div>
+                                    <div class="bottom-right">
+                                        <p><span class="w1">Sub Total: </span><span class="w3">
+                                            CNY <span class="amountCny">{$order['order_amount_cny']}</span></br>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;USD <span class="amountUsd">{$order['order_amount_usd']}</span>
+                                        </span></p>
+                                        <p style="border-bottom: 1px solid #0f131e;padding-bottom: 0.5em;"><span class="w1">Tax: </span><span class="w3 tax" style="margin-left: 22mm;">0.00</span>%</p>
+                                        <p style="padding: 0.5em 0;"><span class="w1">Total: </span><span class="w3" style="margin-left: 19mm;">
+                                            CNY <span class="totalCny">{$order['order_amount_cny']}</span></br>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;USD <span class="totalUsd">{$order['order_amount_usd']}</span>
+                                        </span></p>
+                                        <!-- <div class="sign">
+                                            Authorised Sign
+                                        </div> -->
+                                        <div class="seal sellseal_company" style="width: 250px;top:0mm;"><img style="width: 100%" class="sellseal_company_bg" src="./static/doc/images/seal.png" alt="" /></div>
+                                        <div class="seal sellseal_sign" style="top: -17mm;width: 200px;"><img style="width: 100%" class="sellseal_sign" src="./static/doc/images/kwongkee/{php}echo rand(1,6){/php}.png" alt="" /></div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+					</div>
+                </div>
+			</div>
+			<div class="diyform" style='background: #fff;margin-bottom: 10px;padding: 10px;width: 300px;position: fixed;top: 150px;right: 50px;'>
+				<div class="layui-form-item" style="width: auto;">
+					<div class="layui-inline layui-select-fs">
+						<label class="layui-form-label" style="display: inline-block;font-size: 15px;">买家公司</label>
+						<div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+							<input type="text" placeholder="请填写买家公司名称" name="company_name" id="company_name" value="" />
+						</div>
+					</div>
+				</div>
+				<div class="layui-form-item" style="width: auto;margin-top:10px;">
+					<div class="layui-inline layui-select-fs">
+						<label class="layui-form-label" style="display: inline-block;font-size: 15px;">买家公司地址</label>
+						<div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+							<input type="text" placeholder="请填写买家公司地址" name="company_address" id="company_address" value="" />
+						</div>
+					</div>
+				</div>
+				<div class="layui-form-item" style="width: auto;margin-top:10px;">
+					<div class="layui-inline layui-select-fs">
+						<label class="layui-form-label" style="display: inline-block;font-size: 15px;">发票NO.</label>
+						<div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+							<input type="text" placeholder="请填写发票NO." name="pdf_sn" id="pdf_sn" value="" />
+						</div>
+					</div>
+				</div>
+				<div class="layui-form-item" style="width: auto;margin-top:10px;">
+					<div class="layui-inline layui-select-fs">
+						<label class="layui-form-label" style="display: inline-block;font-size: 15px;">日期</label>
+						<div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+							<input type="text" placeholder="03/08/2021" name="date" id="date" value="" />
+						</div>
+					</div>
+				</div>
+				<div class="layui-form-item" style="width: auto;margin-top:10px;">
+					<div class="layui-inline layui-select-fs">
+						<label class="layui-form-label" style="display: inline-block;font-size: 15px;">账户NO.</label>
+						<div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+							<input type="text" placeholder="请填写账户NO." name="account" id="account" value="" />
+						</div>
+					</div>
+				</div>
+				<div class="layui-form-item" style="width: auto;margin-top:10px;">
+					<div class="layui-inline layui-select-fs">
+						<label class="layui-form-label" style="display: inline-block;font-size: 15px;">账户名称</label>
+						<div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+							<input type="text" placeholder="请填写账户名称" name="AcName" id="AcName" value="" />
+						</div>
+					</div>
+				</div>
+				<div class="layui-form-item" style="width: auto;margin-top:10px;">
+					<div class="layui-inline layui-select-fs">
+						<label class="layui-form-label" style="display: inline-block;font-size: 15px;">开户行名称</label>
+						<div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+							<input type="text" placeholder="请填写开户行名称" name="bank" id="bank" value="" />
+						</div>
+					</div>
+				</div>
+				<div class="layui-form-item" style="width: auto;margin-top:10px;">
+					<div class="layui-inline layui-select-fs">
+						<label class="layui-form-label" style="display: inline-block;font-size: 15px;">小计CNY</label>
+						<div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+							<input type="text" placeholder="请填写人民币数额" name="amountCny" id="amountCny" value="" />
+						</div>
+					</div>
+				</div>
+				<div class="layui-form-item" style="width: auto;margin-top:10px;">
+					<div class="layui-inline layui-select-fs">
+						<label class="layui-form-label" style="display: inline-block;font-size: 15px;">小计USD</label>
+						<div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+							<input type="text" placeholder="请填写美元数额" name="amountUsd" id="amountUsd" value="" />
+						</div>
+					</div>
+				</div>
+				<div class="layui-form-item" style="width: auto;margin-top:10px;">
+					<div class="layui-inline layui-select-fs">
+						<label class="layui-form-label" style="display: inline-block;font-size: 15px;">税率</label>
+						<div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+							<input type="text" placeholder="请填写税率" name="tax" id="tax" value="" />
+						</div>
+					</div>
+				</div>
+				<div class="layui-form-item" style="width: auto;margin-top:10px;">
+					<div class="layui-inline layui-select-fs">
+						<label class="layui-form-label" style="display: inline-block;font-size: 15px;">总数CNY</label>
+						<div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+							<input type="text" placeholder="请填写总数CNY" name="totalCny" id="totalCny" value="" />
+						</div>
+					</div>
+				</div>
+				<div class="layui-form-item" style="width: auto;margin-top:10px;">
+					<div class="layui-inline layui-select-fs">
+						<label class="layui-form-label" style="display: inline-block;font-size: 15px;">总数USD</label>
+						<div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+							<input type="text" placeholder="请填写总数USD" name="totalUsd" id="totalUsd" value="" />
+						</div>
+					</div>
+				</div>
+				<div class="layui-form-item gnameInput" style="width: auto;margin-top:10px;display:none;">
+					<div class="layui-inline layui-select-fs">
+						<label class="layui-form-label" style="display: inline-block;">商品名</label>
+						<div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+							<input type="text" name="gname" id="gname" value="" />
+						</div>
+					</div>
+				</div>
+				<div class="layui-form-item" style="width: auto;margin-top:10px;">
+					<div class="layui-inline layui-select-fs">
+						<label class="layui-form-label" style="display: inline-block;">签名背景</label>
+						<div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+							<button type="button" class="layui-btn" id="signbg_file-upload">上传签名背景</button>
+						</div>
+					</div>
+				</div>
+				<div class="layui-form-item" style="width: auto;margin-top:10px;">
+					<div class="layui-inline layui-select-fs">
+						<label class="layui-form-label" style="display: inline-block;">签名</label>
+						<div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+							<button type="button" class="layui-btn" id="sign_file-upload">上传签名图</button>
+						</div>
+					</div>
+				</div>
+			</div>
+				<div style="padding: 30px 0;text-align: center;position: fixed;top: 0;right: 3em;">
+                <button type="button" style="width: 10em;" class="btn" onclick="createPDF()">生成</button>	
+            </div>
+		</div>
+		
+		
+		<script src="./static/doc/jquery.min.js"></script>
+		<script src="./static/doc/html2canvas.min.js"></script>
+        <script src="./static/doc/jspdf.min.js"></script>
+        <script src="./static/hadmin/assets/layui/layui.js"></script>
+        <script>
+			function changeGName(classname){
+				$('.gnameInput').show();
+				$('.gnameInput #gname').val($('.'+classname).text()).attr('data-classname',classname);
+			}
+			// 随机数
+			function randomNum(minNum,maxNum){
+				switch(arguments.length){
+					case 1:
+						return parseInt(Math.random()*minNum+1,10);
+						break;
+					case 2:
+						return parseInt(Math.random()*(maxNum-minNum+1)+minNum,10);
+						break;
+					default:
+						return 0;
+						break;
+				}
+			}
+            layui.use(['form','upload','laydate'], function(){
+				var upload = layui.upload;
+				// 签名背景
+				upload.render({
+					elem: '#signbg_file-upload'
+					,url: '{:Url("admin/entrymanage/upload_seal_file")}'
+					,accept: 'image'
+					,data: { folder: 'sign', type: 'seal_file'}
+					,multiple: false
+					,before: function(obj){
+						layer.load(); //上传loading
+					}
+					,done: function(res){
+						layer.closeAll('loading'); //关闭loading
+						if(res.code == 1)
+						{
+							$('.sellseal_company_bg').attr('src','/'+res.file_path);
+							// .css('width','175px').css('height','118px')
+						}
+					}
+				});
+				// 签名
+				upload.render({
+					elem: '#sign_file-upload'
+					,url: '{:Url("admin/entrymanage/upload_seal_file")}'
+					,accept: 'image'
+					,data: { folder: 'sign', type: 'seal_file'}
+					,multiple: false
+					,before: function(obj){
+						layer.load(); //上传loading
+					}
+					,done: function(res){
+						layer.closeAll('loading'); //关闭loading
+						if(res.code == 1)
+						{
+							$('.sellseal_sign').attr('src','/'+res.file_path);
+							// .css('width','175px').css('height','118px')
+						}
+					}
+				});
+            });
+            $(function(){
+				// 买家公司
+				$('#company_name').bind('input propertychange',function() {
+					$('.company_name').text($(this).val());
+				});
+				// 买家公司地址
+				$('#company_address').bind('input propertychange',function() {
+					$('.company_address').text($(this).val());
+				});
+				// 发票NO
+				$('#pdf_sn').bind('input propertychange',function() {
+					$('.pdf_sn').text($(this).val());
+				});
+				// 日期Date
+				$('#date').bind('input propertychange',function() {
+					$('.date').text($(this).val());
+				});
+				// 账户NO
+				$('#account').bind('input propertychange',function() {
+					$('.account').text($(this).val());
+				});
+				// 账户名称
+				$('#AcName').bind('input propertychange',function() {
+					$('.AcName').text($(this).val());
+				});
+				// 开户行名称
+				$('#bank').bind('input propertychange',function() {
+					$('.bank').text($(this).val());
+				});
+				// 小计CNY
+				$('#amountCny').bind('input propertychange',function() {
+					$('.amountCny').text($(this).val());
+				});
+				// 小计USD
+				$('#amountUsd').bind('input propertychange',function() {
+					$('.amountUsd').text($(this).val());
+				});
+				// 税率
+				$('#tax').bind('input propertychange',function() {
+					$('.tax').text($(this).val());
+				});
+				// 总数CNY
+				$('#totalCny').bind('input propertychange',function() {
+					$('.totalCny').text($(this).val());
+				});
+				// 总数USD
+				$('#totalUsd').bind('input propertychange',function() {
+					$('.totalUsd').text($(this).val());
+				});
+				//更换商品名
+				$('#gname').bind('input propertychange',function() {
+					let classname = $(this).attr('data-classname');
+					$('.'+classname).text($(this).val());
+				});
+			})
+            // 生成pdf
+            function createPDF() {
+                var layer = layui.layer;
+                html2canvas(document.querySelector("#printId"), {
+                    allowTaint: !0,
+                    scale: 2,
+                    useCORS : true
+                }).then((function(canvas) {
+                    console.log
+                    var contentWidth = canvas.width;
+                    var contentHeight = canvas.height;
+
+                    //一页pdf显示html页面生成的canvas高度;
+                    var pageHeight = contentWidth / 595.28 * 841.89;
+                    //未生成pdf的html页面高度
+                    var leftHeight = contentHeight;
+                    //pdf页面偏移
+                    var position = 0;
+                    //a4纸的尺寸[595.28,841.89]，html页面生成的canvas在pdf中图片的宽高
+                    var imgWidth = 555.28;
+                    var imgHeight = 555.28/contentWidth * contentHeight;
+
+                    var pageData = canvas.toDataURL('image/jpeg', 1.0);
+
+                    var pdf = new jsPDF('', 'pt', 'a4');
+                    //有两个高度需要区分，一个是html页面的实际高度，和生成pdf的页面高度(841.89)
+                    //当内容未超过pdf一页显示的范围，无需分页
+                    if (leftHeight < pageHeight) {
+                        pdf.addImage(pageData, 'JPEG', 20, 0, imgWidth, imgHeight );
+                    } else {
+                        while(leftHeight > 0) {
+                            pdf.addImage(pageData, 'JPEG', 20, position, imgWidth, imgHeight)
+                            leftHeight -= pageHeight;
+                            position -= 841.89;
+                            //避免添加空白页
+                            if(leftHeight > 0) {
+                                pdf.addPage();
+                            }
+                        }
+                    }
+
+                    var pdfName = "{$doc_data['pdf_sn']}.pdf";
+                    // 将pdf输入为base格式的字符串
+                    var buffer = pdf.output("datauristring");
+                    // 将base64格式的字符串转换为file文件
+                    var myfile = dataURLtoFile(buffer, pdfName);
+                    var formdata = new FormData();
+                    formdata.append('file', myfile);
+                    formdata.append('folder', 'payer_pay');
+                    formdata.append('type', 'pi_invoice');
+
+                    $.ajax({   
+                        url:'{:Url("admin/entryManage/check_pdf")}',       
+                        method:'get',       
+                        data:{ trade_id: "{$doc_data['trade_id']}", 'trade_type': 1, type: 'ci_invoice' }, 
+                        dataType:'JSON',         
+                        success:function(res){       
+                            if(res.code == 1)
+                            {
+                                layer.msg(res.msg);
+                            }else{
+                                $.ajax({   
+                                    url:'{:Url("admin/entryManage/upload_file")}',       
+                                    method:'post',       
+                                    data:formdata,
+                                    processData: false,
+                                    contentType : false,    
+                                    dataType:'JSON',         
+                                    success:function(res){       
+                                        if(res.code == 1)
+                                        {
+                                            $.ajax({   
+                                                url:'{:Url("admin/entryManage/save_pdf")}',       
+                                                method:'post',       
+                                                data:{ trade_id: "{$doc_data['trade_id']}", 'trade_type': 1, type: 'ci_invoice', pdf_sn: "{$doc_data['pdf_sn']}", file_path: res.file_path}, 
+                                                dataType:'JSON',         
+                                                success:function(res){ 
+                                                    if(res.code == 1)
+                                                    {
+                                                        layer.msg('变更成功');
+                                                        pdf.save('CI_Innvoice_'+pdfName);
+                                                        setTimeout(function(){
+                                                            parent.window.location.reload();
+                                                            var index = parent.layer.getFrameIndex(window.name);
+                                                            parent.layer.close(index);
+                                                        }, 1000);
+                                                    }else{
+                                                        layer.msg(res.msg);
+                                                    }
+                                                },              
+                                                error:function (data) {
+                                                    layer.msg('系统错误');
+                                                }
+                                            });
+                                            
+                                        } 
+                                    },              
+                                    error:function (data) {
+                                        layer.msg('系统错误');
+                                    }           
+                                });
+                            }
+                        },              
+                        error:function (data) {
+                            layer.msg('系统错误');
+                        }           
+                    });
+                    //pdf.save('CI_Innvoice_'+pdfName);
+                }))
+            }
+
+            //将base64转换为文件对象
+            function dataURLtoFile(dataurl, filename) {
+                var arr = dataurl.split(',');
+                var mime = arr[0].match(/:(.*?);/)[1];
+                var bstr = atob(arr[1]);
+                var n = bstr.length; 
+                var u8arr = new Uint8Array(n);
+                while(n--){
+                    u8arr[n] = bstr.charCodeAt(n);
+                }
+                //转换成file对象
+                return new File([u8arr], filename, {type:mime});
+                //转换成成blob对象
+                //return new Blob([u8arr],{type:mime});
+            }
+        </script>
+
+        
+    </body>
+</html>

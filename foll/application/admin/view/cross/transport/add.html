@@ -1,0 +1,109 @@
+{include file="public/header"}
+
+<body style="padding: 10px;">
+
+<form action="" class="layui-form" id="form1">
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">领取日期</label>
+        <div class="layui-input-inline">
+            <input type="text" class="layui-input" required id="Times" name="getDate" placeholder="请选择领取日期">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">快递企业</label>
+        <div class="layui-input-inline">
+            <select name="getExpress" lay-verify="">
+                <option value="">请选择快递企业</option>
+                {volist name="exp" id="vo"}
+                    <option value="{$vo['id']}">{$vo['expName']}</option>
+                {/volist}
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">号段起止</label>
+        <div class="layui-input-inline" style="width: 100px;">
+            <input type="text" name="expNums" placeholder="开始号码段" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-form-mid">-</div>
+        <div class="layui-input-inline" style="width: 100px;">
+            <input type="text" name="expNumd" placeholder="结束号码段" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+</form>
+
+<div class="layui-form-item">
+    <div class="layui-input-block">
+        <button class="layui-btn" onclick="save()">确认领取</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+
+        laydate.render({
+            elem: '#Times' //指定元素
+        });
+    })
+
+
+    // 添加管理员
+    function save()
+    {
+        var getDate             = $('input[name="getDate"]').val();
+        var getExpress          = $("select option:selected").val();
+        var expNums             = $('input[name="expNums"]').val();
+        var expNumd             = $('input[name="expNumd"]').val();
+
+        if(getDate == '') {
+            layer.msg('请选中领取日期',{icon:2});
+            return false;
+        }
+        if(getExpress == '') {
+            layer.msg('请选中快递企业',{icon:2});
+            return false;
+        }
+
+        if(expNums == '') {
+            layer.msg('请输入起使号段',{icon:2});
+            return false;
+        }
+
+        if(expNumd == '') {
+            layer.msg('请输入截止号段',{icon:2});
+            return false;
+        }
+
+        // 请求处理数据
+        $.post("{:Url('admin/transport/Doadd')}",{
+            //logisticName:logisticName,
+            getDate:getDate,
+            getExpress:getExpress,
+            expNums:expNums,
+            expNumd:expNumd,
+            Method:'add',
+        },function(resd){
+
+            var res = JSON.parse(resd);
+            if(res.code == 1) {
+                layer.msg(res.msg,{icon:1});
+                setTimeout(function(){
+                    layer.closeAll();
+                    parent.window.location.reload();
+                },1000);
+            } else {
+                layer.msg(res.msg,{icon:2});
+            }
+
+        });
+    }
+</script>
+</body>
+</html>

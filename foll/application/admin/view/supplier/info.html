@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+    <link rel="stylesheet" href="./static/agents/layui/css/layui.css">
+    </link>
+    <link rel="stylesheet" type="text/css"
+          href="./static/index/admin/css/formSelects-v4.css" />
+    <script src="./static/index/admin/js/formSelects-v4.js" type="text/javascript"
+            charset="utf-8"></script>
+</head>
+
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">[{$data['user']['user_name']}]详情</div>
+                <div class="layui-card-body">
+                    <p style="padding:5px 10px;background:#0a8ddf;color:#fff;">商标注册信息</p>
+                    {if isset($data['trademark'])}
+                        <table class="layui-table" lay-size="md">
+                        <thead>
+                        <tr>
+                            <th>logo</th>
+                            <th>注册许可（有效日期）</th>
+                            <th>名称语种</th>
+                            <th>注册名称</th>
+                            <th>注册编号</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                {foreach $logo_file as $vo}
+                                <a href="https://decl.gogo198.cn/{$vo}" target="_blank">
+                                    <img src="https://decl.gogo198.cn/{$vo}" alt="" style="width:25px;height:25px;" onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png" />
+                                </a>
+                                {/foreach}
+                            </td>
+                            <td>{$data['trademark']['effective_date']}</td>
+                            <td>{$data['trademark']['reg_language']}</td>
+                            <td>{$data['trademark']['reg_name']}</td>
+                            <td>{$data['trademark']['reg_num']}</td>
+                        </tr>
+                        </tbody>
+                        <thead>
+                        <tr>
+                            <th>注册单位</th>
+                            <th>他方单位编号</th>
+                            <th>他方单位品牌授权书</th>
+                            <th>注册国地</th>
+                            <th>注册类别</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>{$data['trademark']['reg_unit']}</td>
+                            <td>{$data['trademark']['regNo']}</td>
+                            <td>
+                                {if !empty($other_auth_file)}
+                                    {foreach $other_auth_file as $vo}
+                                    <a href="https://decl.gogo198.cn/{$vo}" target="_blank">
+                                        <img src="https://decl.gogo198.cn/{$vo}" alt="" style="width:25px;height:25px;" onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png" />
+                                    </a>
+                                    {/foreach}
+                                {/if}
+                            </td>
+                            <td>{$data['trademark']['reg_country']}</td>
+                            <td>{$data['trademark']['reg_category']}</td>
+                        </tr>
+                        </tbody>
+                        <thead>
+                        <tr>
+                            <th>注册文件</th>
+                            <th>注册类型</th>
+                            <th>经营类型</th>
+                            <th>授权文件</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                {foreach $reg_file as $vo}
+                                <a href="https://decl.gogo198.cn/{$vo}" target="_blank">
+                                    <img src="https://decl.gogo198.cn/{$vo}" alt="" style="width:25px;height:25px;" onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png" />
+                                </a>
+                                {/foreach}
+                            </td>
+                            <td>{$data['trademark']['reg_type']}</td>
+                            <td>{$data['trademark']['business_type']}</td>
+                            <td>
+                                {foreach $auth_file as $vo}
+                                <a href="https://decl.gogo198.cn/{$vo}" target="_blank">
+                                    <img src="https://decl.gogo198.cn/{$vo}" alt="" style="width:25px;height:25px;" onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png" />
+                                </a>
+                                {/foreach}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    {else}
+                    <table class="layui-table" lay-size="md">
+                        <thead>
+                        <tr>
+                            <th>无商标信息</th>
+                        </tr>
+                        </thead>
+                    </table>
+                    {/if}
+                </div>
+                <div class="layui-card-body">
+                    <p style="padding:5px 10px;background:#0a8ddf;color:#fff;">产品注册信息</p>
+                    <table class="layui-table" lay-size="md">
+                        <thead>
+                        <tr>
+                            <th>产品编号</th>
+                            <th>产品货号</th>
+                            <th>产品类别</th>
+                            <th>英文名称</th>
+                            <th>官方名称</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>{$data['ginfo']['gnum']}</td>
+                            <td>{$data['ginfo']['gItemNo']}</td>
+                            <td>{$data['ginfo']['gCateIdOne']}-{$data['ginfo']['gCateIdTwo']}-{$data['ginfo']['gCateIdThree']}</td>
+                            <td>{$data['ginfo']['gEnName']}</td>
+                            <td>{$data['ginfo']['gZnName']}</td>
+                        </tr>
+                        </tbody>
+                        <thead>
+                        <tr>
+                            <th>质检报告（有效日期）</th>
+                            <th>质检报告文件</th>
+                            <th>认证检测（资质名称）</th>
+                            <th>认证检测（有效日期）</th>
+                            <th>资质文件</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>{$data['ginfo']['quality_effective_date']}</td>
+                            <td>
+                                {foreach $quality_file as $vo}
+                                <a href="https://decl.gogo198.cn/{$vo}" target="_blank">
+                                    <img src="https://decl.gogo198.cn/{$vo}" alt="" style="width:25px;height:25px;" onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png" />
+                                </a>
+                                {/foreach}
+                            </td>
+                            <td>{$data['ginfo']['cert_name']}</td>
+                            <td>{$data['ginfo']['cert_effective_date']}</td>
+                            <td>
+                                {if !empty($cert_file)}
+                                {foreach $cert_file as $vo}
+                                <a href="https://decl.gogo198.cn/{$vo}" target="_blank">
+                                    <img src="https://decl.gogo198.cn/{$vo}" alt="" style="width:25px;height:25px;" onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png" />
+                                </a>
+                                {/foreach}
+                                {/if}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="layui-card-body">
+                    <p style="padding:5px 10px;background:#0a8ddf;color:#fff;">产品详情</p>
+                    <table class="layui-table" lay-size="md">
+                        <thead>
+                        <tr>
+                            <th>净重（KG）</th>
+                            <th>毛重（KG）</th>
+                            <th>HS编码</th>
+                            <th>行邮税号</th>
+                            <th>商品规格</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>{$data['ginfo']['goods_info']['netwt']}</td>
+                            <td>{$data['ginfo']['goods_info']['grosswt']}</td>
+                            <td>{$data['ginfo']['goods_info']['hscode']}</td>
+                            <td>{$data['ginfo']['goods_info']['ncad_code']}</td>
+                            <td>{$data['ginfo']['goods_info']['goods_style']}</td>
+                        </tr>
+                        </tbody>
+                        <thead>
+                        <tr>
+                            <th>原产国</th>
+                            <th>申报计量单位</th>
+                            <th>第一计量单位</th>
+                            <th>第二计量单位</th>
+                            <th>币制</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>{$data['ginfo']['goods_info']['origin_country']}</td>
+                            <td>{$data['ginfo']['goods_info']['gunit']}</td>
+                            <td>{$data['ginfo']['goods_info']['std_unit']}</td>
+                            <td>{$data['ginfo']['goods_info']['sec_unit']}</td>
+                            <td>{$data['ginfo']['goods_info']['curr_code']}</td>
+                        </tr>
+                        </tbody>
+                        <thead>
+                        <tr>
+                            <th>长度(单位：米)</th>
+                            <th>宽度(单位：米)</th>
+                            <th>高度(单位：米)</th>
+                            <th>销售单位</th>
+                            <th>是否阶梯式价格</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>{$data['ginfo']['goods_info']['length']}</td>
+                            <td>{$data['ginfo']['goods_info']['width']}</td>
+                            <td>{$data['ginfo']['goods_info']['height']}</td>
+                            <td>{$data['ginfo']['goods_info']['sales_unit']}</td>
+                            <td>{$data['ginfo']['goods_info']['step_price']}</td>
+                        </tr>
+                        </tbody>
+                        {if !empty($data['ginfo']['goods_info']['goods_ladder_info'])}
+                            <thead>
+                            <tr>
+                                <th colspan="3">起批量 ({$data['ginfo']['goods_info']['gunit']})</th>
+                                <th colspan="2">价格 ({$data['ginfo']['goods_info']['curr_code']})</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {foreach $data['ginfo']['goods_info']['goods_ladder_info'] as $k=>$v}
+                                <tr>
+                                    <td colspan="3">{$v['ladder_num1']}-{$v['ladder_num2']}</td>
+                                    <td colspan="2">{$v['ladder_price']}</td>
+                                </tr>
+                            {/foreach}
+                            </tbody>
+                        {/if}
+                    </table>
+                </div>
+                <div class="layui-card-body">
+                    <p style="padding:5px 10px;background:#0a8ddf;color:#fff;">发货仓库</p>
+                    <table class="layui-table" lay-size="md">
+                        <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>始发国地+(地域)</th>
+                            <th>英文地址</th>
+                            <th>官方地址</th>
+                            <th>人员姓名</th>
+                            <th>联系电话</th>
+                            <th>邮政编码</th>
+                            <th>仓库信息</th>
+                            <th>买家收货国地</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {foreach $data['warehouse'] as $k=>$v}
+                            <tr>
+                                <td>{$v['id']}</td>
+                                <td>{$v['start_country']}+({$v['origin_able_country']})</td>
+                                <td>{$v['en_address']}</td>
+                                <td>{$v['zn_address']}</td>
+                                <td>{$v['name']}</td>
+                                <td>{$v['tel']}</td>
+                                <td>{$v['code']}</td>
+                                <td>
+                                    {foreach $data['warehouse'][$k]['able_country_in2'] as $k2=>$v2}
+                                        <p>{$v2['id']}:{$v2['name']}</p>
+                                    {/foreach}
+                                </td>
+                                <td>
+                                    <div style="width:100%;max-width:500px;min-width: 100px;overflow-x: scroll;height: 40px;overflow-y: hidden;white-space: nowrap;">{$v['buyer_able_country2']}</div>
+                                </td>
+                            </tr>
+                        {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="layui-card-body">
+                    <p style="padding:5px 10px;background:#0a8ddf;color:#fff;">运费规则</p>
+                    <table class="layui-table" lay-size="md">
+                        <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>运费规则</th>
+                            <th>发货仓库ID</th>
+                            <th>目的国地</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {foreach $data['freight'] as $k=>$v}
+                                <tr>
+                                    <td>{$k+1}</td>
+                                    <td>{$v['rule_id']}</td>
+                                    <td>{$v['warehouse_id']}</td>
+                                    <td>{$v['able_country']}</td>
+                                </tr>
+                            {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+
+                {if empty($data['ginfo']['status'])}
+                    <div class="layui-btn layui-btn-md layui-btn-primary" style="margin:0 0 30px 30px;" onclick="update('',{$data['ginfo']['id']})">立即处理</div>
+                {/if}
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+
+<script src="./static/hadmin/layui/layui.all.js"></script>
+
+</html>
+
+<script>
+    formSelects.render();
+
+    function check(obj, id, status) {
+        var sel = formSelects.value('rule'+id);
+        var url = "{:url('buss/user/review')}";
+        if (status == 0) {
+            if (sel.length <= 0) {
+                // parent.layer.msg('请选择授权应用！', {
+                //     icon: 5
+                // });
+                alert('请选择授权应用！');
+                return;
+            }
+        }
+        var data = {
+            id: id,
+            status: status,
+            select: sel
+        };
+        requsetServer(url,data);
+        return;
+    }
+
+    function update(obj,id){
+        var url = "{:url('admin/supplier/update')}";
+        var data = {
+            id: id,
+        };
+        requsetServer(url,data);
+        return;
+    }
+
+    function requsetServer(url,data) {
+        $.ajax({
+            url: url,
+            type: "POST",
+            dataType: "json",
+            data: data,
+            success: function (res) {
+                if (res.code === 0) {
+                    // layer.msg(res.message, {
+                    //     icon: 6
+                    // });
+                    alert(res.message);
+                    setTimeout(() => {
+                        window.location.reload;
+                    }, 1200);
+                } else {
+                    // layer.msg(res.message, {
+                    //     icon: 5
+                    // });
+                    alert(res.message);
+                }
+            }
+        })
+    }
+</script>

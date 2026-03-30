@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <link href="../addons/ewei_shopv2/static/css/verified/base.css" rel="stylesheet" type="text/css"/>
+    <link href="../addons/ewei_shopv2/static/css/verified/iconfont.css" rel="stylesheet" type="text/css"/>
+    <link href="../addons/ewei_shopv2/static/css/verified/layout.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="../addons/ewei_shopv2/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../addons/ewei_shopv2/static/js/rem.js"></script>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.2/style/weui.min.css">
+    <!--<link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.0/css/jquery-weui.min.css">-->
+    <title>实名认证</title>
+
+</head>
+<body class="">
+<!--<header class="header">上传</header>-->
+<div class="main">
+    <div class="upBar">
+        <span>上传证件</span>
+        <i class="iconfont icon-shuangjiantouyou"></i>
+        <span>在线识别</span>
+        <i class="iconfont icon-shuangjiantouyou"></i>
+        <span>结果</span>
+    </div>
+    <div class="upBox">
+        <!-- 身份证正面 -->
+        <div class="upItem">
+            <div class="up_bg" id="one">
+                <div class="vm">
+                    <h3>身份证正面</h3>
+                    <p>点击上传身份证正面</p>
+                </div>
+                <input type="file" class="btn_file" accept="image/*" capture="camera">
+            </div>
+            <div class="upImg" id="img1"></div>
+        </div>
+        <!-- 身份证反面 -->
+        <div class="upItem" style="display: none;" id="up2">
+            <div class="up_bg" id="two">
+                <div class="vm">
+                    <h3>驾驶证</h3>
+                    <p>点击上传驾驶证正面</p>
+                </div>
+                <input type="file" class="btn_file" accept="image/*" capture="camera">
+            </div>
+            <div class="upImg" id="img2"></div>
+        </div>
+
+        <button class="submit_btn" onclick="saves()" disabled>提交</button>
+    </div>
+</div>
+<div class="vm tips" style="display: none;" id="tips1">
+</div>
+<div class="vm tips" style="display: none;" id="tips2">
+    <div class="weui-loadmore">
+        <i class="weui-loading"></i>
+        <span class="weui-loadmore__tips">正在识别</span>
+    </div>
+</div>
+<script>
+    //百度统计代码   2018-08-14 12：06
+    var _hmt = _hmt || [];
+    (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?2f23caef4fb16449c19e618ed9ad4687";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+</body>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<script>
+    $(function () {
+        //解决上传图片时capture="camera"在安卓与IOS的兼容性问题（在IOS只能拍照，不能选相册）
+        var ua = navigator.userAgent.toLowerCase();//获取浏览器的userAgent,并转化为小写——注：userAgent是用户可以修改的
+        var isIos = (ua.indexOf('iphone') != -1) || (ua.indexOf('ipad') != -1);//判断是否是苹果手机，是则是true
+        if (isIos) {
+            $("input:file").removeAttr("capture");
+        }
+        ;
+    });
+
+    $(function () {
+        var allowTypes = ["image/jpg", "image/jpeg", "image/png", "image/gif"];
+        var maxSize = 2048 * 2048;
+        var maxWidth = 10000;
+        var n = 1;
+        var maxCount = 2;
+        $(".btn_file").on("change", function (event) {
+            wx.chooseImage({
+                count: 1, // 默认9
+                sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+                sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+                success: function (res) {
+                    var localIds = res.localIds;
+                }
+            });
+            var files = event.target.files;
+            if (files.length === 0) {
+                $("#tips1").html("读取失败");
+                tips();
+            }
+            for (var i = 0, len = files.length; i < len; i++) {
+                var file = files[i];
+                var reader = new FileReader();
+                if (allowTypes.indexOf(file.type) === -1) {
+                    $("#tips1").html("该类型不允许上传");
+                    tips();
+                    continue;
+                }
+                reader.readAsDataURL(file);
+                reader.onload = function (e) {
+                    var img = new Image();
+                    img.src = e.target.result;
+                    img.onload = function () {
+                        var w = Math.min(maxWidth, img.width);
+                        var h = img.height * (w / img.width);
+                        var canvas = document.createElement("canvas");
+                        var ctx = canvas.getContext("2d");
+                        canvas.width = w;
+                        canvas.height = h;
+                        ctx.drawImage(img, 0, 0, w, h);
+                        var base64 = canvas.toDataURL("image/jpeg", 0.7);
+                        if (n == 1) {
+                            $("#one").css("display", "none");
+                            var im = "<img style='height: 216px;' src='" + img.src + "'>";
+                            $("#img1").append(im);
+                        } else {
+                            $("#two").css("display", "none");
+                            var im = "<img style='height: 216px;' src='" + img.src + "'>";
+                            $("#img2").append(im);
+                        }
+                        var formData = new FormData();
+                        formData.append("images", base64);
+                        $("#tips2").css("display", "block");
+                        $.ajax({
+                            url: "{php echo mobileUrl('parking/verified/verifImage')}&n=" + n,
+                            type: "POST",
+                            data: formData,
+                            contentType: false,
+                            processData: false,
+                            success: function (data) {
+                                var datas = JSON.parse(data);
+                                $("#tips2").css("display", "none");
+                                if (datas.status == 1) {
+                                    if (n == 2) {
+                                        $(".submit_btn").removeAttr('disabled');
+                                        $("#tips1").html("识别成功,请确认提交");
+                                        tips()
+                                    } else {
+                                        $("#tips1").html("请继续上传驾驶证");
+                                        tips();
+                                        $("#up2").css("display", "block");
+                                    }
+                                    n += 1;
+                                } else {
+                                    $("#tips1").html("识别失败,请重新上传");
+                                    tips();
+                                    setTimeout(function () {
+                                        location.reload();
+                                    }, 2500);
+                                }
+                            },
+                            error: function (xhr, type) {
+                                $("#tips2").css("display", "none");
+                                $("#tips1").html("系统繁忙,请稍后再试..");
+                                tips();
+                            }
+                        })
+                    }
+                }
+            }
+        })
+    });
+
+    function saves() {
+        $.get("{php echo mobileUrl('parking/verified/save')}", [], function (data) {
+            var res = JSON.parse(data);
+            switch (res.status) {
+                case "0":
+                    $("#tips1").html(res.result.message);
+                    tips();
+                    break;
+                case "1":
+                    $("#tips1").html("提交成功");
+                    tips();
+                    setTimeout(function () {
+                        window.history.back();
+                    }, 2300);
+                    break;
+                case "3":
+                    $("#tips1").html(res.result.message);
+                    tips();
+                    break
+            }
+        });
+        return false
+    }
+
+    function tips() {
+        $("#tips1").css("display", "block");
+        setTimeout(function () {
+                $("#tips1").css("display", "none")
+            }, 2000);
+    };
+</script>
+</html>

@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.baidu.com" versionCode="0.6">
+	<application setting="false">
+		<name><![CDATA[同城互动]]></name>
+		<identifie><![CDATA[jy_tchd]]></identifie>
+		<version><![CDATA[1.2.3]]></version>
+		<type><![CDATA[business]]></type>
+		<ability><![CDATA[同城互动，活动报名]]></ability>
+		<description><![CDATA[同城互动，活动报名]]></description>
+		<author><![CDATA[微赞]]></author>
+		<url><![CDATA[http://www.baidu.com]]></url>
+	</application>
+	<platform>
+		<subscribes>
+		</subscribes>
+		<handles>
+			<message type="text" />
+		</handles>
+		<rule embed="false" />
+		<card embed="false" />
+	</platform>
+	<bindings>
+		<cover>
+			<entry title="首页入口" do="index" state="" direct="false" />
+			<entry title="发布活动" do="fabu" state="" direct="false" />
+			<entry title="个人中心" do="geren" state="" direct="false" />
+		</cover>
+		<menu>
+			<entry title="基本设置" do="setting" state="" direct="false" />
+			<entry title="推广设置" do="url" state="" direct="false" />
+			<entry title="底部菜单设置" do="menu" state="" direct="false" />
+			<entry title="幻灯片设置" do="banner" state="" direct="false" />
+			<entry title="首页导航管理" do="synav" state="" direct="false" />
+			<entry title="品牌管理" do="brands" state="" direct="false" />
+			<entry title="门店分类管理" do="md_fenlei" state="" direct="false" />
+			<entry title="门店管理" do="mendian" state="" direct="false" />
+			<entry title="店员管理" do="dianyuan" state="" direct="false" />
+			<entry title="分类管理" do="cate" state="" direct="false" />
+			<entry title="市区街道" do="jiedao" state="" direct="false" />
+			<entry title="自定义字段" do="attr" state="" direct="false" />
+			<entry title="个人资料字段" do="gerenattr" state="" direct="false" />
+		</menu>
+	</bindings>
+	<install><![CDATA[CREATE TABLE IF NOT EXISTS `ims_jy_tchd_attr` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `weid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '所属帐号',
+  `name` varchar(50) NOT NULL COMMENT '名称',
+  `parentid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '批次ID,0为第一级',
+  `displayorder` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `description` varchar(250) NOT NULL COMMENT '描述',
+  `type` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1多选，2填空，3下拉菜单，4市区街道 , 5三级联动 , 6手机 , 7姓名 , 8头像 ,9图片',
+  `mobile` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '是否显示于手机端',
+  `enabled` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '是否开启',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `ims_jy_tchd_banner` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `weid` int(10) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `thumb` varchar(255) NOT NULL,
+  `content` text,
+  `displayorder` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `enabled` tinyint(1) DEFAULT '0' COMMENT '0为纯图片,1为描述，2为链接跳转',
+  `url` varchar(255) NOT NULL,
+  `status` tinyint(1) DEFAULT '1',
+  `createtime` int(10) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `ims_jy_tchd_brands` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `weid` int(11) NOT NULL,
+  `displayorder` int(11) NOT NULL DEFAULT '0' COMMENT 'ForOrder',
+  `name` varchar(255) NOT NULL,
+  `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT 'ForLogoImage',
+  `description` varchar(255) NOT NULL,
+  `enabled` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '0ForDeleted1ForExists',
+  `updatetime` int(10) NOT NULL,
+  `createtime` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `ims_jy_tchd_cate` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `weid` int(11) NOT NULL,
+  `displayorder` int(11) NOT NULL DEFAULT '0' COMMENT 'ForOrder',
+  `name` varchar(255) NOT NULL,
+  `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT 'ForLogoImage',
+  `description` varchar(255) NOT NULL,
+  `enabled` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '0ForDeleted1ForExists',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `ims_jy_tchd_code` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uid` int(11) unsigned NOT NULL,
+  `weid` int(10) NOT NULL,
+  `mobile` varchar(11) NOT NULL,
+  `code` varchar(200) NOT NULL,
+  `createtime` int(10) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `ims_jy_tchd_dianyuan` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `weid` int(10) unsigned NOT NULL,
+  `from_user` varchar(50) NOT NULL DEFAULT '',
+  `uid` int(10) NOT NULL,
+  `enabled` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '0ForDeleted1ForExists',
+  `username` varchar(50) NOT NULL DEFAULT '',
+  `mobile` varchar(20) DEFAULT NULL,
+  `mail` varchar(200) DEFAULT NULL,
+  `QQ` varchar(200) DEFAULT NULL,
+  `wechat` varchar(200) DEFAULT NULL,
+  `mendianid` int(10) DEFAULT '0',
+  `type` int(10) DEFAULT '0' COMMENT '0代表店员，1为店长，2为待审核',
+  `password` varchar(200) DEFAULT NULL,
+  `description` text,
+  `updatetime` int(10) NOT NULL,
+  `createtime` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `ims_jy_tchd_jiedao` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `weid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '所属帐号',
+  `name` varchar(50) NOT NULL COMMENT '名称',
+  `parentid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '批次ID,0为第一级',
+  `displayorder` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `description` text COMMENT '描述',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '是否开启',
+  `enabled` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '是否删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `ims_jy_tchd_md_fenlei` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `weid` int(11) NOT NULL,
+  `displayorder` int(11) NOT NULL DEFAULT '0' COMMENT 'ForOrder',
+  `name` varchar(255) NOT NULL,
+  `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT 'ForLogoImage',
+  `description` varchar(255) NOT NULL,
+  `enabled` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '0ForDeleted1ForExists',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `ims_jy_tchd_member` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `weid` int(10) NOT NULL,
+  `uid` int(10) NOT NULL,
+  `mobile` varchar(11) NOT NULL,
+  `realname` varchar(50) NOT NULL,
+  `thumb` varchar(255) NOT NULL,
+  `from_user` varchar(50) NOT NULL,
+  `enabled` int(2) NOT NULL COMMENT '封号与否',
+  `type` int(2) NOT NULL COMMENT '2为预留账户版用户,1为微信',
+  `updatetime` int(10) NOT NULL,
+  `createtime` int(10) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `ims_jy_tchd_member_attr` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `weid` int(10) NOT NULL,
+  `qq` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `gender` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `birthyear` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `constellation` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `zodiac` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `idcard` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `studentid` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `grade` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `address` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `zipcode` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `nationality` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `resideprovince` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `graduateschool` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `company` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `education` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `occupation` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `position` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `revenue` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `affectivestatus` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `lookingfor` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `bloodtype` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `height` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `weight` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `alipay` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `msn` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `taobao` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `site` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `bio` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  `interest` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0,1为开启',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `ims_jy_tchd_member_geren` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `weid` int(10) NOT NULL,
+  `uid` int(10) NOT NULL,
+  `mid` int(10) NOT NULL,
+  `qq` varchar(15) NOT NULL,
+  `gender` tinyint(1) NOT NULL,
+  `birthyear` smallint(6) unsigned NOT NULL,
+  `birthmonth` tinyint(3) unsigned NOT NULL,
+  `birthday` tinyint(3) unsigned NOT NULL,
+  `constellation` varchar(10) NOT NULL,
+  `zodiac` varchar(5) NOT NULL,
+  `idcard` varchar(30) NOT NULL,
+  `studentid` varchar(50) NOT NULL,
+  `grade` varchar(10) NOT NULL,
+  `address` varchar(255) NOT NULL,
+  `zipcode` varchar(10) NOT NULL,
+  `nationality` varchar(30) NOT NULL,
+  `resideprovince` varchar(30) NOT NULL,
+  `residecity` varchar(30) NOT NULL,
+  `residedist` varchar(30) NOT NULL,
+  `graduateschool` varchar(50) NOT NULL,
+  `company` varchar(50) NOT NULL,
+  `education` varchar(10) NOT NULL,
+  `occupation` varchar(30) NOT NULL,
+  `position` varchar(30) NOT NULL,
+  `revenue` varchar(10) NOT NULL,
+  `affectivestatus` varchar(30) NOT NULL,
+  `lookingfor` varchar(255) NOT NULL,
+  `bloodtype` varchar(5) NOT NULL,
+  `height` varchar(5) NOT NULL,
+  `weight` varchar(5) NOT NULL,
+  `alipay` varchar(30) NOT NULL,
+  `msn` varchar(30) NOT NULL,
+  `taobao` varchar(30) NOT NULL,
+  `site` varchar(30) NOT NULL,
+  `bio` text NOT NULL,
+  `interest` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `mid` (`mid`),
+  KEY `weid` (`weid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `ims_jy_tchd_mendian` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `weid` int(10) unsigned NOT NULL,
+  `brand_id` int(10) NOT NULL,
+  `mdcateid` int(10) NOT NULL,
+  `mendianname` varchar(200) NOT NULL DEFAULT '',
+  `thumb` varchar(200) DEFAULT NULL,
+  `tuce` text,
+  `tel` varchar(20) DEFAULT NULL,
+  `address` varchar(200) DEFAULT NULL,
+  `mail` varchar(200) DEFAULT NULL,
+  `jw_addr` varchar(255) DEFAULT NULL,
+  `lng` varchar(10) DEFAULT NULL,
+  `lat` varchar(10) DEFAULT NULL,
+  `province` varchar(50) DEFAULT NULL,
+  `city` varchar(50) DEFAULT NULL,
+  `dist` varchar(50) DEFAULT NULL,
+  `description` text,
+  `enabled` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '0ForDeleted1ForExists',
+  `updatetime` int(10) NOT NULL,
+  `createtime` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `ims_jy_tchd_menu` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `weid` int(11) NOT NULL,
+  `displayorder` int(11) NOT NULL DEFAULT '0' COMMENT 'ForOrder',
+  `name` varchar(255) NOT NULL,
+  `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT 'ForLogoImage',
+  `url` varchar(255) NOT NULL DEFAULT '' COMMENT 'ForRedirectUrl',
+  `description` varchar(255) NOT NULL,
+  `enabled` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '0ForDeleted1ForExists',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `ims_jy_tchd_setting` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `weid` int(10) NOT NULL,
+  `aname` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `sharetitle` varchar(255) NOT NULL,
+  `sharedesc` varchar(255) NOT NULL,
+  `sharelogo` varchar(255) NOT NULL,
+  `thumb` varchar(255) NOT NULL,
+  `notice` varchar(255) NOT NULL,
+  `copyright` varchar(255) NOT NULL,
+  `copyrighturl` varchar(255) NOT NULL,
+  `color` varchar(10) NOT NULL,
+  `follow_logo` varchar(255) NOT NULL COMMENT '引导关注logo',
+  `follow_url` text COMMENT '关注地址',
+  `sms_type` int(10) NOT NULL DEFAULT '0' COMMENT '0,1为互亿无线,2为微赞',
+  `sms_sign` varchar(255) NOT NULL,
+  `sms_product` varchar(255) NOT NULL,
+  `sms_username` varchar(255) NOT NULL,
+  `sms_pwd` varchar(255) NOT NULL,
+  `bd_ak` varchar(255) NOT NULL,
+  `sync` int(2) NOT NULL COMMENT '同步手机名称与否',
+  `sync2` int(2) NOT NULL COMMENT '同步个人信息名称与否',
+  `updatetime` int(10) NOT NULL,
+  `createtime` int(10) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `ims_jy_tchd_synav` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `weid` int(11) NOT NULL,
+  `displayorder` int(11) NOT NULL DEFAULT '0' COMMENT 'ForOrder',
+  `name` varchar(255) NOT NULL,
+  `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT 'ForLogoImage',
+  `url` varchar(255) NOT NULL DEFAULT '' COMMENT 'ForRedirectUrl',
+  `description` varchar(255) NOT NULL,
+  `enabled` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '0ForDeleted1ForExists',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `ims_jy_tchd_url` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `weid` int(11) NOT NULL,
+  `displayorder` int(11) NOT NULL DEFAULT '0' COMMENT 'ForOrder',
+  `name` varchar(255) NOT NULL,
+  `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT 'ForLogoImage',
+  `url` varchar(255) NOT NULL DEFAULT '' COMMENT 'ForRedirectUrl',
+  `description` varchar(255) NOT NULL,
+  `enabled` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '0ForDeleted1ForExists',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+]]></install>
+	<uninstall><![CDATA[DROP TABLE IF EXISTS `ims_jy_tchd_attr`;
+DROP TABLE IF EXISTS `ims_jy_tchd_banner`;
+DROP TABLE IF EXISTS `ims_jy_tchd_brands`;
+DROP TABLE IF EXISTS `ims_jy_tchd_cate`;
+DROP TABLE IF EXISTS `ims_jy_tchd_code`;
+DROP TABLE IF EXISTS `ims_jy_tchd_dianyuan`;
+DROP TABLE IF EXISTS `ims_jy_tchd_jiedao`;
+DROP TABLE IF EXISTS `ims_jy_tchd_md_fenlei`;
+DROP TABLE IF EXISTS `ims_jy_tchd_member`;
+DROP TABLE IF EXISTS `ims_jy_tchd_member_attr`;
+DROP TABLE IF EXISTS `ims_jy_tchd_member_geren`;
+DROP TABLE IF EXISTS `ims_jy_tchd_mendian`;
+DROP TABLE IF EXISTS `ims_jy_tchd_menu`;
+DROP TABLE IF EXISTS `ims_jy_tchd_setting`;
+DROP TABLE IF EXISTS `ims_jy_tchd_synav`;
+DROP TABLE IF EXISTS `ims_jy_tchd_url`;
+]]></uninstall>
+	<upgrade><![CDATA[upgrade.php]]></upgrade>
+</manifest>

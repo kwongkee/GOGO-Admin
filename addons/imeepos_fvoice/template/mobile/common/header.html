@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" style="font-size:20px;">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no" />
+    <title>{php echo $this->system['title']}</title>
+    <link href="{$_W['siteroot']}app/resource/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{MODULE_URL}public/css/base.css" />
+    <link rel="stylesheet" href="{MODULE_URL}public/libs/weui/weui.css"/>
+
+    <link rel="stylesheet" href="{MODULE_URL}public/libs/jquery_weui/jquery-weui.css"/>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.1.0.js"></script>
+    <style>
+        .footerbar{
+            z-index:9;
+            border: none;
+        }
+        .weui_tabbar_item {
+            padding: 3px 0 0;
+        }
+        .h44{
+            height:44px;
+        }
+        .weui_tabbar_item .weui_tabbar_icon{
+            color:#000;
+        }
+        .weui_tabbar_icon + .weui_tabbar_label {
+            margin-top: 0px;
+        }
+        {if !empty($this->system['color'])}
+        .header .header-nav a {
+            color:{php echo $this->system['color']};
+        }
+        .weui_tabbar_item.weui_bar_item_on .weui_tabbar_label {
+            color: {php echo $this->system['color']};
+        }
+        .weui_tabbar_item.weui_bar_item_on .weui_tabbar_icon {
+            color: {php echo $this->system['color']};
+        }
+        {/if}
+        {if !empty($this->system['bg_color'])}
+        .header .header-nav a.current {
+            color: #fff;
+            background: {php echo $this->system['bg_color']};
+        }
+        .header .header-nav a {
+            border: 1px solid {php echo $this->system['bg_color']};
+        }
+        .header .header-nav a:last-child {
+            border-right: 1px solid {php echo $this->system['bg_color']};
+        }
+        .footerbar .fb-current {
+            color: {php echo $this->system['bg_color']};
+        }
+        {/if}
+        .voicing{
+            width: .8rem;
+            height: .8rem;
+            background-image: url({MODULE_URL}public/img/voicing.gif) !important;
+            background-size: .8rem;
+            top: .65rem;
+            left: .65rem;
+        }
+        .weui_dialog, .weui_toast{
+            top:10%;
+        }
+    </style>
+    <script>
+        var jssdkconfig = {php echo json_encode($_W['account']['jssdkconfig']);} || {};
+        // 是否启用调试
+        jssdkconfig.debug = false;
+
+        jssdkconfig.jsApiList = [
+            'checkJsApi',
+            'onMenuShareTimeline',
+            'onMenuShareAppMessage',
+            'onMenuShareQQ',
+            'onMenuShareWeibo',
+            'hideMenuItems',
+            'showMenuItems',
+            'hideAllNonBaseMenuItem',
+            'showAllNonBaseMenuItem',
+            'translateVoice',
+            'startRecord',
+            'stopRecord',
+            'onRecordEnd',
+            'playVoice',
+            'pauseVoice',
+            'stopVoice',
+            'uploadVoice',
+            'downloadVoice',
+            'chooseImage',
+            'previewImage',
+            'uploadImage',
+            'downloadImage',
+            'getNetworkType',
+            'openLocation',
+            'getLocation',
+            'hideOptionMenu',
+            'showOptionMenu',
+            'closeWindow',
+            'scanQRCode',
+            'chooseWXPay',
+            'openProductSpecificView',
+            'addCard',
+            'chooseCard',
+            'openCard',
+            'openAddress'
+        ];
+        wx.config(jssdkconfig);
+        var _TUTOR_URL = "{php echo $this->createMobileUrl('tutor')}";
+        var _follow = "{php echo intval($_W['fans']['follow'])}";
+        var _openid = "{php echo $_W['openid']}";
+        var _qrcode = "{php echo $_W['account']['qrcode']}";
+    </script>
+    <script type="text/javascript" src="{MODULE_URL}public/libs/jquery_weui/lib/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="{MODULE_URL}public/libs/jquery_weui/jquery-weui.js"></script>
+    <script src="{MODULE_URL}public/libs/jquery_weui/js/swiper.js"></script>
+    <script src="{MODULE_URL}public/js/voice.js?t={php echo time()}"></script>
+</head>
+<body>
+
+<div id="code" style="font-size:.75rem;color:#999;text-align:center;padding:2rem 0 1.1rem 0;margin-bottom:.9rem;background:#fff;display:none;">
+    <p>
+        关注「{php echo $this->system['title']}」才能接收提问、结算通知
+    </p>
+    <p>
+        长按识别，公众号：{$_W['account']['name']}
+    </p>
+    <p>
+        <img src="{php echo $_W['account']['qrcode']}"
+             style="width:5.5rem;height:5.5rem;margin-top:.7rem;"/>
+    </p>
+    <p style="padding:0px;margin:0px;">{php echo $this->system['content']}</p>
+</div>
+
+<script>
+    $(document.body).on('click','.avatar',function(){
+        var openid = $(this).data('openid');
+        window.location.href = "{php echo $this->createMobileUrl('tutor')}&openid="+openid;
+    });
+</script>

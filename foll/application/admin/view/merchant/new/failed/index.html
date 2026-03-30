@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{$title}}</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<table class="layui-table">
+    <thead>
+    <tr class="ths">
+        <th>商户名称</th>
+        <th>提交票数</th>
+
+        <th>申报成功</th>
+        <th>申报失败</th>
+        <th>申报费用</th>
+
+        <th>身份验真成功</th>
+        <th>身份验真失败</th>
+        <th>身份验证费用</th>
+
+        <th>支付成功货值</th>
+        <th>支付失败货值</th>
+        <th>支付费用</th>
+
+        <th>应付金额</th>
+
+        <th>清算状态</th>
+        <th>编辑操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {volist name="data['data']" id="vo"}
+    <tr class="boys">
+        <td>{$vo.uname}</td>
+        <td>{$vo.votesd}</td>
+
+        <td>{$vo.declVotesd}</td>
+        <td>{$vo.declFaild}</td>
+        <td>{$vo.declMoneyd}</td>
+
+        <td>{$vo.valVotesd}</td>
+        <td>{$vo.valFaild}</td>
+        <td>{$vo.valMoneyd}</td>
+
+        <td>{$vo.paySuccvaluedsb}</td>
+        <td>{$vo.payFailvaluedsb}</td>
+        <td>{$vo.payMoneydsb}</td>
+
+        <td>{$vo.valTotaldsb}</td>
+
+        <td>{$liStatus[$vo.liquStatus]}</td>
+
+        <td>
+            {if condition="($vo.liquStatus == 2)" }
+
+                <a href="javascript:void(0);" onclick="Liquidation({$vo.id},'{$vo.email}');" class="layui-btn layui-btn-xs layui-btn-normal">确认清算</a>
+
+            {elseif condition="($vo.liquStatus == 3)" /}
+
+                <a href="javascript:void(0);" onclick="See({$vo.liquid},'{$vo.uname}');" class="layui-btn layui-btn-xs ">查看清单</a>
+
+            {else /}
+                <a href="javascript:void(0);" onclick="remind('{$vo.email}');" class="layui-btn layui-btn-xs layui-btn-danger">提醒清算</a>
+            {/if}
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+
+<script type="text/javascript">
+    layui.use(['layer','jquery'],function(){
+        layer = layui.layer;
+        $ = layui.jquery;
+    });
+
+    function Liquidation(ids,emails) {
+        layer.confirm('确认清算吗？',{},function(){
+            $.ajax({
+                url:"{:Url('Financed/Liqus')}",
+                dataType:'json',
+                method:'POST',
+                data:{ids:ids,email:emails},
+                success:function(res) {
+                    res = JSON.parse(res);
+                    if(res.code == 1) {
+                        layer.msg(res.msg,{icon:1});
+                    } else {
+                        layer.msg(res.msg,{icon:2});
+                    }
+                    setInterval(function(){
+                        window.location.reload();
+                    },800)
+                }
+            });
+        })
+    }
+
+    // 提醒清算
+    function remind(emails)
+    {
+        layer.confirm('确认清算吗？',{},function() {
+            $.post("{:Url('Financed/Remind')}",{'email':emails},function(res){
+                res = JSON.parse(res);
+                if(res.code == 1) {
+                    layer.msg(res.msg,{icon:1});
+                } else {
+                    layer.msg(res.msg,{icon:2});
+                }
+            });
+        })
+    }
+
+
+    // 查看清单
+    function See(liquid,uname)
+    {
+        layer.open({
+            type: 2,
+            title: '清算清单',
+            shadeClose: true,
+            shade: 0.3,
+            area: ['490px', '400px'],
+            content: "{:Url('Financed/SeeLiqus')}&liquid="+liquid+'&uname='+uname, //iframe的url
+            yes:function(){
+                setTimeout(function(){window.location.reload();},800);
+            },
+            end:function() {
+                setTimeout(function () {
+                    window.location.reload();
+                }, 800);
+            }
+        });
+    }
+
+
+
+</script>
+</body>
+</html>

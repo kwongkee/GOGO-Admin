@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="Cache-Control" content="no-cache"/>
+<title>{if $wurltitle}{$wurltitle}{else}文章中心{/if} - {$config['webtitle']}</title>
+<meta http-equiv="description" content="" />
+<meta name="renderer" content="webkit"/>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+<meta name="description" content="" id="description"/>
+<meta name="keywords" content=""/>
+<link rel="stylesheet" href="{$templateurl}css/wap_css.css" type="text/css"/>
+<script src="{$templateurl}js/jquery-1.8.0.min.js" language="javascript"></script>
+<!--分页 start-->
+<link rel="stylesheet" href="{$templateurl}css/pase.css" type="text/css"/>
+<!--分页 end-->
+</head>
+
+<body>
+<div class="zuowend">
+
+	<div class="zwtio">
+    	<div class="a1"><a class="b2" href="{php echo $this->createMobileUrl('index');}"><</a><span>{if $wurltitle}{$wurltitle}{else}文章中心{/if}</span></div>
+        <div class="clear"></div>
+        <form action="./index.php" method="get">
+		<input type="hidden" name="i" value="{$_GPC['i']}">
+		<input type="hidden" name="c" value="{$_GPC['c']}">
+		<input type="hidden" name="do" value="{$_GPC['do']}">
+		<input type="hidden" name="m" value="{$_GPC['m']}">
+		<input type="hidden" name="typeid" value="{$typeid}">
+		<input type="hidden" name="xkid" value="{$xkid}">
+		<input type="hidden" name="njid" value="{$njid}">
+		<input type="text" name="keyword" value="{$_GPC['keyword']}" placeholder="请输入关键字" />
+		<button><i class="iconfont">&#xe69b;</i></button>
+        </form>
+	
+        <div class="clear"></div>
+        <div class="a2">
+			{loop $typeidall $key $value}
+			<a href="{$urlt}&typeid={$key}&njid={$njid}">
+			{if $key == 1}<i class="iconfont">&#xe647;</i>经典
+			{elseif $key == 2}<i class="iconfont">&#xe625;</i>写作
+			{elseif $key == 3}<i class="iconfont">&#xe64b;</i>写作
+			{elseif $key == 4}<i class="iconfont">&#xe65f;</i>写作
+			{/if}
+			{$value}</a>
+			{/loop}
+        	<div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+    </div>
+    
+    <div class="banjifld">
+		<div style="overflow:scroll;">
+		<font style="width:900px;">            
+			<a href="{$urlt}&typeid={$typeid}" {if $njid == '0'}class="active"{/if}>全部</a>
+			{loop $category_nj $value}
+			<a href="{$urlt}&typeid={$typeid}&njid={$value['cid']}" {if $njid == $value['cid']}class="active"{/if}>{$value['name']}</a>
+			{/loop}
+		</font>
+		</div>
+	</div>
+    <div class="clear" style="height:3px;"></div>
+          
+	<div class="zuowenneirong">
+		{if $list}
+			{loop $list $key $value}
+			<a class="a1" href="{php echo $this->createMobileUrl('article', array('op'=>'show','id'=>$value['id']));}">
+				<h1>{$value['titlename']}</h1>
+				<span>{php echo date('Y-m-d H:i', $value['dateline']);}</span>
+				<p>{$value['messagejj']}</p>
+			</a>
+			{/loop}
+		{else}
+		<a class="a1"><h1 style="text-align:center;">抱歉！未找到相应数据！</h1></a>
+		{/if}
+	</div>
+		  
+	{if $pager}     
+	<div class="pagelist">{$pager}</div>
+	{/if}
+    
+</div>
+<div class="clear"></div>
+
+<!--footer strat-->
+{template 'footer'}
+
+</body>
+</html>

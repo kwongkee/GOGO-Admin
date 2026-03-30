@@ -1,0 +1,267 @@
+{template "parking/base/header"}
+{template "parking/base/myheader"}
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<style type="text/css">
+	.clear{clear: both;}
+	.wx_box{height: auto;}
+	.footer{position: relative;}
+	.weui-cell__ft{color: green;}
+	.layui-form-item .layui-input-inline{margin: 0 0 5px 12px;}
+	
+	.weui-form-preview__bd{border-bottom: 1px solid silver;margin: 3px auto;}
+	.dates span{float: left;margin-left: 5px;}
+	.weui-form-preview__ft{height: 30px;}
+	.weui-navbar{position: fixed;top: 0.1px;}
+	.weui-tabbar{position: fixed;bottom: 0.1px;}
+	.weui-input{width: 62%;border: 1px solid saddlebrown;}
+	.yuan{margin-left: 1px;}
+	.nodata{
+		font-size: 26px;font-weight: bold;color:silver;
+		width: 100%;text-align: center;
+		margin: 42% auto;
+	}
+	* {
+		-webkit-box-sizing: border-box;
+		-moz-box-sizing: border-box;
+		box-sizing: border-box;
+		-webkit-tap-highlight-color: transparent;
+		outline: none;
+	}
+
+	*:not(input) {
+		-webkit-user-select: none;
+	}
+	input{
+		-webkit-user-select: auto;
+	}
+</style>
+<script type="text/javascript" src="../addons/ewei_shopv2/static/weiui/js/address.js"></script>
+<!--<script type="text/javascript">
+	function loadAddress(){
+		var _html ='';
+		for(var index in address)
+		{
+			_html+='<option value="'+index+'">'+address[index]+'</option>';
+		}
+		$('#id_type').append(_html);
+		location.reload();
+	}
+</script>-->
+<div class="wx_box">
+    <div class="license_Fee">
+        <h3 class="title_h3"><span>用户违规车牌查询</span></h3>
+        
+		<div align="center">
+			<form class="layui-form" action="<?php echo mobileUrl('parking/parking_orderdetails/violition');?>" method="post">
+		  	<div class="layui-inline">
+			    
+			    <label class="layui-form-label" style="width: 18%;padding:9px 1px 9px 9px;">车牌号:</label>
+			    <div class="layui-input-inline" style="width:18%;">
+			      <select name="interest" id="zm" lay-filter="aihao">
+			        <option value="1">粤</option>
+			        <option value="2">川</option>
+			        <option value="3">云</option>
+			        <option value="4">陕</option>
+			        <option value="5">新</option>
+			        <option value="6">沪</option>
+			        <option value="7">京</option>
+			        <option value="8">冀</option>
+			        <option value="9">晋</option>
+			        <option value="10">蒙</option>
+			        <option value="11">辽</option>
+			        <option value="12">吉</option>
+			        <option value="13">黑</option>
+			        <option value="14">苏</option>
+			        <option value="15">浙</option>
+			        <option value="16">皖</option>
+			        <option value="17">闽</option>
+			        <option value="18">赣</option>
+			        <option value="19">鲁</option>
+			        <option value="20">豫</option>
+			        <option value="21">鄂</option>
+			        <option value="22">湘</option>
+			        <option value="23">津</option>
+			        <option value="24">琼</option>
+			        <option value="25">渝</option>
+			        <option value="26">桂</option>
+			        <option value="27">贵</option>
+			        <option value="28">云</option>
+			        <option value="29">藏</option>
+			        <option value="30">陕</option>
+			        <option value="31">甘</option>
+			        <option value="32">青</option>
+			        <option value="33">宁</option>
+			      </select>
+			    </div>
+			    
+			    <div class="layui-input-inline" style="width:18%;">
+			      <select name="interest1" id="yw" lay-filter="aihao1">
+			        <option value="1">A</option>
+			        <option value="2">B</option>
+			        <option value="3">C</option>
+			        <option value="4">D</option>
+			        <option value="5">E</option>
+			        <option value="6">F</option>
+			        <option value="7">G</option>
+			        <option value="8">H</option>
+			        <option value="9">I</option>
+			        <option value="10">J</option>
+			        <option value="11">K</option>
+			        <option value="12">L</option>
+			        <option value="13">M</option>
+			        <option value="14">N</option>
+			        <option value="15">O</option>
+			        <option value="16">P</option>
+			        <option value="17">Q</option>
+			        <option value="18">R</option>
+			        <option value="19">S</option>
+			        <option value="20">T</option>
+			        <option value="21">U</option>
+			        <option value="22">V</option>
+			        <option value="23">W</option>
+			        <option value="24" selected>X</option>
+			        <option value="25">Y</option>
+			        <option value="26">Z</option>
+			      </select>
+			    </div>
+			    
+			    <div class="layui-input-inline" style="width:88px;">
+			      <input type="text" name="CarNod" id="CarNod"  lay-verify="required" value="" placeholder="车牌号码"  style="height: 35px;width: 103px;">
+			    </div>
+			</div>
+			
+			<input type="hidden" name="CarNo" id="CarNo" maxlength="12" value="">
+			
+			<div class="layui-form-item" style="text-align: center;"></div>
+			
+			<div class="layui-form-item" style="text-align: center;">
+			    <div class="layui-input-block" style="margin-left: 0px;">
+			      <button class="layui-btn layui-btn-sm" lay-submit lay-filter="formDemo">立即查询</button>
+			      <button type="reset" class="layui-btn layui-btn-sm layui-btn-danger">信息重置</button>
+			    </div>
+			</div>
+			
+			</form>
+		</div>
+			 
+		<script>
+			//Demo
+			layui.use('form', function(){
+			  var form = layui.form;
+			  //监听提交
+			  form.on('submit(formDemo)', function(data) {
+			  	var zm = $('#zm option:selected').text();
+			  	var yw = $('#yw option:selected').text();
+			  	var CarNos = zm+yw;
+			  	var CarNoa = data.field.CarNod;
+			  	CarNoa = CarNos+CarNoa;
+			  	CarNoa = CarNoa.toUpperCase();
+			  	$('#CarNo').val(CarNoa);
+			  	var isVe  = isVehicleNumber(CarNoa);
+			  	if(!isVe) {
+			  		layer.msg('您的车牌号输入不正确');
+			  		return false;
+			  	}
+      			return true;
+			  });
+			  
+			});
+		</script>
+		
+		{if empty($info)}
+			<p class="nodata">暂无数据!</p>
+		{else}
+	
+    	<div class="weui-form-preview">
+    		{loop $info $index $val}
+			<div class="weui-form-preview__bd">
+				
+				<div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">订单金额:</label>
+			      <span style="color: green;" class="weui-form-preview__value">¥ {$val['pay_account']}元</span>
+			    </div>
+				
+			    <div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">订单编号:</label>
+			      <span class="weui-form-preview__value">{$val['ordersn']}</span>
+			    </div>
+			    
+			    <div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">泊位编号:</label>
+			      <span class="weui-form-preview__value">{$val['number']}</span>
+			    </div>
+			    
+			    <div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">停车时长:</label>
+			      <span class="weui-form-preview__value">{$val['duration']} 分钟</span>
+			    </div>
+			    
+			    <div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">车辆驶入时间:</label>
+			      <span class="weui-form-preview__value"><?php echo date("Y-m-d H:i:s",$val['starttime'])?></span>
+			    </div>
+			    
+			    <div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">车辆驶出时间:</label>
+			      <span class="weui-form-preview__value"><?php echo date("Y-m-d H:i:s",$val['endtime'])?></span>
+			    </div>
+			    
+			    <div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">车牌号码:</label>
+			      <span class="weui-form-preview__value">{$val['CarNo']}</span>
+			    </div>
+			    
+			    <div class="weui-form-preview__item">
+			      <label class="weui-form-preview__label">操作缴费:</label>
+			      <span class="weui-form-preview__value"><a href="#" hrs="{$val['ordersn']}" class="layui-btn layui-btn-xs layui-btn-radius check">立即前往缴费</a></span>
+			    </div>
+			</div>
+			{/loop}
+	{/if}
+
+   </div>
+    <div class="footer">Technology by </div>
+    <!--<div class="footer_placeholder"> </div>-->
+    
+</div>
+<script type="text/javascript">
+	function isVehicleNumber(vehicleNumber) {
+		var xreg=/^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}(([0-9]{5}[DF]$)|([DF][A-HJ-NP-Z0-9][0-9]{4}$))/;
+		var creg=/^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}[A-HJ-NP-Z0-9]{4}[A-HJ-NP-Z0-9挂学警港澳]{1}$/;
+		if(vehicleNumber.length == 7) {
+			return creg.test(vehicleNumber);
+		} else if(vehicleNumber.length == 8) {
+			return xreg.test(vehicleNumber);
+		} else {
+			return false;
+		}
+	}
+	
+//	$('.weui-form-preview__bd').bind('click',function(obj){
+		//alert('点击了')
+//	})
+
+	$('.check').bind('click',function(obj) {
+		var th = $(this);
+		var postUrl = "{$postUrl}";
+		var ordersn = th.attr('hrs');
+		
+		$.ajax({
+			type:"post",
+			url:"{$upOpenid}",
+			async:true,
+			data:{'ordersn':ordersn},
+			success:function(res) {
+				var res = JSON.parse(res);
+				if(res.code >= 1) {
+					window.location.href = res.info;
+//					alert(res.msg);
+				} else {
+					alert(res.msg)
+				}
+			}
+		});
+	});
+</script>
+{template "parking/base/footer"}

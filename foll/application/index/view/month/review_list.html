@@ -1,0 +1,133 @@
+{include file="common/header"}
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<body>
+<div class="x-nav">
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<div class="x-body">
+</div>
+<table class="layui-table">
+    <thead>
+    <tr>
+        <th>方案名称</th>
+        <th>月卡种类</th>
+        <th>发行数量</th>
+        <th>受理数</th>
+        <th>未通过数</th>
+        <th>拒绝数</th>
+        <th>总数</th>
+        <th>操作</th></tr>
+    </thead>
+    <tbody>
+
+
+    {volist name='list' id='vo' empty='暂无数据'}
+    {if $vo.id != null}
+    <tr>
+        <td>{$vo.scheme_name}</td>
+        <td>{$vo.month_name}</td>
+        <td>{$vo.month_num}</td>
+        <td>{$vo.count}</td>
+        <td>{$vo.notAepNum}</td>
+        <td>{$vo.refAepNum}</td>
+        <td>{$vo.toAepNum}</td>
+        <td>
+            <a class="layui-btn layui-btn-normal"  onclick="checkStatuser(this,'{$vo.id}',1);">通过审核</a>
+            <a class="layui-btn layui-btn-danger"  onclick="refuse(this,'{$vo.id}',2,0);">审核失败</a>
+            <!--<a class="layui-btn"  onclick="detail(this,'{$vo.id}');">详情</a>-->
+        </td>
+    </tr>
+    {else}
+    <tr>
+        <td>没有数据</td>
+    </tr>
+    {/if}
+    {/volist}
+    </tbody>
+</table>
+<div class="page">
+    <div>
+        {$page}
+    </div>
+</div>
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    layui.use('laydate','layer', function(){
+        var laydate = layui.laydate;
+        layer = layui.layer;
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#start' //指定元素
+        });
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#end' //指定元素
+        });
+
+        layer.photos({
+            photos: '#layer-photos-demo'
+            ,anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+        });
+    });
+
+    // function detail(obj,id){
+    //     layer.open({
+    //         area:['1059px','569px'],
+    //         type: 2,
+    //         content: '{:Url("month_card/month_reviewdetail")}' //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+    //     });
+    // }
+
+    //month_card/is_review
+    function refuse(obj,id,status,type) {
+        console.log('start');
+        axios.get("{:Url('month_card/is_review')}&id="+id+"&status="+status+"&type="+type).then(function (response) {
+            console.log(response.data);
+            if(response.data.code == 0){
+                layer.msg(response.data.msg);
+                $(obj).parent().parent().remove();
+            }else{
+                layer.msg(response.data.msg);
+            }
+        }).catch(function (err) {
+            console.log(err);
+        });
+        return false;
+    }
+     ids = null;
+     statuss = null;
+     object = null;
+    function pass(type) {
+        var index = layer.load();
+        axios.get("{:Url('month_card/is_review')}&id="+ids+"&status="+statuss+"&type="+type).then(function (response) {
+            if(response.data.code == 0){
+                layer.closeAll();
+                layer.msg(response.data.msg);
+                $(object).parent().parent().remove();
+            }else{
+                layer.msg(response.data.msg);
+            }
+            layer.close(index);
+        }).catch(function (err) {
+            layer.close(index);
+            console.log(err);
+        });
+        return false;
+    }
+    function checkStatuser(obj,id,status) {
+        ids = id;
+        statuss = status;
+        object = obj;
+        layer.open({
+            type: 1,
+            title:'审核',
+            content: '<a class="layui-btn layui-btn-lg" onclick="pass(1)">摇号抽签</a><a class="layui-btn layui-btn-lg" onclick="pass(2)">直接发卡</a>' //这里content是一个普通的String
+        });
+        return false;
+    }
+</script>
+</body>
+</html>

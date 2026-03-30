@@ -1,0 +1,1387 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+
+    <title>中国国际贸易单一窗口</title>
+
+    <link rel="shortcut icon" href="https://swapp.singlewindow.cn:443/deskserver/static/favicon.ico">
+
+    <link href="./single_window/bootstrap.min.css?v=20211112101238" rel="stylesheet">
+    <link href="https://swapp.singlewindow.cn:443/deskserver/static/css/font-awesome.min.css?v=20211112101238"
+          rel="stylesheet">
+    <link href="https://swapp.singlewindow.cn:443/deskserver/static/css/animate.css?v=20211112101238" rel="stylesheet">
+    <link href="https://swapp.singlewindow.cn:443/deskserver/static/css/nav.css?v=20211112101238" rel="stylesheet">
+    <link href="https://swapp.singlewindow.cn:443/deskserver/static/css/style.css?v=20211112101238" rel="stylesheet">
+    <link href="https://swapp.singlewindow.cn:443/deskserver/static/css/desk-style.css?v=20211112101238"
+          rel="stylesheet">
+    <link href="https://swapp.singlewindow.cn:443/deskserver/static/css/deskLayer.css?v=20211112101238"
+          rel="stylesheet">
+
+    <script src="https://swapp.singlewindow.cn:443/deskserver/static/js/jquery.min.js?v=20211112101238"></script>
+    <script src="https://swapp.singlewindow.cn:443/deskserver/static/js/layer/layer.js?v=20211112101238"></script>
+    <link rel="stylesheet"
+          href="https://swapp.singlewindow.cn/deskserver/static/js/layer/skin/default/layer.css?v=3.0.11110"
+          id="layuicss-skinlayercss">
+    <script src="https://swapp.singlewindow.cn:443/deskserver/static/js/nav.js?v=20211112101238"></script>
+
+    <script src="https://swapp.singlewindow.cn:443/deskserver/static/js/jquery.mCustomScrollbar.js?v=20211112101238"></script>
+    <style>
+        .change_color{
+            color:#62a3eb;
+        }
+    </style>
+    <script type="text/javascript">
+
+        /*Delete 无用变量 by chenyongda 20181203*/
+
+
+        function isIE() { //ie?
+            if (!!window.ActiveXObject || "ActiveXObject" in window)
+                return true;
+            else
+                return false;
+        }
+
+
+        $(function () {
+
+            var homePageUrl = "\x23";
+            var tab = document.getElementById("indexPageTab");
+            var tabFrame = document.getElementById("indexFrame");
+            if (homePageUrl != null && homePageUrl != '' && homePageUrl != '#' && homePageUrl != "null") {
+                tab.setAttribute("data-id", homePageUrl);
+                tabFrame.setAttribute("data-id", homePageUrl);
+                tabFrame.src = homePageUrl;
+            } else {
+                if ($('.J_menuItem').length == 1) {
+                    tabFrame.src = $('.J_menuItem')[0].href;
+                    tab.setAttribute("data-id", $('.J_menuItem')[0].href);
+                    tabFrame.setAttribute("data-id", $('.J_menuItem')[0].href);
+                } else {
+                    tabFrame.src = "https\x3A\x2F\x2Fswapp.singlewindow.cn\x3A443\x2Fdeskserver\x2Fdeskstatic/notices/notice.html?ngBasePath=https\x3A\x2F\x2Fswapp.singlewindow.cn\x3A443\x2Fdeskserver\x2F&menuId=swcebexp"; //裴杨通知公告修改,废弃掉index_v1.html 20180718
+                }
+            }
+            var params = {
+                menuId: "swcebexp",
+                cusRegNo: "44289609SL",
+                homePageUrl: homePageUrl
+            }
+
+            //获取参数版本 解决dec参数请求压力
+            var deskVersionIndex = layer.load(1, {
+                shade: [0.1, '#fff'],
+                time: 3 * 1000
+                // 0.1透明度的白色背景
+            });
+            $.ajax({
+                type: 'get',
+                url: 'https\x3A\x2F\x2Fswapp.singlewindow.cn\x3A443\x2Fdeskserver\x2Fsw/allVersion',
+                data: {},
+                dataType: 'json',
+                contentType: 'application/json;charset=UTF-8',
+                success: function (resultdata) {
+                    //获取当前版本进行对比
+                    var currentVer = localStorage.allPavaVersion;
+                    var newVer = resultdata.allPavaVersion;
+                    if (currentVer == undefined || currentVer == "undefined" || currentVer == null || currentVer == "" || currentVer != newVer) {
+                        //清空下拉框缓存
+                        localStorage.removeItem('autocompleterKey');
+                        localStorage.allPavaVersion = newVer;
+
+                    }
+                    layer.close(deskVersionIndex);
+                },
+                error: function (data, textStatus, errorThrown) {
+                    layer.close(deskVersionIndex);
+                }
+            });
+
+        });
+
+
+    </script>
+    <link rel="stylesheet" href="https://swapp.singlewindow.cn/deskserver/static/js/plugins/layer/skin/layer.css"
+          id="layui_layer_skinlayercss" style="">
+</head>
+
+<body class="fixed-sidebar full-height-layout skin-1 gray-bg  pace-done" style="overflow: hidden">
+<div class="pace  pace-inactive">
+    <div class="pace-progress" data-progress-text="100%" data-progress="99" style="width: 100%;">
+        <div class="pace-progress-inner"></div>
+    </div>
+    <div class="pace-activity"></div>
+</div>
+<div id="banner" style="width: 100%; height: 60px;">
+    <div class="row border-bottom">
+        <nav class="navbar navbar-static-top" role="navigation">
+            <a href="javascript:;" role="button" style="float: left;margin-top: 12px;margin-left: 25px;">
+                <div class="application" style="display: block;">
+                    <img class="application_img"
+                         src="https://swapp.singlewindow.cn:443/deskserver/static/img/icon_02.png" alt="">
+                    <p class="application_text">应用</p>
+                </div>
+            </a>
+            <div class="navbar-header">
+                <img src="https://swapp.singlewindow.cn:443/deskserver/static/img/navbar-header.png"
+                     style="margin-left: 25px;">
+            </div>
+            <div>
+                <div style="float: left;cursor: pointer;" onclick="window.location.href='http://www.singlewindow.cn/'">
+                    <span class="title">中国国际贸易单一窗口</span>
+                    <span class="title_en">China International Trade Single Window</span>
+                </div>
+                <div style="float: left;height: 60px;">
+                    <span class="span_line">|</span>
+                    <span class="menu_name">跨境电商出口</span>
+                    <span id="train_environment">培训环境，仅供测试</span>
+                </div>
+            </div>
+            <div class="right_div">
+                <div class="logout">
+						<span>
+							<a href="https://swapp.singlewindow.cn:443/deskserver/sw_logout/logout?service=https://swapp.singlewindow.cn:443/deskserver/sw/deskIndex?menu_id=swcebexp"
+                               class="roll-nav roll-right">
+								退出
+							</a>
+						</span>
+                </div>
+                <div class="exit_img">
+                    <img src="https://swapp.singlewindow.cn:443/deskserver/static/img/exit.png">
+                </div>
+                <div class="line">
+                    <span>|</span>
+                </div>
+
+
+                <div class="title_str" style="line-height: 20px;margin-top: 10px;"
+                     onclick="window.location.href='https://app.singlewindow.cn/userserver/user/index?menu_id=sw&amp;sysId=swcebexp'">
+                    <span style="font-size: 12px;">{$list['ebc_body']['ebc_name']} {$list['ebc_body']['ebc_number']}</span>
+                    <br>
+                    <span style="font-size: 12px;" id="applyDate">卡介质有效期截至：2030年05月20日</span>
+                </div>
+
+                <!-- Begin:Added for 信封弹出消息 by cyd 20190109 -->
+                <div class="envelope_msg" id="envelopeId" title="待办提醒">
+                    <i class="fa fa-envelope-o"></i>
+                    <div class="inner_line">
+                        <span>|</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </nav>
+    </div>
+</div>
+<div id="wrapper" class="active" style="position: relative;">
+    <!--整体菜单开始-->
+    <div class="ANAV" style="position: fixed; z-index: 9999; display: none;">
+        <div class="Fnav" style="display: block; width: 0px;">
+            <div class="FnavM">
+                <ul class="menuInfo" style="margin-top: 24px;">
+                    <li class="Fli" id="0"><a class="Flitest" href="javascript:;" role="button"><p
+                            style="display: inline-block;">用户管理</p><img class="Fliimg"
+                                                                        src="https://swapp.singlewindow.cn/deskserver/static/img/02.png"
+                                                                        alt=""></a></li>
+                    <li class="Fli" id="1"><a class="Flitest" href="javascript:;" role="button"><p
+                            style="display: inline-block;">企业资质</p><img class="Fliimg"
+                                                                        src="https://swapp.singlewindow.cn/deskserver/static/img/02.png"
+                                                                        alt=""></a></li>
+                    <li class="Fli" id="2"><a class="Flitest" href="javascript:;" role="button"><p
+                            style="display: inline-block;">许可证件</p><img class="Fliimg"
+                                                                        src="https://swapp.singlewindow.cn/deskserver/static/img/02.png"
+                                                                        alt=""></a></li>
+                    <li class="Fli" id="3"><a class="Flitest" href="javascript:;" role="button"><p
+                            style="display: inline-block;">原产地证</p><img class="Fliimg"
+                                                                        src="https://swapp.singlewindow.cn/deskserver/static/img/02.png"
+                                                                        alt=""></a></li>
+                    <li class="Fli" id="4"><a class="Flitest" href="javascript:;" role="button"><p
+                            style="display: inline-block;">运输工具</p><img class="Fliimg"
+                                                                        src="https://swapp.singlewindow.cn/deskserver/static/img/02.png"
+                                                                        alt=""></a></li>
+                    <li class="Fli" id="5"><a class="Flitest" href="javascript:;" role="button"><p
+                            style="display: inline-block;">舱单申报</p><img class="Fliimg"
+                                                                        src="https://swapp.singlewindow.cn/deskserver/static/img/02.png"
+                                                                        alt=""></a></li>
+                    <li class="Fli" id="6"><a class="Flitest" href="javascript:;" role="button"><p
+                            style="display: inline-block;">货物申报</p><img class="Fliimg"
+                                                                        src="https://swapp.singlewindow.cn/deskserver/static/img/02.png"
+                                                                        alt=""></a></li>
+                    <li class="Fli" id="7"><a class="Flitest" href="javascript:;" role="button"><p
+                            style="display: inline-block;">加工贸易</p><img class="Fliimg"
+                                                                        src="https://swapp.singlewindow.cn/deskserver/static/img/02.png"
+                                                                        alt=""></a></li>
+                    <li class="Fli" id="8"><a class="Flitest" href="javascript:;" role="button"><p
+                            style="display: inline-block;">税费办理</p><img class="Fliimg"
+                                                                        src="https://swapp.singlewindow.cn/deskserver/static/img/02.png"
+                                                                        alt=""></a></li>
+                    <li class="Fli" id="9"><a class="Flitest" href="javascript:;" role="button"><p
+                            style="display: inline-block;">跨境电商</p><img class="Fliimg"
+                                                                        src="https://swapp.singlewindow.cn/deskserver/static/img/02.png"
+                                                                        alt=""></a></li>
+                    <li class="Fli" id="10"><a class="Flitest" href="javascript:;" role="button"><p
+                            style="display: inline-block;">物品通关</p><img class="Fliimg"
+                                                                        src="https://swapp.singlewindow.cn/deskserver/static/img/02.png"
+                                                                        alt=""></a></li>
+                    <li class="Fli" id="11"><a class="Flitest" href="javascript:;" role="button"><p
+                            style="display: inline-block;">出口退税</p><img class="Fliimg"
+                                                                        src="https://swapp.singlewindow.cn/deskserver/static/img/02.png"
+                                                                        alt=""></a></li>
+                    <li class="Fli" id="12"><a class="Flitest" href="javascript:;" role="button"><p
+                            style="display: inline-block;">查询统计</p><img class="Fliimg"
+                                                                        src="https://swapp.singlewindow.cn/deskserver/static/img/02.png"
+                                                                        alt=""></a></li>
+                    <li class="Fli" id="13"><a class="Flitest" href="javascript:;" role="button"><p
+                            style="display: inline-block;">口岸物流</p><img class="Fliimg"
+                                                                        src="https://swapp.singlewindow.cn/deskserver/static/img/02.png"
+                                                                        alt=""></a></li>
+                    <li class="Fli" id="14"><a class="Flitest" href="javascript:;" role="button"><p
+                            style="display: inline-block;">金融服务</p><img class="Fliimg"
+                                                                        src="https://swapp.singlewindow.cn/deskserver/static/img/02.png"
+                                                                        alt=""></a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="showmenu" style="display: none; width: 0px;">
+            <div class="separate separate-1" style="display: inline-block; width: 309px;">
+                <div class="separatetop">
+                    <p>跨境电商</p>
+                </div>
+                <div class="separatebottom separatebottom-1">
+                    <ul class="separatebottomul-1">
+                        <li class="liseparate liseparate-1" id="ceb2pubweb"><a class="liseparatetest"
+                                                                               href="https://app.singlewindow.cn/ceb2pubweb/sw/personalAmount"
+                                                                               role="button" title="跨境电商公共服务"><p>
+                            跨境电商公共服务</p></a><a href="javascript:;"><img class="introduce"
+                                                                        src="https://swapp.singlewindow.cn/deskserver/static/img/icon_01.png"
+                                                                        alt=""> </a></li>
+                        <li class="liseparate liseparate-1" id="swcebexp"><a class="liseparatetest"
+                                                                             href="deskIndex?menu_id=swcebexp"
+                                                                             role="button" title="跨境电商出口"><p>跨境电商出口</p>
+                        </a><a href="javascript:;"><img class="introduce"
+                                                        src="https://swapp.singlewindow.cn/deskserver/static/img/icon_01.png"
+                                                        alt=""> </a><img class="liseparateimg"
+                                                                         src="https://swapp.singlewindow.cn/deskserver/static/img/02.png"
+                                                                         alt=""></li>
+                        <li class="liseparate liseparate-1" id="swcebimp"><a class="liseparatetest"
+                                                                             href="deskIndex?menu_id=swcebimp"
+                                                                             role="button" title="跨境电商进口"><p>跨境电商进口</p>
+                        </a><a href="javascript:;"><img class="introduce"
+                                                        src="https://swapp.singlewindow.cn/deskserver/static/img/icon_01.png"
+                                                        alt=""> </a><img class="liseparateimg"
+                                                                         src="https://swapp.singlewindow.cn/deskserver/static/img/02.png"
+                                                                         alt=""></li>
+                    </ul>
+
+                </div>
+            </div>
+            <div class="separate separate-2" style="display: inline-block; width: 309px;">
+                <div class="separatetop">
+                    <p>跨境电商出口 </p>
+                </div>
+                <div class="separatebottom separatebottom-2">
+                    <ul class="separatebottomul-2">
+                        <li class="liseparate liseparate-2" id="swcebexp01"><a class="liseparatetest"
+                                                                               href="javascript:;" role="button"
+                                                                               title="交易管理"><p>交易管理</p></a><img
+                                class="liseparateimg " src="https://swapp.singlewindow.cn/deskserver/static/img/02.png"
+                                alt=""></li>
+                        <li class="liseparate liseparate-2" id="swcebexp03"><a class="liseparatetest"
+                                                                               href="javascript:;" role="button"
+                                                                               title="清单管理"><p>清单管理</p></a><img
+                                class="liseparateimg " src="https://swapp.singlewindow.cn/deskserver/static/img/02.png"
+                                alt=""></li>
+                        <li class="liseparate liseparate-2" id="swcebexp04"><a class="liseparatetest"
+                                                                               href="javascript:;" role="button"
+                                                                               title="退货管理"><p>退货管理</p></a><img
+                                class="liseparateimg " src="https://swapp.singlewindow.cn/deskserver/static/img/02.png"
+                                alt=""></li>
+                        <li class="liseparate liseparate-2" id="swcebexp05"><a class="liseparatetest"
+                                                                               href="javascript:;" role="button"
+                                                                               title="汇总管理"><p>汇总管理</p></a><img
+                                class="liseparateimg " src="https://swapp.singlewindow.cn/deskserver/static/img/02.png"
+                                alt=""></li>
+                        <li class="liseparate liseparate-2" id="swcebexp06"><a class="liseparatetest"
+                                                                               href="javascript:;" role="button"
+                                                                               title="B2B管理"><p>B2B管理</p></a><img
+                                class="liseparateimg " src="https://swapp.singlewindow.cn/deskserver/static/img/02.png"
+                                alt=""></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="separate separate-3">
+                <div class="separatetop">
+                    <p>三级目录</p>
+                </div>
+                <div class="separatebottom separatebottom-3">
+                    <ul class="separatebottomul-3">
+                    </ul>
+                </div>
+            </div>
+            <div class="separate separate-4">
+                <div class="separatetop">
+                    <p>四级目录</p>
+                </div>
+                <div class="separatebottom separatebottom-4">
+                    <ul class="separatebottomul-4">
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="IntroduceShow" style="display: none;">
+            <div class="top">
+                <p class="tittle">跨境电商出口 </p>
+                <a class="Inclose" href="javascript:;">关闭</a>
+            </div>
+            <div class="bottom"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;跨境电商出口申报系统旨在满足海关对跨境电子商务出口（包括跨境电商企业对个人、跨境电企业对企业商）业务的监管、统计分析等需求，为企业提供一站式办理服务。该系统包括12种单证类型，分别是“订单”、“收款单”、“运单”、“运抵单”、“离境单”、“清单”、“撤销申请单”、“清单总分单”、“退货申请单”、“退货理货明细单”、“汇总申请单”、“汇总结果单”。主要实现以上单据的录入、修改、删除、申报、查询等操作。</p>
+                <p class="download">下载文档</p><a class="downloadtext" href="https://www.singlewindow.cn/xzlm/3961.jhtml">
+                    <p>“单一窗口”标准版用户手册（跨境电商出口篇）</p></a></div>
+        </div>
+    </div>
+    <!--左侧导航开始-->
+    <nav class="navbar-default navbar-static-side" role="navigation">
+        <div class="nav-close">
+            <i class="glyphicon glyphicon-trash-circle"></i>
+        </div>
+        <div class="slimScrollDiv" style="position: relative; width: auto; height: 877px;">
+            <div class="sidebar-collapse" style="width: auto; height: 877px; overflow-x: auto;">
+                <ul class="nav" id="side-menu">
+                    <!-- Added by chenyongda for 先servlet编译，后包含 20181105-->
+                    <!--
+    将ajax_menu_include.jsp 名字修改为 included_ajax_menu.jsp
+    Author:chenyongda
+    20180911
+
+    -->
+
+                    <meta charset="utf-8">
+
+                    <li id="menu_li" style="padding-bottom:20px"><a menuid="swcebexp" class=""><i
+                            class="fa fa-gift"></i><span class="nav-label" style="font-size: 16px;">跨境电商出口</span><span
+                            class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level nav-left collapse in" aria-expanded="true">
+                            <li class="active"><a menuid="swcebexp01" class=""><i class="fa fa-cny"></i><span
+                                    class="nav-label">交易管理</span><span class="fa arrow"></span></a>
+                                <ul class="nav nav-third-level collapse in" aria-expanded="true" style="">
+                                    <li><a menuid="swcebexp0101" class="J_menuItem" title="订单查询(未审结)"
+                                           data-href="https://swapp.singlewindow.cn:443/swcebweb/sw/cebweb/orderQuery?ngBasePath=https%3A%2F%2Fswapp.singlewindow.cn%3A443%2Fswcebweb%2F"
+                                           data-index="01">订单查询(未审结)</a></li>
+                                    <li><a menuid="swcebexp0102" class="J_menuItem" title="订单查询(已审结)"
+                                           data-href="https://swapp.singlewindow.cn:443/swcebweb/sw/cebweb/orderQueryEnd?ngBasePath=https%3A%2F%2Fswapp.singlewindow.cn%3A443%2Fswcebweb%2F"
+                                           data-index="02">订单查询(已审结)</a></li>
+                                    <li><a menuid="swcebexp0103" class="J_menuItem" title="收款单查询(未审结)"
+                                           data-href="https://swapp.singlewindow.cn:443/swcebweb/sw/cebweb/paymentQuery?ngBasePath=https%3A%2F%2Fswapp.singlewindow.cn%3A443%2Fswcebweb%2F"
+                                           data-index="03">收款单查询(未审结)</a></li>
+                                    <li><a menuid="swcebexp0104" class="J_menuItem" title="收款单查询(已审结)"
+                                           data-href="https://swapp.singlewindow.cn:443/swcebweb/sw/cebweb/paymentQueryEnd?ngBasePath=https%3A%2F%2Fswapp.singlewindow.cn%3A443%2Fswcebweb%2F"
+                                           data-index="04">收款单查询(已审结)</a></li>
+                                </ul>
+                            </li>
+                            <li class=""><a menuid="swcebexp03" class=""><i class="fa fa-file-text-o"></i><span
+                                    class="nav-label">清单管理</span><span class="fa arrow"></span></a>
+                                <ul class="nav nav-third-level collapse" aria-expanded="false" style="height: 0px;">
+                                    <li><a menuid="swcebexp0301" class="J_menuItem" title="清单录入"
+                                           data-href="https://swapp.singlewindow.cn:443/swcebweb/sw/cebweb/inventorySave?ngBasePath=https%3A%2F%2Fswapp.singlewindow.cn%3A443%2Fswcebweb%2F"
+                                           data-index="01">清单录入</a></li>
+                                    <li><a menuid="swcebexp0302" class="J_menuItem" title="清单申报"
+                                           data-href="https://swapp.singlewindow.cn:443/swcebweb/sw/cebweb/inventoryDeclare?ngBasePath=https%3A%2F%2Fswapp.singlewindow.cn%3A443%2Fswcebweb%2F"
+                                           data-index="02">清单申报</a></li>
+                                    <li><a menuid="swcebexp0303" class="J_menuItem" title="清单改单"
+                                           data-href="https://swapp.singlewindow.cn:443/swcebweb/sw/cebweb/inventoryQueryUpdate?ngBasePath=https%3A%2F%2Fswapp.singlewindow.cn%3A443%2Fswcebweb%2F"
+                                           data-index="03">清单改单</a></li>
+                                    <li><a menuid="swcebexp0304" class="J_menuItem" title="清单查询(未结关)"
+                                           data-href="https://swapp.singlewindow.cn:443/swcebweb/sw/cebweb/inventoryQuery?ngBasePath=https%3A%2F%2Fswapp.singlewindow.cn%3A443%2Fswcebweb%2F"
+                                           data-index="04">清单查询(未结关)</a></li>
+                                    <li><a menuid="swcebexp0305" class="J_menuItem" title="清单查询(已结关)"
+                                           data-href="https://swapp.singlewindow.cn:443/swcebweb/sw/cebweb/inventoryQueryClr?ngBasePath=https%3A%2F%2Fswapp.singlewindow.cn%3A443%2Fswcebweb%2F"
+                                           data-index="05">清单查询(已结关)</a></li>
+                                    <li><a menuid="swcebexp0306" class="J_menuItem" title="清单查询(已结案)"
+                                           data-href="https://swapp.singlewindow.cn:443/swcebweb/sw/cebweb/inventoryQueryEnd?ngBasePath=https%3A%2F%2Fswapp.singlewindow.cn%3A443%2Fswcebweb%2F"
+                                           data-index="06">清单查询(已结案)</a></li>
+                                    <li><a menuid="swcebexp0307" class="J_menuItem" title="撤销申请单申报"
+                                           data-href="https://swapp.singlewindow.cn:443/swcebweb/sw/cebweb/invtCancelDeclare?ngBasePath=https%3A%2F%2Fswapp.singlewindow.cn%3A443%2Fswcebweb%2F"
+                                           data-index="07">撤销申请单申报</a></li>
+                                    <li><a menuid="swcebexp0308" class="J_menuItem" title="撤销申请单查询"
+                                           data-href="https://swapp.singlewindow.cn:443/swcebweb/sw/cebweb/invtCancelQuery?ngBasePath=https%3A%2F%2Fswapp.singlewindow.cn%3A443%2Fswcebweb%2F"
+                                           data-index="08">撤销申请单查询</a></li>
+                                    <li><a menuid="swcebexp0309" class="J_menuItem" title="清单总分单申报"
+                                           data-href="https://swapp.singlewindow.cn:443/swcebweb/sw/cebweb/wayBillDeclare?ngBasePath=https%3A%2F%2Fswapp.singlewindow.cn%3A443%2Fswcebweb%2F"
+                                           data-index="09">清单总分单申报</a></li>
+                                    <li><a menuid="swcebexp0310" class="J_menuItem" title="清单总分单查询"
+                                           data-href="https://swapp.singlewindow.cn:443/swcebweb/sw/cebweb/wayBillQuery?ngBasePath=https%3A%2F%2Fswapp.singlewindow.cn%3A443%2Fswcebweb%2F"
+                                           data-index="10">清单总分单查询</a></li>
+                                    <li><a menuid="swcebexp0311" class="J_menuItem" title="清单总分单改单"
+                                           data-href="https://swapp.singlewindow.cn:443/swcebweb/sw/cebweb/canUpdateWayBillQuery?ngBasePath=https%3A%2F%2Fswapp.singlewindow.cn%3A443%2Fswcebweb%2F"
+                                           data-index="11">清单总分单改单</a></li>
+                                </ul>
+                            </li>
+                            <li><a menuid="swcebexp04" class=""><i class="fa fa-file-text-o"></i><span
+                                    class="nav-label">退货管理</span><span class="fa arrow"></span></a>
+                                <ul class="nav nav-third-level collapse" aria-expanded="false">
+                                    <li><a menuid="swcebexp0401" class="J_menuItem" title="退货单查询(待申报)"
+                                           data-href="https://swapp.singlewindow.cn:443/swcebweb/sw/cebweb/invtRefundDeclareQuery?ngBasePath=https%3A%2F%2Fswapp.singlewindow.cn%3A443%2Fswcebweb%2F"
+                                           data-index="01">退货单查询(待申报)</a></li>
+                                    <li><a menuid="swcebexp0402" class="J_menuItem" title="退货单查询"
+                                           data-href="https://swapp.singlewindow.cn:443/swcebweb/sw/cebweb/invtRefundQuery?ngBasePath=https%3A%2F%2Fswapp.singlewindow.cn%3A443%2Fswcebweb%2F"
+                                           data-index="02">退货单查询</a></li>
+                                </ul>
+                            </li>
+                            <li><a menuid="swcebexp05" class=""><i class="fa fa-folder-open"></i><span
+                                    class="nav-label">汇总管理</span><span class="fa arrow"></span></a>
+                                <ul class="nav nav-third-level collapse" aria-expanded="false">
+                                    <li><a menuid="swcebexp0501" class="J_menuItem" title="汇总申请单申报"
+                                           data-href="https://swapp.singlewindow.cn:443/swcebweb/sw/cebweb/summaryApply/applyDeclare?ngBasePath=https%3A%2F%2Fswapp.singlewindow.cn%3A443%2Fswcebweb%2F"
+                                           data-index="01">汇总申请单申报</a></li>
+                                    <li><a menuid="swcebexp0502" class="J_menuItem" title="汇总申请单查询"
+                                           data-href="https://swapp.singlewindow.cn:443/swcebweb/sw/cebweb/summaryApply/applyQuery?ngBasePath=https%3A%2F%2Fswapp.singlewindow.cn%3A443%2Fswcebweb%2F"
+                                           data-index="02">汇总申请单查询</a></li>
+                                    <li><a menuid="swcebexp0503" class="J_menuItem" title="汇总结果单查询"
+                                           data-href="https://swapp.singlewindow.cn:443/swcebweb/sw/cebweb/summaryResultQuery?ngBasePath=https%3A%2F%2Fswapp.singlewindow.cn%3A443%2Fswcebweb%2F"
+                                           data-index="03">汇总结果单查询</a></li>
+                                    <li><a menuid="swcebexp0504" class="J_menuItem" title="汇总报关单查询"
+                                           data-href="https://swapp.singlewindow.cn:443/swcebweb/sw/cebweb/summaryDecQuery?ngBasePath=https%3A%2F%2Fswapp.singlewindow.cn%3A443%2Fswcebweb%2F"
+                                           data-index="04">汇总报关单查询</a></li>
+                                </ul>
+                            </li>
+                            <li><a menuid="swcebexp06" class=""><i class="fa fa-file-text-o"></i><span
+                                    class="nav-label">B2B管理</span><span class="fa arrow"></span></a>
+                                <ul class="nav nav-third-level collapse" aria-expanded="false">
+                                    <li><a menuid="swcebexp0601" class="J_menuItem" title="B2B报关单查询"
+                                           data-href="https://swapp.singlewindow.cn:443/swcebweb/sw/cebweb/overseaDeclQuery?ngBasePath=https%3A%2F%2Fswapp.singlewindow.cn%3A443%2Fswcebweb%2F"
+                                           data-index="01">B2B报关单查询</a></li>
+                                    <li><a menuid="swcebexp0602" class="J_menuItem" title="海外仓备案查询"
+                                           data-href="https://swapp.singlewindow.cn:443/swcebweb/sw/cebweb/overseaCompanyQuery?ngBasePath=https%3A%2F%2Fswapp.singlewindow.cn%3A443%2Fswcebweb%2F"
+                                           data-index="02">海外仓备案查询</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!--Begin: xss漏洞修改 20190108 -->
+                    <input type="hidden" value="swcebexp" id="menuId">
+                    <input type="hidden" value="null" id="showId">
+                    <input type="hidden" value="null" id="menuType">
+
+                    <input type="hidden" value="https://swapp.singlewindow.cn:443/deskserver/" id="include_basePath">
+                    <!--End : xss漏洞修改 20190108 -->
+
+                    <script src="https://swapp.singlewindow.cn:443/deskserver/static/storage/jquery.storageapi.min.js?v=20211112101238"></script>
+                    <script src="https://swapp.singlewindow.cn:443/deskserver/static/js/ajaxhtmlstr.js?v=20211112101238"></script>
+
+
+                </ul>
+
+            </div>
+            <div class="slimScrollBar"
+                 style="background: rgb(0, 0, 0); width: 4px; position: absolute; top: 0px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 877px;"></div>
+            <div class="slimScrollRail"
+                 style="width: 4px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.9; z-index: 90; right: 1px;"></div>
+        </div>
+    </nav>
+    <!--左侧导航结束-->
+    <!--右侧部分开始-->
+    <div id="page-wrapper" class="gray-bg dashbard-1">
+
+        <div class="row content-tabs">
+            <a class="navbar-minimalize roll-nav J_tabExit" href="#"><i class="fa fa-bars"
+                                                                        style="margin-top: 12px;"></i> </a>
+            <button class="roll-nav roll-left J_tabLeft">
+                <i class="fa fa-backward"></i>
+            </button>
+            <nav class="page-tabs J_menuTabs">
+                <div class="page-tabs-content" style="margin-left: 0px;">
+                    <!-- 裴杨通知公告修改,废弃掉index_v1.html 20180718 -->
+                    <a href="javascript:;" class="J_menuTab" id="indexPageTab"
+                       data-id="https://swapp.singlewindow.cn:443/deskserver/deskstatic/notices/notice.html">首页</a>
+                    <a href="javascript:;" class="J_menuTab active" onclick="show(1)">订单查询(未审结) <i
+                            class="fa fa-times-circle"></i></a></div>
+            </nav>
+            <button class="roll-nav roll-right J_tabRight">
+                <i class="fa fa-forward"></i>
+            </button>
+            <div class="btn-group roll-nav roll-right">
+                <button class="dropdown J_tabClose" data-toggle="dropdown">
+                    关闭操作<span class="caret"></span>
+
+                </button>
+                <ul role="menu" class="dropdown-menu dropdown-menu-right">
+                    <li class="J_tabCloseAll"><a>关闭全部选项卡</a></li>
+                    <li class="J_tabCloseOther"><a>关闭其他选项卡</a></li>
+                </ul>
+            </div>
+
+        </div>
+        <div class="row J_mainContent" id="content-main">
+            <!-- 裴杨通知公告修改,废弃掉index_v1.html 20180718 -->
+            <!-- <iframe class="J_iframe" name="iframe0" width="100%" height="100%" id="indexFrame" src="https://swapp.singlewindow.cn:443/deskserver/deskstatic/notices/notice.html?ngBasePath=https://swapp.singlewindow.cn:443/deskserver/&amp;menuId=swcebexp" frameborder="0" data-id="https://swapp.singlewindow.cn:443/deskserver/deskstatic/notices/notice.html" seamless="" style="display: none;"></iframe> -->
+            <!--订单查询-->
+            <div class="xs_order">
+                <!--订单查询-->
+                <html>
+                <head>
+                    <!-- <script type="text/javascript">
+                    var swProxyBasePath = decodeURI("https\x3A\x2F\x2Fswapp.singlewindow.cn\x3A443\x2Fswcebweb\x2F");
+                    var host = "swapp.singlewindow.cn\x3A443";
+                    var contextPath = "\x2Fswcebweb";
+                    </script> -->
+
+                    <script type="text/javascript">
+                        //登录人
+                        var login_name = '2100040043116';
+                        if ("null" == login_name) {
+                            login_name = "";
+                        }
+                        //登录类型
+                        var login_type = '1';
+                        if ('null' == login_type) {
+                            login_type = "";
+                        }
+                        //报关员编号
+                        var decl_card = 'null';
+                        if ('null' == decl_card) {
+                            decl_card = "";
+                        }
+                        //企业名称
+                        var etps_name = '\u4F5B\u5C71\u5E02\u949C\u94ED\u5546\u52A1\u8D44\u8BAF\u670D\u52A1\u6709\u9650\u516C\u53F8';
+                        if ('null' == etps_name) {
+                            etps_name = "";
+                        }
+                        //海关十位编码
+                        var cus_reg_no = '44289609SL';
+                        if ('null' == cus_reg_no) {
+                            cus_reg_no = "";
+                        }
+                        //
+                        var op_name = '\u6F58\u60E0\u7476';
+                        if ('null' == op_name) {
+                            op_name = "";
+                        }
+                        //
+                        var cards = '2100040043116';
+                        if ('null' == cards) {
+                            cards = "";
+                        }
+                        //
+                        var dec_password = '88888888';
+                        if ('null' == dec_password) {
+                            dec_password = "";
+                        }
+                        //
+                        var ciq_etps_reg_no = '4403100064';
+                        if ('null' == ciq_etps_reg_no) {
+                            ciq_etps_reg_no = "";
+                        }
+                        //
+                        var account_name = '2100040043116';
+                        if ('null' == account_name) {
+                            account_name = "";
+                        }
+                        //
+                        var account_type = '3';
+                        if ('null' == account_type) {
+                            account_type = "";
+                        }
+                        //地址
+                        var gs_dom = '\u4F5B\u5C71\u5E02\u5357\u6D77\u533A\u6842\u57CE\u5357\u4E09\u8DEF11\u53F7\u5E7F\u4E1C\u73E0\u6C5F\u5F00\u5173\u6709\u9650\u516C\u53F8\u51853\u53F7\u697CD611\u5BA4\uFF08\u4F4F\u6240\u7533\u62A5\uFF09';
+                        if ('null' == gs_dom) {
+                            gs_dom = "";
+                        }
+                        //商务部备案
+                        var mc_manage_code = '440682';
+                        if ('null' == mc_manage_code) {
+                            mc_manage_code = "";
+                        }
+
+                        var mc_corp_code = '4400782023871';
+                        if ('null' == mc_corp_code) {
+                            mc_corp_code = "";
+                        }
+
+                        /* 后加属性 */
+                        //社会统一信用代码
+                        var social_credit_code = '91440605782023871F';
+                        if ('null' == social_credit_code || '' == social_credit_code) {
+                            social_credit_code = '';
+                        }
+                        //组织机构代码
+                        var org_code = '782023871';
+                        if ('null' == org_code || '' == org_code) {
+                            if (social_credit_code != '') {
+                                if (social_credit_code != '') {
+                                    org_Code = social_credit_code.substring(8, 17);
+                                } else {
+                                    org_code = '';
+                                }
+                            }
+                        }
+                        //法人名称
+                        var correp_name = '\u533A\u5E7F\u797A';
+                        if ('null' == correp_name) {
+                            correp_name = "";
+                        }
+
+                        //经营场所
+                        var gs_oploc = 'null';
+                        if ('null' == gs_oploc) {
+                            gs_oploc = "";
+                        }
+
+                        //注册地区
+                        var mc_manage_dept = '440682';
+                        if ('null' == mc_manage_dept) {
+                            mc_manage_dept = "";
+                        }
+
+                        //邮政编码
+                        var mc_post_code = '528200';
+                        if ('null' == mc_post_code) {
+                            mc_post_code = "";
+                        }
+                        //法人证件类型
+                        var iddoc_typecd = '01';
+                        if ('null' == iddoc_typecd) {
+                            iddoc_typecd = "";
+                        }
+
+                        //法人证件号码
+                        var iddoc_no = '441322197602200261';
+                        if ('null' == iddoc_no) {
+                            iddoc_no = "";
+                        }
+
+                        //注册资本币种
+                        var gs_regcapcur = 'null';
+                        if ('null' == gs_regcapcur) {
+                            gs_regcapcur = "";
+                        }
+
+                        //注册资本
+                        var gs_regcap = '110';
+                        if ('null' == gs_regcap) {
+                            gs_regcap = "";
+                        }
+
+                        //注册资金折美元（万美元）
+                        var mc_reg_money_amt = 'null';
+                        if ('null' == mc_reg_money_amt) {
+                            mc_reg_money_amt = "";
+                        }
+                        //工商注册号
+                        var gs_reg_no = '440682000085568';
+                        if ('null' == gs_reg_no) {
+                            gs_reg_no = "";
+                        }
+                        //工商注册日期
+                        var gs_esdate = 'null';
+                        if ('null' == gs_esdate) {
+                            gs_esdate = "";
+                        }
+                        var rdtime = 'XZvCWxlXueRum6p6';
+                        if ('null' == rdtime) {
+                            rdtime = "";
+                        }
+
+                        var cus_cop_master_cus = '5110';
+                        if ('null' == cus_cop_master_cus) {
+                            cus_cop_master_cus = "";
+                        }
+
+                        var Session = {
+                            login_name: login_name,
+                            login_type: login_type,
+                            decl_card: decl_card,
+                            etps_name: etps_name,
+                            cus_reg_no: cus_reg_no,
+                            op_name: op_name,
+                            cards: cards,
+                            dec_password: dec_password,
+                            ciq_etps_reg_no: ciq_etps_reg_no,
+                            account_name: account_name,
+                            account_type: account_type,
+                            social_credit_code: social_credit_code,
+                            org_code: org_code,
+                            gs_dom: gs_dom,
+                            mc_manage_code: mc_manage_code,
+                            mc_corp_code: mc_corp_code,
+                            correp_name: correp_name,
+                            gs_oploc: gs_oploc,
+                            mc_manage_dept: mc_manage_dept,
+                            mc_post_code: mc_post_code,
+                            iddoc_typecd: iddoc_typecd,
+                            iddoc_no: iddoc_no,
+                            gs_regcapcur: gs_regcapcur,
+                            gs_regcap: gs_regcap,
+                            mc_reg_money_amt: mc_reg_money_amt,
+                            gs_reg_no: gs_reg_no,
+                            gs_esdate: gs_esdate,
+                            rdtime: rdtime,
+                            cus_cop_master_cus: cus_cop_master_cus
+                        }
+                        var content = "content-info", contentV = "1il|i1l|l|i1l1il";
+                    </script>
+                    <!-- 全局js -->
+                    <script src="https://swapp.singlewindow.cn:443/swcebweb/static/js/jquery.min.js"></script>
+                    <script src="https://swapp.singlewindow.cn:443/swcebweb/static/js/Mu64.js"></script>
+                    <script src="https://swapp.singlewindow.cn:443/swcebweb/static/js/bootstrap.min.js"></script>
+                    <script src="https://swapp.singlewindow.cn:443/swcebweb/static/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+                    <script src="https://swapp.singlewindow.cn:443/swcebweb/static/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+                    <script src="https://swapp.singlewindow.cn:443/swcebweb/static/js/plugins/bootstrap-select/bootstrap-select.js"></script>
+                    <script src="https://swapp.singlewindow.cn:443/swcebweb/static/js/plugins/suggest/bootstrap-suggest.min.js"></script>
+                    <script src="https://swapp.singlewindow.cn:443/swcebweb/static/js/plugins/layer/laydate/laydate.js"></script>
+                    <script src="https://swapp.singlewindow.cn:443/swcebweb/static/js/jquery-formHelp.js"></script>
+                    <script src="https://swapp.singlewindow.cn:443/swcebweb/static/js/jquery.validate.js"></script>
+                    <script src="https://swapp.singlewindow.cn:443/swcebweb/static/js/layer/layer.js"></script>
+                    <link rel="stylesheet"
+                          href="https://swapp.singlewindow.cn/swcebweb/static/js/layer/skin/default/layer.css?v=3.0.11110"
+                          id="layuicss-skinlayercss">
+                    <script src="https://swapp.singlewindow.cn:443/swcebweb/static/js/swutils/swUtil.js"></script>
+                    <!-- <script src="https://swapp.singlewindow.cn:443/swcebweb/static/js/client.js"></script> -->
+                    <script src="https://swapp.singlewindow.cn:443/swcebweb/static/js/plugins/storage/jquery.storageapi.min.js"></script>
+                    <script src="https://swapp.singlewindow.cn:443/swcebweb/static/js/jquery.form.js"></script>
+                    <script src="https://swapp.singlewindow.cn:443/swcebweb/static/js/plugins/autocompleter/jquery.autocompleter.js"></script>
+                    <script src="https://swapp.singlewindow.cn:443/swcebweb/static/js/plugins/autocompleter/autocomp.js"></script>
+                    <script src="https://swapp.singlewindow.cn:443/swcebweb/static/js/modal.js"></script>
+                    <script src="https://swapp.singlewindow.cn:443/swcebweb/static/js/content.js"></script>
+                    <script type="text/javascript" src="https://app.singlewindow.cn/sat/swVersion.js"></script>
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>中国国际贸易单一窗口</title>
+                    <link href="./single_window/bootstrap.min.css" rel="stylesheet">
+                    <link href="https://swapp.singlewindow.cn:443/swcebweb/static/css/plugins/bootstrap-table/bootstrap-table.min.css"
+                          rel="stylesheet">
+                    <link href="https://swapp.singlewindow.cn:443/swcebweb/static/css/plugins/bootstrap-select/bootstrap-select.min.css"
+                          rel="stylesheet">
+                    <link href="https://swapp.singlewindow.cn:443/swcebweb/static/css/animate.css" rel="stylesheet">
+                    <link href="https://swapp.singlewindow.cn:443/swcebweb/static/css/style.css" rel="stylesheet">
+                    <link href="./single_window/font-awesome.css" rel="stylesheet">
+
+                    <link href="https://swapp.singlewindow.cn/swcebweb/static/css/need/laydate.css" rel="stylesheet">
+                    <link href="https://swapp.singlewindow.cn/swcebweb/static/css/skins/default/laydate.css"
+                          rel="stylesheet">
+
+                    <link href="https://swapp.singlewindow.cn:443/swcebweb/static/css/../js/layer/skin/default/layer.css"
+                          rel="stylesheet">
+
+                    <link href="https://swapp.singlewindow.cn:443/swcebweb/static/css/../js/plugins/autocompleter/jquery.autocompleter.css"
+                          rel="stylesheet">
+                    <link rel="stylesheet" type="text/css"
+                          href="https://swapp.singlewindow.cn:443/swcebweb/static/js/plugins/webdialog/webdialog.css">
+                    <script src="https://swapp.singlewindow.cn:443/swcebweb/static/js/commons/webDialogUtil.js"></script>
+                    <script src="https://swapp.singlewindow.cn:443/swcebweb/static/js/plugins/webdialog/webdialog.min.js"></script>
+                    <script src="https://swapp.singlewindow.cn:443/swcebweb/static/wfUI/js/wfcore.js"></script>
+                    <script src="https://swapp.singlewindow.cn:443/swcebweb/menuType"></script>
+                    <style>.jhover {
+                        background: #07d;
+                        color: #fff
+                    }</style>
+                </head>
+                <body class="laydate_body">
+                <div id="ceb_OrderQuery">
+                    <meta charset="utf-8">
+                    <title>Hello</title>
+                    <style>
+                        .ceb_label_width {
+                            width: 100px;
+                        }
+                    </style>
+                    <!-- tag:定义层 -->
+                    <div class="row itswRow">
+                        <!-- tag:定义层宽比例，col-sm-12为最大比例 -->
+                        <div class="col-sm-12">
+
+                            <div class="tab-content">
+                                <!-- tag:form_page -->
+                                <div role="tabpanel" class="tab-pane active" id="form_page">
+                                    <div class="panel panel-default">
+                                        <div class="panel-body">
+                                            <form id="tableForm">
+                                                <div class="row itswRow">
+                                                    <div class="col-sm-12">
+                                                        <!-- tag:定义文本域 ,宽比为总宽度的1/4 -->
+                                                        <div class="col-sm-3">
+                                                            <div class="itswLable  itswLable-top">
+                                                                <label class="control-label">订单编号</label>
+                                                            </div>
+                                                            <div class="itswInput">
+                                                                <input type="text" class="form-control" name="orderNo"
+                                                                       id="orderNo" value="{$list['ordersn']}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <div class="itswLable  itswLable-top">
+                                                                <label class="control-label">电商企业代码</label>
+                                                            </div>
+                                                            <div class="itswInput">
+                                                                <input type="text" class="form-control" name="ebcCode"
+                                                                       id="ebcCode">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <div class="itswLable  itswLable-top">
+                                                                <label class="control-label">电商平台代码</label>
+                                                            </div>
+                                                            <div class="itswInput">
+                                                                <input type="text" class="form-control" name="ebpCode"
+                                                                       id="ebpCode">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <div class="itswLable  itswLable-top">
+                                                                <label class="control-label">业务状态</label>
+                                                            </div>
+                                                            <div class="itswInput">
+                                                                <div class="input-group">
+                                                                    <input type="hidden" class="form-control"
+                                                                           name="appStatus" id="appStatus">
+                                                                    <input type="text"
+                                                                           class="form-control autocompleter-node"
+                                                                           name="appStatusName" id="appStatusName"
+                                                                           autocomplete="off" pcode=""
+                                                                           value="{$list['appStatusId']}">
+                                                                    <div class="autocompleter autocompleter-closed"
+                                                                         id="autocompleter-1">
+                                                                        <ul class="autocompleter-list">
+                                                                            <li data-value="0" data-label="0-全部"
+                                                                                class=" autocompleter-item autocompleter-item-selected">
+                                                                                0-全部
+                                                                            </li>
+                                                                            <li data-value="1" data-label="1-暂存"
+                                                                                class="autocompleter-item">1-暂存
+                                                                            </li>
+                                                                            <li data-value="100" data-label="100-海关退单"
+                                                                                class="autocompleter-item">100-海关退单
+                                                                            </li>
+                                                                            <li data-value="120" data-label="120-海关入库"
+                                                                                class="autocompleter-item">120-海关入库
+                                                                            </li>
+                                                                            <li data-value="2" data-label="2-申报"
+                                                                                class="autocompleter-item">2-申报
+                                                                            </li>
+                                                                            <li data-value="3" data-label="3-发送海关成功"
+                                                                                class="autocompleter-item">3-发送海关成功
+                                                                            </li>
+                                                                            <li data-value="4" data-label="4-发送海关失败"
+                                                                                class="autocompleter-item">4-发送海关失败
+                                                                            </li>
+                                                                        </ul>
+                                                                    </div>
+                                                                    <div class="input-group-btn">
+						                                                     <span class="autocompBtn autocomp-trigger">
+						                                                         <button type="button"
+                                                                                         class="btn btn-white dropdown-toggle"
+                                                                                         data-toggle="dropdown">
+						                                                               <span class="caret"></span>
+						                                                         </button>
+						                                                     </span>
+                                                                    </div>
+                                                                </div>
+                                                                <!--<input type="text" class="form-control" name="appStatus" id="appStatus">-->
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row itswRow">
+                                                    <div class="col-sm-12">
+                                                        <!-- tag:定义文本域 ,宽比为总宽度的1/4 -->
+                                                        <div class="col-sm-3">
+                                                            <div class="itswLable  itswLable-top">
+                                                                <label class="control-label">订单类型</label>
+                                                            </div>
+                                                            <div class="itswInput">
+                                                                <div class="input-group">
+                                                                    <input type="hidden" class="form-control"
+                                                                           name="orderType" id="orderType" value="0">
+                                                                    <input type="text" class="form-control"
+                                                                           name="orderTypeName" id="orderTypeName"
+                                                                           autocomplete="off"
+                                                                           value="{$list['orderTypeId']}">
+                                                                    <div class="input-group-btn">
+                                                                        <button type="button"
+                                                                                class="btn btn-white dropdown-toggle order_type"
+                                                                                data-toggle="">
+                                                                            <span class="caret"></span>
+                                                                        </button>
+                                                                        <ul class="dropdown-menu dropdown-menu-right order_menu"
+                                                                            role="menu"
+                                                                            style="padding-top: 0px; max-height: 375px; max-width: 350px; overflow: auto; width: auto; transition: all 0.3s ease 0s;">
+                                                                            <table class="table table-condensed"
+                                                                                   style="margin-bottom: 0px;">
+                                                                                <tbody>
+                                                                                <tr data-index="0" data-id="0"
+                                                                                    data-key="全部" class="jhover">
+                                                                                    <td data-name="code">0</td>
+                                                                                    <td data-name="name">全部</td>
+                                                                                </tr>
+                                                                                <tr data-index="1" data-id="B"
+                                                                                    data-key="B2B出口订单">
+                                                                                    <td data-name="code">B</td>
+                                                                                    <td data-name="name">B2B出口订单</td>
+                                                                                </tr>
+                                                                                <tr data-index="2" data-id="E"
+                                                                                    data-key="B2C出口订单">
+                                                                                    <td data-name="code">E</td>
+                                                                                    <td data-name="name">B2C出口订单</td>
+                                                                                </tr>
+                                                                                <tr data-index="3" data-id="W"
+                                                                                    data-key="海外仓订仓单">
+                                                                                    <td data-name="code">W</td>
+                                                                                    <td data-name="name">海外仓订仓单</td>
+                                                                                </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                                <!--<input type="text" class="form-control" name="appStatus" id="appStatus">-->
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <div class="itswLable  itswLable-top">
+                                                                <label class="control-label">入库时间起始</label>
+                                                            </div>
+                                                            <div class="itswInput">
+                                                                <input type="text" class="form-control laydate-icon"
+                                                                       name="beginDate" id="beginDate"
+                                                                       placeholder="请选择日期" value="{$list['beginDate']}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <div class="itswLable  itswLable-top">
+                                                                <label class="control-label">入库时间截止</label>
+                                                            </div>
+                                                            <div class="itswInput">
+                                                                <input type="text" class="form-control laydate-icon"
+                                                                       name="endDate" id="endDate" placeholder="请选择日期"
+                                                                       value="{$list['endDate']}">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- tag:定义表单按钮 -->
+                                                <div class="row itswRow">
+                                                    <div class="col-sm-12">
+                                                        <div class="col-sm-12">
+                                                            <!-- tag:层居中 -->
+                                                            <div style="text-align: center;">
+                                                                <button class="itswButton" type="button" id="qryBtn">
+                                                                    <span class="fa fa-search"></span> &nbsp;&nbsp;查询
+                                                                </button>
+                                                                <button class="itswButton" type="button"
+                                                                        id="resetQryBtn">
+                                                                    <span class="fa fa-history"></span> &nbsp;&nbsp;重置
+                                                                </button>
+                                                            </div>
+                                                            <!-- end:层居中 -->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- end:定义表单按钮 -->
+                                            </form>
+                                            <div class="row itswRow">
+                                                <div class="col-sm-12">
+                                                    <div class="col-sm-12">
+                                                        <!-- tag:table -->
+                                                        <div class="bootstrap-table">
+                                                            <div class="fixed-table-toolbar"></div>
+                                                            <div class="fixed-table-container"
+                                                                 style="padding-bottom: 0px;">
+                                                                <div class="fixed-table-header" style="display: none;">
+                                                                    <table></table>
+                                                                </div>
+                                                                <div class="fixed-table-body">
+                                                                    <div class="fixed-table-loading"
+                                                                         style="top: 38px; display: none;">
+                                                                        正在努力地加载数据中，请稍候……
+                                                                    </div>
+                                                                    <table id="orderTable" data-mobile-responsive="true"
+                                                                           class="table table-hover table-striped">
+                                                                        <thead>
+                                                                        <tr>
+                                                                            <th style="text-align: center; "
+                                                                                data-field="orderNo" tabindex="0">
+                                                                                <div class="th-inner ">订单编号</div>
+                                                                                <div class="fht-cell"></div>
+                                                                            </th>
+                                                                            <th style="text-align: center; "
+                                                                                data-field="ebpName" tabindex="0">
+                                                                                <div class="th-inner ">电商平台名称</div>
+                                                                                <div class="fht-cell"></div>
+                                                                            </th>
+                                                                            <th style="text-align: center; "
+                                                                                data-field="ebcName" tabindex="0">
+                                                                                <div class="th-inner ">电商企业名称</div>
+                                                                                <div class="fht-cell"></div>
+                                                                            </th>
+                                                                            <th style="text-align: center; "
+                                                                                data-field="appTypeName" tabindex="0">
+                                                                                <div class="th-inner ">报送类型</div>
+                                                                                <div class="fht-cell"></div>
+                                                                            </th>
+                                                                            <th style="text-align: center; "
+                                                                                data-field="orderTypeName" tabindex="0">
+                                                                                <div class="th-inner ">订单类型</div>
+                                                                                <div class="fht-cell"></div>
+                                                                            </th>
+                                                                            <th style="text-align: center; "
+                                                                                data-field="appStatusName" tabindex="0">
+                                                                                <div class="th-inner ">业务状态</div>
+                                                                                <div class="fht-cell"></div>
+                                                                            </th>
+                                                                            <th style="text-align: center; "
+                                                                                data-field="sysDate" tabindex="0">
+                                                                                <div class="th-inner ">入库时间</div>
+                                                                                <div class="fht-cell"></div>
+                                                                            </th>
+                                                                        </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                        {if empty($list['id'])}
+                                                                        <tr class="no-records-found">
+                                                                            <td colspan="7">暂无数据</td>
+                                                                        </tr>
+                                                                        {else}
+                                                                            <tr class="no-records-found">
+                                                                                <td class="change_color">{$list['ordersn']}</td>
+                                                                                <td>{$list['ebp_name']}</td>
+                                                                                <td>{$list['ebc_name']}</td>
+                                                                                <td>{$list['submissionType']}</td>
+                                                                                <td>{$list['orderTypeId']}</td>
+                                                                                <td class="change_color">{$list['appStatusId']}</td>
+                                                                                <td>{$list['beginDate']}</td>
+                                                                            </tr>
+                                                                        {/if}
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                                <div class="fixed-table-footer" style="display: block;">
+                                                                    <table>
+                                                                        <tbody>
+                                                                        <tr></tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                                <div class="fixed-table-pagination"
+                                                                     style="display: none;">
+                                                                    <div class="pull-left pagination-detail"><span
+                                                                            class="pagination-info">显示第 1 到第 0 条记录，总共 1 条记录</span><span
+                                                                            class="page-list" style="display: none;">每页显示 <span
+                                                                            class="btn-group dropup"><button
+                                                                            type="button"
+                                                                            class="btn btn-default  btn-outline dropdown-toggle"
+                                                                            data-toggle="dropdown"><span
+                                                                            class="page-size">10</span> <span
+                                                                            class="caret"></span></button><ul
+                                                                            class="dropdown-menu" role="menu"><li
+                                                                            class="active"><a href="javascript:void(0)">10</a></li></ul></span> 条记录</span>
+                                                                    </div>
+                                                                    <div class="pull-right pagination"
+                                                                         style="display: none;">
+                                                                        <ul class="pagination pagination-outline">
+                                                                            <li class="page-first disabled"><a
+                                                                                    href="javascript:void(0)">«</a></li>
+                                                                            <li class="page-pre disabled"><a
+                                                                                    href="javascript:void(0)">‹</a></li>
+                                                                            <li class="page-next disabled"><a
+                                                                                    href="javascript:void(0)">›</a></li>
+                                                                            <li class="page-last disabled"><a
+                                                                                    href="javascript:void(0)">»</a></li>
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="clearfix"></div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- end:tab内容层 -->
+                        </div>
+                        <!-- end:定义层宽比例，col-sm-12为最大比例 -->
+                    </div>
+                    <!-- end:定义层 -->
+
+                </div>
+
+                <script type="text/javascript">
+                    window.onload = function () {
+                        //定义jsonVale参数
+                        var conditionJsonObj = {};
+                        conditionJsonObj.customMaster = '1521';
+                        conditionJsonObj.entryType = 'D';
+                        conditionJsonObj.preEntryId = '123456';
+                        conditionJsonObj.entryId = '62423412';
+                        conditionJsonObj.spDecSeqNo = '4214E24';
+                        var jsonVale = JSON.stringify(conditionJsonObj);
+                        //组件初始化
+                        //回话超时
+                        // wfinit("ceb_OrderQuery", "ceb_orderQuery", jsonVale);
+
+                    }
+
+                </script>
+
+                <script type="text/javascript"
+                        src="https://app.singlewindow.cn/sat/swVersion.js?d=1639558436049"></script>
+                <script type="text/javascript"
+                        src="https://swapp.singlewindow.cn:443/swcebweb/static/js/cebweb/order/orderQuery.js"
+                        id="busijs"></script>
+                <div class="xs_order_date"></div>
+                <div id="laydate_box" class="laydate_box" name="laydate-v1.1"
+                     style="position: absolute; right: 865.859px; top: 113px; display: none;">
+                    <div class="laydate_top">
+                        <div class="laydate_ym laydate_y" id="laydate_YY"><a
+                                class="laydate_choose laydate_chprev laydate_tab"><cite></cite></a><input id="laydate_y"
+                                                                                                          readonly=""><label></label><a
+                                class="laydate_choose laydate_chnext laydate_tab"><cite></cite></a>
+                            <div class="laydate_yms"><a class="laydate_tab laydate_chtop"><cite></cite></a>
+                                <ul id="laydate_ys"></ul>
+                                <a class="laydate_tab laydate_chdown"><cite></cite></a></div>
+                        </div>
+                        <div class="laydate_ym laydate_m" id="laydate_MM"><a
+                                class="laydate_choose laydate_chprev laydate_tab"><cite></cite></a><input id="laydate_m"
+                                                                                                          readonly=""><label></label><a
+                                class="laydate_choose laydate_chnext laydate_tab"><cite></cite></a>
+                            <div class="laydate_yms " id="laydate_ms"><span m="0">01月</span><span m="1">02月</span><span
+                                    m="2">03月</span><span m="3" class="">04月</span><span m="4" class="">05月</span><span
+                                    m="5" class="">06月</span><span m="6" class="">07月</span><span m="7"
+                                                                                                  class="">08月</span><span
+                                    m="8" class="">09月</span><span m="9" class="">10月</span><span m="10"
+                                                                                                  class="">11月</span><span
+                                    m="11" class="laydate_click">12月</span></div>
+                        </div>
+                    </div>
+                    <table class="laydate_table" id="laydate_table">
+                        <thead>
+                        <tr>
+                            <th>日</th>
+                            <th>一</th>
+                            <th>二</th>
+                            <th>三</th>
+                            <th>四</th>
+                            <th>五</th>
+                            <th>六</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td class="laydate_nothis" y="2021" m="11" d="28">28</td>
+                            <td class="laydate_nothis" y="2021" m="11" d="29">29</td>
+                            <td class="laydate_nothis" y="2021" m="11" d="30">30</td>
+                            <td class="laydate_click" y="2021" m="12" d="1">1</td>
+                            <td class="" y="2021" m="12" d="2">2</td>
+                            <td class="" y="2021" m="12" d="3">3</td>
+                            <td class="" y="2021" m="12" d="4">4</td>
+                        </tr>
+                        <tr>
+                            <td class="" y="2021" m="12" d="5">5</td>
+                            <td class="" y="2021" m="12" d="6">6</td>
+                            <td class="" y="2021" m="12" d="7">7</td>
+                            <td class="" y="2021" m="12" d="8">8</td>
+                            <td class="" y="2021" m="12" d="9">9</td>
+                            <td class="" y="2021" m="12" d="10">10</td>
+                            <td class="" y="2021" m="12" d="11">11</td>
+                        </tr>
+                        <tr>
+                            <td class="" y="2021" m="12" d="12">12</td>
+                            <td class="" y="2021" m="12" d="13">13</td>
+                            <td class="" y="2021" m="12" d="14">14</td>
+                            <td class="" y="2021" m="12" d="15">15</td>
+                            <td class="" y="2021" m="12" d="16">16</td>
+                            <td class="" y="2021" m="12" d="17">17</td>
+                            <td class="" y="2021" m="12" d="18">18</td>
+                        </tr>
+                        <tr>
+                            <td class="" y="2021" m="12" d="19">19</td>
+                            <td class="" y="2021" m="12" d="20">20</td>
+                            <td class="" y="2021" m="12" d="21">21</td>
+                            <td class="" y="2021" m="12" d="22">22</td>
+                            <td class="" y="2021" m="12" d="23">23</td>
+                            <td class="" y="2021" m="12" d="24">24</td>
+                            <td class="" y="2021" m="12" d="25">25</td>
+                        </tr>
+                        <tr>
+                            <td class="" y="2021" m="12" d="26">26</td>
+                            <td class="" y="2021" m="12" d="27">27</td>
+                            <td class="" y="2021" m="12" d="28">28</td>
+                            <td class="" y="2021" m="12" d="29">29</td>
+                            <td class="" y="2021" m="12" d="30">30</td>
+                            <td class="" y="2021" m="12" d="31">31</td>
+                            <td class="laydate_nothis" y="2022" m="1" d="1">1</td>
+                        </tr>
+                        <tr>
+                            <td class="laydate_nothis" y="2022" m="1" d="2">2</td>
+                            <td class="laydate_nothis" y="2022" m="1" d="3">3</td>
+                            <td class="laydate_nothis" y="2022" m="1" d="4">4</td>
+                            <td class="laydate_nothis" y="2022" m="1" d="5">5</td>
+                            <td class="laydate_nothis" y="2022" m="1" d="6">6</td>
+                            <td class="laydate_nothis" y="2022" m="1" d="7">7</td>
+                            <td class="laydate_nothis" y="2022" m="1" d="8">8</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="laydate_bottom">
+                        <ul id="laydate_hms" style="display: block;">
+                            <li class="laydate_sj">时间</li>
+                            <li><input readonly="">:</li>
+                            <li><input readonly="">:</li>
+                            <li><input readonly=""></li>
+                        </ul>
+                        <div class="laydate_time" id="laydate_time"></div>
+                        <div class="laydate_btn"><a id="laydate_clear" style="display: block;">清空</a><a
+                                id="laydate_today" style="display: block;">今天</a><a id="laydate_ok"
+                                                                                    style="display: block;">确认</a></div>
+                    </div>
+                </div>
+                </body>
+                </html>
+            </div>
+        </div>
+    </div>
+    <!--右侧部分结束-->
+
+</div>
+
+<!--xss漏洞修改 20190108 -->
+<!-- <input type="hidden" value="https://swapp.singlewindow.cn:443/deskserver/" id="basePath"> -->
+<script>
+    function show(type) {
+        if (type == 1) {
+            $('#content-main').find('.xs_order').show();
+            $('#content-main').find('.xs_order').find('.laydate_box').attr('id', 'laydate_box');
+            $('#content-main').find('.xs_declareorder').hide();
+            $('#content-main').find('.xs_declareorder').find('.laydate_box').removeAttr('id');
+        } else {
+            $('#content-main').find('.xs_order').hide();
+            $('#content-main').find('.xs_order').find('#laydate_box').removeAttr('id');
+            $('#content-main').find('.xs_declareorder').show();
+            $('#content-main').find('.xs_declareorder').find('.laydate_box').attr('id', 'laydate_box');
+        }
+    }
+
+    $(function () {
+        //业务状态
+        $('.xs_order #ceb_OrderQuery .autocomp-trigger').click(function () {
+            $('.xs_order .autocompleter-closed').removeClass('autocompleter-closed').addClass('autocompleter-focus').addClass('autocompleter-show').css('display', 'block');
+        });
+        $('.xs_order .autocompleter-item').click(function () {
+            let val = $(this).data('label');
+            val = val.split('-');
+            $('.xs_order #appStatusName').val(val[1]);
+            $('.xs_order #appStatus').val(val[0]);
+            $('.xs_order .autocompleter-closed').css('display', 'none');
+        });
+
+        //订单类型
+        $('.xs_order #form_page .order_type').click(function () {
+            $('.xs_order #form_page .order_menu').show();
+        });
+        $('.xs_order .order_menu tr').click(function () {
+            let val = $(this).data('key');
+            // val = val.split('-');
+            $('.xs_order #orderTypeName').val(val);
+            $('.xs_order #form_page .order_menu').hide();
+        });
+
+        //入库时间起始
+        $('.xs_order #beginDate').click(function () {
+            $('.xs_order #laydate_box').show();
+        });
+        //入库时间截止
+        $('.xs_order #endDate').click(function () {
+            $('.xs_order #laydate_box').show();
+        });
+
+        /////////////////////////////////////////////
+        //清单
+        //贸易方式
+        $('.xs_declareorder .trade_btn').click(function () {
+            $('.xs_declareorder .trade_ul').removeClass('autocompleter-closed').addClass('autocompleter-focus').addClass('autocompleter-show');
+        });
+        $('.xs_declareorder .trade_ul ul li').click(function () {
+            let val = $(this).data('label');
+            val = val.split('-');
+            $('.xs_declareorder #tradeModeName').val(val[1]);
+            $('.xs_declareorder #tradeMode').val(val[0]);
+        });
+
+        //业务类型
+        $('.xs_declareorder .statistic_btn').click(function () {
+            $('.xs_declareorder .statistics_ul').removeClass('autocompleter-closed').addClass('autocompleter-focus').addClass('autocompleter-show');
+        });
+        $('.xs_declareorder .statistics_ul ul li').click(function () {
+            let val = $(this).data('label');
+            val = val.split('-');
+            $('.xs_declareorder #statisticsFlagName').val(val[1]);
+            $('.xs_declareorder #statisticsFlag').val(val[0]);
+        });
+
+        //业务状态
+        $('.xs_declareorder .appstatus_btn').click(function () {
+            $('.xs_declareorder .appstatus_ul').show();
+        });
+        $('.appstatus_ul table tr').click(function () {
+            let key = $(this).data('key');
+            let id = $(this).data('id');
+            $('.xs_declareorder #appStatusName').val(key);
+            $('.xs_declareorder #appStatus').val(id);
+            $('.xs_declareorder .appstatus_ul').hide();
+        });
+
+        //汇总状态
+        $('.xs_declareorder .isbl_btn').click(function () {
+            $('.xs_declareorder .isbl_ul').removeClass('autocompleter-closed').addClass('autocompleter-focus').addClass('autocompleter-show').css('display', 'block');
+        });
+        $('.xs_declareorder .isbl_ul ul li').click(function () {
+            let val = $(this).data('label');
+            val = val.split('-');
+            $('.xs_declareorder #isblStatusName').val(val[1]);
+            $('.xs_declareorder #isblStatus').val(val[0]);
+            $('.xs_declareorder .isbl_ul').css('display', 'none');
+        });
+
+        //申报地海关
+        $('.xs_declareorder .customs_btn').click(function () {
+            $('.xs_declareorder .customs_ul').removeClass('autocompleter-closed').addClass('autocompleter-focus').addClass('autocompleter-show').css('display', 'block');
+        });
+        $('.xs_declareorder .customs_ul ul li').click(function () {
+            let val = $(this).data('label');
+            val = val.split('-');
+            $('.xs_declareorder #customsCodeName').val(val[1]);
+            $('.xs_declareorder #customsCode').val(val[0]);
+            $('.xs_declareorder .customs_ul').css('display', 'none');
+        });
+
+        //入库时间起
+        $('.xs_declareorder #beginDate').click(function () {
+            $('.xs_declareorder #laydate_box').show().css('right', '32.7969px').css('top', '200px');
+        });
+        //入库时间截止
+        $('.xs_declareorder #endDate').click(function () {
+            $('.xs_declareorder #laydate_box').show().css('right', '969.547px').css('top', '245px');
+        });
+    })
+</script>
+<!-- 全局js -->
+<script src="https://swapp.singlewindow.cn:443/deskserver/static/js/bootstrap.min.js?v=20211112101238"></script>
+<script src="https://swapp.singlewindow.cn:443/deskserver/static/js/plugins/metisMenu/jquery.metisMenu.js?v=20211112101238"></script>
+<script src="https://swapp.singlewindow.cn:443/deskserver/static/js/plugins/slimscroll/jquery.slimscroll.min.js?v=20211112101238"></script>
+<script src="https://swapp.singlewindow.cn:443/deskserver/static/js/plugins/layer/layer.min.js?v=20211112101238"></script>
+<!-- 第三方插件 -->
+<script src="https://swapp.singlewindow.cn:443/deskserver/static/js/plugins/pace/pace.min.js?v=20211112101238"></script>
+<!-- 专业版启动插件-->
+<!-- <script src="https://swapp.singlewindow.cn:443/deskserver/static/js/client.js?v=20211112101238"></script> -->
+<script src="https://swapp.singlewindow.cn:443/deskserver/static/js/json2.js?v=20211112101238"></script>
+<script src="https://swapp.singlewindow.cn:443/deskserver/static/js/contabs.js?v=20211112101238" defer="defer"></script>
+<script src="https://swapp.singlewindow.cn:443/deskserver/static/js/hplus.js?v=20211112101238" defer="defer"></script>
+<script src="https://swapp.singlewindow.cn:443/deskserver/static/js/indexMenu.js?v=20211112101238"></script>
+<script type="text/javascript" src="https://app.singlewindow.cn/sat/swVersion.js?d=1639558410639"></script>
+</body>
+</html>

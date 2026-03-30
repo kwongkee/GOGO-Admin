@@ -1,0 +1,86 @@
+{include file="public/header"}
+<body style="padding: 10px;">
+
+<div class="header">
+    <span>代理商户费率列表</span>
+    <!--button class="layui-btn layui-btn-sm" onclick="add()">添加</button-->
+    <div></div>
+</div>
+<button class="layui-btn layui-btn-primary layui-btn-sm" style="float: right;margin: 5px 0px 5px 0px;" onclick="backs()">返回上级菜单</button>
+
+<table class="layui-table">
+    <thead>
+    <tr>
+        <th>代理商</th>
+        <th>商户名</th>
+        <th>申报失败收费</th>
+        <th>身份费率</th>
+        <th>申报费率</th>
+        <th>支付费率</th>
+        <th>支付货值折扣</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    {volist name="data.lists" id="vo"}
+    <tr>
+        <td>{$vo.did|getAgents}</td>
+        <td>{$vo.uid|getDecls}</td>
+        <td>
+            {if condition="$vo.isCharge == 1" }
+                <button class="layui-btn layui-btn-sm layui-btn-warm">收费</button>
+            {else /}
+                <button class="layui-btn layui-btn-sm">不收费</button>
+            {/if}
+        </td>
+        <td>{$vo.verfee}</td>
+        <td>{$vo.sbfee}</td>
+        <td>{$vo.payfee}</td>
+        <td>{$vo.payhfee}</td>
+        <td>
+            <button class="layui-btn layui-btn-sm" onclick="edit({$vo.rid})">编辑</button>
+            <button class="layui-btn layui-btn-danger layui-btn-sm" onclick="del({$vo.rid})">删除</button>
+        </td>
+    </tr>
+    {/volist}
+
+    </tbody>
+</table>
+
+</body>
+<script type="text/javascript">
+    layui.use(['layer'],function(){
+        layer = layui.layer;
+        $     = layui.jquery;
+    });
+
+    // 编辑操作
+    function edit(id)
+    {
+        layer.open({
+            type:2,
+            title:'编辑费率',
+            shade:0.3,
+            area:['480px','420px'],
+            content:'{:Url("agents/fee/edit")}&rid='+id
+        });
+    }
+
+
+    // 删除操作
+    function fee(mid)
+    {
+        var host = '{:Url("agents/fee/del")}&rid='+mid;
+        // 跳转
+        window.location.href = host;
+    }
+
+    //返回上级菜单
+    function backs() {
+        window.history.go(-1);
+    }
+
+</script>
+</html>

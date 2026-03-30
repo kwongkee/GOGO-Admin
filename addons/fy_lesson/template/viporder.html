@@ -1,0 +1,105 @@
+<!-- 
+ * 会员VIP服务订单管理
+ * ============================================================================
+ * ============================================================================
+-->
+{template 'common/header'}
+<ul class="nav nav-tabs">
+	<li {if $op=='display'}class="active"{/if}><a href="{php echo $this->createWebUrl('viporder');}">VIP订单管理</a></li>
+</ul>
+{if $operation == 'display'}
+<style>
+.col-lg-3{width:22%;}
+</style>
+<div class="main">
+    <div class="panel panel-info">
+        <div class="panel-heading">筛选</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get" class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fy_lesson" />
+                <input type="hidden" name="do" value="viporder" />
+                <input type="hidden" name="op" value="display" />
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width:100px;">订单遍号</label>
+                    <div class="col-sm-2 col-lg-3">
+                        <input class="form-control" name="ordersn" type="text" value="{$_GPC['ordersn']}">
+                    </div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">用户昵称</label>
+                    <div class="col-sm-2 col-lg-3">
+                        <input class="form-control" name="nickname" id="" type="text" value="{$_GPC['nickname']}">
+                    </div>
+                </div>
+                <div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width:100px;">订单状态</label>
+                    <div class="col-sm-8 col-lg-3 col-xs-12">
+                        <select name="status" class="form-control">
+                            <option value="">不限</option>
+							<option value="0" {if in_array($_GPC['status'],array('0'))} selected="selected" {/if}>待付款</option>
+							<option value="1" {if $_GPC['status'] == 1} selected="selected" {/if}>已付款</option>
+                        </select>
+                    </div>
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">下单时间</label>
+                    <div class="col-sm-8 col-lg-3 col-xs-12">
+                        {php echo tpl_form_field_daterange('time', array('starttime'=>date('Y-m-d', $starttime),'endtime'=>date('Y-m-d', $endtime)));}
+                    </div>
+                    <div class="col-sm-3 col-lg-3" style="width: 18%;">
+                        <button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="panel panel-default">
+        <form action="" method="post" class="form-horizontal form" >
+        <div class="table-responsive panel-body">
+            <table class="table table-hover">
+                <thead class="navbar-inner">
+                <tr>
+                    <th style="width:15%;">订单遍号</th>
+                    <th style="width:12%;">用户昵称</th>
+                    <th style="width:12%;">服务时长</th>
+                    <th style="width:12%;">服务价格</th>
+                    <th style="width:12%;">支付方式</th>
+                    <th style="width:12%;">订单状态</th>
+                    <th style="width:15%;">下单时间</th>
+                    <th style="width:10%; text-align:right;">删除</th>
+                </tr>
+                </thead>
+                <tbody>
+                {loop $list $item}
+                <tr>
+                    <td>{$item['ordersn']}</td>
+                    <td>{$item['nickname']}</td>
+                    <td>{$item['viptime']} 个月</td>
+                    <td>{$item['vipmoney']} 元</td>
+                    <td>
+						<span class="label label-info">
+						{if $item['paytype'] == 'credit'}余额支付
+						{elseif $item['paytype'] == 'wechat'}微信支付
+						{elseif $item['paytype'] == 'alipay'}支付宝支付
+						{else}无{/if}
+						</span>
+                    </td>
+                    <td>
+                        {if $item['status'] == 0}<span class="label label-danger">未付款</span>{/if}
+						{if $item['status'] == 1}<span class="label label-success">已付款</span>{/if}
+                    </td>
+                    <td>{php echo date('Y-m-d H:i:s', $item['addtime'])}</td>
+                    <td style="text-align:right;">
+                        <a class="btn btn-default btn-sm" href="{php echo $this->createWebUrl('viporder', array('op' => 'delete', 'id' => $item['id']))}" title="删除订单" onclick="return confirm('此操作不可恢复，确认删除？');return false;"><i class="fa fa-times"></i></a>
+                    </td>
+                </tr>
+                {/loop}
+                </tbody>
+            </table>
+            {$pager}
+        </div>
+    </div>
+    </form>
+</div>
+
+{/if}
+{template 'common/footer'}

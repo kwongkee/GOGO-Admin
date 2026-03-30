@@ -1,0 +1,51 @@
+{template 'header'}
+	<div class="container-fluid">
+		<h4><span class='glyphicon glyphicon-circle-arrow-right'></span>&nbsp;&nbsp;附近页面自定义</h4>
+		<div class="row">
+			<div class="col-md-6">
+				<label>顶部标签(男)设置</label>
+				<input type="text" class="form-control" value="{php echo $this->settings['hall_tag_1']}" id='hall_tag_1' placeholder='例如：帅哥粉丝团'>
+				<br>
+				<label>顶部标签（女）设置</label>
+				<input type="text" class="form-control" value="{php echo $this->settings['hall_tag_2']}" id='hall_tag_2' placeholder='例如：美女粉丝团'>
+				<p class="help-block">如果为空，则默认</p>
+				<button class="btn btn-sm btn-info" onclick="doSave('hall_tag')">保存</button>
+			</div>
+		</div>
+		<br>
+	</div>
+	<script type="text/javascript">
+	function doSave(type,val) {
+
+		if(!type) {
+			return false;
+		}
+
+		if(type == 'hall_tag') {
+			hall_tag_1 = $("#hall_tag_1").val();
+			hall_tag_2 = $("#hall_tag_2").val();
+		}
+		
+		$.ajax({
+			type:'post',
+			data:{
+				dataType:type, // 数据类型区分
+				hall_tag_1:hall_tag_1,
+				hall_tag_2:hall_tag_2,
+				setval:val
+			},
+
+			url:"{php echo $this->createWebUrl('settingform')}",
+			success:function(d) {
+				if(d.res == '100') {
+					alert('保存成功');
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+
+	}
+	</script>
+{template 'footer'}

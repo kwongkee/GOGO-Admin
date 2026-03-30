@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="Cache-Control" content="no-cache"/>
+<title>加入班级 - {$config['webtitle']}</title>
+<meta http-equiv="description" content="" />
+<meta name="renderer" content="webkit"/>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+<meta name="description" content="" id="description"/>
+<meta name="keywords" content=""/>
+<link rel="stylesheet" href="{$templateurl}css/wap_css.css" type="text/css"/>
+<!--分页 start-->
+<link rel="stylesheet" href="{$templateurl}css/pase.css" type="text/css"/>
+<!--分页 end-->
+<script src="{$templateurl}js/jquery-1.8.0.min.js" language="javascript"></script>
+<!--php echo register_jssdk(false)-->
+<script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<script src="{$templateurl}js/weixin.ini.js"></script>
+<script>
+	
+	var JSSDK_CONFIG = $.parseJSON('{php echo json_encode($_W['account']['jssdkconfig'])}');
+	
+	$(function(){
+		//if(is_ios() == false){
+        register_jssdk();
+        //}
+		
+		wx.ready(function(){
+			wx.checkJsApi({
+				jsApiList: ['chooseImage'], // 需要检测的JS接口列表，所有JS接口列表见附录2,
+				success: function(res) {
+				// 以键值对的形式返回，可用的api值true，不可用为false
+				// 如：{"checkResult":{"chooseImage":true},"errMsg":"checkJsApi:ok"}
+				}
+			});
+			$("#QRCodeScanner").on('click',function(){//打开扫一扫按钮
+				wx.scanQRCode({
+					needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+					scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+					success: function (res) {
+					var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+					//alert(result);
+					location.href=result;
+					}
+				});
+			});
+		});
+	});
+</script>
+</head>
+
+<body>
+<div class="jrbn">
+	<div class="topjrbj">
+    	<form action="./index.php" method="get">
+		<input type="hidden" name="i" value="{$_GPC['i']}">
+		<input type="hidden" name="c" value="{$_GPC['c']}">
+		<input type="hidden" name="do" value="{$_GPC['do']}">
+		<input type="hidden" name="m" value="{$_GPC['m']}">
+		<input type="text" name="keyword" value="{$_GPC['keyword']}" placeholder="请输入班级编号加入班级" />
+		<button><i class="iconfont">&#xe69b;</i></button>
+		</form>
+		<a href="javascript:void(0)" id="QRCodeScanner"><i class="iconfont">&#xe617;</i></a>
+    </div>
+     {if $_GPC['open'] == 2}
+     <div class="bjssmr">
+			<h1>加入方法</h1>
+			<p>
+				<span>您可以使用如下方法进行加入班级</span>
+				<span>1、扫描老师或已加入班级同学的班级二维码。</span>
+				<span>2、搜索班级数字编码进行加入班级。</span>
+				<span>3、向对应老师提供您的学生编码。</span>
+			</p>
+			<h2>您的学生编码：{$user_show['usernumber']}</h2>
+			<div class="clear"></div>
+		</div>
+        {else}
+ <div class="banjiff"><a href="{php echo $this->createMobileUrl('theclass');}&open=2">如何加入班级? 点击查看>></a></div>
+ {/if}
+ <div class="banjine">
+	   {if $list}
+	{loop $list $key $value}
+    <div class="banjibh">班级编号：{$value['numberid']}</div>
+		<div class="a1">
+        
+			<a class="b1" href="{php echo $this->createMobileUrl('m_theclass_show');}&id={$value['id']}">
+            
+				<img src="{php echo tomedia($value[imgurl]);}" />
+				<font><h2>{$category_nj[$value[njid]]['name']}{$category[$value[xkid]]['name']}-{$value['titlename']}<br /><span>授课老师：{$value['name']}老师</span><span>招生人数：{$value['number']}</span><br><span>开学时间：{php echo date('Y年m月d日', $value['kxtimes']);}</span></h2></font>
+				<h3><i class="iconfont">&#xe6b6;</i>{$xstotal[$value['id']]}</h3>
+				<div class="clear"></div>
+				
+				<div class="clear"></div>
+			</a>
+<!--		{loop $notice[$value['id']] $valuesd}
+			<div class="b2"><a href="{php echo $this->createMobileUrl('notice_show');}&id={$valuesd['id']}">{$valuesd['titlename']}</a></div>
+			{/loop}-->
+            <div class="b2" style="text-align:right;">
+				<i>{$value['price']}元/学期</i>
+				{if array_key_exists($value['id'],$my_class)}
+					{if $my_class[$value['id']] == 1}
+						<a>已加入班级</a>
+					{else}
+						<a>等待审核</a>
+					{/if}
+				{else}
+					{if $value['number']>$xstotal[$value['id']]}
+						{if $value['price']>0}
+							{if $value['pay_status']}
+							<a>已支付</a>
+							{else}
+							<a href="{php echo $this->createMobileUrl('pay',array('type'=>'class','id'=>$value['id']))}" onclick="return confirm('确认要购买并加入班级？');">购买并加入班级</a>
+							{/if}
+						{else}
+						<a href="{$urltk}&op=add&id={$value['id']}" onclick="return confirm('确认要加入班级？');">加入班级</a>
+						{/if}
+					{else}
+						<a>人员已满</a>
+					{/if}
+				{/if}
+			</div>
+		</div>
+		{/loop}
+		{else}
+		<div class="a1" style="padding-top:20px;padding-bottom:20px; text-align:center;">抱歉！未找到相应班级！</div>
+		{/if}
+		<div style="text-align:center;">{$pager}</div>
+		
+	</div>
+    
+    
+       
+<!--    {if $list}
+	{loop $list $key $value}
+	<div class="bjssmr">
+    	<h1>{$category_nj[$value[njid]]['name']}{$category[$value[xkid]]['name']}-{$value['titlename']}-{$value['name']}老师班</h1>
+        <p><span>老师：{$value['name']}老师&nbsp;&nbsp;&nbsp;&nbsp;{php echo date('Y年m月d日', $value['dateline']);}创建</span><span>当前班级人数：{$xstotal[$value['id']]}人</span></p>
+        <h2>班级编号：{$value['numberid']}</h2>
+        <a href="{$urltk}&op=add&id={$value['id']}" onclick="return confirm('确认要加入班级？');">加入班级</a>
+        <div class="clear"></div>
+    </div>
+	{/loop}
+	{else}
+		{if $keyword}
+		<div class="bjssmr" style="padding-top:20px;padding-bottom:20px; text-align:center;">抱歉！未找到相应数据！</div>
+		{else}
+		 <div class="bjssmr">
+			<h1>加入方法</h1>
+			<p>
+				<span>您可以使用如下方法进行加入班级</span>
+				<span>1、扫描老师或已加入班级同学的班级二维码。</span>
+				<span>2、搜索班级数字编码进行加入班级。</span>
+				<span>3、向对应老师提供您的学生编码。</span>
+			</p>
+			<h2>您的学生编码：{$user_show['usernumber']}</h2>
+			<div class="clear"></div>
+		</div>
+		{/if}
+	{/if}-->
+    
+</div>
+<div class="clear"></div>
+
+
+<!--footer strat-->
+{template 'footer'}
+
+</body>
+</html>

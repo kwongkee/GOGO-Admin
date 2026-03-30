@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<div class="header">
+    <span>电子订单预提列表</span>
+    <!--<button class="layui-btn layui-btn-sm" onclick="add();">添加</button>-->
+    <div></div>
+</div>
+
+<table class="layui-table">
+    <thead>
+    <tr class="ths">
+        <th>ID</th>
+        <th>操作员工</th>
+        <th>订单票数</th>
+        <th>提单编号</th>
+        <th>批次编号</th>
+        <th>预提时间</th>
+        <th>申报状态</th>
+        <th>验证企业</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {volist name="data.lists" id="vo" key="k" }
+    <tr class="boys">
+        <td>{$k}</td>
+        <td>{$vo.user_name}</td>
+        <td>{$vo.succ_num} 票</td>
+        <td>{$vo.bill_num}</td>
+        <td>{$vo.batch_num}</td>
+        <td>{$vo.create_time}</td>
+        <td>{$vo.desc}</td>
+
+        <td>
+            {if condition=" $vo.ver_pay!='' "}
+                {foreach $verPay as $k2=>$v2}
+                    {if condition="$k2==$vo.ver_pay"}
+                        {$v2}
+                    {/if}
+                {/foreach}
+                   
+                <!--$verPay["$vo.ver_pay"]-->
+            {else}
+                未选支付企业
+            {/if}
+        </td>
+        <td>
+
+            <button class="layui-btn layui-btn-normal" onclick="Declares('{$vo.batch_num}',{$vo.uid})">申报</button>
+
+            <button class="layui-btn layui-btn-sm" onclick="Declare('{$vo.batch_num}')">进度查看</button>
+        
+            <a class="layui-btn layui-btn-sm layui-btn-danger" href="{:Url('admin/elec/expro_err')}&batch_num={$vo.batch_num}">错误导出</a>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<div class="layui-box layui-laypage layui-laypage-default">{$data.pages}</div>
+
+<script type="text/javascript">
+    layui.use(['layer','jquery'],function(){
+        layer = layui.layer;
+        $ = layui.jquery;
+    });
+
+    // 申报
+    function Declare(batch)
+    {
+        layer.open({
+            type: 2,
+            title: '申报进度',
+            shadeClose: true,
+            shade: 0.3,
+            area: ['490px', '389px'],
+            content: "{:Url('admin/elec/schedulesQuery')}&batch_num="+batch, //iframe的url
+            yes:function(){
+                //setTimeout(function(){window.location.reload();},800);
+            },
+            end:function() {
+                setTimeout(function () {
+                    //window.location.reload();
+                }, 800);
+            }
+        });
+    }
+
+
+    // 申报
+    function Declares(batch,uid)
+    {
+        layer.open({
+            type: 2,
+            title: '电子订单申报',
+            shadeClose: true,
+            shade: 0.3,
+            area: ['490px', '489px'],
+            content: "{:Url('admin/elec/declare')}&batch_num="+batch+"&uid="+uid, //iframe的url
+            yes:function(){
+                setTimeout(function(){window.location.reload();},800);
+            },
+            end:function() {
+                setTimeout(function () {
+                    window.location.reload();
+                }, 800);
+            }
+        });
+    }
+
+
+    // 退回操作
+    function Returns(ids) {
+        layer.confirm('您确定退回吗?',{
+            icon:3,
+            btn:['确定','取消']
+        },function(){
+            $.ajax({
+                url:"{:url('admin/elec/returns')}",
+                type:'post',
+                dataType:'json',
+                data:{'batch_num':ids},
+                success:function(data) {
+                    console.log(data)
+                    var res = JSON.parse(data);
+                    if(res.code > 0) {
+                        layer.msg(res.msg,{icon:1});
+                    } else {
+                        layer.msg('退回失败',{icon:2});
+                    }
+                    setTimeout(function(){window.location.reload();},1000);
+                }
+            })
+        })
+    }
+
+
+    // 请求加入队列
+    function dels(batch) {
+        layer.confirm('您确定要申报吗？', {
+            icon:3,
+            btn: ['确定','取消'] //按钮
+        }, function() {
+
+            $.ajax({
+                url:"http://39.108.11.214/api/elec/declares",
+                type:'post',
+                dataType:'json',
+                //async:false,
+                data:{'batch_num':batch},
+                success:function(data) {
+                    if(data.code > 0) {
+                        layer.msg('加入申报队列成功',{icon:1});
+                    } else {
+                        layer.msg('加入申报队列失败',{icon:2});
+                        setTimeout(function(){window.location.reload();},1000);
+                    }
+                },
+                error:function(er) {
+                    //console.log(er)
+                }
+            })
+        });
+    }
+    function exprotElist(id){
+        layer.open({
+            type: 1,
+            title:'选择导出格式',
+            content: ' <a href="{:Url(\'admin/elec/export_excel\')}&batch_num='+id+'&type=1" class="layui-btn">格式一</a> <a href="{:Url(\'admin/elec/export_excel\')}&batch_num='+id+'&type=2" class="layui-btn">格式二</a>' //注意，如果str是object，那么需要字符拼接。
+        });
+        return false;
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+{include file="public/header" /}
+<body>
+    <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+      <ul class="layui-tab-title">
+        <li class="layui-this">主观题</li>
+        <li>选择题</li>
+      </ul>
+      <div class="layui-tab-content">
+        <div class="layui-tab-item layui-show">
+            <form class="layui-form" action="" lay-filter="component-form-group">
+                <div class="layui-form-item">
+                <div class="layui-block">
+                  <label class="layui-form-label">题目名称：</label>
+                  <div class="layui-input-block">
+                    <input type="text" name="question_title" required  lay-verify="required" autocomplete="off" class="layui-input">
+                  </div>
+                </div>
+              </div>
+                <div class="layui-form-item">
+                <div class="layui-block">
+                  <label class="layui-form-label">题目分值：</label>
+                  <div class="layui-input-block">
+                    <input type="text" name="subjective_score" required  lay-verify="required" autocomplete="off" class="layui-input">
+                  </div>
+                </div>
+              </div>
+              <input type="hidden" name="type" value="1">
+              <div class="layui-form-item">
+                  <div class="layui-input-block">
+                <button type="submit" class="layui-btn" lay-submit="" lay-filter="component-form-demo1">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                  </div>
+                </div>
+            </form>
+        </div>
+        <div class="layui-tab-item">
+            <form class="layui-form" action="" lay-filter="component-form-option">
+                <div class="layui-form-item">
+                <div class="layui-block">
+                  <label class="layui-form-label">题目名称：</label>
+                  <div class="layui-input-block">
+                    <input type="text" name="question_title" required  lay-verify="required" autocomplete="off" class="layui-input">
+                  </div>
+                </div>
+              </div>
+                <div class="layui-form-item">
+                <div class="layui-block">
+                  <label class="layui-form-label">题目分值：</label>
+                  <div class="layui-input-inline">
+                    <input type="text" name="objective_score" required  lay-verify="required" autocomplete="off" class="layui-input">
+                  </div>
+                  <div class="layui-input-inline">
+                      <button type="button" class="layui-btn" onclick="add_option()">新增选项</button>
+                  </div>
+                </div>
+              </div>
+              <div id="options"></div>
+              <input type="hidden" name="type" value="2">
+              <div class="layui-form-item">
+                  <div class="layui-input-block">
+                <button type="submit" class="layui-btn" lay-submit="" lay-filter="component-form-demo2">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                  </div>
+                </div>
+            </form>
+        </div>
+      </div>
+    </div>
+<script type="text/javascript">
+layui.use(['form', 'element'], function(){
+  var $ = layui.jquery
+  ,form = layui.form
+  ,element = layui.element;
+  form.render(null, 'component-form-group');
+  form.render(null, 'component-form-option');
+  /* 监听提交 */
+  form.on('submit(component-form-demo1)', function(data){
+      // console.log(data.field);
+    $.ajax({   
+      url:"{:Url('admin/interview/quesadd')}",
+      method:'post',
+      data:data.field,
+      dataType:'json',
+      success:function(res){
+          layer.msg(res.msg,{time:2000}, function () {
+              if(res.code == 1)
+              {
+                  var index = parent.layer.getFrameIndex(window.name);
+                  parent.layer.close(index);
+                  parent.window.location.reload();
+              }
+          }); 
+      },
+      error:function (data) {
+          layer.msg('系统错误',{time:2000});
+      }
+    });
+    return false;
+  });
+  /* 监听提交 */
+  form.on('submit(component-form-demo2)', function(data){
+    console.log(data.field);
+    $.ajax({   
+      url:"{:Url('admin/interview/quesadd')}",
+      method:'post',
+      data:data.field,
+      dataType:'json',
+      success:function(res){
+        console.log(res);
+          layer.msg(res.msg,{time:2000}, function () {
+              if(res.code == 1)
+              {
+                  var index = parent.layer.getFrameIndex(window.name);
+                  parent.layer.close(index);
+                  parent.window.location.reload();
+              }
+          }); 
+      },
+      error:function (data) {
+          layer.msg('系统错误',{time:2000});
+      }
+    });
+    return false;
+  });
+});
+  function add_option() {
+    var $ = layui.$,layer = layui.layer,form = layui.form;
+    var _len = $('#options .layui-form-item').length;
+var html = '<div class="layui-form-item" id="opt'+_len+'"><div class="layui-block"><label class="layui-form-label">题目选项：</label><div class="layui-input-inline"><input type="text" name="question_options['+_len+']" required  lay-verify="required" autocomplete="off" class="layui-input"></div><div class="layui-input-inline"><button type="button" class="layui-btn" onclick="del_option(\'opt'+_len+'\')">删除选项</button></div></div>';
+        $("#options").append(html);
+        form.render('radio');
+    }
+    function del_option(id) {
+        var $ = layui.$,layer = layui.layer,form = layui.form;
+        layer.confirm('您确认要删除该配置吗？', {
+            btn: ['确认','取消'] //按钮
+        }, function(){
+            $("#"+id).remove();
+            layer.closeAll();
+        }, function(){
+        
+        });
+    }
+</script>
+</body>
+</html>

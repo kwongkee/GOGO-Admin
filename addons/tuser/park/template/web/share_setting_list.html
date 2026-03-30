@@ -1,0 +1,105 @@
+{template 'common/header'}
+<style>
+    .l_tableWrap .l_table_tit .l_formBar {
+        border: 0;
+        float: left;
+        font-size: 0;
+    }
+    .y_sele {
+        display: inline-block;
+        padding: 5px 0 12px 12px;
+    }
+    .y_sele_tit {
+        font-size: 14px;
+        padding: 0 0 0 10px;
+    }
+    .l_table_search{
+        margin-left: 10px;
+        margin-bottom: 5px;
+    }
+</style>
+<div class="clearfix">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            自定义分享列表
+            &nbsp;&nbsp;
+            <a class="btn btn-success" href='{php echo $this->createWebUrl("share_setting_add")}' id="export">添加自定义分享</a>
+        </div>
+        <div class="table-responsive panel-body" style="overflow:visible;">
+            <table class="table table-hover">
+                <tr>
+                    <th>ID</th>
+                    <th>页面标签</th>
+                    <th>分享标题</th>
+                    <th>分享图片</th>
+                    <th>创建时间</th>
+                    <th>操作</th>
+                </tr>
+                {loop $list $row}
+                <tr>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['id']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['type']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['title']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {if $row['img']}
+                            <img src="{php echo $attach_url . '/'.$row['img']}" style="width:50px;height:50px;" />
+                            {/if}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {php echo date('Y-m-d H:i:s',$row['create_at']);}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            <a href='{php echo $this->createWebUrl("share_setting_edit",array("id"=>$row["id"]))}'>编辑</a>
+                            <a href="javascript:void(0)" onclick="del_row('{$row['id']}')">删除</a>
+                        </p>
+                    </td>
+                </tr>
+                {/loop}
+            </table>
+        </div>
+        <div class="panel-body text-right">
+            {$pager}
+        </div>
+    </div>
+</div>
+<script>
+    function del_row(id) {
+        if (confirm("确定删除吗？")) {
+            var pars = {};
+            pars.id = id;
+            $.ajax({
+                url: "{php echo $this->createWebUrl('ajax',array('sdo'=>'del_share'))}",
+                type: "post",
+                dataType: "html",
+                data: pars,
+                success: function (res) {
+                    $(".submit").attr("disabled", false);
+                    if (res == "ok") {
+                        alert("操作成功");
+                        window.location.reload(true);
+                    } else {
+                        alert(res);
+                    }
+                }
+            })
+        }
+    }
+</script>
+{template 'common/footer'}

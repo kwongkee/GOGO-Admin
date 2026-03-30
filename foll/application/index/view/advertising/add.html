@@ -1,0 +1,187 @@
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>{include file="common/header"}</title>
+</head>
+<link rel="stylesheet" href="./static/hadmin/css/cardvoucher.css">
+<link rel="stylesheet" href="./static/hadmin/css/jquery.datetimepicker.css">
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/js/jquery.datetimepicker.full.js"></script>
+<link rel="stylesheet" href="./static/index/xadmin/css/laydate.css">
+<script src="./static/index/xadmin/js/laydate.js" charset="utf-8"></script>
+<body>
+	<div class="warp">
+		<form action="{:Url('Advertising/save')}" method="post">
+			<div class="warp-input">
+				选择展位：
+				<select name="adv_id" id="adv_id">
+					<option>请选择...</option>
+					{volist name="advertising_data" id="vo"}
+					<option value="{$vo.id}">{$vo.adv_name}</option>
+					{/volist}
+				</select>
+			</div>
+			<div class="warp-input">
+				<input type="hidden" name="adv_condition" id="condition"/>
+				展位是否空闲：<input type="text" style="margin-left:8px!important" name="" value="" id="adv_condition"/>
+			</div>
+			<div class="warp-input">
+				展位费用：<input type="text" style="margin-left:8px!important" name="adv_money" value="" id="adv_money"/>
+			</div>
+			<div class="warp-input">
+						 <input type="hidden" name="adv_type" value="" id="adv_type"/>
+				展位类型：<input type="text" style="margin-left:8px!important" value="" id="adv_types"/>
+			</div>
+			<div class="warp-input">
+						 <input type="hidden" name="adv_way" value="" id="adv_way"/>
+				播放方式：<input type="text" style="margin-left:8px!important" value="" id="adv_ways"/>
+			</div>
+			<div class="warp-input" id="adv_time" style="display: none;">
+				展位占用时间：
+				<input type="text" id="start_time" value="" style="width:200px!important;margin-right:4px;" />
+				-
+				<input type="text" id="end_time" value="" style="width:200px!important;margin-left:4px;" />
+			</div>	
+			<div class="warp-input">
+				选择时间：
+				<input type="text" id="s_time" name="s_time" value="" style="width:200px!important;margin-right:4px;" />
+				<input type="text" id="h_time" name="s_time" style="width:200px!important;margin-left:4px;display: none;" />
+				-
+				<input type="text" id="e_time" name="e_time" value="" style="width:200px!important;margin-left:4px;" />
+			</div>		
+			<div>
+				<input type="submit" value="提交申请" class="sub" />
+			</div>
+		</form>
+	</div>
+</body>
+<script>
+layui.use('laydate', function(){
+	
+  var laydate = layui.laydate;
+  //执行一个laydate实例
+  laydate.render({
+    elem: '#s_time', //指定元素
+    
+  });
+  
+  laydate.render({
+    elem: '#e_time' //指定元素
+  });
+  
+  laydate.render({
+    elem: '#start_time', //指定元素
+    format: 'yyyy-MM-dd', //可任意组合
+ 
+  });
+  
+  laydate.render({
+    elem: '#end_time' //指定元素
+  });
+});
+	function timestampToTime(timestamp) {
+        var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+        Y = date.getFullYear() + '-';
+        M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+        D = date.getDate() +1 
+        return Y+M+D;
+    }
+	
+		function timestampToTimes(timestamp) {
+        var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+        Y = date.getFullYear() + '-';
+        M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+        D = date.getDate() + ' ';
+        return Y+M+D;
+    }
+	
+	
+	if($("#starttime").val()){
+		var time = $("#starttime").val();
+		var datetimestamp = Date.parse(time).toString();  
+        var dts = datetimestamp.substr(0,datetimestamp.length-3);  
+		$("#s_time").val(dts);
+	}
+	
+	if($("#endtime").val()){
+		var time = $("#endtime").val();
+		var datetimestamp = Date.parse(time).toString();
+        var dts = datetimestamp.substr(0,datetimestamp.length-3);
+		$("#e_time").val(dts);
+	}
+	
+	if($("select[name='app']").val()){
+		var type = $("select[name='app']").val();
+		if(type == 'parking'){
+			$('#park').show();
+		}else if(type != 'parking' ){
+			$('#park').hide();
+			$("#park_1").val("");
+			$("#park_2").val("");
+		}
+	}
+	
+	$("#starttime").change(function(){
+		var time = $(this).val();
+		var datetimestamp = Date.parse(time).toString();  
+        var dts = datetimestamp.substr(0,datetimestamp.length-3);  
+		$("#s_time").val(dts);
+	})
+	
+	$("#endtime").change(function(){
+		var time = $(this).val();
+		var datetimestamp = Date.parse(time).toString();  
+        var dts = datetimestamp.substr(0,datetimestamp.length-3);  
+		$("#e_time").val(dts);
+	})
+	
+	$("#adv_id").change(function(){
+		var adv_id = $(this).val();
+		$.post('{:Url('advertising/selectData/')}',{'adv_id':adv_id},function(data){
+			var obj = JSON.parse(data);
+			$('#adv_money').val(obj['money']);
+			$('#condition').val(obj['condition']);
+			if(obj['type']=='1'){
+				$('#adv_types').val(obj['types']);
+				$('#adv_type').val(obj['type']);
+				$('#adv_ways').val(obj['ways']);
+				$('#adv_way').val(obj['way']);
+			}else{
+				$('#adv_type').val(obj['type'])
+				$('#adv_types').val(obj['types'])
+				$('#adv_way').hide()
+			}
+			if(obj['condition']=='2')//展位非空闲
+			{
+				$('#adv_condition').val('展位占用');
+				$('#adv_time').show();
+				$('#start_time').val(timestampToTimes(obj['s_time']));
+				$('#end_time').val(timestampToTimes(obj['e_time']));
+				$('#s_time').hide();
+				$('#s_time').attr('disabled','true');
+				$('#h_time').show();
+				$('#h_time').removeAttr('disabled');
+				layui.use('laydate', function(){
+					var laydate = layui.laydate;
+					    //执行一个laydate实例
+					laydate.render({
+					    elem: '#h_time', //指定元素					    
+					    min:timestampToTime(obj['e_time']),
+					});
+				});
+			}else{
+				$('#adv_condition').val('展位空闲');
+				$('#adv_time').hide()
+				$('#s_time').show()
+				$('#s_time').removeAttr('disabled')
+				$('#h_time').hide()
+				$('#h_time').attr('disabled','true')
+			}
+		})
+		
+	})
+	
+	
+	
+</script>
+</html>

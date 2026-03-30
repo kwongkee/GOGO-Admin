@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{$title}}</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<button class="layui-btn layui-btn-normal" style="margin-left: 12px;" onclick="idCardConfirm('{$batchNum}')">风控确认</button>
+<a class="layui-btn layui-btn-normal" style="margin-left: 12px;" href="http://declare.gogo198.cn/widtholds/identifyExport/{$batchNum}">导出</a>
+<table class="layui-table">
+    <thead>
+    <tr class="ths">
+        <th>用户姓名</th>
+        <th>用户证件号</th>
+        <th>物流单号</th>
+        <th>批次编号</th>
+        <th>用户手机</th>
+        <th>信息描述</th>
+        <th>生成时间</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {volist name="list" id="vo"}
+    <tr class="boys">
+        <td>{$vo.uname}</td>
+        <td>{$vo.idCard}</td>
+        <td>{$vo.waybillno}</td>
+        <td>{$vo.batch_num}</td>
+        <td>{$vo.phone}</td>
+        <td>{$vo.msg}</td>
+        <td>{$vo.add_time|date="Y-m-d H:i",###}</td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+
+<script type="text/javascript">
+    layui.use(['layer','jquery'],function(){
+        layer = layui.layer;
+        $ = layui.jquery;
+    });
+
+    function idCardConfirm(batchNum){
+        parent.layer.confirm('是否执行?', {
+            btn: ['YES', 'NO'], //按钮
+            title: false,
+        }, function () {
+            $.ajax({
+                url:"{:Url('admin/elec/idCardVerifConfirm')}",
+                type:"GET",
+                dataType:"json",
+                data:{batch_num:batchNum},
+                success:function(res){
+                    if (res.code==0){
+                        parent.layer.msg(res.message, {icon: 6});
+                    } else{
+                        parent.layer.msg(res.message, {icon: 5});
+                    }
+                },error:function(xhr){
+                    parent.layer.msg('链接服务错误', {icon: 5});
+                }
+            });
+        }, function () {
+            console.log('no');
+        });
+        return false;
+    }
+</script>
+</body>
+</html>

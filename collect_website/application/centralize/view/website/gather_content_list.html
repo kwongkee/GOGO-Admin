@@ -1,0 +1,602 @@
+{include file="public/header_new"}
+<link rel="stylesheet" href="static/agents/layui/css/layui.css">
+<script src="static/agents/layui/layui.js"></script>
+<style>
+    img{ width:20px;height:20px;}
+    .disf{display:flex;align-items: center;}
+    .layui-form-label{width:100px;}
+</style>
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <!--<h3 style="text-align: center;"></h3>-->
+                <div id="toolbar" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;">
+                    <button type="button" href="javascript:;" onclick="save();" class="btn btn-default">
+                        新增内容
+                    </button>
+                </div>
+                <table id="table"
+
+                /*默认排序项*/
+                data-sort-name="id"
+                data-sort-order="desc"
+                /*工具栏相关*/
+                data-toolbar="#toolbar"
+                data-search="false"          /*搜索框*/
+                data-search-on-enter-key="false"
+                data-show-refresh="true"    /*刷新按钮*/
+                /*分页相关*/
+                data-side-pagination="server"
+                data-pagination="true"      /*显示分页*/
+                data-page-size="10"         /*每页显示条数*/
+                /*移动端相关*/
+                data-mobile-responsive="true"
+                data-card-view="true"
+                data-show-columns="true"
+                /*radio or checkbox字段名称*/
+                data-select-item-name="id" >
+
+                <thead>
+                <tr>
+                    <th data-field="checkbox"
+                        data-align="center"
+                        data-checkbox="true"></th>
+                    <th data-field="id"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">ID</th>
+                    <th data-field="title"
+                        data-align="center"
+                        data-sortable="true">标题</th>
+                    <th data-field="createtime"
+                        data-align="center"
+                        data-sortable="true">创建时间</th>
+                    <th data-field="shelftime"
+                        data-align="center"
+                        data-sortable="true">上架时间</th>
+                    <th data-field="manage"
+                        data-align="center"
+                        data-sortable="true"
+                        data-formatter="actionFormatter">操作</th>
+                </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--关键字替换-->
+<div class="keyreplace" style="display: none;padding:10px;box-sizing: border-box;">
+    <form class="layui-form" action="" method="post" lay-filter="component-form-element2" style="text-align: center;">
+        <input type="hidden" name="template_id2" id="template_id2" value="">
+        <div class="origin_rep">
+            <div class="rep_content">
+                <div class="layui-form-item ">
+                    <label class="layui-form-label">原文关键字</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="replace[]" class="layui-input" placeholder="请输入原文关键字" value="">
+                    </div>
+                </div>
+                <div class="layui-form-item ">
+                    <label class="layui-form-label">替换关键字</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="renew[]" class="layui-input" placeholder="请输入要替换的关键字" value="">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="layui-btn add_rep layui-btn-primary">添加</div>
+        <hr>
+        <div class="layui-form-item">
+            <div class="layui-input-block" style="padding:0;margin:0;margin-top:20px;">
+                <button class="layui-btn" lay-submit lay-filter="formDemo2">立即提交</button>
+            </div>
+        </div>
+    </form>
+</div>
+<!--一键上架-->
+<div class="select_domain" style="display: none;padding:10px;box-sizing: border-box;">
+    <form class="layui-form" action="" method="post" lay-filter="component-form-element" style="text-align: center;">
+        <input type="hidden" name="template_id" id="template_id" value="">
+        <div class="origin">
+            <div class="domain_content">
+                <div class="layui-form-item ">
+                    <label class="layui-form-label">选择网站</label>
+                    <div class="layui-input-block">
+                        <select name="web_ids[]" lay-verify="required" lay-filter="web_ids" lay-search>
+                            <option value="">请选择网站</option>
+                            {volist name="website_list" id="vo"}
+                            <option value="{$vo.id}">{$vo.title}</option>
+                            {/volist}
+                        </select>
+                    </div>
+                </div>
+                <div class="module">
+                    <div class="layui-form-item ">
+                        <label class="layui-form-label">选择栏目</label>
+                        <div class="layui-input-block modules disf">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="layui-btn add layui-btn-primary">添加</div>
+        <hr>
+        <div class="layui-form-item">
+            <div class="layui-input-block" style="padding:0;margin:0;margin-top:20px;">
+                <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload'],function() {
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+
+        form.render(null,'component-form-element');
+        form.render(null,'component-form-element2');
+        
+        form.on('submit(formDemo)', function(data){
+            $.ajax({
+                url:"{:Url('centralize/website/gather_module_shelf')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            window.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+        
+        form.on('submit(formDemo2)', function(data){
+            $.ajax({
+                url:"{:Url('centralize/website/gather_module_replace')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            window.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+        form.on('select(web_ids)',function(data){
+            let val = data.value;
+            let t = this;
+
+            $.ajax({
+                url:"{:Url('centralize/website/get_module')}",
+                method:'post',
+                data:{'wid':val},
+                dataType:'JSON',
+                success:function(res){
+                    if(res.code == 0)
+                    {
+                        if($(t).parent().parent().parent().parent().siblings('.module').find('.module_1').length>0){
+                            $(t).parent().parent().parent().parent().siblings('.module').find('.modules').html('');
+                        }else{
+                            if(res.data.length>0) {
+                                let html = '<select name="module_1[]" lay-verify="required" lay-filter="module_1" class="module_1" style="margin-right:5px;">\n' +
+                                    '                            <option value="">请选择一级栏目</option>\n';
+    
+                                for (let i = 0; i < res.data.length; i++) {
+                                    html += '<option value="' + res.data[i].id + '">' + res.data[i].title + '</option>';
+                                }
+                                html += '                </select>';
+                                $(t).parent().parent().parent().parent().siblings('.module').find('.modules').append(html);
+                                form.render(null, 'component-form-element');
+                            }else{
+                                $(t).parent().parent().parent().parent().siblings('.module').find('.modules').append('');
+                                form.render(null, 'component-form-element');
+                            }   
+                        }
+                    }
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+        });
+
+        form.on('select(module_1)',function(data){
+            let val = data.value;
+            let t = this;
+
+            $.ajax({
+                url:"{:Url('centralize/website/get_child_module')}",
+                method:'post',
+                data:{'pid':val},
+                dataType:'JSON',
+                success:function(res){
+                    if(res.code == 0)
+                    {
+                        if($(t).parent().parent().parent().find('.module_2').length>0){
+                            $(t).parent().parent().parent().find('.module_2').next().remove();
+                            $(t).parent().parent().parent().find('.module_2').remove();
+                            $(t).parent().parent().parent().find('.module_3').next().remove();
+                            $(t).parent().parent().parent().find('.module_3').remove();
+                            $(t).parent().parent().parent().find('.module_4').next().remove();
+                            $(t).parent().parent().parent().find('.module_4').remove();
+                        }
+                        
+                        if(res.data.length>0){
+                            let html = '<select name="module_2[]" lay-verify="required" lay-filter="module_2" class="module_2" style="margin-right:5px;">\n' +
+                                '                            <option value="">请选择二级栏目</option>\n';
+
+                            for(let i=0;i<res.data.length;i++){
+                                html += '<option value="'+res.data[i].id+'">'+res.data[i].title+'</option>';
+                            }
+                            html += '                </select>';
+                            $(t).parent().parent().parent().append(html);
+                            form.render(null,'component-form-element');
+                        }else{
+                            $(t).parent().parent().parent().append('');
+                            form.render(null, 'component-form-element');
+                        }
+                        
+                    }
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+        });
+
+        form.on('select(module_2)',function(data){
+            let val = data.value;
+            let t = this;
+
+            $.ajax({
+                url:"{:Url('centralize/website/get_child_module')}",
+                method:'post',
+                data:{'pid':val},
+                dataType:'JSON',
+                success:function(res){
+                    if(res.code == 0)
+                    {
+                        if($(t).parent().parent().parent().find('.module_3').length>0){
+                            $(t).parent().parent().parent().find('.module_3').next().remove();
+                            $(t).parent().parent().parent().find('.module_3').remove();
+                            $(t).parent().parent().parent().find('.module_4').next().remove();
+                            $(t).parent().parent().parent().find('.module_4').remove();
+                        }
+                        
+                        if(res.data.length>0){
+                            let html = '<select name="module_3[]" lay-verify="required" lay-filter="module_3" class="module_3" style="margin-right:5px;">\n' +
+                                '                            <option value="">请选择三级栏目</option>\n';
+
+                            for(let i=0;i<res.data.length;i++){
+                                html += '<option value="'+res.data[i].id+'">'+res.data[i].title+'</option>';
+                            }
+                            html += '                </select>';
+                            $(t).parent().parent().parent().append(html);
+                            form.render(null,'component-form-element');
+                        }else{
+                            $(t).parent().parent().parent().append('');
+                            form.render(null, 'component-form-element');
+                        }
+                    }
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+        });
+
+        form.on('select(module_3)',function(data){
+            let val = data.value;
+            let t = this;
+
+            $.ajax({
+                url:"{:Url('centralize/website/get_child_module')}",
+                method:'post',
+                data:{'pid':val},
+                dataType:'JSON',
+                success:function(res){
+                    if(res.code == 0)
+                    {
+                        if($(t).parent().parent().parent().find('.module_4').length>0){
+                            $(t).parent().parent().parent().find('.module_4').next().remove();
+                            $(t).parent().parent().parent().find('.module_4').remove();
+                        }
+                        
+                        if(res.data.length>0){
+                            let html = '<select name="module_4[]" lay-verify="required" lay-filter="module_4" class="module_4" style="margin-right:5px;">\n' +
+                                '                            <option value="">请选择四级栏目</option>\n';
+
+                            for(let i=0;i<res.data.length;i++){
+                                html += '<option value="'+res.data[i].id+'">'+res.data[i].title+'</option>';
+                            }
+                            html += '                </select>';
+                            $(t).parent().parent().parent().append(html);
+                            form.render(null,'component-form-element');
+                        }else{
+                            $(t).parent().parent().parent().append('');
+                            form.render(null, 'component-form-element');
+                        }
+                    }
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+        });
+
+        $('.add').click(function(){
+            let html = '<hr/>\n'+
+                '<div class="domain_content">\n' +
+                '            <div class="layui-form-item ">\n' +
+                '                <label class="layui-form-label">选择网站</label>\n' +
+                '                <div class="layui-input-block">\n' +
+                '                    <select name="web_ids[]" lay-verify="required" lay-filter="web_ids" lay-search>\n' +
+                '                        <option value="">请选择网站</option>\n';
+                                        {volist name="website_list" id="vo"}
+                html += '                        <option value="{$vo.id}">{$vo.title}</option>\n';
+                                        {/volist}
+                html += '                    </select>\n' +
+                '                </div>\n' +
+                '            </div>\n' +
+                '            <div class="module">\n' +
+                '                <div class="layui-form-item ">\n' +
+                '                    <label class="layui-form-label">选择栏目</label>\n' +
+                '                    <div class="layui-input-block modules disf">\n' +
+                '                    </div>\n' +
+                '                </div>\n' +
+                '            </div>\n' +
+                '        </div>';
+
+            $('.domain_content').last().after(html);
+            form.render(null,'component-form-element');
+        });
+
+        $('.add_rep').click(function(){
+            let html = '<hr/>\n'+
+                '<div class="rep_content">\n' +
+                '            <div class="layui-form-item ">\n' +
+                '                <label class="layui-form-label">原文关键字</label>\n' +
+                '                <div class="layui-input-block">\n' +
+                '                    <input type="text" name="replace[]" class="layui-input" placeholder="请输入原文关键字" value="">\n' +
+                '                </div>\n' +
+                '            </div>\n' +
+                '            <div class="layui-form-item ">\n' +
+                '                <label class="layui-form-label">替换关键字</label>\n' +
+                '                <div class="layui-input-block">\n' +
+                '                    <input type="text" name="renew[]" class="layui-input" placeholder="请输入要替换的关键字" value="">\n' +
+                '                </div>\n' +
+                '            </div>\n' +
+                '        </div>';
+                
+            $('.rep_content').last().append(html);
+            form.render(null,'component-form-element2');
+        });
+    });
+</script>
+<script type="text/javascript">
+
+    var table;
+
+    $(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:url('centralize/website/gather_content_list')}",
+            queryParams: queryParams,
+        });
+        $('.form-control').attr('placeholder','搜索标题');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.id;
+        var title = row.title;
+
+        var result = "";
+        result += '<button style="margin-right: 5px;" type="button" onclick="edit('+id+',\''+title+'\')" class="btn btn-primary btn-xs">编辑</button>';
+        result += '<button style="margin-right: 5px;" type="button" onclick="keyreplace('+id+',\''+title+'\')" class="btn btn-danger btn-xs">关键字替换</button>';
+        result += '<button style="margin-right: 5px;" type="button" onclick="shelf('+id+',\''+title+'\')" class="btn btn-success btn-xs">一键上架</button>';
+        // result += '<button style="margin-right: 5px;" type="button" onclick="del('+id+',\''+title+'\')" class="btn btn-danger btn-xs">删除</button>';
+        return result;
+    }
+
+    function getIdSelections() {
+        return $.map($table.bootstrapTable('getSelections'), function(row) {
+            return row.id
+        });
+    }
+    //对比，并获取所有已选择的checkbox值
+    function contrast(){
+        let ids = '';
+        var idlist = $('#table').bootstrapTable('getAllSelections');
+        if(idlist.length>2){
+            layer.alert('只能选择2条数据进行对比');
+            return false;
+        }else if(idlist.length<2){
+            layer.alert('请选择2条数据进行对比');
+            return false;
+        }
+        for (var i = 0; i < idlist.length; i++) {
+            // ids.push(idlist[i].id);
+            ids += ','+idlist[i].id;
+        }
+
+        //进行对比,跳转新页面
+        layer.open({
+            type: 2,
+            title: '内容对比',
+            area:['100%','100%'],
+            content: "{:url('centralize/website/contrast_pfc_detail')}&ids="+ids
+        });
+    }
+
+    function edit(id,name){
+        var index = layer.open({
+            type: 2,
+            title: '查看-'+name,
+            area:['100%','100%'],
+            content: "{:url('centralize/website/save_gather_content')}&id="+id
+        });
+        // layer.full(index);
+    }
+
+    function keyreplace(id,title){
+        var form = layui.form;
+        $('#template_id2').val(id);
+        $('.keyreplace').find('.rep_content').remove();
+        let html = '<div class="rep_content">\n'+
+                        '<div class="layui-form-item">\n'+
+                            '<label class="layui-form-label">原文关键字</label>\n'+
+                            '<div class="layui-input-block">\n'+
+                                '<input type="text" name="replace[]" class="layui-input" placeholder="请输入原文关键字" value="">\n'+
+                            '</div>\n'+
+                        '</div>\n'+
+                        '<div class="layui-form-item">\n'+
+                            '<label class="layui-form-label">替换关键字</label>\n'+
+                            '<div class="layui-input-block">\n'+
+                                '<input type="text" name="renew[]" class="layui-input" placeholder="请输入要替换的关键字" value="">\n'+
+                            '</div>\n'+
+                        '</div>\n'+
+                    '</div>';
+        $('.keyreplace').find('.origin_rep').append(html);
+        form.render(null,'component-form-element2');
+        layer.open({
+            type: 1,
+            title: title,
+            area:['80%','80%'],
+            content: $('.keyreplace')
+        });
+    }
+
+    function save(title) {
+        var index = layer.open({
+            type: 2,
+            title: title,
+            area:['100%','100%'],
+            content: "{:url('centralize/website/save_gather_content')}"
+        });
+        // layer.full(index);
+    }
+
+    function del(id,title){
+        layer.confirm('确认删除该轮播图吗？',function(index){
+            $.ajax({
+                url: "<?php echo Url('centralize/index/rotation_del'); ?>",
+                data:{'id':id},
+                type:'post',
+                cache:false,
+                dataType:'json',
+                success:function(data){
+                    if(data.code==1)
+                    {
+                        layer.msg(data.msg, {
+                            icon: 1,
+                            time: 2000
+                        }, function(){
+                            window.location.reload();
+                        });
+                        return true;
+                    }else {
+                        layer.msg(data.message, {icon:2, time:2000});
+                        return false;
+                    }
+                },
+                error:function() {
+                    layer.msg('系统出错,请重试',{icon:2,time:1000});
+                }
+            });
+        });
+    }
+
+    //上架到xx域名下的xx模块
+    function shelf(id,title){
+        var form = layui.form;
+        $('#template_id').val(id);
+        $.ajax({
+            url:"{:Url('centralize/website/get_shelf_detail')}",
+            method:'post',
+            data:{id:id},
+            dataType:'JSON',
+            success:function(res){
+                if(res.code == 0)
+                {
+                    if(res.data){
+
+                    }
+                }
+            },
+            error:function (data) {
+                layer.msg('系统错误',{time:2000});
+            }
+        });
+        $('.select_domain').find('.domain_content').html('');
+        let html = '<div class="domain_content">\n' +
+            '                <div class="layui-form-item ">\n' +
+            '                    <label class="layui-form-label">选择网站</label>\n' +
+            '                    <div class="layui-input-block">\n' +
+            '                        <select name="web_ids[]" lay-verify="required" lay-filter="web_ids" lay-search>\n' +
+            '                            <option value="">请选择网站</option>\n';
+                                        {volist name="website_list" id="vo"}
+            html += '                            <option value="{$vo.id}">{$vo.title}</option>\n';
+                                        {/volist}
+            html += '                        </select>\n' +
+            '                    </div>\n' +
+            '                </div>\n' +
+            '                <div class="module">\n' +
+            '                    <div class="layui-form-item ">\n' +
+            '                        <label class="layui-form-label">选择栏目</label>\n' +
+            '                        <div class="layui-input-block modules disf">\n' +
+            '\n' +
+            '                        </div>\n' +
+            '                    </div>\n' +
+            '                </div>\n' +
+            '            </div>';
+        $('.select_domain').find('.origin').html(html);
+        form.render(null,'component-form-element');
+        layer.open({
+            type: 1,
+            title: title,
+            area:['80%','80%'],
+            content: $('.select_domain')
+        });
+    }
+</script>
+
+</body>
+</html>

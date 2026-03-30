@@ -1,0 +1,60 @@
+<!--
+ * ============================================================================
+ * 版权所有 2015-2016 风影随行，并保留所有权利。
+ * 网站地址: http://www.haoshu888.com；
+ * ----------------------------------------------------------------------------
+ * 这不是一个自由软件！已购买用户允许对程序代码进行修改和使用，但是不允许对
+ * 程序代码以任何形式任何目的的再发布，作者将保留追究法律责任的权力和最终解
+ * 释权。
+ * ============================================================================
+-->
+{php include $this->template('_header');}
+<style type="text/css">
+*{   
+    -webkit-touch-callout:none;
+    -webkit-user-select:none;
+    -khtml-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+} 
+</style>
+<link href="{MODULE_URL}template/mobile/style/article.css" rel="stylesheet" />
+<div class="rich_primary">
+	<div class="rich_title">{$section['title']}</div>
+	<div class="rich_mate">
+		<div class="rich_mate_text">{php
+		echo date('Y-m-d', $section['addtime']);}</div>
+		<div class="rich_mate_text"></div>
+		<a href="{php echo $this->createMobileUrl('teacher', array('teacherid'=>$lesson['teacherid']));}"><div class="rich_mate_text href">{$lesson['teacher']}</div></a>
+	</div>
+	<div class="rich_content">
+		{php echo htmlspecialchars_decode($section['content']);}
+	</div>
+</div>
+
+
+{php echo register_jssdk(false);}
+<script type="text/javascript">
+wx.ready(function(){
+	var shareData = {
+		title: "{$lesson['bookname']} - {$setting['sitename']} - {$_W['account']['name']}",
+		desc: "{$sharelesson['title']}",
+		link: "{php echo $url;}&uid={php echo $lessonmember['uid'];}",
+		imgUrl: "{php echo $_W['attachurl'];}{php echo $sharelesson['images']?$sharelesson['images']:$lesson['images']}",
+		trigger: function (res) {},
+		complete: function (res) {},
+		success: function (res) {},
+		cancel: function (res) {},
+		fail: function (res) {}
+	};
+	wx.onMenuShareTimeline(shareData);
+	wx.onMenuShareAppMessage(shareData);
+	wx.onMenuShareQQ(shareData);
+	wx.onMenuShareWeibo(shareData);
+	wx.onMenuShareQZone(shareData);
+	
+});
+</script>
+
+{php include $this->template('_footer');}

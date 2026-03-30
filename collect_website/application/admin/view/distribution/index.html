@@ -1,0 +1,230 @@
+{include file="common/header_new"}
+<link rel="stylesheet" href="static/agents/layui/css/layui.css">
+<script src="static/agents/layui/layui.js"></script>
+<style>
+    img{ width:20px;height:20px;}
+</style>
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <h3 style="text-align: center;">申请列表</h3>
+                <div class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;display: block !important;">
+                    <button type="button" href="javascript:;" onclick="add();" class="btn btn-success">
+                        新增分销
+                    </button>
+                </div>
+                <table id="table"
+
+                /*默认排序项*/
+                data-sort-name="id"
+                data-sort-order="desc"
+                /*工具栏相关*/
+                data-toolbar="#toolbar"
+                data-search="false"          /*搜索框*/
+                data-search-on-enter-key="false"
+                data-show-refresh="true"    /*刷新按钮*/
+                /*分页相关*/
+                data-side-pagination="server"
+                data-pagination="true"      /*显示分页*/
+                data-page-size="10"         /*每页显示条数*/
+                /*移动端相关*/
+                data-mobile-responsive="true"
+                data-card-view="true"
+                data-show-columns="true"
+                /*radio or checkbox字段名称*/
+                data-select-item-name="id" >
+
+                <thead>
+                <tr>
+                    <th data-field="id"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">ID</th>
+                    <th data-field="name"
+                        data-align="center"
+                        data-sortable="true">昵称</th>
+                    <th data-field="realname"
+                        data-align="center"
+                        data-sortable="true">真实名称</th>
+                    <th data-field="mobile"
+                        data-align="center"
+                        data-sortable="true">手机号</th>
+                    <th data-field="email"
+                        data-align="center"
+                        data-sortable="true">邮箱号</th>
+                    <th data-field="agent_status"
+                        data-align="center"
+                        data-sortable="true">状态</th>
+                    <th data-field="createtime"
+                        data-align="center"
+                        data-sortable="true">申请时间</th>
+                    <th data-field="agent_time"
+                        data-align="center"
+                        data-sortable="true">成为分销时间</th>
+                    <th data-field="manage"
+                        data-align="center"
+                        data-sortable="true"
+                        data-formatter="actionFormatter">操作</th>
+                </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var table;
+
+    $(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:url('admin/distribution/index')}",
+            queryParams: queryParams,
+        });
+        $('.form-control').attr('placeholder','搜索标题');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.id;
+        var title = row.name;
+
+        var result = "";
+        result += '<select name="sel" style="margin:0 5px;" onchange="openWindow(this,'+id+',\''+title+'\')"><option>配置</option>';
+        if(row.agent_status=='申请通过'){
+            result += '<option value="1">1-分销佣金</option><option value="2">2-分销限制</option><option value="3">3-招募方式</option>';
+        }else if(row.agent_status=='申请中'){
+            result += '<option value="4">1-审核通过</option><option value="5">2-审核不通过</option>';
+        }
+        result += '</select>';
+        result += '<button style="margin-right: 5px;" type="button" onclick="del('+id+',\''+title+'\')" class="btn btn-danger btn-xs">删除</button>';
+        return result;
+    }
+
+    function openWindow(t,id,title){
+        let val = $(t).val();
+
+        let url = '';
+        if(val==1){
+            url = "{:Url('admin/distribution/distr_commission')}";
+        }else if(val==2){
+            url = "{:Url('admin/distribution/distr_restrict')}";
+        }else if(val==3){
+            url = "{:Url('admin/distribution/recruit_method')}";
+        }else if(val==4){
+            //通过
+            layer.confirm('确认审核通过吗？',function(index) {
+                $.ajax({
+                    url: "{:Url('admin/distribution/apply_distr')}",
+                    method: 'post',
+                    data: {id: id,agent_status:2},
+                    dataType: 'JSON',
+                    success: function (res) {
+                        layer.msg(res.msg, {time: 2000}, function () {
+                            if (res.code == 0) {
+                                window.location.reload();
+                            }
+                        });
+                    },
+                    error: function (data) {
+                        layer.msg('系统错误', {time: 2000});
+                    }
+                });
+            });
+        }else if(val==5){
+            //不通过
+            layer.open({
+                formType: 2,//这里依然指定类型是多行文本框，但是在下面content中也可绑定多行文本框在这里插入代码片
+                title: '请输入审核不通过原因',
+                area: ['400px', '340px'],
+                btnAlign: 'c',
+                closeBtn:'1',//右上角的关闭
+                content: `<div><p>不通过原因:</p><textarea name="txt_remark" id="agent_remark" style="width:200px;height:80px;"></textarea></div>`,
+                btn:['确认','取消'],
+                yes: function (index, layero) {
+                    var value = $('#agent_remark').val();//获取多行文本框的值
+                    $.ajax({
+                        url: "{:Url('admin/distribution/apply_distr')}",
+                        method: 'post',
+                        data: {id: id,agent_status:-1,'agent_remark':value},
+                        dataType: 'JSON',
+                        success: function (res) {
+                            layer.msg(res.msg, {time: 2000}, function () {
+                                if (res.code == 0) {
+                                    window.location.reload();
+                                }
+                            });
+                        },
+                        error: function (data) {
+                            layer.msg('系统错误', {time: 2000});
+                        }
+                    });
+                    // layer.close(index);
+                },
+                no:function(index){
+                    layer.close(index);
+                    return false;//点击按钮按钮不想让弹层关闭就返回false
+                },
+                close:function(index){
+                    return false;//点击按钮按钮不想让弹层关闭就返回false
+                }
+            });
+        }
+        if(url!=''){
+            var index = layer.open({
+                type: 2,
+                title: title,
+                area:['100%','100%'],
+                content: url+'&id='+id
+            });
+        }
+    }
+
+    function del(id,title){
+        layer.confirm('确认删除该分销商吗？',function(index) {
+            $.ajax({
+                url: "{:Url('admin/distribution/del_distr')}",
+                method: 'post',
+                data: {id: id},
+                dataType: 'JSON',
+                success: function (res) {
+                    layer.msg(res.msg, {time: 2000}, function () {
+                        if (res.code == 0) {
+                            window.location.reload();
+                        }
+                    });
+                },
+                error: function (data) {
+                    layer.msg('系统错误', {time: 2000});
+                }
+            });
+        });
+    }
+
+    function add(){
+        var index = layer.open({
+            type: 2,
+            title: '新增分销',
+            area:['100%','100%'],
+            content: "{:url('admin/distribution/add_distr')}"
+        });
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>我的分答</title>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<meta name="format-detection" content="address=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<script src="http://cdn.bootcss.com/zepto/1.1.6/zepto.min.js"></script>
+<link rel="stylesheet" href="{TEMPLATE_PATH}/wtCommon.css?v={php echo time();}">
+<link rel="stylesheet" href="{TEMPLATE_PATH}/live.css?v={php echo time();}">
+<link rel="stylesheet" href="{TEMPLATE_PATH}/whisper.css?v={php echo time();}">
+<script type="text/javascript">
+$(function(){
+	 $(".whisperOpen").click(function(){
+		 var data={submit:true};
+		 data.real_name=$("#real_name").val();
+		 data.user_title=$("#user_title").val();
+		 data.user_desc=$("#user_desc").val();
+		 data.pay_money=$("#pay_money").val();
+		 if(data.pay_money==''){
+			 alert('请填写需要支付金额！');
+			 return;
+		 }
+		 if(data.real_name==''){
+			 alert('请填写您的姓名！');
+			 return;
+		 }
+		 if(data.user_title==''){
+			 alert('请填写您的头衔！');
+			 return;
+		 }
+		 $.post(location.href,data,function(result){
+			 if(result.success==1){
+				 alert(result.data);
+				 location.href=location.href.replace('my_ask_info','my_ask_index');
+			     return;
+			 }
+			 alert(result.data);
+		 });
+	 });
+});
+
+</script>
+</head>
+
+<body class="bind">
+
+<section class="main_box_3">
+
+<div>
+	<div class="mine_header">
+		<span class="mine_headerimg"><img src="{$head_imgurl}"></span>
+		<span class="mine_headername">{$nickname}</span>
+	</div>
+</div>
+
+<div class="section_setLivePeople0">
+    <p><span>向我提问需要支付</span><input type="text" placeholder="￥2-500" id="pay_money" class="whisper_money" value="{$db_user['pay_money']}">元</p>
+</div>
+
+<div class="section_setLivePeople1">
+    <ul class="section_setLivePeople_ul">
+        <li><p class="section_setLivePeople1_p"><span class="section_stp_span0">姓名</span>&nbsp;<span class="section_stp_span1">（8个汉字，16个英文字符）</span></p></li>
+        <li><textarea id="real_name" class="whisper_name" placeholder="此处填写真实的姓名有利于提问者更好的认识你">{$db_user['real_name']}</textarea></li>
+    </ul>
+</div>
+
+<div class="section_setLivePeople1">
+    <ul class="section_setLivePeople_ul">
+        <li><p class="section_setLivePeople1_p"><span class="section_stp_span0">你的头衔</span>&nbsp;<span class="section_stp_span1">（18个字以内）</span></p></li>
+        <li><textarea id="user_title" class="whisper_title" placeholder="可填写职称、职位、专家认证等、例如xxx公司总经理、xxxx医院主任医师，不可以为空">{$db_user['user_title']}</textarea></li>
+    </ul>
+</div>
+
+<div class="section_setLivePeople1">
+    <ul class="section_setLivePeople_ul">
+        <li><p class="section_setLivePeople1_p"><span class="section_stp_span0">详细介绍下自己</span>&nbsp;<span class="section_stp_span1">（100个字以内）</span></p></li>
+        <li><textarea id="user_desc" class="whisper_intro" placeholder="可为空">{$db_user['user_desc']}</textarea></li>
+    </ul>
+</div>
+</section>
+<div class="wt_footer_set">
+  <a href="javascript:;" class="wt_btn_set whisperOpen" attr-topicid="">保存修改</a>
+</div>
+<div class="loadingBox"><span></span></div>
+</body></html>

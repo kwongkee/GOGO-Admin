@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>{if !empty($title['contact'])}{$title['contact']}{else}联系我们-{$setting['company']}{/if}</title>
+<meta name="keywords" content="{$setting['keywords']}" />
+<meta name="description" content="{$setting['description']}" />
+{if !empty($setting['icon'])}
+<link rel="shortcut icon" href="{$_W['attachurl']}{$setting['icon']}" />
+{/if}
+<meta name="format-detection" content="telephone=no"/>
+<meta content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<meta content="yes" name="apple-mobile-web-app-capable" />
+<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+<meta content="telephone=no" name="format-detection" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+<link href="../addons/mogucms_guanwang/template/style/css/common.css" type="text/css" rel="stylesheet">
+<link href="../addons/mogucms_guanwang/template/style/css/style.css" type="text/css" rel="stylesheet">
+<script src="../addons/mogucms_guanwang/template/style/js/jquery.js"></script>
+<script src="../addons/mogucms_guanwang/template/style/js/wow.min.js"></script>
+<script src="../addons/mogucms_guanwang/template/style/js/jquery.lazyload.js"></script>
+<script src="../addons/mogucms_guanwang/template/style/js/comloding.js"></script>
+<script src="../addons/mogucms_guanwang/template/style/js/common.js"></script>
+<!--[if lt IE 9]>
+<script src="../addons/mogucms_guanwang/template/style/js/html5.js"></script>
+<![endif]-->
+<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<script type="text/javascript">
+  wx.config({
+	  debug: false,
+      appId: "{$jssdk['appId']}",
+      timestamp: "{$jssdk['timestamp']}",
+      nonceStr: "{$jssdk['nonceStr']}",
+      signature: "{$jssdk['signature']}",
+      jsApiList: [
+		'checkJsApi',
+        'onMenuShareTimeline',
+        'onMenuShareAppMessage'
+      ]
+  });
+  wx.ready(function () {
+  
+    var shareData = {
+    title: "{if !empty($title['contact'])}{$title['contact']}{else}首页-{$setting['company']}{/if}",
+    desc: "{$setting['keywords']}",
+    link: "{$jssdk['url']}",
+    imgUrl: "{if $setting['logo2']}{$_W['attachurl']}{$setting['logo2']}{elseif $fdset['logo2']}{$_W['attachurl']}{$fdset['logo2']}{else}../addons/mogucms_guanwang/template/style/images/logo2.png{/if}",
+  };
+ 
+  wx.onMenuShareAppMessage({
+      title: shareData.title,
+      desc: shareData.desc,
+      link: shareData.link,
+      imgUrl:shareData.imgUrl,
+      success: function (res) {
+      }
+    });
+  wx.onMenuShareTimeline({
+      title: shareData.title+"---"+shareData.desc,
+      link: shareData.link,
+      imgUrl:shareData.imgUrl,
+      success: function (res) {
+      }
+    }); 
+  });
+</script>
+</head>
+{if !empty($setting['shangqiao']) && $setting['isshangqiao']=="1"}{php echo html_entity_decode($setting['shangqiao'])}{/if}
+<body>
+{template 'default/header'}
+<div class="container">
+    <div id="banner" class="banner"><img src="{if !empty($banner['contact'])}{$_W['attachurl']}{$banner['contact']}{else}../addons/mogucms_guanwang/template/style/images/contact_banner.jpg{/if}" /></div>
+    <div class="content">
+        <div class="wrapper">
+        	<div class="contact_fl wow fadeInUp">
+            	<h1 style="font-size:28px; font-weight:bold; line-height:40px;">{$setting["company"]}</h1>
+                <p><a style="color:#108bec; font-size:18px;" href="http://{$setting['domain']}" target="_blank">{$setting["domain"]}</a></p>
+                <div class="contact_tel"><h2>{$setting["dianhua"]}</h2><p>Phone:{$setting["shouji"]}&nbsp;&nbsp;QQ:{$setting["qq"]}</p></div>
+                <h3 style="font-size:24px; line-height:30px; margin-top:20px;">{$setting["email"]}</h3>
+                <div class="contact_dz">
+                	<h2>{$setting["dizhi"]}</h2>
+                    <p>{$setting["luxian"]}</p>
+                </div>
+                <div style="margin-top:20px; float:left;"><h2><img src="{if !empty($setting['erweima'])}{$_W['attachurl']}{$setting['erweima']}{else}../addons/mogucms_guanwang/template/style/images/foot_ewm.png{/if}" style="max-width:130px;"/></h2><p class="tac">扫一扫 关注我</p></div>
+            </div>
+            <div class="contact_map wow fadeInUp">{if !empty($setting['ditu'])}{php echo html_entity_decode($setting['ditu'])}{else}<img src="../addons/mogucms_guanwang/template/style/images/map.jpg" />{/if}</div>
+        </div>
+    </div>
+</div>
+
+{template 'default/footer'}

@@ -1,0 +1,236 @@
+{template 'common/header'}
+<ul class="nav nav-tabs">
+	{template 'article_header'}
+</ul>
+
+{if $op == 'add' || $op == 'edit'}
+<div class="main">
+	<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data" onsubmit='return formcheck()'>
+	<input type="hidden" name="token" value="{$_W['token']}" />
+    	<input type="hidden" name="idd" value="{$srdb['id']}" />
+        <div class="panel panel-default">
+            <div class="panel-heading">{if $op == 'add'}添加{elseif $op == 'edit'}修改{/if}</div>
+            <div class="panel-body">
+                
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red;font-weight:bolder;">*</span>标题</label>
+                    <div class="col-xs-12 col-sm-9" >
+						<input type="txt" class="form-control" id="titlename" name="titlename" value="{$srdb[titlename]}">
+                    </div>
+                </div>
+				
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red;font-weight:bolder;">*</span>类型</label>
+					<div class="col-xs-12 col-sm-9" >
+					<select class="form-control" style="margin-right:15px;" name="typeid" autocomplete="off">
+						<option value="">不限</option>
+						{loop $typeidall $key $value}
+						<option value="{$key}" {if $srdb['typeid'] == $key}selected{/if}>{$value}</option>
+						{/loop}
+					</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red;font-weight:bolder;">*</span>学科</label>
+					<div class="col-xs-12 col-sm-9" >
+					<select class="form-control" style="margin-right:15px;" name="xkid" autocomplete="off">
+						<option value="">不限</option>
+						{loop $category_xk $row}
+						{if $row['pid'] == 0}
+						<option value="{$row['cid']}" {if $row['cid'] == $srdb['xkid']}selected{/if}>{$row['name']}</option>
+						{/if}
+						{/loop}
+					</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red;font-weight:bolder;">*</span>年级</label>
+					<div class="col-xs-12 col-sm-9" >
+					<select class="form-control" style="margin-right:15px;" name="njid" autocomplete="off">
+						<option value="">不限</option>
+						{loop $category_nj $row}
+						{if $row['pid'] == 0}
+						<option value="{$row['cid']}" {if $row['cid'] == $srdb['njid']}selected{/if}>{$row['name']}</option>
+						{/if}
+						{/loop}
+					</select>
+					</div>
+				</div>
+				
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">序号</label>
+                    <div class="col-xs-12 col-sm-9" >
+                    	<input type="txt" class="form-control" id="listorder" name="listorder" value="{$srdb[listorder]}" style="width:100px;">
+						*序号越小越排在前面
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">简介</label>
+                    <div class="col-xs-12 col-sm-9" >
+						<textarea name="messagejj" style="height:100px;" class="form-control">{$srdb['messagejj']}</textarea>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">内容</label>
+                    <div class="col-xs-12 col-sm-9" >
+						{php echo tpl_ueditor('message', $srdb['message']);}
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        <div class="form-group col-sm-12 col-xs-12">
+			<input type="submit" name="{$op}_submit" value="保 存" class="btn btn-primary col-lg-1" onclick='return formcheck()' />
+		</div>
+  </form>
+</div>
+{else}
+
+<div class='main'>
+   	<div class="panel panel-info">
+		<div class="panel-heading">筛选</div>
+		<div class="panel-body">
+			<form action="./index.php" method="get" class="form-inline" role="form">
+				<input type="hidden" name="c" value="{$_GPC['c']}">
+				<input type="hidden" name="a" value="{$_GPC['a']}">
+				<input type="hidden" name="do" value="{$_GPC['do']}">
+				<input type="hidden" name="m" value="{$_GPC['m']}">
+				<input type="hidden" name="type" value="{$type}">
+				<div class="form-group">
+					<label for="exampleInputEmail2">名称</label>
+					<input class="form-control" name="titlename" id="" type="text" value="{$_GPC['titlename']}" size="40" placeholder="请输入关键字">
+				</div>
+				<div class="form-group">
+					<label for="exampleInputEmail2">类型</label>
+					<select class="form-control" style="margin-right:15px;" name="typeid" autocomplete="off">
+						<option value="">不限</option>
+						{loop $typeidall $key $value}
+						<option value="{$key}" {if $_GPC['typeid'] == $key}selected{/if}>{$value}</option>
+						{/loop}
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="exampleInputEmail2">学科</label>
+					<select class="form-control" style="margin-right:15px;" name="xkid" autocomplete="off">
+						<option value="">不限</option>
+						{loop $category_xk $row}
+						{if $row['pid'] == 0}
+						<option value="{$row['cid']}" {if $row['cid'] == $_GPC['xkid']}selected{/if}>{$row['name']}</option>
+						{/if}
+						{/loop}
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="exampleInputEmail2">年级</label>
+					<select class="form-control" style="margin-right:15px;" name="njid" autocomplete="off">
+						<option value="">不限</option>
+						{loop $category_nj $row}
+						{if $row['pid'] == 0}
+						<option value="{$row['cid']}" {if $row['cid'] == $_GPC['njid']}selected{/if}>{$row['name']}</option>
+						{/if}
+						{/loop}
+					</select>
+				</div>
+				<div style=" width:100%; height:10px;"></div>
+				<div class="form-group">
+					<label for="exampleInputEmail2">结果排序：</label>
+					<select name="orderby">
+						<option value="">默认排序</option>
+						<option value="dateline" $orderby[dateline]>发布时间</option>
+						<option value="listorder" $orderby[listorder]>序号排序</option>
+					</select>
+					<select name="ordersc" class="form-control">
+						<option value="" >不限</option>
+						<option value="desc" $ordersc[desc] >递减</option>
+						<option value="asc" $ordersc[asc] >递增</option>
+					</select>
+					<select name="psize" class="form-control">
+						<option value="20" $perpages[20] >每页显示20个</option>
+						<option value="50" $perpages[50] >每页显示50个</option>
+						<option value="100" $perpages[100] >每页显示100个</option>
+					</select>
+				</div>
+				<button type="submit" class="btn btn-primary">搜索</button>
+				<div style=" width:100%; height:10px;"></div>
+				<div class="form-group" >
+					<label for="exampleInputEmail2">生成的前台{$wurltitle}栏目链接：</label>
+					{if $wurlshow == 1}
+					<a href="javascript:;" id="copy1">{$wurlt}</a>
+					<script type="text/javascript">
+					require(['jquery', 'util'], function($, util){
+						$(function(){
+							util.clip($("#copy1")[0], $("#copy1").text());
+						});
+					});
+					</script>
+					{else}
+					<font color="#A0A0A0">（选择“年级”、“学科”、“类型”搜索后才能生成链接）</font> 
+					{/if}
+				</div>
+			</form>
+			
+		</div>
+	</div>
+</div>
+
+<script language="javascript" type="text/javascript">
+function checkAll(form, name) {
+	for(var i = 0; i < form.elements.length; i++) {
+		var e = form.elements[i];
+		if(e.name.match(name)) {
+			e.checked = form.elements['chkall'].checked;
+		}
+	}
+}
+</script>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <form method="post" class="form">
+	<input name="token" type="hidden" value="{$_W['token']}" />
+	<div class="table-responsive">
+	  <table class="table">
+		<tr>
+			<th width="30">选择</th>
+			<th width="60">序号</th>
+			<th >标题</th>
+			<th >类型</th>
+			<th >学科</th>
+			<th >年级</th>
+			<th width="150">发布时间</th>
+			<th width="100">操作</th>
+		</tr>
+		{loop $list $key $value}
+		<tr >
+			<td><input type="checkbox" name="ids[]" value="{$value[id]}"></td>
+			<td>{$value[listorder]}</td>
+			<td>{$value[titlename]}</td>
+			<td>{$typeidall[$value[typeid]]}</td>
+			<td>{$category_xk[$value[xkid]][name]}</td>
+			<td>{$category_nj[$value[njid]][name]}</td>
+			<td>{php echo date('Y-m-d H:i', $value['dateline']);}</td>
+			<td>
+				<a class="btn btn-info btn-sm" href="{$urlt}&op=edit&id={$value[id]}" title="修改"><i class="fa fa-edit"></i></a>
+				<a class="btn btn-danger btn-sm" href="{$urlt}&op=delete&id={$value[id]}" title="删除" onclick="return confirm('确认删除吗？');return false;"><i class="fa fa-remove"></i></a>
+			</td>
+		</tr>
+		{/loop}
+		{if $pager}
+		<tr >
+			<td colspan="8">{$pager}</td>
+		</tr>
+		{/if}
+		<tr >
+			<td colspan="8" align="center">
+				<input type="checkbox" id="chkall" name="chkall" onclick="checkAll(this.form, 'ids')">&nbsp;全选 &nbsp;&nbsp;
+				<input type="submit" name="listsubmit" value="批量删除" class="btn btn-primary">
+			</td>
+		</tr>
+	  </table>
+	</div>
+	
+	</form>
+  </div>
+</div>
+{/if}
+
+{template 'common/footer'}

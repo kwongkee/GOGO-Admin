@@ -1,0 +1,269 @@
+{include file="common/header_new"}
+
+<style>
+    img{ width:20px;height:20px;}
+</style>
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <h3 style="text-align: center;">数据源管理</h3>
+                <ul id="myTab" class="nav nav-tabs" role="tablist">
+                    <li class="active"><a href="#tab1" role="tab" data-toggle="tab">数据源</a></li>
+<!--                    <li><a href="#tab2" role="tab" data-toggle="tab">内容管理</a></li>-->
+                </ul>
+                <div id="myTabContent" class="tab-content">
+                    <div class="tab-pane active" id="tab1">
+                        <div id="toolbar1" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;float: left;">
+                            <button type="button" href="javascript:;" onclick="add(1);" class="btn btn-default">
+                                新增数据源
+                            </button>
+                        </div>
+                        <table id="table"
+                        /*默认排序项*/
+                        data-sort-name="id"
+                        data-sort-order="desc"
+                        /*工具栏相关*/
+                        data-toolbar="#toolbar"
+                        data-search="false"          /*搜索框*/
+                        data-search-on-enter-key="true"
+                        data-show-refresh="true"    /*刷新按钮*/
+                        /*分页相关*/
+                        data-side-pagination="server"
+                        data-pagination="true"      /*显示分页*/
+                        data-page-size="10"         /*每页显示条数*/
+                        /*移动端相关*/
+                        data-mobile-responsive="true"
+                        data-card-view="true"
+                        data-show-columns="true"
+                        /*radio or checkbox字段名称*/
+                        data-select-item-name="id" >
+                        <thead>
+                        <tr>
+                            <th data-field="name"
+                                data-align="center"
+                                data-sortable="true"
+                                data-visible="true">目标网页</th>
+                            <th data-field="link"
+                                data-align="center"
+                                data-sortable="true"
+                                data-visible="true">网页链接</th>
+                            <th data-field="createtime"
+                                data-align="center"
+                                data-sortable="true"
+                                data-visible="true">创建时间</th>
+                            <th data-field="manage"
+                                data-align="center"
+                                data-sortable="true"
+                                data-formatter="actionFormatter">操作</th>
+                        </tr>
+                        </thead>
+                        </table>
+                    </div>
+                    <div class="tab-pane " id="tab2">
+                        <div id="toolbar2" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;float: left;">
+                            <button type="button" href="javascript:;" onclick="add(2);" class="btn btn-success">
+                                新增内容
+                            </button>
+                            <button type="button" href="javascript:;" onclick="shelf();" class="btn btn-info" style="margin:0 15px;">
+                                拟上架列表
+                            </button>
+                        </div>
+                        <table id="table2"
+                        /*默认排序项*/
+                        data-sort-name="id"
+                        data-sort-order="desc"
+                        /*工具栏相关*/
+                        data-toolbar="#toolbar"
+                        data-search="false"          /*搜索框*/
+                        data-search-on-enter-key="true"
+                        data-show-refresh="true"    /*刷新按钮*/
+                        /*分页相关*/
+                        data-side-pagination="server"
+                        data-pagination="true"      /*显示分页*/
+                        data-page-size="10"         /*每页显示条数*/
+                        /*移动端相关*/
+                        data-mobile-responsive="true"
+                        data-card-view="true"
+                        data-show-columns="true"
+                        /*radio or checkbox字段名称*/
+                        data-select-item-name="id" >
+                        <thead>
+                        <tr>
+                            <th data-field="id"
+                                data-align="center"
+                                data-sortable="true"
+                                data-visible="true">ID</th>
+                            <th data-field="title"
+                                data-align="center"
+                                data-sortable="true"
+                                data-visible="true">标题</th>
+                            <th data-field="type"
+                                data-align="center"
+                                data-sortable="true"
+                                data-visible="true">内容分类</th>
+                            <th data-field="createtime"
+                                data-align="center"
+                                data-sortable="true"
+                                data-visible="true">创建时间</th>
+                            <th data-field="manage"
+                                data-align="center"
+                                data-sortable="true"
+                                data-formatter="actionFormatter2">操作</th>
+                        </tr>
+                        </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    var table;
+
+    $(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:url('admin/officialwebsite/crawl_content_list')}&type=1&pid={$pid}",
+            queryParams: queryParams,
+        });
+        table2 = $('#table2').bootstrapTable({
+            url: "{:url('admin/officialwebsite/crawl_content_list')}&type=2",
+            queryParams: queryParams,
+        });
+
+        $('.form-control').attr('placeholder','搜索商户名称');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.id;
+        var name = row.name;
+
+        var result = "";
+
+        // result += '<button style="margin-right: 5px;" type="button" onclick="openWindow('+id+',\''+name+'\',\''+1+'\')" class="btn btn-primary btn-xs">新增标签</button>';
+        result += '<button style="margin-right: 5px;" type="button" onclick="openWindow('+id+',\''+name+'\',\''+2+'\')" class="btn btn-info btn-xs">爬取方案</button>';
+        result += '<button style="margin-right: 5px;" type="button" onclick="openWindow('+id+',\''+name+'\',\''+3+'\')" class="btn btn-success btn-xs">查看内容</button>';
+        return result;
+    }
+
+    function actionFormatter2(value, row, index) {
+        var id = row.id;
+        var name = row.title;
+
+        var result = "";
+
+        result += '<button style="margin-right: 5px;" type="button" onclick="openWindow('+id+',\''+name+'\',\''+4+'\')" class="btn btn-primary btn-xs">编辑</button>';
+        result += '<button style="margin-right: 5px;" type="button" onclick="del('+id+',\''+name+'\',\''+2+'\')" class="btn btn-danger btn-xs">删除</button>';
+        return result;
+    }
+
+    function shelf(pid){
+        var index = layer.open({
+            type: 2,
+            title: '拟上架列表',
+            area:['100%','100%'],
+            content: "{:url('admin/officialwebsite/fake_shelf_diylist')}"
+        });
+    }
+
+    function del(id,title){
+        layer.confirm('确认删除该内容吗？',function(index){
+            $.ajax({
+                url: "<?php echo Url('admin/officialwebsite/del_diycontent'); ?>",
+                data:{'id':id},
+                type:'post',
+                cache:false,
+                dataType:'json',
+                success:function(data){
+                    if(data.code==0)
+                    {
+                        layer.msg(data.msg, {
+                            icon: 1,
+                            time: 2000
+                        }, function(){
+                            window.location.reload();
+                        });
+                        return true;
+                    }else {
+                        layer.msg(data.msg, {icon:2, time:2000});
+                        return false;
+                    }
+                },
+                error:function() {
+                    layer.msg('系统出错,请重试',{icon:2,time:1000});
+                }
+            });
+        });
+    }
+
+    function add(type){
+        if(type==1){
+            var index = layer.open({
+                type: 2,
+                title: '新增数源',
+                area:['100%','100%'],
+                content: "{:url('admin/officialwebsite/add_crawl_content')}&pid={$pid}"
+            });    
+        }else if(type==2){
+            var index = layer.open({
+                type: 2,
+                title: '新增内容',
+                area:['100%','100%'],
+                content: "{:url('admin/officialwebsite/add_diycontent')}&pid={$pid}"
+            });
+        }
+    }
+
+    function openWindow(id,name,type){
+        if(type==1){
+            var index = layer.open({
+                type: 2,
+                title: '新增标签-'+name,
+                area:['100%','100%'],
+                content: "{:url('admin/officialwebsite/add_label')}&id="+id
+            });
+        }else if(type==2){
+            var index = layer.open({
+                type: 2,
+                title: '爬取方案-'+name,
+                area:['100%','100%'],
+                content: "{:url('admin/officialwebsite/add_crawl_plain')}&pid="+id
+            });
+        }else if(type==3){
+            var index = layer.open({
+                type: 2,
+                title: '查看内容-'+name,
+                area:['100%','100%'],
+                content: "{:url('admin/officialwebsite/crawl_content')}&pid="+id
+            });
+        }else if(type==4){
+            var index = layer.open({
+                type: 2,
+                title: '编辑内容-'+name,
+                area:['100%','100%'],
+                content: "{:url('admin/officialwebsite/add_diycontent')}&id="+id
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

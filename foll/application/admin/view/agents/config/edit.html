@@ -1,0 +1,60 @@
+{include file="public/header"}
+<body style="padding: 10px;">
+<form action="" class="layui-form">
+
+    <input type="hidden" name="id" value="{$admin.id}">
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">代理商名称</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" readonly name="title" placeholder="请输入角色名称" value="{$admin.uname}">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">商户选择</label>
+
+        <div class="layui-input-block">
+            {volist name="$decls" id="vv"}
+                <input type="checkbox" name="menu[{$vv['id']}]" lay-skin="primary" title="{$vv['user_name']}" {:isset($rights) && in_array($vv.id,$rights) ? 'checked':''; }>
+            {/volist}
+        </div>
+
+    </div>
+</form>
+
+<div class="layui-form-item" style="margin-top: 10px;">
+    <div class="layui-input-block">
+        <button class="layui-btn" onclick="save()">保 存</button>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['form','layer'],function(){
+        var form = layui.form;
+        $        = layui.jquery;
+        layer    = layui.layer;
+    })
+
+    // 保存角色
+    function save()
+    {
+        var title = $.trim($('input[name="title"]').val())
+        if(title == '') {
+            layer.msg('代理商名称不能为空',{icon:2});
+            return false;
+        }
+
+        $.post('{:Url("agents/config/save")}',$('form').serialize(),function(res){
+            if(res.code == 1) {
+                layer.msg(res.msg,{icon:1});
+                setTimeout(function(){
+                    parent.window.location.reload();
+                },1300);
+            } else {
+                layer.msg(res.msg,{icon:2});
+            }
+        })
+    }
+</script>
+</html>

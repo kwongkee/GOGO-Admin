@@ -1,0 +1,233 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template("common/easy_delivery_header", TEMPLATE_INCLUDEPATH)) : (include template("common/easy_delivery_header", TEMPLATE_INCLUDEPATH));?>
+<link rel="stylesheet" href="../addons/sz_yi/static/css/register.css">
+<script src="../addons/sz_yi/static/js/CNaddrArr.min.js"></script>
+
+<body>
+<style>
+    .register img{
+        width: 28px;
+        height: 28px;
+    }
+</style>
+<header>
+    <div class="logo"><img src="../addons/sz_yi/static/images/logo.png" alt=""></div>
+    <div class="plane"><img src="../addons/sz_yi/static/images/plane.png" alt=""></div>
+</header>
+<div class="warp">
+    <div class="content">
+        <form action="">
+            <div class="register">
+                <ul>
+                    <li class="reg-pic"><img src="../addons/sz_yi/static/images/会员.png" alt=""></li>
+                    <li><input type="text" name="name" id="name" placeholder="请输入真实姓名"></li>
+                </ul>
+                <ul>
+                    <li class="reg-pic"><img src="../addons/sz_yi/static/images/输入身份证号.png" alt=""></li>
+                    <li><input type="text" name="idcard" id="idcard" placeholder="请输入身份证号"></li>
+                </ul>
+                <ul>
+                    <li class="reg-pic"><img src="../addons/sz_yi/static/images/手机.png" alt=""></li>
+                    <li><input type="text" name="tel" id="tel" placeholder="请输入手机号"></li>
+                </ul>
+                <ul>
+                    <li class="reg-pic"><img src="../addons/sz_yi/static/images/验证码.png" alt=""></li>
+                    <li>
+                        <input type="text" name="code" id="code" placeholder="请输入验证码" style="width: 70%;margin-top: 5px;">
+                    </li>
+                    <li style="float: right;">
+                        <button id="send" style="background-color:#d59b3e;" type="button" class="zbox-btn zbox-btn-blue zbox-btn-outlined reg-red">获取验证码
+                        </button>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="reg-pic" ><img src="../addons/sz_yi/static/images/省份.png" alt=""></li>
+                    <li style="width: 80%" >
+                        <select name="province" id="prov_select" style="width: 100%;">
+                            <option >请选择省</option>
+                        </select>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="reg-pic"><img src="../addons/sz_yi/static/images/市.png" alt=""></li>
+                    <li  style="width: 80%;" >
+                        <select name="city" id="city_select" style="width: 100%;">
+                            <option>请选择市</option>
+                        </select>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="reg-pic"><img src="../addons/sz_yi/static/images/区.png" alt=""></li>
+                    <li  style="width: 80%;" >
+                        <select name="area" id="region_select" style="width: 100%;">
+                            <option>请选择区</option>
+                        </select>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="reg-pic"><img src="../addons/sz_yi/static/images/地址.png" alt=""></li>
+                    <li><input type="text" name="address" id="address" placeholder="xxxx街道xx路xx号"></li>
+                </ul>
+
+            </div>
+            <div class="reg-btn">
+                <button id="verif" type="button" style="border-radius: 15px;">认证</button>
+            </div>
+        </form>
+    </div>
+</div>
+<?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template("common/easy_deliver_footer", TEMPLATE_INCLUDEPATH)) : (include template("common/easy_deliver_footer", TEMPLATE_INCLUDEPATH));?>
+
+<script>
+    var InterValObj; //timer变量，控制时间
+    var count = 60; //间隔函数，1秒执行
+    var curCount;//当前剩余秒数
+    $(function () {
+        //province - city - area 20151010
+        $("#prov_select").change(function () {//绑定选择省份触发
+            var prov_id = $(this).val(),
+                city_html = '<option value="">请选择...</option>',
+                citys = [];
+            citys = addr_arr[prov_id];
+            try {
+                for (var i = 0; i < citys.length; i++) {
+                    city_html += '<option value="' + citys[i][0] + '">' + citys[i][1] + '</option>';
+                }
+            }
+            catch (e) { }
+            $("#city_select").html(city_html);
+            $("#region_select").html('<option value="">请选择...</option>');
+        });
+
+        $("#city_select").change(function () {//绑定选择城市触发
+            var city_id = $(this).val(),
+                region_html = '<option value="">请选择...</option>',
+                areas = [];
+            areas = addr_arr[city_id];
+            for (var i = 0; i < areas.length; i++) {
+                region_html += '<option value="' + areas[i][0] + '">' + areas[i][1] + '</option>';
+            }
+            $("#region_select").html(region_html);
+        });
+
+        function getProvIdByName(prov_name) {//工具函数，通过省份名省获取到省份id
+            var provinces = [];
+            provinces = addr_arr[0];
+            prov_name = $.trim(prov_name);
+            for (var i = 0; i < provinces.length; i++) {
+                if (prov_name == provinces[i][1]) {
+                    return provinces[i][0];
+                }
+            }
+            return -1;
+        }
+        function getProvIdByCityId(city_id) {//工具函数，通过城市id获取到省份id
+            for (var i = 1; i < 36; i++) {
+                for (var j = 0; j < addr_arr[i].length; j++) {
+                    if (addr_arr[i][j][0] == city_id) {
+                        return i;
+                    }
+                }
+            }
+            return -1;
+        }
+        function addrInit(prov_id, city_id, area_id) {//工具函数，通过固定的省份id,城市id,地区id来初始化
+            var prov_html = "",
+                provinces = [];
+            provinces = addr_arr[0];
+            for (var i = 0; i < provinces.length; i++) {
+                if (provinces[i][0] != prov_id) {
+                    prov_html += '<option value="' + provinces[i][0] + '">' + provinces[i][1] + '</option>';
+                } else {
+                    prov_html += '<option value="' + provinces[i][0] + '" selected="selected">' + provinces[i][1] + '</option>';
+                }
+            }
+            $("#prov_select").html(prov_html);
+            $("#prov_select").trigger("change");
+            $("#city_select").find('option[value="' + city_id + '"]').attr("selected", true).trigger("change");
+            $("#region_select").find('option[value="' + area_id + '"]').attr("selected", true);
+        }
+        function addrEmptyInit() {//什么都没选，空初始化
+            var prov_html = '<option value="">请选择...</option>',
+                provinces = [];
+            provinces = addr_arr[0];
+            for (var i = 0; i < provinces.length; i++) {
+                prov_html += '<option value="' + provinces[i][0] + '">' + provinces[i][1] + '</option>';
+            }
+            $("#prov_select").html(prov_html);
+        }
+        addrEmptyInit();//空启动
+        //the end
+    });
+    $('#send').bind("click", function () {
+        var tel = $('#tel').val();
+        if (tel == ""||tel===null) {
+            $.DialogByZ.Alert({
+                Title: "提示", Content: "请输入手机号", BtnL: "确定", FunL: function () {
+                    $.DialogByZ.Close()
+                }
+            });
+            return;
+        }
+        curCount = count;
+        $.post("<?php  echo $this->createMobileUrl('member/sendcode');?>",{mobile:tel},function (res) {
+            res = JSON.parse(res);
+            if (res.status == 1) {
+                    //设置button效果，开始计时
+                $(this).attr("disabled", "true");
+                $(this).html(curCount + "秒后获取");
+                InterValObj = window.setInterval(SetRemainTime, 1000); //启动计时器，1秒执行一次
+                    //向后台发送处理数据
+            } else {
+                $.DialogByZ.Alert({Title:"",Content:res.result});
+            }
+        })
+    });
+
+    //timer处理函数
+    function SetRemainTime() {
+        if (curCount == 0) {
+            window.clearInterval(InterValObj);//停止计时器
+            $("#send").removeAttr("disabled");//启用按钮
+            $("#send").html("发送验证码");
+        } else {
+            curCount--;
+            $("#send").html(curCount + "秒后获取");
+        }
+    }
+
+    /*提示框*/
+    $("#verif").click(function () {
+        var name = $('#name').val();
+        var idcard =$('#idcard').val();
+        var phone = $('#tel').val();
+        var code =$('#code').val();
+        var address =$('#address').val();
+        var province = $('#prov_select').val();
+        var city = $('#city_select').val();
+        var area = $('#region_select').val();
+        $.DialogByZ.Loading('../addons/sz_yi/static/images/loading.png');
+        $('#verif').attr('disabled','true');
+        $.post("<?php  echo $this->createMobileUrl('member/member_auth');?>",{
+            name:name,
+            idcard:idcard,
+            phone:phone,
+            code:code,
+            address:address,
+            province:province,
+            city:city,
+            area:area
+        },function (res) {
+            $.DialogByZ.Close();
+            res = JSON.parse(res);
+            $.DialogByZ.Alert({Title: "", Content: res.result});
+            $("#verif").removeAttr("disabled");//启用按钮
+            if(res.status==1){
+                window.location.href="<?php  echo $this->createMobileUrl('shop/list')?>";
+            }
+        });
+    });
+
+
+</script>
+</body>
+</html>

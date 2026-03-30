@@ -1,0 +1,188 @@
+{include file="public/header_new" /}
+
+
+<body class="gray-bg">
+    <div class="animated fadeInRight">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+
+                    <div class="ibox-content">
+                        <form action="{:url('admin/Package/packageCollectAdd')}" method="post" class="form form-horizontal" id="form" >
+
+						            <div class="form-group">
+                            <label class="col-sm-2 control-label">发起商户</label>
+                            <div class="col-md-5">
+                                <select class="form-control" id="form_user" name="form_user">
+                                    <option></option>
+                                    {volist name="userlist" id="vo"}
+                                      <option value="{$vo.id}">{$vo.user_name} - {$vo.company_name}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">接收商户</label>
+                            <div class="col-md-5">
+                                <select class="form-control" id="to_user" name="to_user">
+                                    <option></option>
+                                    {volist name="userlist" id="vo"}
+                                      <option value="{$vo.id}">{$vo.user_name} - {$vo.company_name}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">揽收人员</label>
+                            <div class="col-md-5">
+                                <select class="form-control" id="collect_user" name="collect_user">
+                                    <option></option>
+                                    {volist name="collectuser" id="vo"}
+                                      <option value="{$vo.uid}">{$vo.realname} - {$vo.mobile} - {$vo.nickname}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">是否需要分拣</label>
+                            <div class="radio radio-info radio-inline" style="padding-left: 40px;">
+                                <input type="radio" id="is_select1" name="is_select" value="1" >
+                                <label for="is_select1">是</label>
+                            </div>
+                            <div class="radio radio-info radio-inline" style="padding-left: 40px;">
+                                <input type="radio" id="is_select2" name="is_select" value="0" checked>
+                                <label for="is_select2">否</label>
+                            </div>
+                        </div>
+                        <div class="form-group" id="select_div">
+                            <label class="col-sm-2 control-label">分拣人员</label>
+                            <div class="col-md-5">
+                                <select class="form-control" id="select_user" name="select_user">
+                                    <option></option>
+                                    {volist name="selectuser" id="vo"}
+                                      <option value="{$vo.uid}">{$vo.realname} - {$vo.mobile} - {$vo.nickname}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">揽收运单号</label>
+                            <div class="col-md-5">
+                                <select class="form-control" id="collect_order" name="collect_order[]" multiple="multiple">
+                                    <option></option>
+                                    {volist name="collect_order" id="vo"}
+                                      <option value="{$vo.pack_ordersn}">{$vo.pack_ordersn}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">备注</label>
+                            <div class="col-sm-5">
+                                <textarea name="remark" id="remark" rows="8" cols="80"></textarea>
+                                <span class="help-block m-b-none Validform_checktip"></span>
+                            </div>
+                        </div>
+
+						            <div class="form-group">
+                            <label class="col-sm-2 control-label"></label>
+                            <div class="col-sm-10">
+                                <input type="submit" class="btn btn-primary" value="&nbsp;提交&nbsp;">
+                                <span id="msgtip" style="margin-left:30px;"></span>
+                            </div>
+						            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+	<script>
+    $(function()
+    {
+        $("#select_div").hide();
+        $('input[type=radio][name=is_select]').change(function() {
+          if (this.value == '1') {
+              $("#select_div").show();
+          } else if (this.value == '0') {
+              $("#select_div").hide();
+          }
+      });
+
+      $("#form_user").select2({
+          placeholder: "选择发起地址",
+          allowClear: true
+      });
+
+      $("#to_user").select2({
+          placeholder: "选择揽收地址",
+          allowClear: true
+      });
+
+      $("#collect_user").select2({
+          placeholder: "选择揽收人员",
+          allowClear: true
+      });
+
+      $("#select_user").select2({
+          placeholder: "选择分拣人员",
+          allowClear: true
+      });
+
+      $("#collect_order").select2({
+          placeholder: "选择揽收运单",
+          allowClear: true
+      });
+
+        var form = $("#form").Validform({
+            tiptype:2,
+            postonce:true,//让表单只能提交一次，提交成功后再提交表单将不会有操作
+            ajaxPost:true,
+            tiptype:function(msg,o,cssctl){
+                if(!o.obj.is("form"))
+                {
+                    var objtip=o.obj.siblings(".Validform_checktip");
+                    cssctl(objtip,o.type);
+                    objtip.text(msg);
+                }
+                else
+                {
+                    var objtip=o.obj.find("#msgtip");
+                    cssctl(objtip,o.type);
+                    objtip.text(msg);
+                }
+            },
+            callback:function(data){
+                if(data.status==1)
+                {
+                    layer.msg(data.message, {
+                                icon: 1,
+                                time: 2000
+                            }, function(){
+                                parent.window.table.bootstrapTable('refresh');
+                                var index = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(index);
+                            });
+                            return true;
+                }
+                else
+                {
+                    layer.msg(data.message, {icon:2, time:2000});
+                    return false;
+                }
+            }
+        });
+    });
+    </script>
+
+</body>
+
+</html>

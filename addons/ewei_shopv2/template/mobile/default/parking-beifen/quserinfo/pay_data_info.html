@@ -1,0 +1,82 @@
+{template "parking/base/header"}
+{template "parking/base/myheader"}
+
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<link rel="stylesheet" href="../addons/ewei_shopv2/static/weiui/css/demos.css">
+<style type="text/css">
+    #grids {margin: 3px auto;text-align: center;padding-left: 25px;}
+    #grids a{display: block;width: 150px;margin: 5px 5px;border: 1px solid silver;border-radius: 5px;}
+    .weui-grid__label{font-size:8px;}
+    .weui-grid__icon{color: red}
+    input[type="date"]:before{color:#A9A9A9;content:attr(placeholder);}
+    input[type="date"].full:before {color:black;content:""!important;}
+</style>
+</head>
+<body ontouchstart="">
+<div class="dates" style="margin-top: 20px;margin-left: 91px;margin-bottom: 20px;">
+    <span style="
+    float: left;
+    margin-top: 8px;
+">日期</span>
+    <span>
+        <input id="start" class="weui_input" type="date" placeholder="" value="" style="height:41px;overflow: hidden;">
+        <!--<input type="date" name="start" id="start" value="" placeholder="开始日期"/>-->
+    </span>
+
+</div>
+
+<div class="weui-grids" id="grids">
+
+    <a href="#" class="weui-grid js_grid">
+        <div class="weui-grid__icon" id="leavePayDone">
+            0
+        </div>
+        <p class="weui-grid__label">离开已结/总:<div id="leavePayDoneCount">0</div></p>
+    </a>
+    <a href="#" class="weui-grid js_grid">
+        <div class="weui-grid__icon" id="leaveNotPay">
+            0
+        </div>
+        <p class="weui-grid__label">离开未结/总:<div id="leaveNotPayCount">0</div></p>
+    </a>
+    <a href="#" class="weui-grid js_grid">
+        <div class="weui-grid__icon" id="excepOrder">
+            0
+        </div>
+        <p class="weui-grid__label">异免离开/总:<div id="excepOrderCount">0</div></p>
+    </a>
+    <a href="#" class="weui-grid js_grid">
+        <div class="weui-grid__icon" id="parkNotPay">
+            0
+        </div>
+        <p class="weui-grid__label">停入未结/总:<div id="parkNotPayCount">0</div></p>
+    </a>
+
+</div>
+<script>
+    var time = null;
+    $("#start").on("input",function(){
+        if($(this).val().length>0){
+            $(this).addClass("full");
+        }
+        else{
+            $(this).removeClass("full");
+        }
+    });
+    setInterval(function () {
+        time = $('#start').val();
+        console.log(time);
+        $.get("{php echo mobileUrl('parking/parking_data/getPayData')}",{time:time},function (res) {
+            var data = JSON.parse(res);
+            $('#leavePayDone').html(data.result.leavePayDone);
+            $('#leavePayDoneCount').html(data.result.toLeavePayDone);
+            $('#leaveNotPay').html(data.result.leaveNotPay);
+            $('#leaveNotPayCount').html(data.result.toLeaveNotPay);
+            $('#excepOrder').html(data.result.excepOrder);
+            $('#excepOrderCount').html(data.result.totalExcepOrder);
+            $('#parkNotPay').html(data.result.parkNotPay);
+            $('#parkNotPayCount').html(data.result.totalParkNotPay);
+        });
+    },5000);
+</script>
+{template "parking/base/footer"}

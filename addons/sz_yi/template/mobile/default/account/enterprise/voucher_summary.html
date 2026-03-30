@@ -1,0 +1,69 @@
+{template 'common/header'}
+<style>
+    *{font-size:15px !important;}
+</style>
+<link href="../addons/sz_yi/static/css/layui.css" rel="stylesheet">
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <div id="toolbar" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;">
+                        <button type="button" class="layui-btn layui-btn-normal ssl_add">
+                            新增汇总
+                        </button>
+                    </div>
+                </div>
+
+                <div class="layui-card-body">
+                    <div class="layui-tab layui-tab-card">
+                        <!--<ul class="layui-tab-title">-->
+                            <!--<li class="layui-this">已登记未汇总</li>-->
+                            <!--<li>已提交未确认</li>-->
+                            <!--<li>已汇总未记账</li>-->
+                            <!--<li>已汇总已记账</li>-->
+                        <!--</ul>-->
+                        <div class="layui-tab-content">
+                            <div class="layui-tab-item layui-show">
+                                <table class="layui-hide" id="mainTable"></table>
+                            </div>
+                            <!--<div class="layui-tab-item">-->
+                                <!--<table class="layui-hide" id="mainTable2"></table>-->
+                            <!--</div>-->
+                            <!--<div class="layui-tab-item">-->
+                                <!--<table class="layui-hide" id="mainTable3"></table>-->
+                            <!--</div>-->
+                            <!--<div class="layui-tab-item">-->
+                                <!--<table class="layui-hide" id="mainTable4"></table>-->
+                            <!--</div>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../addons/sz_yi/static/js/layer.js"></script>
+<script type="text/javascript" src="../addons/sz_yi/static/js/layui/layui.js"></script>
+<script>
+    $(function(){
+        layui.use(['layer', 'form','table'], function(){
+            var layer = layui.layer
+                ,form = layui.form;
+
+            $('.ssl_add').click(function(){
+                layer.confirm('请选择汇总方式',{
+                    btn:['人工汇总','系统汇总']
+                }, function(index,layero){
+                    //按钮【按钮一】的回调
+                    window.location.href='./index.php?i=3&c=entry&do=account&m=sz_yi&p=register&op=manualSummary';
+                }, function(index){
+                    //按钮【按钮二】的回调
+                    window.location.href='./index.php?i=3&c=entry&do=account&m=sz_yi&p=register&op=voucher_manage_select';
+                });
+            })
+        });
+    })
+</script>
+{template 'common/footer'}

@@ -1,0 +1,548 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template("common/easy_delivery_header", TEMPLATE_INCLUDEPATH)) : (include template("common/easy_delivery_header", TEMPLATE_INCLUDEPATH));?>
+<style>
+    .content {
+        height: auto;
+    }
+
+    .check-box {
+        margin: 3px 10px 0 0;
+    }
+
+    .pack-warp {
+        border-top: 1px solid #d0d0d0;
+        border-bottom: 0px;
+    }
+    #test10{
+        width: 100%;height: 100%;
+    }
+    #test11{
+        width: 100%;height: 100%;
+    }
+    .layui-m-layercont{
+        height: 22%;
+    }
+    #layui-layer100001{
+        top:20px;
+    }
+</style>
+<body>
+<header>
+    <div class="logo"><img src="../addons/sz_yi/static/images/logo.png" alt=""></div>
+    <div class="plane"><img src="../addons/sz_yi/static/images/plane.png" alt=""></div>
+</header>
+<div class="warp">
+    <div class="content">
+        <div class="warp-con">
+            <div class="details-title dis">
+                <div class="fl" style="width: 40%;margin-top: 3%;"><span class="details-line">|</span>选择已购商家</div>
+                <div class="locally-btn">
+                    <ul>
+                        <li style="width: 27%;text-align: right;margin-top: 10px;">我要</li>
+                        <li style="width: 70%;">
+                            <button class="but-blue" onclick="window.location.href = '<?php  echo $this->createMobileUrl("order/easy_deliver_centralizedpackage")?>&a=main'">集中打包<img
+                                    src="../addons/sz_yi/static/images/icon_11.png" alt=""></button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="details-title">
+                <div class="choice">
+                    <ul>
+                        <li><img src="../addons/sz_yi/static/images/icon_12.png" alt=""></li>
+                        <li>请选择直邮方式</li>
+                        <li style="width: 30%;">
+                            <select name="directmailType" onchange="directmailType(this);">
+                                <option value="1">保税直邮</option>
+                                <option value="2">境外直邮</option>
+                            </select>
+                        </li>
+                    </ul>
+                    <ul>
+                        <li><img src="../addons/sz_yi/static/images/icon_05.png" alt=""></li>
+                        <li>请选择购买店铺</li>
+                        <li style="width: 30%;">
+                            <select name="shop">
+                                <?php  if(is_array($bussRes)) { foreach($bussRes as $item) { ?>
+                                <?php  if($oid['supplier_uid']==$item['uid']) { ?>
+                                <option value="<?php  echo $item['uid'];?>"><?php  echo $item['username'];?></option>
+                                <?php  } ?>>
+                                <?php  } } ?>
+                            </select>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="content">
+                <div class="details-title dis" style="border-bottom:0px;">
+                    <div class="fl" style="width: 40%;margin-top: 3%;"><span class="details-line">|</span>选择已购商品</div>
+                </div>
+                <div id="good">
+                    <?php  if(is_array($goods)) { foreach($goods as $item) { ?>
+                    <div class="pack-warp">
+                        <div class="check-box">
+                            <label for="checkbox1"></label>
+                            <input type="checkbox" id="checkbox1" value="<?php  echo $item['id'];?>" data-price="<?php  echo $item['price'];?>"/>
+                        </div>
+                        <div class="pack-list">
+                            <p>商品名称：<?php  echo $item['title'];?></p>
+                            <ul class="btn-numbox">
+                                <li><span class="number">打包数量：</span></li>
+                                <li>
+                                    <ul class="count">
+                                        <li><span id="num-jian" class="num-jian" style="border-radius:5px 0 0 5px;">-</span>
+                                        </li>
+                                        <li><input type="text" class="input-num" id="input-num" data-max="<?php  echo $item['total'];?>"
+                                                   data-price="<?php  echo $item['price'];?>" value="<?php  echo $item['total'];?>"/></li>
+                                        <li><span id="num-jia" class="num-jia" style="border-radius:0 5px 5px 0;">+</span>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li><span class="kucun" style="margin-left: 10px; color: #bbb; font-size: 12px;">待打包：0</span>
+                                </li>
+                            </ul>
+                            <p>商品价值：¥ <?php  echo $item['price'];?></p>
+                        </div>
+                    </div>
+                    <?php  } } ?>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="warp-con">
+            <div class="details-title">
+                <span class="details-line">|</span>申报信息
+            </div>
+            <div class="details-num">
+                <p>实际购买人
+                    <select name="buy" id="buy">
+                        <?php  if(is_array($recipient)) { foreach($recipient as $user) { ?>
+                        <option value="<?php  echo $user['id'];?>"><?php  echo $user['name'];?></option>
+                        <?php  } } ?>
+                    </select>
+                <p style="margin-left: 58%;float: left;margin-top: -34px;font-size: 27px;position: relative;left: 0;"><a href='#' onclick="locaAddRecipient();">+</a></p>
+
+                </p>
+                <p>实际收件人
+                    <select name="recipient" id="recipient">
+                        <?php  if(is_array($recipient)) { foreach($recipient as $user) { ?>
+                        <option value="<?php  echo $user['id'];?>"><?php  echo $user['name'];?></option>
+                        <?php  } } ?>
+                    </select>
+                <p style="margin-left: 58%;float: left;margin-top: -34px;font-size: 27px;position: relative;left: 0;"><a href='#' onclick="locaAddRecipient();">+</a></p>
+
+                </p>
+                <p>实际发件人
+                    <select name="shipping" id="shipping" onchange="getPackage(this);">
+                        <option value="">请选择</option>
+                        <?php  if(is_array($bussRes)) { foreach($bussRes as $item) { ?>
+                        <option value="<?php  echo $item['uid'];?>"><?php  echo $item['username'];?></option>
+                        <?php  } } ?>
+                    </select>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="warp-con">
+            <div class="details-title">
+                <span class="details-line">|</span>包裹详情
+            </div>
+            <div class="details-num" style="display: inline-block;">
+                <div class="pack-details" style="width: 100%;">
+                    <p>包裹总数：<span id="showTotalNum">0</span></p>
+                    <p>包裹总值：¥ <span id="shoTotalPrice">0.00</span></p>
+                    <!--
+                    <p style="margin-top: 10px; padding-top: 5px; border-top: 1px solid #d0d0d0;">保价直邮：
+                        <select name="isSafePrice" id="isSafePrice">
+                            <option value="N" selected="selected">无需保价</option>
+                        </select>
+                    <p>保费金额：
+                        <select name="safeFree"  id="safeFree">
+                            <option value="">请选择</option>
+                            <option value="1">定额保费</option>
+                            <option value="2">比例保费</option>
+                        </select>
+                    </p>
+                    <p id="showSafeFree">可保价值：¥ 0.00</p>
+                    </p>-->
+<!--                    <p>保费金额/百分比：<input type="text" name="safeFree" id="safeFree" value="0" style="border: 1px solid #cccccc;"></p>-->
+<!--                    <p style="margin-top: 10px; padding-top: 5px; border-top: 1px solid #d0d0d0;">包材选择：-->
+<!--                        <select name="isPackage" id="isPackage">-->
+<!--                            <option value="Y">需要包材</option>-->
+<!--                            <option value="N" selected="selected">无需包材</option>-->
+<!--                        </select>-->
+<!--                    <p>包材名称：-->
+<!--                        <select name="packageType" id="packageType" onchange="showPackPrice(this);">-->
+<!--                            <option value="">请选择</option>-->
+<!--                        </select>-->
+<!--                    </p>-->
+<!--                    <p id="packFree">包材费用：¥ 0.00</p>-->
+<!--                    </p>-->
+                </div>
+                <div class="pack_but fl" style="text-align: center; top:0px; left: 6%; margin-left: 0%; width: 88%;">
+                    <input type="hidden" name="oid" value="<?php  echo $_GPC['oid'];?>" id="oid">
+                    <button style="border-radius:15px;" id="packFreeSettle" onclick="packFreeSettle(this);return false;" type="button" class="zbox-btn zbox-btn-blue zbox-btn-outlined but-red">
+                        <img src="../addons/sz_yi/static/images/打包发货.png" alt="" style="height: 32px;width: 32px;">
+                        就地打包
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template("common/easy_deliver_footer", TEMPLATE_INCLUDEPATH)) : (include template("common/easy_deliver_footer", TEMPLATE_INCLUDEPATH));?>
+<!--<link rel="stylesheet" href="../addons/sz_yi/static/css/layer.css">-->
+<script src="../addons/sz_yi/static/js/layer.js" type="text/javascript"></script>
+<script src="https://www.layuicdn.com/layui-v2.5.6/layui.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/layui-upload.js" type="text/javascript"></script>
+<!-- 加减数量 -->
+<script>
+    function selNum() {
+        var l = document.getElementsByClassName('pack-warp');
+        Array.prototype.forEach.call(l,function (element) {
+            var num_jia = element.querySelector('#num-jia');
+            var num_jian = element.querySelector('#num-jian');
+            var input_num = element.querySelector('#input-num');
+            num_jia.onclick = function () {
+                if (input_num.value >= input_num.getAttribute('data-max')) {
+                    input_num.value = input_num.getAttribute('data-max');
+                } else {
+                    input_num.value = parseInt(input_num.value) + 1;
+                    var num = parseInt($('#showTotalNum').html()) + 1;
+                    var p = parseFloat($('#shoTotalPrice').html());
+                    if (p>0){
+                        $('#shoTotalPrice').html(parseFloat(p + parseFloat(input_num.getAttribute('data-price'))));
+                        $('#showTotalNum').html(num);
+                    }
+
+                }
+                if ($(this).parent().parent().parent().parent().parent().prev().find('#checkbox1').prop('checked')){
+                    $(input_num).parent().parent().parent().next().children().html('待打包:' + (input_num.getAttribute('data-max') - input_num.value));
+                }
+            }
+            num_jian.onclick = function () {
+                if (input_num.value <= 1) {
+                    input_num.value = 1;
+                } else {
+                    input_num.value = parseInt(input_num.value) - 1;
+                    var num = parseInt($('#showTotalNum').html()) - 1;
+                    var p = parseFloat($('#shoTotalPrice').html());
+                    if (p>0){
+                        $('#shoTotalPrice').html(parseFloat(p - parseFloat(input_num.getAttribute('data-price'))));
+                        $('#showTotalNum').html(num);
+                    }
+
+                }
+                if ($(this).parent().parent().parent().parent().parent().prev().find('#checkbox1').prop('checked')){
+                    $(input_num).parent().parent().parent().next().children().html('待打包:' + (parseInt(input_num.getAttribute('data-max')) - parseInt(input_num.value)));
+                }
+            }
+        });
+
+    }selNum();
+
+
+    function countPriceAndNum() {
+        $('.content .pack-warp').each(function () {
+            $(this).find('.check-box input').bind('click', function () {
+                var num = parseInt($(this).parent().next().find('.input-num').val());
+                if ($(this).prop('checked')) {
+                    var p = parseFloat($('#shoTotalPrice').html());
+                    p = p+parseFloat($(this).attr('data-price'))*num;
+                    num = parseInt($('#showTotalNum').html()) + num;
+                } else {
+                    var p = parseFloat($('#shoTotalPrice').html())-parseFloat($(this).attr('data-price'))*num;
+                    num = parseInt($('#showTotalNum').html()) - num;
+                }
+                $('#shoTotalPrice').html(p);
+                $('#showTotalNum').html(num);
+            });
+        });
+    }
+
+    countPriceAndNum();
+
+
+    //获取包材
+    function getPackage(obj) {
+        var merId = $(obj).val();
+        $.ajax({
+            url: "<?php  echo $this->createMobileUrl('order/easy_deliver_locallypack')?>&a=package&merid=" + merId,
+            type: 'GET',
+            dataType: "json",
+            success: function (res) {
+                if (res.status == 1) {
+                    $.DialogByZ.Alert({Title: "", Content: res.result});
+                } else {
+                    var h = '<option value="">请选择</option>';
+                    for (var i = 0; i < res.result.length; i++) {
+                        h += '<option value="' + res.result[i]['id'] + '" data-price="' + res.result[i]['price'] + '">' + res.result[i]['packgeName'] + '(' + res.result[i]['speci'] + ')</option>';
+                    }
+                    $('#packageType').html(h);
+                }
+            }, error: function (xhr) {
+                $.DialogByZ.Alert({Title: "", Content: "获取包材失败"});
+            }
+        });
+       
+    }
+
+ 
+
+    function showPackPrice(obj) {
+        $('#packFree').html('包材费用：¥' + $("#packageType option:selected").attr('data-price'));
+    }
+
+    //直邮方式
+    function directmailType(obj){
+        var val = $(obj).val();
+        var oid =$('#oid').val();
+        $.ajax({
+            url:"<?php  echo $this->createMobileUrl('order/easy_deliver_locallypack')?>&a=goods&type=directmail&val="+val+"&oid="+oid,
+            type:"GET",
+            dataType: "json",
+            success:function (res) {
+                if (res.status==1){
+                    $('#good').html('');
+                }else{
+                    var h = '';
+                    for (var i=0;i<res.result.length;i++){
+                        h +='   <div class="pack-warp">\n' +
+                            '                        <div class="check-box">\n' +
+                            '                            <label for="checkbox1"></label>\n' +
+                            '                            <input type="checkbox" id="checkbox1" value="'+res.result[i].id+'" data-price="'+res.result[i].price+'"/>\n' +
+                            '                        </div>\n' +
+                            '                        <div class="pack-list">\n' +
+                            '                            <p>商品名称：'+res.result[i].title+'</p>\n' +
+                            '                            <ul class="btn-numbox">\n' +
+                            '                                <li><span class="number">打包数量：</span></li>\n' +
+                            '                                <li>\n' +
+                            '                                    <ul class="count">\n' +
+                            '                                        <li><span id="num-jian" class="num-jian" style="border-radius:5px 0 0 5px;">-</span>\n' +
+                            '                                        </li>\n' +
+                            '                                        <li><input type="text" class="input-num" id="input-num" data-max="'+res.result[i].total+'"\n' +
+                            '                                                   data-price="'+res.result[i].price+'" value="'+res.result[i].total+'"/></li>\n' +
+                            '                                        <li><span id="num-jia" class="num-jia" style="border-radius:0 5px 5px 0;">+</span>\n' +
+                            '                                        </li>\n' +
+                            '                                    </ul>\n' +
+                            '                                </li>\n' +
+                            '                                <li><span class="kucun" style="margin-left: 10px; color: #bbb; font-size: 12px;">待打包：'+res.result[i].total+'</span>\n' +
+                            '                                </li>\n' +
+                            '                            </ul>\n' +
+                            '                            <p>商品价值：¥ '+res.result[i].price+'</p>\n' +
+                            '                        </div>\n' +
+                            '                    </div>';
+                    }
+                    $('#good').html(h);
+                    countPriceAndNum();
+                    selNum();
+                }
+            },error:function (xhr) {}
+        })
+    }
+
+
+    var pageii;
+    var localUrl;
+    var isDone=false;
+    //打包费用支付
+    function packFreeSettle(obj) {
+        var oid = $('#oid').val();
+        var goodsid={};
+        $('input[type="checkbox"]:checked').each(function () {
+            goodsid[$(this).val()]=$(this).parent().next().find('#input-num').val();//向数组中添加元素
+        });
+        var buyName = $('#buy').val();//购买人
+        var recipientName = $('#recipient').val();//收件人
+        var shippingName = $('#shipping').val();//寄件人
+        //var isSafePrice = $('#isSafePrice').val();
+        var safeFree = $('#safeFree').val();
+        var isPackage = $('#isPackage').val();
+        var packageType=$('#packageType').val();
+        if (Object.keys(goodsid).length===0){
+            $.DialogByZ.Alert({Title: "", Content: "请选择打包商品"});
+            return false;
+        }
+        if (buyName==""||recipientName==""||safeFree==""){
+            $.DialogByZ.Alert({Title: "", Content: "请填写申报信息"});
+            return false;
+        }
+        if (isPackage=="Y"&&packageType==""){
+            $.DialogByZ.Alert({Title: "", Content: "请选择打包信息"});
+            return false;
+        }
+        if (isDone&&localUrl!=""){
+            openVerif();
+        }
+        $(obj).attr('disabled',true);
+        $.DialogByZ.Alert({Title: "", Content: "<img style='width: 100%;' src='../addons/sz_yi/static/images/bS4jUCz.gif'>",BtnL:''});
+        $.ajax({
+            url:"<?php  echo $this->createMobileUrl('order/easy_deliver_packagefeepay')?>",
+            type:"POST",
+            dataType:"json",
+            data:{
+                oid:oid,
+                goodsid:goodsid,
+                buyName:buyName,
+                recipientName:recipientName,
+                shippingName:shippingName,
+                safeFree:safeFree,
+                isPackage:isPackage,
+                packageType:packageType
+            }, success:function (res) {
+                $(obj).attr('disabled',false);
+                $.DialogByZ.Close();
+                if(res.status!=1){
+                    if (res.result.type=='CC'){
+                        localUrl = res.result.url;
+                        openVerif();
+                    }else{
+                        window.location.href = res.result.url;
+                    }
+                }
+            },error:function (xhr) {
+                $(obj).attr('disabled',false);
+                $.DialogByZ.Alert({Title: "", Content: "请求失败"});
+            }
+        });
+        return false;
+    }
+
+    const locaAddRecipient=()=>{
+        window.location.href="<?php  echo $this->createMobileUrl('member/easy_deliver_family')?>";
+    }
+
+    const openVerif=()=>{
+        pageii = layer.open({
+            type: 1
+            ,title:""
+            ,content: $('#u')
+            ,anim: false
+            ,style: 'position:fixed; left:0; top:0; width:100%; height:100%; border: none; -webkit-animation-duration: .5s; animation-duration: .5s;'
+        });
+    }
+    /* 如果在和后台做数据交互时，出现点击加减按钮的值无法传到后台的情况，可以用下面这种方式
+    $("body").on("click", ".num-jian", function(m) {
+        var obj = $(this).closest("ul").find(".input-num");
+        if(obj.val() <= 0) {
+             obj.val(0);
+        } else {
+             obj.val(parseInt(obj.val()) - 1);
+        }
+        obj.change();
+     });
+
+    $("body").on("click", ".num-jia", function(m) {
+        var obj = $(this).closest("ul").find(".input-num");
+        obj.val(parseInt(obj.val()) + 1);
+        obj.change();
+    });*/
+
+
+</script>
+
+</body>
+</html>
+<div id="u" style="display: none;">
+    <div class="layui-upload-drag" id="test10">
+        <img class="priv1" src="../addons/sz_yi/static/images/身份证正面.png" style="margin-top: -25px;margin-left: -46px;">
+        <p class="priv1" style="text-align: center;margin-top: 20px;margin-left: -54px;">点击上传正面照片</p>
+        <div class="layui-hide" id="uploadDemoView">
+<!--            <hr>-->
+            <img src="" alt="上传成功后渲染" style="max-width: 196px;height: 150px;width: 196px;margin-left: -42px;">
+        </div>
+    </div>
+    <div class="layui-upload-drag" id="test11">
+    <img class="priv2" src="../addons/sz_yi/static/images/身份证背面.png" style="margin-top: -25px;margin-left: -46px;">
+    <p class="priv2" style="text-align: center;margin-top: 20px;margin-left: -54px;">点击上传反面照片</p>
+    <div class="layui-hide" id="uploadDemoView2">
+<!--        <hr>-->
+        <img src="" alt="上传成功后渲染" style="max-width: 196px;height: 150px;width: 196px;margin-left: -42px;">
+    </div>
+    </div>
+    <button type="button" class="layui-btn layui-btn-fluid" style="background-color: #2a95d8;border:1px solid #2a95d8;margin-top:5px;" onclick="closeLayuiPage();">完成</button>
+</div>
+<script>
+    layui.use('upload', function(){
+       var upload = layui.upload;
+        //普通图片上传
+        var uploadInst = upload.render({
+            elem: '#test10'
+            , url: '<?php  echo $this->createPluginMobileUrl("directmailorder/uploadIdCard")?>' //改成您自己的上传接口
+            ,data:{
+                name:function () {
+                    return  $('#recipient').val();
+                },
+                type:"face"
+            }
+            , before: function (obj) {
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#uploadDemoView img').attr('src', result); //图片链接（base64）
+                    $('.priv1').addClass('layui-hide');
+                    $('#uploadDemoView').removeClass('layui-hide').addClass('layui-show');
+                });
+                layer.load(2); //上传loading
+            }
+            , done: function (res) {
+                //如果上传失败
+                layer.closeAll('loading'); //关闭loading
+                layer.msg(res.result);
+                if (res.status <= 0) {
+                    isDone=true;
+                }
+                //上传成功
+            }
+            , error: function () {
+                //演示失败状态，并实现重传
+                layer.closeAll('loading'); //关闭loading
+                isDone=false;
+                return layer.msg('上传失败');
+            }
+        });
+        //普通图片上传
+        var uploadInst1 = upload.render({
+            elem: '#test11'
+            , url: '<?php  echo $this->createPluginMobileUrl("directmailorder/uploadIdCard")?>' //改成您自己的上传接口
+            ,data:{
+                name:function () {
+                    return  $('#recipient').val();
+                },
+                type:"back"
+            }
+            , before: function (obj) {
+                console.dir(obj);
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#uploadDemoView2 img').attr('src', result); //图片链接（base64）
+                    $('.priv2').addClass('layui-hide');
+                    $('#uploadDemoView2').removeClass('layui-hide').addClass('layui-show');
+                });
+                layer.load(2); //上传loading
+            }
+            , done: function (res) {
+                //如果上传失败
+                layer.closeAll('loading'); //关闭loading
+                layer.msg(res.result);
+                if (res.status <= 0) {
+                    isDone=true;
+                }
+                //上传成功
+            }
+            , error: function () {
+                //演示失败状态，并实现重传
+                layer.closeAll('loading'); //关闭loading
+                isDone=false;
+                return layer.msg('上传失败');
+            }
+        });
+    });
+    const closeLayuiPage =()=>{
+        layer.close(pageii);
+        if (isDone){
+            window.location.href=localUrl;
+        }
+        return false;
+    }
+</script>

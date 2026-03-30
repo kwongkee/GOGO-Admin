@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<title>订单确认</title>
+	<link rel="stylesheet" type="text/css" href="../addons/sz_yi/static/travel_express/css/hui.css" />
+	<link rel="stylesheet" type="text/css" href="../addons/sz_yi/static/travel_express/css/style.css" />
+	<style>
+        .hui-header h1{
+            padding: 0px 38px 0px 0;
+        }
+        .hui-list-text{
+            border-bottom: 1px solid #969696;
+            padding: 0 10px;
+            margin-left: 0px;
+        }
+        .hui-form-items-title {
+            width: 30%;
+        }
+        .table-list tr td{text-align: center;}
+    </style>
+</head>
+<body>
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1>清单列表确认</h1>
+</header>
+
+<div class="hui-wrap">
+    <div class="wrap-top">
+        <div class="hui-footer-icons hui-icons-news top-icon" style="margin: 4px 10px 0 0;"></div>
+        <div class="text-title">
+            <p style="line-height: 34px;">单号<span class="title-en text-space" style="color: #0077ac;">(Single number)</span>：{$order['ordersn']}</p>
+        </div>
+    </div>
+
+    <form style="padding:0 10px;" class="hui-form" id="form1">
+        <div class="table-title">请确认下列商品<span class="title-en font-red">(Please confirm the following products)</span></div>
+        <input type="hidden" name="id" value="{$order['id']}">
+        <div style="width: 95%; overflow-x: auto; margin: 0 auto;">
+            <table class="table-list">
+                <tr style="background:#f7f7f7;">
+                    <td class="table-list-top">类别</td>
+                    <td class="table-list-top">品名</td>
+                    <td class="table-list-top">规格</td>
+                    <td class="table-list-top">数量</td>
+                    <td class="table-list-top table-list-right">重量</td>
+                </tr>
+                {loop $orders $v}
+                <tr>
+                    <td>{$v['cates_text']}</td>
+                    <td>{$v['brand_cn']}-{$v['good_name']}</td>
+                    <td>{$v['specs']}{$v['specs2']}/{$v['specs3']}</td>
+                    <td>{$v['num']}</td>
+                    <td class="table-list-right">{$v['weight']}kg</td>
+                </tr>
+                {/loop}
+            </table>
+        </div>
+        <div style="padding:15px 8px; width: 80%; margin: 20px auto 64px;">
+            <button type="button" class="hui-button hui-primary hui-fr red" onclick="javascript:history.back(-1);"><img src="../addons/sz_yi/static/travel_express/images/icon_09.png" alt="" class="button-pic">返回</button>
+            <button type="button" class="hui-button hui-primary hui-fr blue" id="submitBtn"><img src="../addons/sz_yi/static/travel_express/images/icon_08.png" alt="" class="button-pic">确认</button>
+        </div>
+    </form>
+
+</div>
+
+{template 'common/travel_express_footer'}
+
+<script src="../addons/sz_yi/static/travel_express/js/hui.js" type="text/javascript" charset="utf-8"></script>
+<script src="../addons/sz_yi/static/travel_express/js/hui-form.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+hui.formInit();
+//表单元素数据收集演示
+hui('#submitBtn').click(function(){
+    var data = hui.getFormData('#form1');
+    var status = "{$order['status']}";
+    switch(status){
+        case '0':
+            hui.toast('该订单正在审核中,不能提交确认');
+            return false;
+        break;
+        case '3':
+            hui.toast('该订单已确认,请勿重复提交');
+            return false;
+        break;
+    }
+    hui.confirm('我已确认该订单商品信息？', ['取消','确定'], function(){
+
+        hui.ajax({
+                url  : '{php echo $this->createMobileUrl("member/travel_express_confirm")}&op=submit',
+                type : 'POST',
+                data : {id: data.id },
+                beforeSend : function(){hui.loading();},
+                complete   : function(){hui.closeLoading();},
+                success : function(res){
+                    hui.toast(res.result.msg);
+                    if(res.status == 1)
+                    {
+                        setTimeout(function(){
+                            window.location.href="{php echo $this->createMobileUrl('member/travel_express_search')}";
+                        }, 2000);
+                    }
+                    
+                },
+                error : function(e){
+                    console.log(JSON.stringify(e));
+                    hui.iconToast('系统错误', 'warn');
+                },
+                'backType' : "JSON"
+            });
+    },function(){
+    });
+});
+
+</script>
+</body>
+</html>

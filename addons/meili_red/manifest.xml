@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.baidu.com" versionCode="0.6">
+	<application setting="true">
+		<name><![CDATA[关键词·红包|卡券|积分]]></name>
+		<identifie><![CDATA[meili_red]]></identifie>
+		<version><![CDATA[2.1]]></version>
+		<type><![CDATA[activity]]></type>
+		<ability><![CDATA[多关键词红包，卡券，积分，适合节日营销！]]></ability>
+		<description><![CDATA[多关键词红包，卡券，积分，适合节日营销！]]></description>
+		<author><![CDATA[微赞]]></author>
+		<url><![CDATA[http://www.baidu.com]]></url>
+	</application>
+	<platform>
+		<subscribes>
+		</subscribes>
+		<handles>
+			<message type="voice" />
+			<message type="text" />
+		</handles>
+		<rule embed="true" />
+		<card embed="false" />
+	</platform>
+	<bindings>
+		<menu>
+			<entry title="活动管理" do="manage" state="" direct="false" />
+		</menu>
+	</bindings>
+	<install><![CDATA[CREATE TABLE IF NOT EXISTS `ims_meili_red_fans` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) DEFAULT '0',
+  `rid` int(11) DEFAULT '0',
+  `from_user` varchar(50) DEFAULT '' COMMENT '用户ID',
+  `nickname` varchar(50) DEFAULT '',
+  `headimgurl` varchar(500) DEFAULT '',
+  `username` varchar(50) DEFAULT '',
+  `tel` varchar(20) DEFAULT '' COMMENT '登记信息(手机等)',
+  `totalnum` int(11) DEFAULT '0' COMMENT '总次数',
+  `todaynum` int(11) DEFAULT '0' COMMENT '今天次数',
+  `lasttime` int(11) DEFAULT '0' COMMENT '最后时间',
+  `dateline` int(10) DEFAULT '0',
+  `status` tinyint(1) DEFAULT '1',
+  PRIMARY KEY (`id`),
+  KEY `rid` (`rid`),
+  KEY `uniacid` (`uniacid`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `ims_meili_red_msgid` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) unsigned NOT NULL DEFAULT '1',
+  `msgid` varchar(64) NOT NULL DEFAULT '0',
+  `time` varchar(16) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `ims_meili_red_prize` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) DEFAULT '0',
+  `rid` int(10) NOT NULL DEFAULT '0',
+  `prizeodds` int(10) NOT NULL DEFAULT '0',
+  `prizesum` int(10) unsigned NOT NULL DEFAULT '0',
+  `type` tinyint(4) NOT NULL DEFAULT '0',
+  `min_money` varchar(16) DEFAULT '',
+  `max_money` varchar(16) DEFAULT '',
+  `cardid` varchar(100) DEFAULT '',
+  `total_num` int(10) unsigned NOT NULL DEFAULT '0',
+  `url` varchar(255) DEFAULT '',
+  `txt` varchar(255) DEFAULT '',
+  `credit` int(10) NOT NULL DEFAULT '0',
+  `time` varchar(32) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  KEY `rid` (`rid`),
+  KEY `uniacid` (`uniacid`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `ims_meili_red_reply` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `rid` int(10) unsigned DEFAULT '0',
+  `uniacid` int(11) DEFAULT '0',
+  `title` varchar(50) DEFAULT '',
+  `start_picurl` varchar(500) DEFAULT '',
+  `start_theme` varchar(50) DEFAULT '',
+  `start_instruction` varchar(200) DEFAULT '',
+  `end_theme` varchar(50) DEFAULT '',
+  `end_instruction` varchar(200) DEFAULT '',
+  `end_picurl` varchar(500) DEFAULT '',
+  `starttime` int(10) DEFAULT '0',
+  `endtime` int(10) DEFAULT '0',
+  `number_times` int(11) DEFAULT '0' COMMENT '总游戏次数',
+  `most_num_times` int(11) DEFAULT '0' COMMENT '每天游戏次数',
+  `status` tinyint(1) DEFAULT '0',
+  `dateline` int(10) DEFAULT '0',
+  `xzlx` int(1) NOT NULL DEFAULT '0',
+  `area` text NOT NULL,
+  `iskeyword` int(1) NOT NULL DEFAULT '0',
+  `iptype` int(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `rid` (`rid`),
+  KEY `uniacid` (`uniacid`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `ims_meili_red_user` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `rid` int(10) NOT NULL DEFAULT '0',
+  `uniacid` int(10) unsigned NOT NULL DEFAULT '1',
+  `openid` varchar(64) NOT NULL DEFAULT '1',
+  `bopenid` varchar(64) NOT NULL DEFAULT '1',
+  `nickname` varchar(64) NOT NULL DEFAULT '1',
+  `money` varchar(16) NOT NULL DEFAULT '100',
+  `headimgurl` varchar(500) DEFAULT '',
+  `time` varchar(16) NOT NULL DEFAULT '1',
+  `status` tinyint(4) NOT NULL DEFAULT '0',
+  `salt` varchar(32) DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `rid` (`rid`),
+  KEY `uniacid` (`uniacid`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+]]></install>
+	<uninstall><![CDATA[DROP TABLE IF EXISTS `ims_meili_red_fans`;
+DROP TABLE IF EXISTS `ims_meili_red_msgid`;
+DROP TABLE IF EXISTS `ims_meili_red_prize`;
+DROP TABLE IF EXISTS `ims_meili_red_reply`;
+DROP TABLE IF EXISTS `ims_meili_red_user`;
+]]></uninstall>
+	<upgrade><![CDATA[upgrade.php]]></upgrade>
+</manifest>

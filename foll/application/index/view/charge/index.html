@@ -1,0 +1,162 @@
+{include file="common/header"}
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<body>
+<div class="x-nav">
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<div class="x-body">
+    <div class="layui-btn-group demoTable">
+        <button class="layui-btn" onclick="getCheck()">导出选中</button>
+        <button class="layui-btn" onclick="getAll()">导出全部</button>
+    </div>
+    <table class="layui-table">
+        <thead>
+            <th>
+                <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+            </th>
+            <th lay-data="{field:'center', width:80}">方案名称</th>
+            <th lay-data="{align:'center'}" >全天上限</th>
+            <th lay-data="{field:'center', width:60}" >时段范围</th>
+            <th lay-data="{field:'center', width:60}" >时段最高上限</th>
+            <th lay-data="{field:'center', width:60}">全天封顶类别</th>
+            <th lay-data="{field:'center', width:60}">操作</th>
+        </thead>
+        {volist name="list" id="vo" empty="<span>没有数据</span>"}
+        <tr>
+            <td>
+                <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='{$vo.id}'><i class="layui-icon">&#xe605;</i></div>
+            </td>
+            <td>{$vo.ChargeClass}</td>
+            <td>{$vo.Allcapped}元</td>
+            <td>
+                {if $vo.period_rand['period_rand']==''||$vo.period_rand['period_rand2']==''}
+                <span>未填写</span>
+                {else}
+                {$vo.period_rand['period_rand']}-{$vo.period_rand['period_rand2']}
+                {/if}
+            </td>
+            <td>{$vo.period_limit}</td>
+            <td>{$type[$vo.allClass]}</td>
+            <td>
+                <a title="详情" class="layui-btn layui-btn-radius layui-btn-primary layui-btn-sm"  onclick="xiangqing(this)">
+                    查看
+                </a>
+                <input type="hidden" value='{$vo.payPeriod}'>
+                <a title="更新"  class="layui-btn layui-btn-radius layui-btn-sm" onclick='edit("{:Url("index/charge_edit")}","{$vo.id}")'>
+                    编辑
+                </a>
+                <a title="删除" 	class="layui-btn layui-btn-radius layui-btn-danger layui-btn-sm" href="{:Url('index/charge_del')}&id={$vo.id}">
+                    删除
+                </a>
+            </td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+
+</div>
+<script>
+    function xiangqing(obj) {
+       var data=JSON.parse($(obj).next().val());
+       var alert_table = null;
+       alert_table='<table class="layui-table">';
+       alert_table+=' <thead><tr><th>时段名称</th><th>开始时间</th><th>结束时间</th><th>免费时间</th><th>时段收费</th><th>时段封顶</th>';
+       alert_table+= '<th>预付详情</th></tr></thead><tbody>';
+       for(var i=0;i<data.length;i++){
+            alert_table+='  <tr><td>'+data[i].period_name+'</td><td>'+data[i].starTime+'</td><td>'+data[i].endTime+'</td><td>'+data[i].free+'分钟</td>';
+            alert_table+='<td>'+data[i].price+'元'+data[i].minute+'分</td><td>'+data[i].capped+'元</td><td>'+data[i].y_minute_new+'分钟/'+data[i].addMinus+'分钟</td></tr>';
+       }
+       alert_table+='</tbody></table>';
+        layer.open({
+            type: 1,
+            area: ['70%', '70%'],
+            content:alert_table
+        });
+    }
+    function edit(url,id){
+        layer.open({
+            type: 2,
+            shade: [0.8, '#393D49'],
+            anim: 1,
+            area: ['100%', '100%'],
+            content:url+"&id="+id
+        });
+    }
+</script>
+<script>
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#start' //指定元素
+        });
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#end' //指定元素
+        });
+    });
+    var data=null;
+    function getCheck (argument) {
+        data = tableCheck.getData();//异步发送邮箱
+        console.dir(data);
+        if(data.length<1){
+            alert('请选择');
+            return false;
+        }
+        layer.open({
+            type: 1,
+            area: ['300px', '150px'],
+            content: '<div class="layui-row"><form class="layui-form layui-col-md12 x-so"><input style="width:100%;" class="layui-input" placeholder="请输入接收文件邮箱" name="email" id="email"><a style="margin-left:112px;margin-top:12px" class="layui-btn" onclick="RequestSendEmail();return false;">确认</a></form></div>'
+        });
+
+    }
+    function getAll() {
+        layer.open({
+            type: 1,
+            area: ['300px', '150px'],
+            content: '<div class="layui-row"><form class="layui-form layui-col-md12 x-so"><input style="width:100%;" class="layui-input" placeholder="请输入接收文件邮箱" name="email" id="email"><a style="margin-left:112px;margin-top:12px" class="layui-btn" onclick="RequestSendEmailAllData();return false;">确认</a></form></div>'
+        });
+    }
+    function RequestSendEmailAllData() {
+        var em =$("#email").val();
+        if(em==''){
+            layer.msg('邮箱不能空');
+            return false;
+        }
+        jiazai();
+        $.post("{:Url('index/sendChargeEMAIL')}",{
+            "type":2,
+            "data":JSON.stringify(data),
+            "email":em
+        },function (data) {
+            layer.closeAll();
+            layer.msg(data.msg);
+        });
+        return false;
+    }
+    function RequestSendEmail() {
+        var em =$("#email").val();
+        if(em==''){
+            layer.msg('邮箱不能空');
+            return false;
+        }
+        jiazai();
+        $.post("{:Url('index/sendChargeEMAIL')}",{
+            "type":1,
+            "data":JSON.stringify(data),
+            "email":em
+        },function (data) {
+            layer.closeAll();
+            layer.msg(data.msg);
+        });
+        return false;
+    }
+
+    function jiazai() {
+        layer.load(1, {shade: 0.3});
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+	<script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+	<style>
+		.header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+		.header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+		.header button{float: right;margin-top: -5px;}
+		#formli {width: 100%;float: left;}
+		#formli li{float: left;}
+		
+		#formli2 {width: 100%;float: left;}
+		#formli2 li{float: left;margin-right: 10px;}
+	</style>
+</head>
+<body style="padding: 10px;">
+	
+	<div class="header">
+		<span>电商企业信息</span>
+		<!--<button class="layui-btn layui-btn-xs" style="float: right;" onclick="add();">添加</button>-->
+		<div></div>
+	</div>
+	
+	<div style="margin: 15px 0px;"></div>
+	
+	<form class="layui-form layui-form-pane" id="form1">
+		
+		<!--<input type="hidden" name="id" value="1">-->
+
+		<div class="layui-form-item">
+	  		<label class="layui-form-label">企业名称:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="domain[CnAddr]" id="" value="<?php if(isset($info['CnAddr'])){echo $info['CnAddr'];}?>" placeholder="请输入企业名称"/>
+	  		</div>
+	  	</div>
+	  	
+	  	<div class="layui-form-item">
+	  		<label class="layui-form-label">营业执照:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="domain[licenseId]" value="<?php if(isset($info['licenseId'])){echo $info['licenseId'];}?>" placeholder="请输入营业执照"/>
+	  		</div>
+	  	</div>
+	  	
+	  	<div class="layui-form-item">
+	  		<label class="layui-form-label">机构代码:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="domain[OrgNo]" value="<?php if(isset($info['OrgNo'])){echo $info['OrgNo'];}?>" placeholder="请输入机构代码"/>
+	  		</div>
+	  	</div>
+		
+		<div class="layui-form-item">
+	  		<label class="layui-form-label">跨境角色:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="domain[role]" value="<?php if(isset($info['role'])){echo $info['role'];}?>" placeholder="请输入跨境角色"/>
+	  		</div>
+	  	</div>
+	  	
+	  	<div class="layui-form-item">
+	  		<label class="layui-form-label">许可业务:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="domain[Qualify]" value="<?php if(isset($info['Qualify'])){echo $info['Qualify'];}?>" placeholder="请输入许可业务"/>
+	  		</div>
+	  	</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">企业邮箱:</label>
+			<div class="layui-input-block">
+				<input type="text" class="layui-input" name="domain[email]" value="<?php if(isset($info['email'])){echo $info['email'];}?>" placeholder="请输入企业邮箱"/>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">物流企业名称:</label>
+			<div class="layui-input-block">
+				<input type="text" class="layui-input" name="domain[EHSEntName]" value="<?php if(isset($info['EHSEntName'])){echo $info['EHSEntName'];}?>" placeholder="请输入物流企业名称"/>
+			</div>
+		</div>
+		<div class="layui-form-item" >
+			<label class="layui-form-label">物流企业代码:</label>
+			<div class="layui-input-block">
+				<input type="text" class="layui-input" name="domain[EHSEntNo]" value="<?php if(isset($info['EHSEntNo'])){echo $info['EHSEntNo'];}?>" placeholder="请输入物流企业代码"/>
+			</div>
+		</div>
+	</form>
+	
+	<div class="layui-form-item">
+		<div class="layui-input-block">
+			<button class="layui-btn layui-btn-lx" onclick="save()">保 存</button>
+			<input type="reset" class="layui-btn layui-btn-danger layui-btn-lx" value="重 置" />
+		</div>
+	</div>
+	
+	<script type="text/javascript">
+		layui.use(['layer','form','jquery'],function(){
+			form = layui.form;
+			layer = layui.layer;
+			$ = layui.jquery;
+		});
+
+		// 保存管理员
+		function save() {
+//			var id = parseInt($('input[name="id"]').val());
+			var CnAddr = $.trim($('input[name="domain[CnAddr]"]').val());//公司名称
+			var licenseId = $.trim($('input[name="domain[licenseId]"]').val());//营业执照
+			var OrgNo = $.trim($('input[name="domain[OrgNo]"]').val());//机构代码
+			var role = $.trim($('input[name="domain[role]"]').val());//跨境角色
+			var Qualify = $.trim($('input[name="domain[Qualify]"]').val());//许可业务
+			var email = $.trim($('input[name="domain[email]"]').val());//许可业务
+			if(CnAddr == ''){
+				layer.alert('请输入企业名称',{icon:2});
+				return false;
+			}
+
+			if(licenseId == ''){
+				layer.alert('请输入营业执照',{icon:2});
+				return false;
+			}
+			
+			if(OrgNo == ''){
+				layer.alert('请输入机构代码',{icon:2});
+				return false;
+			}
+			
+			if(role == ''){
+				layer.alert('请输入跨境角色',{icon:2});
+				return false;
+			}
+			
+			if(Qualify == ''){
+				layer.alert('请输入许可业务',{icon:2});
+				return false;
+			}
+            if(email == ''){
+                layer.alert('请输入企业邮箱',{icon:2});
+                return false;
+            }
+			$.post("{:Url('Record/subjectsSave')}",$('#form1').serialize(),function(res){
+				console.dir(res);
+				
+				if(res.code > 0){
+					layer.alert(res.msg,{icon:2});
+				} else {
+					layer.alert(res.msg,{icon:1});
+					setTimeout(function(){
+						window.location.reload();
+					},1000);
+				}
+			});
+		}
+
+	</script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="common/meta"}
+    <link rel="stylesheet" href="./static/hadmin/layui/css/layui.css"></link>
+</head>
+<body class="gray-bg">
+<div class="demoTable" style="margin: 5px;">
+    搜索：
+    <div class="layui-inline">
+        <input class="layui-input" name="orderNo" id="orderNo" autocomplete="off">
+    </div>
+    <div class="layui-inline">
+        <select name="status" id="status" lay-filter="status" style="height: 38px;">
+            <option value="">状态</option>
+            <option value="2">已处理</option>
+            <option value="1">未处理</option>
+        </select>
+    </div>
+
+    <button class="layui-btn" data-type="reload" id="search">搜索</button>
+</div>
+<table id="order" lay-filter="order"></table>
+</body>
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/js/bootstrap.min.js?v=3.3.6"></script>
+<!-- 自定义js -->
+<script src="./static/hadmin/js/content.js?v=1.0.0"></script>
+<!-- Bootstrap table -->
+<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<!--<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>-->
+<!--<script src="./static/hadmin/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>-->
+<script src="./static/hadmin/layui/layui.all.js"></script>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="obtn">提交申报</a>
+</script>
+
+<script>
+    // admin/goods/add
+
+    layui.use(['upload','form','table'], function () {
+        upload = layui.upload;
+        form = layui.form;
+        var table = layui.table;
+
+
+        table.render({
+            elem: '#order',
+            id: 'orderReload',
+            page: true,
+            even: true, //开启隔行背景
+            size: 'lg', //小尺寸的表格
+            // toolbar: '#toolbarDemo',
+            // defaultToolbar:['filter', 'print', 'exports'],
+            loading:true,
+            cols: [[
+                {field:'company_name', title:'所属公司', width:110},
+                {field:'EntOrderNo', title:'订单', width:120},
+                {field:'WaybillNo', title:'物流单', width:120},
+                {field:'OrderGoodTotalCurr', title:'币制', width:100},
+                {field:'OrderGoodTotal', title:'订单总额', width:100},
+                {field:'packageType', title:'包装类型', width:100},
+                {field:'OrderDocName', title:'姓名', width:100},
+                {field:'OrderDocId', title:'证件号码', width:140},
+                {field:'RecipientTel', title:'收货人电话', width:100},
+                {field:'Province', title:'收货人省', width:100},
+                {field:'city', title:'收货人城市', width:100},
+                {field:'county', title:'收货人区/县', width:100},
+                {field:'RecipientAddr', title:'收货人地址', width:150},
+                {field:'RecipientCountry', title:'收货人国', width:100},
+                {field:'RecipientProvincesCode', title:'收货人行行政区', width:100},
+                {field:'grossWeight', title:'净重', width:100},
+                {field:'weight', title:'毛重', width:100},
+                ,{fixed: 'right', width:110,title:"操作", align:'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+            ]],
+            url: '{:url("admin/order/getOrderList")}',
+            parseData: function(res){
+                //res 即为原始返回的数据
+            return {
+                "code": res.status, //解析接口状态
+                "msg": res.message, //解析提示文本
+                "count": res.total, //解析数据长度
+                "data": res.data //解析数据列表
+            };
+        }
+        });
+        $('#search').bind("click",function () {
+            var orderNo = $('#orderNo').val();
+            var status = $('#status').val();
+            table.reload('orderReload', {
+                where: {
+                    orderNo:orderNo,
+                    status:status
+                }
+            });
+        });
+
+        //监听工具条
+        table.on('tool(order)', function(obj){
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+            var tr = obj.tr; //获得当前行 tr 的DOM对象
+
+            if(layEvent === 'obtn'){
+                var index = layer.load(1); //风格1的加载
+                $.ajax({
+                    url:'{:Url("admin/order/orderDeclChangeHandle")}',
+                    type:"POST",
+                    dataType:"json",
+                    data:{id:data.id},
+                    success:function (res) {
+                        layer.close(index);
+                        if (res.code==0){
+                            obj.del();
+                        }
+                        layer.alert(res.message);
+                    },
+                    error:function (xhr) {
+                        layer.close(index);
+                        layer.alert('链接服务错误..');
+                    }
+                });
+            }
+        });
+    });
+
+</script>
+</html>
+

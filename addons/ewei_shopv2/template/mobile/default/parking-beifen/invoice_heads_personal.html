@@ -1,0 +1,235 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>发票抬头修改</title>
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+
+    <!-- CSS Code -->
+    <link rel="stylesheet" href="../addons/ewei_shopv2/static/msg/css/bill.css" type="text/css">
+    <link rel="stylesheet" href="../addons/ewei_shopv2/static/msg/css/flickerplate.css" type="text/css">
+    <!-- JavaScript Code -->
+    <script src="../addons/ewei_shopv2/static/msg/js/jquery.min.js"></script>
+    <script src="../addons/ewei_shopv2/static/msg/js/bootstrap.js"></script>
+    <script src="../addons/ewei_shopv2/static/msg/js/jquery.js"></script>
+</head>
+<body bgcolor="#ebebeb">
+	
+<header>发票抬头修改</header>
+    
+<form action="{$urls}" id="form_head" method="post">
+	
+	<div class="person_wallet_account" >
+    <!-- 抬头选择 -->
+    <div class="record">
+   		<ul>
+          	<li class="current" style="width:100%">
+              	<h1>个人抬头</h1>
+                <div class="center" style="display:block"></div>
+            </li>
+        </ul>
+    </div>
+    <input type="hidden" name="hd"   id="head" value="<?php echo $head['Type_head'];?>">
+	<input type="hidden" name="hid"  id="heads" value="<?php echo $head['id'];?>">
+   
+    <!-- 个人抬头 -->
+    <div class="exp" style="display:block">
+      	<div class="person_shop_apply">
+	      	<ul>
+	            <li>
+	                <span>发票抬头:</span><input type="text" name="head_name" value="<?php echo $head['head_name']?$head['head_name']:''; ?>" id="head_name" readonly placeholder="填写纳税人抬头">
+	            </li>
+				
+				<li>
+	                <span>纳税人识别号:</span><input type="text" name="nsrsbh" value="<?php echo $head['nsrsbh']?$head['nsrsbh']:''; ?>" id="nsrsbh" readonly placeholder="填写纳税人识别号">
+	            </li>
+				
+	            <li>
+	                <span>手机号码:</span><input type="text" name="phone" value="<?php echo $head['phone_number']?$head['phone_number']:''; ?>" id="phone" placeholder="填写手机号码(选填)" >
+	            </li>
+				
+	            <li>
+	                <span>电子邮箱:</span><input type="email" name="email" value="<?php echo $head['email']?$head['email']:''; ?>" id="email" placeholder="填写电子邮箱(选填)" >
+	            </li>
+	        </ul>
+	        <button type="submit" class="enter" id="submit2"> 确认修改 </button>
+ 	 	</div>
+    </div>
+	
+</div>
+</form>
+
+<div style="margin-bottom:5px;">
+	<p style="text-align:center;">
+		<label style="font-size:12px;">Technology by Gogo</label>
+		<img src="../addons/ewei_shopv2/static/images/img/logo.png" width="45px" style="margin-bottom: 5px">
+	</p>
+</div>
+    
+<script type="text/javascript">
+    var liIndex=0;
+    //点击切换发票抬头
+    $('.person_wallet_account .record ul li').click(function(e) {
+    	
+        $(this).addClass('current').children('.center').show(0);
+     
+      	$(this).siblings().removeClass('current').children('.center').hide(0)
+       	//当前选中的标签；
+       	liIndex=$(this).index()
+        console.dir(liIndex);
+         
+      	if(liIndex == 0 ) {//企业
+        	$('.person_wallet_account .inc').show(0)
+        	$('.person_wallet_account .exp').hide(0)
+        	$('#head').val('01'); 
+        	
+      	}else {//个人
+	        $('.person_wallet_account .inc').hide(0)
+	        $('.person_wallet_account .exp').show(0)
+	        $('#head').val('03');
+      	}
+    });
+    
+    //发票抬头
+	$("#head_name").blur(function() {//发票抬头
+		var t = $('#head_name').val();
+		if ($.trim($('#head_name').val()).length == 0) {					
+			$('#head_name').val('').focus().val(t);				
+			$('#head_nametext').html('请输入纳税人抬头');
+			$('#head_nametext').css('display','block');				
+		} else {
+			if (isChinaName($.trim($('#head_name').val())) == false) {
+				$('#head_name').val('').focus().val(t);					
+				$('#head_nametext').html('纳税人名字输入不正确');
+				$('#head_nametext').css('display','block');
+			}else{
+				$('#head_nametext').css('display','none');
+			}
+		}
+	});
+	
+	//纳税人识别号号输入；
+		$("#nsrsbh").keydown(function(){
+			$('#nsrsbh').maxLength(18);//控制输入长度
+			var t = $('#nsrsbh').val();
+		});
+		
+		//银行账号
+		$("#bank_number").keydown(function() {
+			
+			$('#bank_number').maxLength(19);//控制输入长度
+			
+			var t = $('#bank_number').val();
+		});
+
+    //预留手机号码控制；
+		$("#phone").blur(function() {//会员注册手机号码
+			var t = $('#phone').val();
+			if ($.trim($('#phone').val()).length == 0) {					
+				//$('#phone').val('').focus().val(t);
+				$('#phonetext').html('请输入手机号码');
+				$('#phonetext').css('display','block');
+			} else {
+				if (isPhoneNo($.trim($('#phone').val())) == false) {
+					$('#phone').val('').focus().val(t);
+					$('#phonetext').html('手机号码不正确');
+					$('#phonetext').css('display','block');
+				}else{
+					$('#phonetext').css('display','none');
+				}
+			}
+		});
+		//会员注册手机号码控制；
+		$("#phone").keydown(function(){
+			$('#phone').maxLength(11);//控制输入长度				
+		});
+		
+		//电子邮箱
+		$("#email").blur(function() {
+			var t = $('#email').val();
+			if ($.trim($('#email').val()).length == 0) {					
+				//$('#email').val('').focus().val(t);				
+				$('#emailtext').html('请输入电子邮箱');
+				$('#emailtext').css('display','block');				
+			} else {
+				if (isemail($.trim($('#email').val())) == false) {
+					$('#email').val('').focus().val(t);
+					$('#emailtext').html('电子邮箱输入不正确');
+					$('#emailtext').css('display','block');
+				}else{
+					$('#emailtext').css('display','none');
+				}
+			}
+		});
+		
+    	/*姓名身份证，手机号提交*/
+		function isemail(name) {
+			var pattern = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/;
+			return pattern.test(name);
+		}
+		
+		/*姓名身份证，手机号提交*/
+		function isChinaName(name) {
+			var pattern = /^[\u4E00-\u9FA5]{1,18}$/;
+			return pattern.test(name);
+		}
+    	
+    	// 验证银行卡
+		function isCardNo(card) {
+			var pattern = /^\d{16}$/g;
+			return pattern.test(card);
+		}
+		
+		// 验证手机号
+		function isPhoneNo(phone) {
+			var pattern = /^1[34578]\d{9}$/;
+			return pattern.test(phone);
+		}
+		
+		jQuery.fn.maxLength = function(max){  
+	        this.each(function(){  
+	            var type = this.tagName.toLowerCase();  
+	            var inputType = this.type? this.type.toLowerCase() : null;  
+	            if(type == "input" && inputType == "text" || inputType == "password"){  
+	                //Apply the standard maxLength  
+	                this.maxLength = max;  
+	            }  
+	            else if(type == "textarea"){  
+	                this.onkeypress = function(e){  
+	                    var ob = e || event;  
+	                    var keyCode = ob.keyCode;  
+	                    var hasSelection = document.selection? document.selection.createRange().text.length > 0 : this.selectionStart != this.selectionEnd;  
+	                    return !(this.value.length >= max && (keyCode > 50 || keyCode == 32 || keyCode == 0 || keyCode == 13) && !ob.ctrlKey && !ob.altKey && !hasSelection);  
+	                };  
+	                this.onkeyup = function(){  
+	                    if(this.value.length > max){  
+	                        this.value = this.value.substring(0,max);  
+	                    }  
+	                };  
+	            }  
+	        });  
+	   };
+	
+	$('#submit2').click(function() {
+		//车牌颜色{php echo mobileUrl('parking/invoicelist/headers');}
+		var urls = $('#urls').val();//请求地址	
+		var head_name = $('#head_name2').val();//发票抬头
+		var email = $('#email2').val();//电子邮箱
+		
+		if(head_name == ''){
+			alert('请填写发票抬头');
+			$('#head_name2').val('').focus().val(head_name);
+			return false;
+		}
+		
+		if((email != '') && isemail($.trim($('#email').val())) == false) {
+			alert('您填写的电子邮箱不正确');
+			return false;
+		}
+		
+		return true;
+	})
+</script>
+</body>
+</html>

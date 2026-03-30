@@ -1,0 +1,159 @@
+{template 'common/header'}
+<script>
+    require(['jquery', 'util', 'datetimepicker'], function ($, u) {
+        $(document).on("change", ".color_select", function () {
+            var color = $("option:selected", this).attr('data-color');
+            color = color.replace(";", "");
+            color = color.split(':');
+            var color_obj = $(this).parent().parent().next().find(".color_demo");
+            color_obj.css('background', color[1]);
+        });
+
+        //添加一页导航
+        $('.add_nav_page').click(function () {
+            var page_nav_num = $(".page_nav_num").val() * 1 + 1;
+
+            $(".nav_content_tpl .form-group").each(function () {
+                var page_num = $(this).attr("data-pageNum");
+                $(this).find(".titles").prop("name", "titles[" + page_nav_num + "][" + page_num + "]");
+                $(this).find(".links").prop("name", "links[" + page_nav_num + "][" + page_num + "]");
+                $(this).find(".icons").prop("name", "icons[" + page_nav_num + "][" + page_num + "]");
+                $(this).find(".colors").prop("name", "colors[" + page_nav_num + "][" + page_num + "]");
+            });
+
+            var tp1_new = $(".nav_content_tpl").html();
+
+            $(".nav_content").append(tp1_new);
+
+            $(".nav_content_tpl .form-group").each(function () {
+                $(this).find(".titles").prop("name", "titles_tpl");
+                $(this).find(".links").prop("name", "links_tpl");
+                $(this).find(".icons").prop("name", "icons_tpl");
+                $(this).find(".colors").prop("name", "colors_tpl");
+            });
+            $(".page_nav_num").val(page_nav_num);
+        });
+    });
+</script>
+<div class="clearfix">
+    <form id="theform" class="form form-horizontal" action="" method="post">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                商户首页导航配置&nbsp;&nbsp;&nbsp;<input type="button" class="btn btn-primary add_nav_page"  value="添加导航页" />
+            </div>
+            <div class="panel-body nav_content">
+                {php foreach($info['desc'] as $i=>$desc) {}
+                <div class="nav_content_wapper">
+                    <div class="panel-heading">
+                        导航页{$i}
+                    </div>
+                    <div class="panel-body">
+                        {php for($num=0;$num<$pageNum;$num++) { }
+                        <div class="form-group">
+                            <div style='float:left;'>
+                                <label style='float:left;line-height: 35px;'>名称</label>
+                                <div class="col-sm-9 col-xs-12">
+                                    <input type="text" id="scan_title" style="width:120px;" class="form-control" placeholder="" name="titles[{$i}][{$num}]" value="{$desc[$num]['title']}">
+                                </div>
+                            </div>
+                            <div style='float:left;'>
+                                <label style='float:left;line-height: 35px;'>链接</label>
+                                <div class="col-sm-9 col-xs-12">
+                                    <input type="text" id="scan_title" style="width:260px;" class="form-control" placeholder="" name="links[{$i}][{$num}]" value="{$desc[$num]['link']}">
+                                </div>
+                            </div>
+                            <div style='float:left;'>
+                                <label style='float:left;line-height: 35px;'>图标</label>
+                                <div class="col-sm-9 col-xs-12">
+                                    <select class="level form-control" style="width:100px;" name="icons[{$i}][{$num}]">
+                                        {php foreach($pageConfig['svg_icon'] as $k=>$row) {}
+                                        <option value="{$k}" {if $desc[$num]['icon']==$k}selected="selected"{/if}>{$row}</option>
+                                        {php } }
+                                    </select>
+                                </div>
+                            </div>
+                            <div style='float:left;'>
+                                <label style='float:left;line-height: 35px;'>颜色</label>
+                                <div class="col-sm-9 col-xs-12">
+                                    <select class="level form-control color_select" style="width:100px;" name="colors[{$i}][{$num}]">
+                                        {php foreach($pageConfig['color'] as $k=>$row) {}
+                                        <option value="{$k}" data-color='{$row}' {if $desc[$num]['color']==$k}selected="seleced"{/if}>{$k}</option>
+                                        {php } }
+                                    </select>
+                                </div>
+                            </div>
+                            <div style='float:left;'>
+                                <div class="col-sm-9 col-xs-12" style="line-height: 35px;">
+                                    <div class="color_demo" style="width:30px;{$pageConfig['color'][$desc[$num]['color']]}">&nbsp;</div>
+                                </div>
+                            </div>
+                        </div>
+                        {php } }
+                    </div>
+                </div>
+                {php } }
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
+                <div class="col-md-2 col-lg-1">
+                    <input type="hidden" class="page_nav_num" value="{php echo count($info['desc'])-1;}" />
+                    <input name="submit" type="submit" value="保存" class="btn btn-primary btn-block" />
+                    <input type="hidden" name="token" value="{$_W['token']}" />
+                </div>
+            </div>
+        </div>
+
+        <div class="nav_content_tpl" style="display:none">
+            <div class="nav_content_wapper">
+                <div class="panel-heading">
+                    导航组
+                </div>
+                <div class="panel-body">
+                    {php for($num=0;$num<$pageNum;$num++) { }
+                    <div class="form-group" data-pageNum="{$num}">
+                        <div style='float:left;'>
+                            <label style='float:left;line-height: 35px;'>名称</label>
+                            <div class="col-sm-9 col-xs-12">
+                                <input type="text" id="scan_title" style="width:120px;" class="form-control titles" placeholder="" name="" value="">
+                            </div>
+                        </div>
+                        <div style='float:left;'>
+                            <label style='float:left;line-height: 35px;'>链接</label>
+                            <div class="col-sm-9 col-xs-12">
+                                <input type="text" id="scan_title" style="width:260px;" class="form-control links" placeholder="" name="" value="">
+                            </div>
+                        </div>
+                        <div style='float:left;'>
+                            <label style='float:left;line-height: 35px;'>图标</label>
+                            <div class="col-sm-9 col-xs-12">
+                                <select class="level form-control icons" style="width:100px;" name="">
+                                    {php foreach($pageConfig['svg_icon'] as $k=>$row) {}
+                                    <option value="{$k}">{$row}</option>
+                                    {php } }
+                                </select>
+                            </div>
+                        </div>
+                        <div style='float:left;'>
+                            <label style='float:left;line-height: 35px;'>颜色</label>
+                            <div class="col-sm-9 col-xs-12">
+                                <select class="level form-control color_select colors" style="width:100px;" name="">
+                                    {php foreach($pageConfig['color'] as $k=>$row) {}
+                                    <option value="{$k}" data-color='{$row}'>{$k}</option>
+                                    {php } }
+                                </select>
+                            </div>
+                        </div>
+                        <div style='float:left;'>
+                            <div class="col-sm-9 col-xs-12" style="line-height: 35px;">
+                                <div class="color_demo" style="width:30px;">&nbsp;</div>
+                            </div>
+                        </div>
+                    </div>
+                    {php } }
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{template 'common/footer'}

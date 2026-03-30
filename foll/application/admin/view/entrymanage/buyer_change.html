@@ -1,0 +1,96 @@
+{include file="public/header_new"}
+<link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+<link rel="stylesheet" href="./static/hadmin/assets/layui/css/admin.css">
+<link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+<style>
+    .layui-table[lay-size=sm] td, .layui-table[lay-size=sm] th{word-break: break-all;}
+    .disitem{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .layui-form-label{
+        width:90px;
+    }
+</style>
+<body class="gray-bg">
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">买家变更</label>
+                    <div class="layui-input-block">
+                        <button class="layui-btn" type="button" onclick="changeBuyer('pi')">变更PI发票</button>
+                        <button class="layui-btn" type="button" onclick="changeBuyer('ci')">变更CI发票</button>
+                        <button class="layui-btn" type="button" onclick="changeBuyer('po')">变更PO合同</button>
+
+                        <table class="layui-table" lay-size="sm">
+                            <colgroup>
+
+                            </colgroup>
+                            <thead>
+                            <tr>
+                                <th>
+                                    <div class="disitem">
+                                        <span>变更后商业发票CI</span>
+                                        <a href="{if $trade_pdf_c['ci'] } http://shop.gogo198.cn/foll{$trade_pdf_c['ci']} {else /} # {/if}" target="_blank">{if $trade_pdf_c['ci'] } 商业发票CI下载 {else /} 未变更 {/if}</a>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="disitem">
+                                        <span>变更后形式发票PI</span>
+                                        <a href="{if $trade_pdf_c['pi'] } http://shop.gogo198.cn/foll{$trade_pdf_c['pi']} {else /} # {/if}" target="_blank">{if $trade_pdf_c['pi'] } 形式发票PI下载 {else /} 未变更 {/if}</a>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="disitem">
+                                        <span>变更后购销合同PO</span>
+                                        <a href="{if $trade_pdf_c['po'] } http://shop.gogo198.cn/foll{$trade_pdf_c['po']} {else /} # {/if}" target="_blank">{if $trade_pdf_c['po'] } 购销合同PO下载 {else /} 未变更 {/if}</a>
+                                    </div>
+                                </th>
+                            </tr>
+                            </thead>
+                            <!--<tbody>-->
+                            <!--<tr>-->
+                            <!--<td>  </td>-->
+                            <!--<td>  </td>-->
+                            <!--<td>  </td>-->
+                            <!--</tr>-->
+                            <!--</tbody>-->
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+<script>
+    layui.use(['form','upload','laydate'], function(){
+        var form = layui.form,upload = layui.upload, laydate = layui.laydate;
+
+        window.changeBuyer = function (type) {
+            switch (type) {
+                case 'pi' :
+                    var url = "{:Url('admin/entryManage/change_buyer')}&type=pi&entry_id={$entry_data['id']}";
+                    break;
+                case 'ci' :
+                    var url = "{:Url('admin/entryManage/change_buyer')}&type=ci&entry_id={$entry_data['id']}";
+                    break;
+                case 'po' :
+                    var url = "{:Url('admin/entryManage/change_buyer')}&type=po&entry_id={$entry_data['id']}";
+                    break;
+            }
+            var index = layer.open({
+                type: 2,
+                title: '买家变更',
+                content: url,
+                area: ['100%','100%'],
+            });
+
+            //layer.full(index);
+        }
+    });
+</script>
+</html>

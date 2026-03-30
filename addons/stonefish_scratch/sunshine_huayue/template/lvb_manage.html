@@ -1,0 +1,269 @@
+{template 'header'}
+<div class="container-fluid">
+<nav class="navbar navbar-default">
+	<div class="container-fluid">
+		<!-- Collect the nav links, forms, and other content for toggling -->
+		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			<ul class="nav navbar-nav">
+				<li class="dropdown">
+					<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+						<span><?php 
+					if($channelStatus === '0') {
+						$channel_status = '无输入流';
+					}elseif($channelStatus === '1') {
+						$channel_status = '有输入流';
+					}elseif($channelStatus === '2') {
+						$channel_status = '异常';
+					}elseif($channelStatus === '3') {
+						$channel_status = '关闭';
+					}elseif($channelStatus === '4') {
+						$channel_status = '配置不完整';
+					}else{
+						$channel_status = '全部状态';
+					}
+					echo $channel_status;	
+					?></span>
+						<span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu">
+						<li>
+							<a href="javascript:void(0);" onclick="Search.searchchannelStatus(0)">无输入流</a>
+						</li>
+						<li>
+							<a href="javascript:void(0);" onclick="Search.searchchannelStatus(1)">有输入流</a>
+						</li>
+						<li>
+							<a href="javascript:void(0);" onclick="Search.searchchannelStatus(2)">异常</a>
+						</li>
+						<li>
+							<a href="javascript:void(0);" onclick="Search.searchchannelStatus(3)">关闭</a>
+						</li>
+						<li>
+							<a href="javascript:void(0);" onclick="Search.searchchannelStatus(4)">配置不完整</a>
+						</li>
+						<li>
+							<a href="javascript:void(0);" onclick="Search.searchchannelStatus('all')">全部状态</a>
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+		<!-- /.navbar-collapse -->
+	</div>
+	<!-- /.container-fluid -->
+</nav>
+<script type="text/javascript">
+	var Search = (function() {
+		var channelStatus = '{$channelStatus}' === '' || 'all';
+
+		var searchchannelStatus = function(val) {
+			channelStatus = val;
+			search();
+		}
+
+		var search = function() {
+			var url = '';
+			url = '&channelStatus='+channelStatus;
+			window.location.href="{php echo $this->createWebUrl('LvbManage')}"+url;
+		}
+
+		return {
+			searchchannelStatus:searchchannelStatus
+		}
+	}())
+
+	window.onkeydown = function(e) {
+		if(e.keyCode == 13) {
+			Search.searchKeyWord();
+		}
+	}
+</script>
+	<table class="table">
+		<tr>
+			<th width="40">#</th>
+			<th >直播频道ID</th>
+			<th>直播频道名称</th>
+			<th >频道状态</th>
+			<th >创建时间</th>
+			<th>操作</th>
+		</tr>
+		{loop $res->channelSet $key $item}
+		<tr id="item_{$item->id}" style="background-color:rgb(240,240,240)">
+			<input type="hidden" id="{$item->id}" value="{$item->id}">
+			<td>{php echo $key +1+($page-1)*$pagesize}</td>
+			<td>{php echo $item->channel_id}</td>
+			<td>{php echo $item->channel_name}</td>
+			<td><?php 
+			if($item->channel_status === '0') {
+				$channel_status = '无输入流';
+			}
+			elseif($item->channel_status === '1') {
+				$channel_status = '有输入流';
+			}
+			elseif($item->channel_status === '2') {
+				$channel_status = '异常';
+			}
+			elseif($item->channel_status === '3') {
+				$channel_status = '关闭';
+			}
+			elseif($item->channel_status === '4') {
+				$channel_status = '配置不完整';
+			}
+			else{
+				$channel_status = '未知';
+			}
+			echo $channel_status;
+			?></td>
+			<td>{php echo $item->create_time}</td>
+			<td>
+			
+			</td>
+		</tr>
+		{/loop}
+	</table>
+	{php echo pagination($count,$page,$pagesize)}
+</div>
+<!-- 踢出模态框 -->
+<div class="modal fade bs-example-modal-sm"  tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" id="moment_detail_layer">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+			</div>
+			<div class="modal-body"></div>
+		</div>
+	</div>
+</div>
+<!-- 开通会员 -->
+<div class="modal fade bs-example-modal-sm"  id="openvip_layer">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+			</div>
+			<div class="modal-body"></div>
+			<div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+		        <button type="button" class="btn btn-primary" onclick="confirmVip(this)">确认开通会员</button>
+		     </div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	function openVip(id) {
+		$("#openvip_layer .modal-footer").find('button').eq(1).data('user_id',id);
+		var nickname = $("#item_"+id).find('td').eq(2).html();
+		var sex = $("#item_"+id).find('td').eq(3).html();
+		if(sex == '1') {
+			sex = '男';
+		}else {
+			sex = '女';
+		}
+		var html = '';
+		html += "<p>用户名："+nickname+"</p>";
+		html += "<p>性&nbsp;别："+sex+"</p>";
+		$("#openvip_layer .modal-body").html(html);
+		$("#openvip_layer").modal('show');
+	}
+	function confirmVip() {
+		var id = $("#openvip_layer .modal-footer").find('button').eq(1).data('user_id');
+		if(!id) {
+			alert("缺少id参数");
+			return false;
+		}
+		$.ajax({
+			type:'post',
+			data:{user_id:$("#openid_"+id).val()},
+			url:"{php echo $this->createWebUrl('openvipbyadmin')}",
+			success:function(d,s) {
+				if(d.res == '100') {
+					$("#openvip_layer .modal-body").append("<p style='color:red;font-weight:bold;'>"+d.msg+"</p>");
+					$("#openvip_layer .modal-footer").find('button').eq(1).html("已开通会员");	
+					setTimeout(function() {
+						window.location.href='';
+					},2000);
+				}else {
+					alert(d.msg);
+				}
+				
+			}
+		})
+	}
+	function removeVip(id) {
+		var openid = $("#openid_"+id).val();
+		var nickname = $("#item_"+id).find('td').eq(2).html();
+		if(!openid) {
+			return false;
+		}
+		if(!confirm('确认取消['+nickname+']的会员状态?')) {
+			return false;
+		}
+		if(!confirm('再次确认取消会员状态?')) {
+			return false;
+		}
+		$.ajax({
+			type:'post',
+			data:{user_id:$("#openid_"+id).val()},
+			url:"{php echo $this->createWebUrl('removevipbyadmin')}",
+			success:function(d,s) {
+				if(d.res == '100') {
+					alert("移除会员状态成功");
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+				
+			}
+		})
+
+	}
+	// 恢复系统权限
+	function restoreFromSystem(id) {
+		var openid = $("#openid_"+id).val();
+		var nickname = $("#item_"+id).find('td').eq(2).html();
+		if(!openid) {
+			return false;
+		}
+		if(!confirm('确认解除['+nickname+']的用户限制?')) {
+			return false;
+		}
+		$.ajax({
+			type:'post',
+			data:{user_id:$("#openid_"+id).val()},
+			url:"{php echo $this->createWebUrl('restoreFromSystem')}",
+			success:function(d,s) {
+				if(d.res == '100') {
+					alert("解除限制成功");
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+				
+			}
+		})
+	}
+	// 从系统中踢出
+	function removeOutFromSystem(id) {
+		var openid = $("#openid_"+id).val();
+		var nickname = $("#item_"+id).find('td').eq(2).html();
+		if(!openid) {
+			return false;
+		}
+		if(!confirm('确认踢出['+nickname+']?')) {
+			return false;
+		}
+		$.ajax({
+			type:'post',
+			data:{user_id:$("#openid_"+id).val()},
+			url:"{php echo $this->createWebUrl('removeOutFromSystem')}",
+			success:function(d,s) {
+				if(d.res == '100') {
+					alert("踢出用户成功");
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+				
+			}
+		})
+	}
+</script>
+{template 'footer'}

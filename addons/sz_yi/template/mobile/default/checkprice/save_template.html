@@ -1,0 +1,192 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
+        <link rel="stylesheet" href="../addons/sz_yi/static/warehouse/static_file/style.css" media="all">
+        <link rel="stylesheet" href="../addons/sz_yi/static/warehouse/static_file/layui.css" media="all">
+        <link rel="stylesheet" type="text/css" href="../addons/sz_yi/static/warehouse/static_file/hui.css" />
+        <script type="text/javascript" src="../addons/sz_yi/static/warehouse/static_file/hui.js" charset="UTF-8"></script>
+        <script src="../addons/sz_yi/static/warehouse/static_file/jquery-3.2.1.min.js"></script>
+        <script src="../addons/sz_yi/static/warehouse/static_file/layui.js"></script>
+        <title>保存报价</title>
+        <style>
+            *{font-size:15px;}
+            .disf{display:flex;align-items: center;}
+            .layui-btn-normal{background:#1790FF;}
+            div{overflow: visible;}
+            .layui-table td, .layui-table th{ text-align: center;}
+            .layui-table th{ background-color: #ecf6fc; }
+            .required{color: red;font-size: 1.3rem;right: 3px;position: relative;top: 7px;}
+            .icon-right{font-size: 20px;line-height: 20px;padding-right: 10px;vertical-align: middle;}
+            .layui-layer-adminRight{top : 0px !important;}
+            .layui-layer-btn .layui-layer-btn0{border-color: #F7931E!important;background-color: #F7931E!important;}
+            .layui-table-cell{padding:0 2px;}
+            .laytable-cell-1-0-2{height:auto;min-height:auto;}
+            .layui-layer-hui .layui-layer-content{color:#fff;}
+            .disf{display:flex;align-items: center;}
+            
+            .box_content{justify-content:center;border-radius:8px;margin-bottom:30px;box-sizing:border-box;}
+            .box_content{background:{$website['color']};color:{$website['color_word']};border:1px solid {$website['color_word']};font-size:25px;text-align:center;padding:30px;width:100%;}
+            .box_content p{color:{$website['color_word']};}
+            .box_content img{width:40px;margin-right:5px;}
+            .select_box{display:none;}
+        </style>
+    </head>
+    <body>
+  
+        <div class="layui-fluid">
+    <div class="layui-card">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" name="buss_id" value="{$buss_id}" style="display:none;">
+
+            <div class="layui-card-body">
+                <div class="layui-form-item">
+                    <div class="layui-form-label">添加标签</div>
+                    <div class="layui-input-block">
+                        <div class="disf">
+                            <input type="text" name="label_name" class="layui-input" id="label_name" value="" placeholder="标签名称" style="width:50%;"/>
+                             <select name="label_value" id="label_value" lay-filter="label_value" style="width:50%;">
+                                <option value="1">文本输入框</option>
+                                <option value="2">数值输入框</option>
+                                <option value="3">时间选择框</option>
+                                <option value="4">普通选择框</option>
+                            </select>
+                        </div>
+                        <div class="select_box">
+                           
+                            <input type="text" name="select_name" class="layui-input" id="select_name" value="" placeholder="选择内容用顿号‘、’隔开" style="width:100%;"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-form-label"></div>
+                    <div class="layui-input-block">
+                        <div class="layui-btn layui-btn-success layui-btn-md add">添加</div>
+                    </div>
+                </div>
+                <fieldset class="layui-elem-field template_box">
+                    <legend>模板演示区</legend>
+                    <div class="layui-field-box">
+                        
+                    </div>
+                </fieldset>
+            </div>
+            <hr />
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">添加模板</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+    </body>
+    <script>
+        layui.use(['layer', 'form', 'table', 'upload', 'laydate'], function () {
+            var $ = layui.$
+                , layer = layui.layer
+                , form = layui.form
+                , element = layui.element
+                , laydate = layui.laydate
+                , upload = layui.upload
+                , table = layui.table;
+    
+            form.render(null, 'component-form-element');
+            
+            form.on('select(label_value)',function(data){
+                let val = data.value;
+                if(val==1){
+                    $('.select_box').hide();
+                }else if(val==2){
+                    $('.select_box').hide();
+                }else if(val==3){
+                    $('.select_box').hide();
+                }else if(val==4){
+                    $('.select_box').show();
+                }
+            });
+            
+            $('.add').click(function(){
+                let label_name = $('#label_name').val();
+                let label_value = $('#label_value').val();
+                let select_name = $('#select_name').val();
+                let rand = new Date().valueOf();
+                if(label_name==''){
+                    layer.msg('请输入标签名称');return false;
+                }
+    
+                let html = '<div class="layui-form-item">\n' +
+                    '                            <div class="layui-form-label">'+label_name+'</div>\n' +
+                    '                            <div class="layui-input-block">\n';
+                if(label_value==1){
+                    html += '<input type="text" class="layui-input" value="" placeholder=""/>\n'+
+                        '<input type="text" name="content[label_name][]" value="'+label_name+'" style="display:none;"><input type="text" name="content[label_value][]" value="'+label_value+'" style="display:none;"><input type="text" name="content[label_select][]" value="" style="display:none;"><input type="text" name="content[label_rand][]" value="" style="display:none;">\n';
+                }else if(label_value==2){
+                    html += '<input type="number" class="layui-input" value="" placeholder=""/>\n'+
+                        '<input type="text" name="content[label_name][]" value="'+label_name+'" style="display:none;"><input type="text" name="content[label_value][]" value="'+label_value+'" style="display:none;"><input type="text" name="content[label_select][]" value="" style="display:none;"><input type="text" name="content[label_rand][]" value="" style="display:none;">\n';
+                }else if(label_value==3){
+                    html += ' <input type="text" class="layui-input" id="date'+rand+'" value="" placeholder="yymmddhhii">\n'+
+                        '<input type="text" name="content[label_name][]" value="'+label_name+'" style="display:none;"><input type="text" name="content[label_value][]" value="'+label_value+'" style="display:none;"><input type="text" name="content[label_select][]" value="" style="display:none;"><input type="text" name="content[label_rand][]" value="'+rand+'" style="display:none;">\n';
+                }else if(label_value==4){
+                    if(select_name==''){
+                        layer.msg('请输入选择框内容');return false;
+                    }
+                    let val = select_name.split('、');
+                    html += '<select lay-search>\n';
+                    for(let i=0;i<val.length;i++){
+                        html += '<option value="'+val[i]+'">'+val[i]+'</option>\n';
+                    }
+                    html += '</select>\n'+
+                        '<input type="text" name="content[label_name][]" value="'+label_name+'" style="display:none;"><input type="text" name="content[label_value][]" value="'+label_value+'" style="display:none;"><input type="text" name="content[label_select][]" value="'+select_name+'" style="display:none;"><input type="text" name="content[label_rand][]" value="" style="display:none;">\n';
+                }
+                html += '                            </div>\n' +
+                    '                        </div>';
+    
+                $('.template_box').find('.layui-field-box').append(html);
+                form.render(null,'component-form-element');
+                if(label_value==3){
+                    laydate.render({
+                        elem: '#date'+rand //指定元素
+                    });
+                }
+            });
+    
+            form.on('submit(component-form-element2)', function(data){
+                // JSON.stringify()
+                // console.log(data.field);return false;
+                $.ajax({
+                    url:"./index.php?i=3&c=entry&do=checkprice&p=quote&m=sz_yi&op=save_template",
+                    method:'post',
+                    data:data.field,
+                    dataType:'JSON',
+                    success:function(res){
+                        layer.msg(res.result.msg,{time:2000}, function () {
+                            if(res.status == 0)
+                            {
+                                var layer = layui.layer;
+                                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引 
+                                parent.layer.close(index);
+                                parent.location.reload();
+                            }else if(res.status == -1){
+                                var layer = layui.layer;
+                                layer.open({
+                                    type: 2,
+                                    title: '请先登录',
+                                    shadeClose: true,
+                                    shade: 0.3,
+                                    area: ['100%', '100%'],
+                                    content: "./index.php?i=3&c=entry&do=checkprice&p=index&m=sz_yi&op=login&open=3",
+                                });
+                            }
+                        });
+                    },
+                    error:function (data) {
+                        layer.msg('系统错误',{time:2000});
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+</html>

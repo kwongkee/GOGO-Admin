@@ -1,0 +1,98 @@
+{include file="common/header"}
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<body>
+<div class="x-body">
+    <div class="layui-card-body">
+        <form class="layui-form layui-form-pane"  lay-filter="component-form-element">
+            <input type="hidden" name="id" value="{$info.id}">
+            <div class="layui-row layui-col-space10 layui-form-item">
+                <div class="layui-col-lg6">
+                    <label class="layui-form-label">月卡名称：</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="card_name" lay-verify="required" placeholder="" value="{$info['card_name']}" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-col-lg6">
+                    <label class="layui-form-label">领取类型：</label>
+                    <div class="layui-input-block">
+                        <select name="receive_type" lay-verify="required" lay-filter="receive_type">
+                            <option value="1" {if $info.receive_type ==1}selected="selected"{/if}>购买</option>
+                            <option value="0" {if $info.receive_type ==0}selected="selected"{/if}>免费</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-row layui-col-space10 layui-form-item">
+                <div class="layui-col-lg6">
+                    <label class="layui-form-label">可用天数：</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="use_time" lay-verify="required" value="{$info.use_time}" placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-col-lg6">
+                    <label class="layui-form-label">月卡状态：</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" name="card_status" lay-skin="switch" checked="checked" lay-text="启用|禁用">
+                        <div class="layui-unselect layui-form-switch layui-form-onswitch" lay-skin="_switch">
+                            <em>是</em>
+                            <i></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-lg6">
+                <label class="layui-form-label">支付费用：</label>
+                <div class="layui-input-block">
+                    <input type="text" name="card_money" value="{$info.card_money}" placeholder="" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">类型：</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="card_type" value="1" title="全日"  {if $info.card_type == 1}checked="checked"{/if}><div class="layui-unselect layui-form-radio"></div>
+                    <input type="radio" name="card_type" value="2" title="夜间卡" {if $info.card_type == 2}checked="checked"{/if}><div class="layui-unselect layui-form-radio"></div>
+                    <input type="radio" name="card_type" value="3" title="白间卡"  {if $info.card_type == 3}checked="checked"{/if}><div class="layui-unselect layui-form-radio"></div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn layui-btn-normal layui-btn-radius" lay-submit="" lay-filter="component-form-element">更新</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script type="text/javascript">
+    layui.use(['layer','form','jquery'],function(){
+        $ = layui.jquery;
+        layer = layui.layer;
+        var form = layui.form;
+        //监听工具条
+        form.on('submit(component-form-element)', function(data){
+            submit_data(data.field);
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+    function submit_data(filed) {
+        axios.post('{:Url("index/edit_month_card_type")}',filed).then(function (repose) {
+            console.log(repose.data);
+            if(repose.data.code == 0){
+                layer.msg(repose.data.message, {icon: 1});
+                setTimeout(function () {
+                    location.reload();
+                },1200);
+            }else{
+                layer.msg(repose.data.message, {icon: 5});
+            }
+        }).catch(function (error) {
+            layer.msg(error, {icon: 5});
+        });
+
+    }
+</script>
+</body>
+</html>

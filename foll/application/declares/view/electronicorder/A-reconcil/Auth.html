@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>实名认证</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+	<script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+	<style type="text/css">
+		.clear{clear: both;}
+		.money{color: red;font-weight: bold;font-size: 15px;}
+	</style>
+</head>
+<body>
+
+<div style="margin-top: 10px;"></div>
+
+<form class="layui-form" method="post" action="{:Url('Reconcil/Auth')}" id="forms">
+  
+  {if condition="$order.role eq 1"}
+  <div class="layui-form-item">
+    <label class="layui-form-label">请选择商户</label>
+    <div class="layui-input-inline">
+      <select name="useruid" lay-verify="requie" lay-filter="sel">
+        <option value=""></option>
+        {volist name='order.userlist' id='vo' key='index'}
+        <option value="{$vo.id}">{$vo.user_name}</option>
+        {/volist}
+      </select>
+    </div>
+  </div>
+  {/if}
+  
+  
+	<div class="layui-form-item">
+    <div class="layui-inline">
+      	<label class="layui-form-label">请选择时间</label>
+      	<div class="layui-input-inline" style="width: 200px;">
+        	<input type="text" name="startDate" id="startDate" value="" lay-verify="datetime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+      	</div>
+      	<div class="layui-form-mid">-</div>
+  		<div class="layui-input-inline" style="width: 200px;">
+        	<input type="text" name="endDate" id="endDate" value="" lay-verify="datetime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+      	</div>
+      	<div class="layui-form-mid layui-word-aux">查询时间</div>
+  	</div>
+	</div>
+  
+	<input type="hidden" name="userid" id="userid" value="" />
+  
+  <div class="layui-form-item">
+    <div class="layui-input-block">
+      <button class="layui-btn" type="submit">查询</button>
+      <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+  </div>
+  
+</form>
+
+<div class="clear">
+	
+</div>
+
+<span class="x-right" style="line-height:40px">共有数据：{$order.total} 条</span>
+<table class="layui-table">
+  <colgroup>
+    <col width="50">
+    <col width="200">
+    <col>
+  </colgroup>
+  <thead>
+    <tr>
+      <th style="width: 29px;padding:3px 4px;">编号</th>
+        <th>订单编号</th>
+        <th>用户名</th>
+        <th>身份证</th>
+        <th>认证成功日期</th>
+        <th>认证状态</th>
+        <th>认证费用</th>
+    </tr> 
+  </thead>
+  
+  <tbody>
+    {volist name='order.lists' id='vo' key='index'}
+    <tr>
+        <td>{$index}</td>
+        <td>{$vo.orderId}</td>
+				<td>{$vo.userName}</td>
+				<td>{$vo.userId}</td>
+				<td>{$vo.completeTime}</td>
+				<td>{$vo.resultMsg}</td>
+        <td>({$vo.fee/100}) 元</td>
+    </tr>
+    {/volist}
+    <tr>
+    	<td>合计</td>
+    	<td colspan="6">
+    		<p>
+    			(服务费用: <span class="money">￥{$order.ServerMoney}</span>元)&nbsp;&nbsp;
+    			(验核费用: <span class="money">￥{$order.Money}</span>元)&nbsp;&nbsp;
+    			(合计总额: <span class="money">￥{$order.Total}</span>元)&nbsp;&nbsp;
+    			(验核人数: <span class="money">{$order.count}</span>人)&nbsp;&nbsp;
+    			<input type="button" class="layui-btn layui-btn-sm" lay-filter="uploads" lay-submit value="确认" />
+	    		<input type="button" class="layui-btn layui-btn-sm layui-btn-danger" lay-filter='Wrong' lay-submit value="有误" />
+    		</p>
+    	</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="layui-box layui-laypage layui-laypage-default">
+	{$order.pages}
+</div>
+
+<!--  确认下载对账  -->
+<form class="layui-form" id="uploadform" style="display: none;">
+		<div class="layui-form-item">
+			<div class="layui-input-inline">
+				{volist name="$order.jiesuan" id='vo' key='index'}
+				<input type="hidden" name="userid[{$index}]" value="{$vo.id}" />
+				{/volist}
+				<input type="hidden" name="userinfo[email]" value="{$order.email}"/>
+				<input type="hidden" name="userinfo[ServerMoney]" value="{$order.ServerMoney}"/>
+				<input type="hidden" name="userinfo[Money]" value="{$order.Money}"/>
+				<input type="hidden" name="userinfo[Total]" value="{$order.Total}"/>
+				<!-- -->
+				<input type="hidden" name="userinfo[count]" value="{$order.count}"/>
+				<input type="hidden" name="userinfo[startDate]" value="{$order.startDate}" />
+				<input type="hidden" name="userinfo[endDate]"  value="{$order.endDate}" />
+			</div>
+		</div>
+</form>
+
+
+<script type="text/javascript">
+//Demo
+layui.use(['form','element','jquery','layer','layedit','laydate'], function(){
+	var $  = layui.jquery,
+	form   = layui.form,
+	layer  = parent.layer == undefined ? layui.layer:parent.layer,
+	element  = layui.element,
+	layedit = layui.layedit
+  ,laydate = layui.laydate;
+  
+  //监听select选择
+  form.on('select(sel)',function(res) {
+  	$('#userid').val(res.value);
+  	return false;
+  });
+  
+  //监听提交
+  form.on('submit(formDemo)', function(data) {
+    $.post("{:Url('Reconcil/Auth')}",$('#forms').serialize(),function (res) {
+					var res = JSON.parse(res);
+	        if(res.code > 0 ) {
+	            layer.msg('设置成功', {icon: 6});
+	        } else {
+	        	layer.msg(res.msg, {icon: 5});
+	        }
+    	});
+    return false;
+    
+  });
+  
+  //绑定事件   确认账单
+  form.on('submit(uploads)',function(res) {
+  	
+  	layer.confirm("您的电子邮箱为：{$order.email}",{icon:6,title:'请确认您的电子邮箱'}
+  	,function(index) {
+  		
+	  	$.post("{:Url('Reconcil/Authuploads')}",$('#uploadform').serialize(),function(data) {
+					 //var res = JSON.parse(data);
+		       layer.msg(data.msg);
+		       if(res.code > 0){
+		       		layer.msg(data.msg, {icon: 5});
+		       } else {
+		       		layer.msg(data.msg, {icon: 6});		       		
+		       		setTimeout(function(){
+		       			window.location.reload();
+		       		},1000);
+		       }
+	    });
+    	return false;
+  		
+  	},function(err){
+  		layer.msg('取消')
+  	});
+  	
+  })
+  
+  //有误按钮   账单有误
+  form.on('submit(Wrong)',function() {
+  	$.post("{:Url('Reconcil/Autherror')}",$('#uploadform').serialize(),function(data) {
+			 //var res = JSON.parse(data);
+       layer.msg(data.msg);
+       if(res.code > 0){
+       		layer.msg(data.msg, {icon: 5});
+       } else {
+       		layer.msg(data.msg, {icon: 6});		       		
+       		/*setTimeout(function(){
+       			window.location.reload();
+       		},1000);*/
+       }
+	  });
+    return false;
+  });
+  
+  //日期
+  	var start = laydate.render({
+	    elem: '#startDate'
+	    ,theme: 'molv'
+	    ,type: 'datetime'
+	    ,format:'yyyy-MM-dd HH:mm:ss'
+	    ,min: '-0'
+	    ,max:'2099-6-16 23:59:59'
+	    ,done:function(value,data){
+	    }
+  	});
+  
+  	var end = laydate.render({
+    	elem: '#endDate'
+    	,theme: 'molv'
+    	,type: 'datetime'
+    	,format:'yyyy-MM-dd HH:mm:ss'
+    	,min: '-0'
+    	,max:'2099-6-16 23:59:59'
+    	,done:function(value,data,endDate){
+    	}
+  	});
+  
+});
+</script>
+</body>
+
+</html>

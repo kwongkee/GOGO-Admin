@@ -1,0 +1,85 @@
+{include file='iot/header'}
+<body>
+<style>
+    .infor {
+        width: 100%;
+        height: auto;
+        border-bottom: 1px solid #dfdfdf;
+        display: inherit;
+        padding: 10px 0;
+    }
+
+    .infor_left {
+        float: left;
+        width: 30%;
+        text-align: center;
+    }
+
+    .infor_right {
+        float: left;
+        width: 68%;
+    }
+
+    .infor_code {
+        width: 100%;
+        text-align: center;
+    }
+</style>
+<div class="whole">
+    <div class="header">
+        <div class="toplogo"><img src="./static/iot/images/top-logo.png" alt=""></div>
+        <h2 class="title">访客信息</h2>
+        <a href="#" onClick="javascript :history.back(-1);" class="quit">返回</a>
+    </div>
+    <div class="content" style="margin-top: 17%; display: inline-block;">
+        <div class="infor">
+            <div class="infor_left">手机号码：</div>
+            <div class="infor_right">{$data.tel}</div>
+        </div>
+        <div class="infor">
+            <div class="infor_left">访客姓名：</div>
+            <div class="infor_right">{$data.idname}</div>
+        </div>
+        <div class="infor">
+            <div class="infor_left">身份证号：</div>
+            <div class="infor_right">{$data.idcard}</div>
+        </div>
+        <div class="infor">
+            <div class="infor_left">来访期限：</div>
+            <div class="infor_right">{$data.expire_time}/小时</div>
+        </div>
+        <div class="infor">
+            <div class="infor_left">来访方式：</div>
+            <div class="infor_right">{$verif[$data.verif_type]}</div>
+        </div>
+    </div>
+    <div class="infor_code" style="height: 0; overflow: hidden;margin-top:23px;"></div>
+    <div class="btn" style="margin:9% 14% 5%;width:70%;" onclick="viewQr();return false;"><a href="#">查看二维码</a></div>
+</div>
+
+{include file='iot/menu'}
+</body>
+<script type='text/javascript' src='http://cdn.staticfile.org/jquery/2.1.1/jquery.min.js'></script>
+<script type="text/javascript" src="http://cdn.staticfile.org/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+<script>
+    // 设置 qrcode 参数
+    var isBack = false;
+    jQuery('.infor_code').qrcode({width: 230, height: 220, text: "{$sharurl}"});
+    function viewQr() {
+        if (isBack) {
+            isBack = false;
+            $('.btn a').html('查看二维码');
+            $('.content').css({"height": "100%", "overflow": "initial"});
+            $('.infor_code').css({"height": 0, "overflow": "hidden"});
+            // $('.infor_code').html('');
+        } else {
+            isBack = true;
+
+            $('.btn a').html('返回');
+            $('.content').css({"height": 0, "overflow": "hidden"});
+            $('.infor_code').css({"height": "100%", "overflow": "initial"});
+        }
+        return false;
+    }
+</script>
+</html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="Cache-Control" content="no-cache"/>
+<title>做做作业 - {$config['webtitle']}</title>
+<meta http-equiv="description" content="" />
+<meta name="renderer" content="webkit"/>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+<meta name="description" content="" id="description"/>
+<meta name="keywords" content=""/>
+<link href="./resource/css/common.min.css?v=20170802" rel="stylesheet">
+<link rel="stylesheet" href="{$templateurl}css/wap_css.css" type="text/css"/>
+<link rel="stylesheet" href="../addons/ck_homework/Assets/mobile/style/light7.min.css">
+<link rel="stylesheet" href="../addons/ck_homework/Assets/mobile/style/weibei.css">
+<!--图片插件end-->
+<style>
+	.a2 h2 label{ padding-top:10px; padding-bottom:10px;}
+	.a2 h2 label{}
+	h1 p{
+		font-size: 24px;
+	}
+</style>
+
+<script type="text/javascript" src="./resource/js/lib/jquery-1.11.1.min.js?v=20170802"></script>
+<!--<script>-->
+<!--	var COMMENT_ZAN = "{php echo $this->createMobileUrl('audio')}";-->
+<!--	var MOBILE_ASSETS = "{php echo MOBILE_ASSETS}";-->
+<!--	var JSSDK_CONFIG = $.parseJSON('{php echo json_encode($_W['account']['jssdkconfig'])}');-->
+<!--</script>-->
+<!--<script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>-->
+<!--<script src="{$templateurl}js/weixin.ini.js"></script>&lt;!&ndash;audio end&ndash;&gt;-->
+<!--<script src="{$templateurl}js/easydialog.min.js"></script>-->
+	<!--图片插件start-->
+<script type="text/javascript" src="./resource/js/app/util.js"></script>
+<script type="text/javascript" src="./resource/js/lib/mui.min.js?v=20170802"></script>
+<script src="./resource/js/require.js"></script>
+<script src="{$templateurl}js/recorder.mp3.min.js"></script>
+</head>
+<body style="background-color:#FFFFFF;font-size:0.85rem;">
+<div id="agreement" class="cuotidiankai">
+	<div class="a1">   
+    <p style="font-size: 1rem;">本题来源：<a>{$rsdb['titlename']}</a></p>
+    </div>
+	
+    <div class="a2">
+	    <form id="myupload" name="form1" method="post" action="{$dourl}" enctype="multipart/form-data">
+	    <input type="hidden" name="token" value="{$_W['token']}" />
+	    <input type="hidden" name="startimes" value="{$kstimes}" />
+	    <input type="hidden" name="actiond" value="dosubmit" />
+		<input type="hidden" name="q_total" value="{$total}" />
+   	    {loop $listdb $key $value}
+	    {php $answer_arll = explode('\n',$value[answer]);}
+	    {php $q_id = $value[id];}
+		<input type="hidden" id="typelt" value="{$value['type']}">
+    	<h1>{php echo html_entity_decode($value['titlename']);}</h1>
+        <h2>
+			{if $value['type'] < 3}<!--选择题-->
+				{loop $arraytp $i $row}
+				{if $answer_arll[$i]}
+				<div class="label-div"><label>
+				{if $value['type'] == 1}
+				<input type="radio" name="answerdb[{$value['id']}]" onclick="answer_ck()" value="{$row}" {if $value['hdanswer'] == $row}checked{/if}>
+				{else}
+				<input type="checkbox" name="answerdb[{$value['id']}][]" onclick="answer_ck()" value="{$row}" {if @in_array($row, $value['hdanswer'])}checked{/if}>
+				{/if}
+				{$row}、{$answer_arll[$i]}</label></div>
+				{/if}
+				{/loop}
+			{elseif $value['type'] == 3}<!--填空题-->
+				<label>请填写答案</label>
+				<label><textarea style="height:100px; width:100%;" id="answertk" name="answerdb[{$value['id']}]" onKeyUp="answer_ck()" onBlur="answer_ck()">{$value[hdanswer]}</textarea></label>
+				
+				<label style="color:#999999;">注意：多个答案以中文逗号分开，如飘逸，封样，退费。</label>
+			{elseif $value['type'] == 4}<!--判断题-->
+				<div class="label-div"><label><input type="radio" name="answerdb[{$value['id']}]" value="A" onclick="answer_ck()" {if $value['hdanswer'] == 'A'}checked{/if}> 正确</label></div>
+				<div class="label-div"><label><input type="radio" name="answerdb[{$value['id']}]" value="B" onclick="answer_ck()" {if $value['hdanswer'] == 'B'}checked{/if}> 错误</label></div>
+			{else}<!--主观题、作文题-->
+
+                <div class="shangchuantup">
+                    <div class="mui-table-view-chevron">
+                        <div class="mui-image-uploader">
+                            <a href="javascript:;" class="mui-upload-btn mui-pull-right js-image-answerarr"></a>
+                            <div class="mui-image-preview js-image-preview mui-pull-right">
+                            {loop $value[hdanswer] $i $rowpl}
+                            {if $rowpl}
+                    		<input type="hidden" value="{$rowpl}" name="answerarr[]" class="js-answer-img-arr" /><img src="{php echo tomedia($rowpl);}" data-id="{$i}" data-preview-src="" data-preview-group="__IMG_UPLOAD_answerarr" />
+                            {/if}
+                    		{/loop}
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+                        util.image($('.js-image-answerarr'), function(url){
+                            $('.js-image-answerarr').parent().find('.js-image-preview').append('<input type="hidden" value="'+url.attachment+'" name="answerarr[]" class="js-answer-img-arr" /><img src="'+url.url+'" data-id="'+url.id+'" data-preview-src="" data-preview-group="__IMG_UPLOAD_answerarr" />');
+                            answer_ck();
+                        }, {
+                            crop : false,
+                            multiple : true,
+                            preview : '__IMG_UPLOAD_answerarr'
+                        });
+                    </script>
+                    
+                </div>
+			<!--音频-->
+			<div class="zj2" style="text-align: center;">
+				<a href="javascript:void(0)" onClick="ck_audio();">
+					<i class="iconfont" style="font-size:40px;">&#xe64c;</i>
+					请点击阅读
+				</a>
+
+				<div class="clear"></div>
+			</div>
+
+			<div class="zj2 show_audio" style="display: none;" onClick="audio_play($(this))">
+				<a class="audio_boder" local="">
+					<audio id="audio_show" src="" hidden controls></audio><i class="iconfont"><img src="{MOBILE_ASSETS}img/yuyin1.png" alt=""></i><em>0s'</em></a>
+				<div class="clear"></div>
+			</div>
+
+			<div class="zj2 show_audio1" style="display: none;">
+				<a><i class="iconfont"><img src="{$templateurl}img/loading.gif" alt="" width="25" height="25"></i><em>音频上传中...</em></a>
+				<div class="clear"></div>
+			</div>
+			<div class="zj2 show_audio2" style="display: none;">
+				<a><i class="iconfont"><img src="{$templateurl}img/loading.gif" alt="" width="25" height="25"></i><em>音频上传失败...</em></a>
+				<div class="clear"></div>
+			</div>
+			<div class="zj2 show_audio3" style="display: none;">
+				<a><i class="iconfont"><img src="{$templateurl}img/loading.gif" alt="" width="25" height="25"></i><em>音频上传成功...</em></a>
+				<div class="clear"></div>
+			</div>
+
+			<input type="hidden" name="audio" value="">
+			<input type="hidden" name="audio_time" value="">
+			<input type="hidden" name="audio_local" value="">
+
+			<input type="hidden" name="filePath" id="filePath" value="">
+			<input type="hidden" name="baseUrl" id="baseUrl" value="">
+			<input type="hidden" name="mp3_filename" id="mp3_filename" value="">
+			<div class="clear"></div>
+			<!--音频结束-->
+				<br/>
+				<font class="beizhusc">请拍照上传图片，务必保证图片清晰，不要出现其他太多的非答案区域。</font>
+			{/if}
+        </h2>
+		
+		<input type="hidden" id="aqid" name="aqid" value="">
+		<input type="hidden" id="q_id" name="q_id" value="{$q_id}">
+		<input type="hidden" id="numberbh" name="numberbh" value="{$page}">
+
+		{/loop}
+		</form>
+
+		<div class="ctrl-bar">
+			<a class="s" href="javascript:void(0);" style="transform:rotate(0);" {if $page > 1}onClick="onurl_ck()"{/if}><i class="iconfont">上一题</i></a>
+			<a class="zuotizy" href="javascript:void(0);" onClick="qcard_ck()">题卡</a>
+			<a class="zuotizy" style="background:#999;">{$page}/{$total}</a></li>
+			<a href="javascript:void(0);" onClick="submit_ck()" class="zuotizy" style="background:#F00;">交卷</a>
+			<a class="x"  href="javascript:void(0);" {if $page < $total}onClick="upurl_ck()"{/if}><i class="iconfont">下一题</i></a>
+        </div>
+    </div>
+</div>
+
+
+<!--题卡 start-->
+<div id="agreement1" class="cuotidiankai" style="display:none;">
+	<div class="a1">
+    <p style="text-align:center; font-size:16px;"><a href="javascript:void(0);" onClick="qcard_ck()" style="float:left;"><</a>作业题卡</p>
+    </div>
+    <div class="tikatika">
+    	{php for($i=1;$i <= $total; $i++){}
+        <li><a href="{$urlt}&page={$i}" {if @in_array($i, $aqid_all)} style="background-color:#FF9900;"{/if}>{$i}</a></li>
+        {php }}
+    </div>
+</div>
+<!--题卡 end-->
+{template 'audio2'}
+<script type="text/javascript">
+//获取答题信息
+function answer_ck(){
+
+	var answerl = '';
+	var answerl_ck = 0;
+	var typelt = document.getElementById("typelt").value;
+	
+	if(typelt < 3){
+		
+		var obj = $(".a2 label");
+		if(obj.length == 0){return;}
+		var radio = obj.children('input[type="radio"]');
+		var check = obj.children('input[type="checkbox"]');
+	
+		//单选
+		for(var i=0;i<radio.length;i++){
+			if($(radio[i]).prop('checked') == true){
+				answerl += $(radio[i]).val();
+				answerl_ck = 1;
+			}
+		}
+		
+		//多选
+		for(var i=0;i<check.length;i++){
+			if($(check[i]).prop('checked') == true){
+				answerl += $(check[i]).val()+',';
+				answerl_ck = 1;
+			}
+		}
+	
+	}else if(typelt == 3){
+        var answertk = document.getElementById("answertk").value;
+        if(answertk){
+            answerl = answertk;
+            answerl_ck = 1;
+        }
+    }else if(typelt == 4){
+		var objp = $(".a2 label");
+		if(objp.length == 0){return;}
+		var radiop = objp.children('input[type="radio"]');
+	
+		//选项
+		for(var i=0;i<radiop.length;i++){
+			if($(radiop[i]).prop('checked') == true){
+				answerl += $(radiop[i]).val();
+				answerl_ck = 1;
+			}
+		}
+	}else{
+
+        var answerImgArr = document.getElementsByClassName("js-answer-img-arr");
+        var len = answerImgArr.length;
+        for(var i=0;i<len;i++){
+            if(i>0){
+                answerl += ','+answerImgArr[i].value;
+            }else{
+                answerl += answerImgArr[i].value;
+            }
+        }
+        if(answerl!=''){
+            //answerl = encodeURI(answerl);
+            answerl_ck = 1;
+        }
+	}
+
+	document.getElementById("aqid").value = answerl;
+}
+
+//题卡
+function qcard_ck(){
+	if(document.getElementById("agreement1").style.display == 'block'){
+		document.getElementById("agreement").style.display = 'block';
+		document.getElementById("agreement1").style.display = 'none';
+	}else{
+		document.getElementById("agreement").style.display = 'none';
+		document.getElementById("agreement1").style.display = 'block';
+	}
+}
+
+//上一题
+function onurl_ck(){
+	var onurlt = '{$urlt}&page={php echo $onpage = $page - 1;}';
+    var q_id = document.getElementById("q_id").value;
+	var aqid = document.getElementById("aqid").value;
+	if(aqid){
+		onurlt += '&aqid='+aqid+'&q_id='+q_id;
+	}
+
+	window.location.href = onurlt;
+}
+//下一题
+function upurl_ck(){
+	var upurlt = '{$urlt}&page={php echo $uppage = $page + 1;}';
+	var q_id = document.getElementById("q_id").value;
+	var aqid = document.getElementById("aqid").value;
+	if(aqid){
+		upurlt += '&aqid='+aqid+'&q_id='+q_id; 
+	}
+
+	window.location.href = upurlt;
+}
+
+
+//显示录音页面
+function ck_audio() {
+	$('.audio_html').show();
+	$('#footerjob1').hide();
+}
+//关闭录音页面
+function ck_audio_close() {
+	$('.audio_html').hide();
+	$('#footerjob1').show();
+}
+
+var set1 ;
+var set2 ;
+function audio_play(obg) {
+
+	var second =  $("input[name='audio_time']").val();
+	var audio = document.getElementById('audio_show');
+	var mp3url =  $("input[name='baseUrl']").val();
+
+	//赋值
+	$(obg).find('audio').attr('src',mp3url);
+
+	//播放图片列表
+	var icon = ['icon_1.png','icon_2.png','icon_3.png','yuyin1.png'];
+	var index = 0;
+	if(audio.paused){
+		set1 = setInterval(function () {
+			$(obg).find('img').attr('src',MOBILE_ASSETS+'img/'+icon[index]);
+			index++;
+			if(index >= 3)
+			{
+				index = 0;
+			}
+		},500);
+		audio.play();
+
+		set2 = setTimeout(function () {
+			clearInterval(set1);
+			clearTimeout(set2);
+			$(obg).find('img').attr('src',MOBILE_ASSETS+'img/'+icon[3]);
+		},second*1000);
+	}else{
+		clearInterval(set1);
+		clearTimeout(set2);
+		$(obg).find('img').attr('src',MOBILE_ASSETS+'img/'+icon[3]);
+		audio.pause();
+	}
+}
+
+//提交
+function submit_ck(){
+	document.form1.submit();
+}
+
+
+</script>
+
+<div class="clear"></div>
+</body>
+</html>

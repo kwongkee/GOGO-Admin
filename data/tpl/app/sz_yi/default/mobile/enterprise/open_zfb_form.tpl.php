@@ -1,0 +1,20 @@
+<?php defined('IN_IA') or exit('Access Denied');?><!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>调查结束</title>
+    <script src="../addons/sz_yi/template/mobile/default/enterprise/static/js/jquery-1.8.3.min.js"></script>
+</head>
+<body>
+    <div class="contain"><?php  echo htmlspecialchars_decode($zfb_form);?></div>
+</body>
+<script>
+    $(function(){
+        // var s = htmlspecialchars("zfb_form");
+        // $('.contain').html("");
+    })
+</script>
+</html>

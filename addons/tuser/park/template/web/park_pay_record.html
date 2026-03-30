@@ -1,0 +1,91 @@
+{template 'common/header'}
+<style>
+    .l_tableWrap .l_table_tit .l_formBar {
+        border: 0;
+        float: left;
+        font-size: 0;
+    }
+    .y_sele {
+        display: inline-block;
+        padding: 5px 0 12px 12px;
+    }
+    .y_sele_tit {
+        font-size: 14px;
+        padding: 0 0 0 10px;
+    }
+    .l_table_search{
+        margin-left: 10px;
+        margin-bottom: 5px;
+    }
+</style>
+<div class="clearfix">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            停车记录
+        </div>
+        <div class="table-responsive panel-body" style="overflow:visible;">
+            <table class="table table-hover">
+                <tr>
+                    <th>id</th>
+                    <th>用户名</th>
+                    <th>手机号</th>
+                    <th>计费方式</th>
+                    <th>消耗积分</th>
+                    <th>支付金额</th>
+                    <th>实际支付金额</th>
+                    <th>支付时间</th>
+                </tr>
+                {loop $list $row}
+                <tr>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['id']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['fans_info']['username']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['fans_info']['mobile']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$park_pay_types[$row['park_pay_type']]}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['credit']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {php echo $row['money']/100;}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {php echo $row['pay_money']/100;}
+                        </p>
+                    </td>
+                    <td>
+                        {if $row['status']==2}
+                        <p class="form-control-static" title="{php echo date('Y-m-d H:i:s',$row['update_at']);}">
+                            {php echo date('Y-m-d H:i:s',$row['update_at']);}
+                        </p>
+                        {/if}
+                    </td>
+                </tr>
+                {/loop}
+            </table>
+        </div>
+        <div class="panel-body text-right">
+            {$pager}
+        </div>
+    </div>
+</div>
+{template 'common/footer'}

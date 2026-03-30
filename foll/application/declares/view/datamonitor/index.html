@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>商品备案</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/admin.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        th{
+            padding:3px 12px;
+        }
+    </style>
+</head>
+<body style="padding-top: 10px;">
+
+<div class="layui-fluid">
+    <span>选择批次</span>
+    <select name="interest"  id="pici">
+        <option value="">请选择</option>
+        {volist name='batch_list' id="vo" key="k"}
+        {if $k == 1}
+        <option value="{$vo.batch_num}" selected="selected">{$vo.batch_num}</option>
+        {else}
+        <option value="{$vo.batch_num}">{$vo.batch_num}</option>
+
+        {/if}
+        {/volist}
+    </select>
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-sm6 layui-col-md3">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    总提交数
+                    <span class="layui-badge layui-bg-blue layuiadmin-badge">批次</span>
+                </div>
+                <div class="layui-card-body layuiadmin-card-list">
+                    <p class="layuiadmin-big-font" id="batchCount">{$batchCount}</p>
+                    <p>
+                        总计提交数
+                        <span class="layuiadmin-span-color" id="subCount">{$subCount} <i class="layui-icon"></i></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm6 layui-col-md3">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    支付成功数
+                    <span class="layui-badge layui-bg-cyan layuiadmin-badge">批次</span>
+                </div>
+                <div class="layui-card-body layuiadmin-card-list">
+                    <p class="layuiadmin-big-font" id="batchPayCount">{$batchPayCount}</p>
+                    <p>
+                        总支付数
+                        <span class="layuiadmin-span-color" id="payCount">{$payCount} <i class="layui-icon"></i></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm6 layui-col-md3">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    申报数
+                    <span class="layui-badge layui-bg-green layuiadmin-badge">批次</span>
+                </div>
+                <div class="layui-card-body layuiadmin-card-list">
+
+                    <p class="layuiadmin-big-font" id="batchElecCount">{$batchElecCount}</p>
+                    <p>
+                        总申报
+                        <span class="layuiadmin-span-color" id="elecCount"> {$elecCount}<i class="layui-icon"></i></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!--<div class="layui-col-sm6 layui-col-md3">-->
+            <!--<div class="layui-card">-->
+                <!--<div class="layui-card-header">-->
+                    <!--未支付数-->
+                    <!--<span class="layui-badge layui-bg-green layuiadmin-badge">批次</span>-->
+                <!--</div>-->
+                <!--<div class="layui-card-body layuiadmin-card-list">-->
+
+                    <!--<p class="layuiadmin-big-font">999,666</p>-->
+                    <!--<p>-->
+                       <!--总未支付数-->
+                        <!--<span class="layuiadmin-span-color">*** <i class="layui-icon"></i></span>-->
+                    <!--</p>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="layui-col-sm6 layui-col-md3">-->
+            <!--<div class="layui-card">-->
+                <!--<div class="layui-card-header">-->
+                    <!--未申报数-->
+                    <!--<span class="layui-badge layui-bg-green layuiadmin-badge">批次</span>-->
+                <!--</div>-->
+                <!--<div class="layui-card-body layuiadmin-card-list">-->
+
+                    <!--<p class="layuiadmin-big-font">999,666</p>-->
+                    <!--<p>-->
+                        <!--总未申报数-->
+                        <!--<span class="layuiadmin-span-color">*** <i class="layui-icon"></i></span>-->
+                    <!--</p>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <div class="layui-col-sm6 layui-col-md3">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    错误提交数
+                    <!--<span class="layui-badge layui-bg-orange layuiadmin-badge"></span>-->
+                    <a  href="{:Url('datamonitor/expro_errorsub')}&num={$batch_list[0]['batch_num']}" id="load" style="color: #ffffff;"> <span class="layui-badge  layuiadmin-badge" style="background-color: red;color: #ffffff;">批次导出</span></a>
+                </div>
+                <div class="layui-card-body layuiadmin-card-list">
+
+                    <p class="layuiadmin-big-font" id="batchErrorSub">{$batchErrorSub}</p>
+                    <p>
+                        总错误数
+                        <span class="layuiadmin-span-color" id="errSub">{$errSub} <i class="layui-icon"></i></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm6 layui-col-md3">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    支付失败数
+                    <span class="layui-badge layui-bg-orange layuiadmin-badge">批次</span>
+                </div>
+                <div class="layui-card-body layuiadmin-card-list">
+
+                    <p class="layuiadmin-big-font" id="batchErrPay">{$batchErrPay}</p>
+                    <p>
+                        总失败数
+                        <span class="layuiadmin-span-color" id="errPay">{$errPay} <i class="layui-icon"></i></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm6 layui-col-md3">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    申报失败数
+                    <span class="layui-badge layui-bg-orange layuiadmin-badge">批次</span>
+                </div>
+                <div class="layui-card-body layuiadmin-card-list">
+
+                    <p class="layuiadmin-big-font" id="batchErrELec">{$batchErrELec}</p>
+                    <p>
+                        总失败数
+                        <span class="layuiadmin-span-color" id="errElec">{$errElec}<i class="layui-icon"></i></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    线性图
+                    <div class="layui-btn-group layuiadmin-btn-group">
+                        <!--<button class="layui-btn layui-btn-primary layui-btn-xs">去年</button>-->
+                        <!--<button class="layui-btn layui-btn-primary layui-btn-xs">今年</button>-->
+                    </div>
+                </div>
+                <div class="layui-card-body">
+                    <div class="layui-row">
+                        <div class="layui-col-sm12">
+                            <div class="layui-carousel layadmin-carousel layadmin-dataview" data-anim="fade" lay-filter="LAY-index-pagetwo" lay-anim="fade" style="width: 100%; height: 280px;">
+                                <div carousel-item="" id="LAY-index-pagetwo">
+                                    <div class="layui-this" _echarts_instance_="1534391401666" style="-webkit-tap-highlight-color: transparent; user-select: none; background-color: rgba(0, 0, 0, 0); cursor: default;"><div style="position: relative; overflow: hidden; width: 763px; height: 332px;"><div data-zr-dom-id="bg" class="zr-element" style="position: absolute; left: 0px; top: 0px; width: 763px; height: 332px; user-select: none;"></div><canvas width="763" height="332" data-zr-dom-id="0" class="zr-element" style="position: absolute; left: 0px; top: 0px; width: 763px; height: 332px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></canvas><canvas width="763" height="332" data-zr-dom-id="1" class="zr-element" style="position: absolute; left: 0px; top: 0px; width: 763px; height: 332px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></canvas><canvas width="763" height="332" data-zr-dom-id="_zrender_hover_" class="zr-element" style="position: absolute; left: 0px; top: 0px; width: 763px; height: 332px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></canvas><div class="echarts-tooltip zr-element" style="position: absolute; display: none; border-style: solid; white-space: nowrap; transition: left 0.4s ease 0s, top 0.4s ease 0s; background-color: rgba(50, 50, 50, 0.5); border-width: 0px; border-color: rgb(51, 51, 51); border-radius: 4px; color: rgb(255, 255, 255); font-family: 微软雅黑, Arial, Verdana, sans-serif; padding: 5px; left: 568px; top: 86px;">10月<br>访问量 : 1,370<br>下载量 : 1,240<br>平均访问量 : 1,300</div></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script type="text/javascript">
+var data =null;
+    layui.use(['layer','jquery'],function(){
+        $ = layui.jquery;
+        layer = layui.layer;
+
+    });
+    setInterval(function () {
+        var num =  document.getElementById('pici');
+        var index = num.selectedIndex;
+        var n = num.options[index].value;
+        $("#load").attr("href","{:Url('datamonitor/expro_errorsub')}&num="+n);
+        axios.get("{:Url('datamonitor/getCount')}&num="+n).then(function (reason) {
+            data =reason.data;
+            $("#batchCount").html(reason.data.batchCount);
+            $("#subCount").html(reason.data.subCount+'<i class="layui-icon"></i>');
+            $("#batchPayCount").html(reason.data.batchPayCount);
+            $("#payCount").html(reason.data.payCount+'<i class="layui-icon"></i>');
+            $("#batchElecCount").html(reason.data.batchElecCount);
+            $("#elecCount").html(reason.data.elecCount+'<i class="layui-icon"></i>');
+            $("#batchErrorSub").html(reason.data.batchErrorSub);
+            $("#errSub").html(reason.data.errSub+'<i class="layui-icon"></i>');
+            $("#batchErrPay").html(reason.data.batchErrPay);
+            $("#errPay").html(reason.data.errPay+'<i class="layui-icon"></i>');
+            $("#batchErrELec").html(reason.data.batchErrELec);
+            $("#errElec").html(reason.data.errElec+'<i class="layui-icon"></i>');
+        }).catch(function (err) {
+            layer.msg(err);
+        })
+    },5000);
+</script>
+</body>
+</html>

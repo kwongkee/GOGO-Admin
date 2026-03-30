@@ -1,0 +1,81 @@
+{template 'header'}
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-6">
+				<h4><span class='glyphicon glyphicon-circle-arrow-right'></span>&nbsp;&nbsp;社区群发技能</h4>
+				<label>群发内容</label>
+				<textarea class="form-control" id="send_content" rows="10" placeholder=""></textarea>
+				<br>
+				<button class="form-control btn btn-sm btn-info" onclick="doSend('send_content')">确认群发！</button>
+				<p class="help-block">将发送至所有社区粉丝，整个过程会耗时，请耐心等待！！！</p>
+			</div>
+		</div>
+		<br>
+		<div class="row">
+		<div class="col-sm-12">
+			<label>发送历史</label>
+			<ul class="list-group">
+				<li class="list-group-item">
+					<div class="row">
+						<div class="col-sm-1">#</div>
+						<div class="col-sm-2"></div>
+						<div class="col-sm-7">内容</div>
+						<div class="col-sm-2">时间</div>
+					</div>
+				</li>
+				{loop $list $key $item}
+				<li class="list-group-item">
+					<div class="row">
+						<div class="col-sm-1">{php echo $key +1}</div>
+						<div class="col-sm-2">
+						{$item['creator']}
+						</div>
+						<div class="col-sm-7">{$item['content']}</div>
+						<div class="col-sm-2">{$item['add_time']}</div>
+					</div>
+				</li>
+				{/loop}
+			</ul>
+		</div>
+	</div>
+	</div>
+	<script type="text/javascript">
+	function doSend(type) {
+
+		if(!confirm('请确认是否群发？将通过消息模板方式通知所有花约用户'))
+		{
+			return;
+		}
+		if(!confirm('再次确认！'))
+		{
+			return;
+		}
+		if(!type) {
+			return false;
+		}
+		// 群发内容
+		if(type == 'send_content') {
+			var send_content = $("#send_content").val();
+		}
+		
+		$.ajax({
+			type:'post',
+			data:{
+				send_content:send_content
+			},
+
+			url:"{php echo $this->createWebUrl('multisend')}",
+			success:function(d) {
+				if(d.res == '100') {
+					alert(d.msg);
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+
+	}
+
+	</script>
+{template 'footer'}

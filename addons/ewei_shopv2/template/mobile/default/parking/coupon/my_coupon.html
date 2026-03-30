@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html">
+    <title>我的卷</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="../addons/ewei_shopv2/static/css/coupon/mui.min.css">
+    <!--App自定义的css-->
+    <link rel="stylesheet" type="text/css" href="../addons/ewei_shopv2/static/css/coupon/app.css">
+    <style>
+        .mui-card .mui-control-content {
+            padding: 10px;
+        }
+        .mui-control-content {
+            height: 150px;
+        }
+        .mui-toast-container {bottom: 50% !important;}
+    </style>
+</head>
+<body>
+<div class="mui-content new-min-quan">
+    <ul>
+        {loop $myCoupon $item}
+        <li>
+            <a href="{php echo mobileUrl('parking/coupon/my_coupon_detail')}&id={$item['id']}">
+                <div class="left">
+                    <div class="rtdian"></div><div class="rbdian"></div>
+                    <div class="padding">
+
+                        <img src="
+                    {if empty($item['img_smill_url'])}
+                    ../addons/ewei_shopv2/static/css/coupon/images/logo.jpg
+                    {else}
+                    {php echo $_W['siteroot'].'attachment/'.$item['img_smill_url']}
+                    {/if}"><div class="tit">{$item['coupon_title']}<p>{php echo date('Y.m.d',$item['coupon_stime'])}-{php echo date('Y.m.d',$item['coupon_etime'])}</p></div>
+                    </div>
+                </div>
+                <div class="right {if $item['status']!=0}bg1{else}bg2{/if}">
+                    <div class="ltdian"></div><div class="lbdian"></div>
+                    <div class="padding">
+                        <div class="price">￥<i>{$item['coupon_money']}</i></div>
+                        <div class="btn"><button class="used">{$status[$item['status']]}</button></div>
+                    </div>
+                </div>
+            </a>
+        </li>
+        {/loop}
+
+    </ul>
+</div>
+</body>
+
+</html>

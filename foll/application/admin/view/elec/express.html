@@ -1,0 +1,96 @@
+{include file="public/header"}
+<body style="padding: 10px;">
+<div class="header">
+    <span>快递公司列表</span>
+
+    <button class="layui-btn layui-btn-sm" onclick="addDevice()">添加快递公司</button>
+</div>
+
+<table class="layui-table">
+    <thead>
+    <tr>
+        <th>快递公司名称</th>
+        <th>编码</th>
+        <th>模板ID</th>
+        <!--<th>运单号API链接</th>-->
+        <th>创建时间</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {volist name="data" id='vo'}
+    <tr>
+        <td>
+            {$vo['code_name']}
+        </td>
+        <td>{$vo['code']}</td>
+        <td>{$vo['temp_id']}</td>
+        <!--<td>{$vo['api_address']}</td>-->
+        <td>
+            {$vo['createtime']|date='Y-m-d H:i:s',###}
+        </td>
+        <td>
+            <button class="layui-btn layui-btn-normal layui-btn-xs" onclick="edit({$vo['id']})">编辑</button>
+            <button class="layui-btn layui-btn-danger layui-btn-xs" onclick="del({$vo['id']})">删除</button>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<div class="layui-page">
+    {$page}
+</div>
+
+<script type="text/javascript">
+
+    layui.use(['layer'],function(){
+        layer = layui.layer;
+        $     = layui.jquery;
+    });
+
+    // 添加设备
+    function addDevice() {
+        layer.open({
+            type:2,
+            title:'添加设备',
+            shade:0.3,
+            area:['100%','100%'],
+            content:'{:Url("admin/elec/addExpress")}'
+        });
+    }
+
+    //编辑设备
+    function edit(id){
+        layer.open({
+            type:2,
+            title:'编辑设备',
+            shade:0.3,
+            area:['100%','100%'],
+            content:'{:Url("admin/elec/addExpress")}&id='+id
+        });
+    }
+
+    // 删除数据
+    function del(id,bill)
+    {
+        layer.confirm('确定要删除吗？',{icon:3,btn:['确定','取消']},function() {
+            $.post("{:Url('admin/elec/delExpress')}",{id:id},function(resd){
+                var res = resd;
+                if(res.code == 1) {
+                    layer.msg(res.msg,{icon:1});
+                    setTimeout(function(){
+                        layer.closeAll();
+                        window.location.reload();
+                    },1100);
+                } else {
+                    layer.alert(res.msg,{icon:2});
+                }
+            },'json');
+        })
+    }
+</script>
+
+</body>
+</html>

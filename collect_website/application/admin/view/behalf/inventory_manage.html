@@ -1,0 +1,266 @@
+{include file="common/header_new"}
+
+<style>
+    .disf{display:flex;align-items: center;}
+    img{ width:20px;height:20px;}
+</style>
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <h3 style="text-align: center;">清单管理</h3>
+
+                <div id="toolbar1" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;float: left;">
+                    <div class="disf">
+                        <input type="text" class="form-control" id="demo" placeholder="请选择开始时间">
+                        <input type="text" class="form-control" id="demo2" placeholder="请选择结束时间">
+                        <select name="merch" id="merch" class="form-control selectpicker show-tick " data-live-search="true">
+                            <option value="">选择卖家汇总</option>
+                            {volist name="merch" id="vo"}
+                            <option value="{$vo.id}">{$vo.id}:{$vo.user_name}</option>
+                            {/volist}
+                        </select>
+                        <select name="express" id="express" class="form-control selectpicker2 show-tick " data-live-search="true">
+                            <option value="">选择物流汇总</option>
+                            {volist name="express" id="vo"}
+                            <option value="{$vo.id}">{$vo.id}:{$vo.enterprise_name}</option>
+                            {/volist}
+                        </select>
+                        <button type="button" href="javascript:;" onclick="out_inventory();" class="btn btn-default" style="margin-left:5px;margin-top:5px;">
+                            输出清单
+                        </button>
+                    </div>
+                </div>
+                <table id="table"
+                /*默认排序项*/
+                data-sort-name="id"
+                data-sort-order="desc"
+                /*工具栏相关*/
+                data-toolbar="#toolbar"
+                data-search="true"          /*搜索框*/
+                data-search-on-enter-key="true"
+                data-show-refresh="true"    /*刷新按钮*/
+                /*分页相关*/
+                data-side-pagination="server"
+                data-pagination="true"      /*显示分页*/
+                data-page-size="10"         /*每页显示条数*/
+                /*移动端相关*/
+                data-mobile-responsive="true"
+                data-card-view="true"
+                data-show-columns="true"
+                /*radio or checkbox字段名称*/
+                data-select-item-name="id" >
+                <thead>
+                <tr>
+                    <th data-field="ordersn"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">订单编号</th>
+                    <th data-field="enterprise_name"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">物流企业名称</th>
+                    <th data-field="sellername"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">卖家名称</th>
+                    <th data-field="buyername"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">买家名称</th>
+                    <th data-field="totalprice"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">订单金额</th>
+                    <th data-field="status_name"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">状态</th>
+                    <th data-field="createtime"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">创建时间</th>
+                    <th data-field="manage"
+                        data-align="center"
+                        data-sortable="true"
+                        data-formatter="actionFormatter">操作</th>
+                </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    var table;
+
+    $(document).ready(function(){
+        //时间空间
+        $("#demo").datetimepicker({
+            format: 'Y-M-D H:mm:ss',
+        });
+        $("#demo2").datetimepicker({
+            format: 'Y-M-D H:m:ss',
+        });
+        //table控件
+        table = $('#table').bootstrapTable({
+            url: "{:url('admin/behalf/inventory_manage')}&pa=1",
+            queryParams: queryParams,
+        });
+        //选择器控件
+        $('.selectpicker').selectpicker({
+            'selectedText': 'cat'
+        });
+        $('.selectpicker2').selectpicker({
+            'selectedText': 'cat'
+        });
+        $('.selectpicker').change(function(){
+            merchid = $(this).val();
+            expressid = $('.selectpicker2').val();
+            startDate = $("#demo").val();
+            endDate = $("#demo2").val();
+            // console.log($(this).val()+' '+expressid);
+            table = $('#table').bootstrapTable('refreshOptions',{
+                url: "{:url('admin/behalf/inventory_manage')}&pa=1&merchid="+merchid+'&exp_id='+expressid+'&startDate='+startDate+'&endDate='+endDate,
+                queryParams: queryParams,
+            });
+        });
+        $('.selectpicker2').change(function(){
+            merchid = $('.selectpicker').val();
+            expressid = $(this).val();
+            startDate = $("#demo").val();
+            endDate = $("#demo2").val();
+            // console.log($(this).val());
+            table = $('#table').bootstrapTable('refreshOptions',{
+                url: "{:url('admin/behalf/inventory_manage')}&pa=1&merchid="+merchid+'&exp_id='+expressid+'&startDate='+startDate+'&endDate='+endDate,
+                queryParams: queryParams,
+            });
+        });
+        $('#search .form-control').attr('placeholder','搜索订单编号');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.id;
+        var name = row.name;
+
+        var result = "";
+
+        // result += '<button style="margin-right: 5px;" type="button" onclick="openWindow('+id+',\''+name+'\',\''+1+'\')" class="btn btn-primary btn-xs">输出运单</button>';
+        // result += '<button style="margin-right: 5px;" type="button" onclick="openWindow('+id+',\''+name+'\',\''+2+'\')" class="btn btn-primary btn-xs">输出小票</button>';
+        result += '<button style="margin-right: 5px;" type="button" onclick="openWindow('+id+',\''+name+'\',\''+3+'\')" class="btn btn-normal btn-xs">查看订单</button>';
+        // result += '<button style="margin-right: 5px;" type="button" onclick="del('+id+',\''+name+'\',\''+2+'\')" class="btn btn-danger btn-xs">删除</button>';
+        return result;
+    }
+
+    function del(id,title){
+        layer.confirm('确认删除该物流企业吗？',function(index){
+            $.ajax({
+                url: "<?php echo Url('admin/behalf/del_logistics'); ?>",
+                data:{'id':id},
+                type:'post',
+                cache:false,
+                dataType:'json',
+                success:function(data){
+                    if(data.code==0)
+                    {
+                        layer.msg(data.msg, {
+                            icon: 1,
+                            time: 2000
+                        }, function(){
+                            window.location.reload();
+                        });
+                        return true;
+                    }else {
+                        layer.msg(data.msg, {icon:2, time:2000});
+                        return false;
+                    }
+                },
+                error:function() {
+                    layer.msg('系统出错,请重试',{icon:2,time:1000});
+                }
+            });
+        });
+    }
+
+    function openWindow(id,name,type){
+        if(type==1){
+            var index = layer.open({
+                type: 2,
+                title: '输出运单PDF',
+                area:['100%','100%'],
+                content: "{:url('admin/behalf/make_express')}&id="+id
+            });
+        }else if(type==2){
+            var index = layer.open({
+                type: 2,
+                title: '输出小票JPG',
+                area:['100%','100%'],
+                content: "{:url('admin/behalf/make_ticket')}&id="+id
+            });
+        }else if(type==3){
+            var index = layer.open({
+                type: 2,
+                title: '查看订单',
+                area:['100%','100%'],
+                content: "{:url('admin/behalf/order_detail')}&id="+id
+            });
+        }
+    }
+
+    function out_inventory(){
+        keyword = $('#search .form-control').val();
+        merchid = $('.selectpicker').val();
+        expressid = $('.selectpicker2').val();
+        startDate = $("#demo").val();
+        endDate = $("#demo2").val();
+
+
+        $.ajax({
+            url: "<?php echo Url('admin/behalf/out_inventory'); ?>",
+            data:{'keyword':keyword,'merchid':merchid,'expressid':expressid,'startDate':startDate,'endDate':endDate},
+            type:'post',
+            cache:false,
+            dataType:'json',
+            success:function(data){
+                if(data.code==0)
+                {
+                    window.location.href="<?php echo Url('admin/behalf/out_inventory'); ?>&keyword="+keyword+"&merchid="+merchid+"&expressid="+expressid+"&startDate="+startDate+"&endDate="+endDate+"&ppa=1";
+                    // layer.msg(data.msg, {
+                    //     icon: 1,
+                    //     time: 2000
+                    // }, function(){
+                    //     window.location.reload();
+                    // });
+                    return true;
+
+                }else {
+                    layer.msg(data.msg, {icon:2, time:2000});
+                    return false;
+                }
+            },
+            error:function() {
+                layer.msg('系统出错,请重试',{icon:2,time:1000});
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

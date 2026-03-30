@@ -1,0 +1,135 @@
+{include file="common/header"}
+<div class="x-nav">
+
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"
+       href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<div class="x-body">
+    <!--<div class="layui-row">-->
+        <!--<form class="layui-form layui-col-md12 x-so" method="get" action="{:Url('index/get_month_apply_info')}">-->
+            <!--<input type="text" name="username" placeholder="请输入姓名" value="" autocomplete="off" class="layui-input">-->
+            <!--<button class="layui-btn" lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>-->
+        <!--</form>-->
+    <!--</div>-->
+    <!-- <xblock>
+        <button class="layui-btn layui-btn-danger" onclick="updateAll()"><i class="layui-icon"></i>批量受理</button>
+    </xblock> -->
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <!-- <th>
+                <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe618;</i></div>
+            </th> -->
+            <th>姓名</th>
+            <th>认证状态</th>
+            <th>已上传资料</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {volist name='list.data'  id='item' empty="暂时没有数据"}
+        <tr>
+            <input type="hidden" name="id" value="{$item['id']}">
+            <td>{$item['uname']}</td>
+            {if !empty($item['license'])}
+            <td>已认证</td>
+            {else}
+            <td>未完成认证</td>
+            {/if}
+            <td id="imgs">
+                <div id="layer-photos-demo" class="layer-photos-demo">
+                    <?php $d=explode(",",trim($item['name'],',')); foreach($d as $key => $value){
+                    echo "<img style='height:40px;' src='../../../../attachment/images/verifed/".$value.".jpg'>";
+                    }?>
+                </div>
+            </td>
+            <td class="td-manage">
+                <a href="javascript:;" onclick="update(this,{$item['id']},'{$item['openid']}')" class="layui-btn">通过</a>
+            </td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+    <div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+    </div>
+
+</div>
+<script>
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#start' //指定元素
+        });
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#end' //指定元素
+        });
+    });
+
+
+    /*用户-删除*/
+    // function member_del(obj, id) {
+    //     layer.confirm('确认要删除吗？', function (index) {
+    //         //发异步删除数据
+    //         $.get("&oid=" + id, {}, function (res) {
+    //             if (res == 'success') {
+    //                 $(obj).parents("tr").remove();
+    //                 layer.msg('已删除!', {icon: 1, time: 1000});
+    //             }
+    //         });
+    //     });
+    // }
+    // function updateAll() {
+    //     var data = tableCheck.getData();
+    //     $.get("{php echo webUrl('parking/card/updateStatusId')}&id=" + data, {}, function (res) {
+    //         if (res == 'success') {
+    //             layer.msg('审核成功', {icon: 1});
+    //             $(".layui-form-checked").not('.header').parents('tr').remove();
+    //         }
+    //     })
+    // }
+
+    function update(obj, id, openid) {
+        layer.open({
+            content: '<form class="layui-form" action=""><div class="layui-form-item"><label class="layui-form-label">是否需要抽签</label><div class="layui-input-block"><select id="shifou" name="sf" style="display:block;height:38px;" lay-verify="required"><option value="">请选择</option><option value="1">是</option><option value="2" selected="selected">否</option></select></div></div></form>'
+            , btn: ['确认'],
+            area: ['300px', '200px']
+            ,scrollbar: false
+            , yes: function (index, layero) {
+                var shifou = $("#shifou").val();
+                $.get("{:Url('index/update_review_status')}", {
+                    "openid": openid,
+                    "id":id,
+                    "sf": shifou,
+                }, function (res) {
+                    if (res.code == 0) {
+                        layer.msg('审核成功', {icon: 1});
+                        $(obj).parent('td').parent('tr').remove();
+                    } else {
+                        alert('服务链接失败');
+                    }
+                })
+            }
+        });
+    }
+
+    $("#imgs img").each(function (index) {
+        $(this).bind("click", function () {
+            layer.msg("<img height='500' width='800' src='" + $(this).attr('src') + "'>", {
+                time: 50000,
+                area: 'auto',
+                maxWidth: 1000,
+                maxHeight: 1000,
+                Boolean: true,
+                btn: '关闭'
+            });
+        });
+    });
+
+</script>
+</body>
+</html>

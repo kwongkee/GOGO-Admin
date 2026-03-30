@@ -1,0 +1,117 @@
+{template 'web/link'}
+    <style>
+        table,.layui-table td, .layui-table th{
+            border-color: white;
+            border:none;
+        }
+        .layui-table{
+            width: 95%;
+            margin: 10px auto;
+        }
+        .layui-table tbody tr td a,a:hover{
+            color: #1E9FFF;
+        }
+        .layui-table thead tr{
+            background-color: white;
+            border-top: 1px solid #e2e2e2;
+            border-bottom: 1px solid #e2e2e2;
+        }
+        .demoTable{
+            margin: 10px auto 20px;
+            width: 95%;
+        }
+        .layui-btn{
+            height: 38px;
+            line-height: 38px;
+        }
+        .layui-nav-img{
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            margin-top: 0;
+            margin-left: 0;
+        }
+    </style>
+
+<form class="layui-form" action="">
+
+    <div class="demoTable">
+        <div class="layui-inline">
+
+            <div class="layui-input-inline">
+                <input class="layui-input" name="kwd" id="demoReload" autocomplete="off" placeholder="微信昵称/手机号码/openid">
+            </div>
+
+            <div class="layui-input-inline">
+                <select name="public">
+                    {loop $publist $inx $item}
+                        <option value="{$item['uniacid']}">{$item['name']}</option>
+                    {/loop}
+                </select>
+            </div>
+
+            <div class="layui-input-inline">
+                <a href="javascript:void(0);" class="layui-btn" onclick="submit();">搜索</a>
+            </div>
+
+        </div>
+    </div>
+</form>
+
+    <div class="layui-form" id="tables">
+
+    </div>
+
+<script>
+    layui.use(['layer','table'],function(){ //独立版的layer无需执行这一句
+        var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
+        var table = layui.table;
+    });
+
+    // 所属内容
+    function submit() {
+        var kwd   = $('input[name="kwd"]').val();
+        var opval = $('select option:selected').val();
+        var ophtml = $('select option:selected').html();
+        var urls = "{php echo WebUrl('mer_chats',array('m'=>'mer_chats','do'=>'index','p'=>'search'))}";
+        $.ajax({
+            url:urls,
+            type:'POST',
+            data:{
+                kwd:kwd,opval:opval,ophtml:ophtml
+            },
+            success:function(red){
+                var res = JSON.parse(red);
+                if(res.code != 1) {
+                    layer.msg(res.msg);
+                    return false;
+                }
+                // 赋值
+                $('#tables').html(res.msg);
+            }
+        })
+    }
+
+
+    // 选择操作
+    function Choice(obj,set) {
+        // 选择操作 将选择的数据写入表中
+        var urls = "{php echo WebUrl('mer_chats',array('m'=>'mer_chats','do'=>'index','p'=>'selectdata'))}";
+        $.ajax({
+            url:urls,
+            type:'POST',
+            data:set,
+            success:function(red){
+
+                var res = JSON.parse(red);
+                if(res.code != 1) {
+                    alert(res.msg);
+                    return false;
+                }
+
+                $(obj).attr('onclick','') // 重新绑定事件
+                $(obj).html('已选择') //  选择成功修改状态
+            }
+        })
+    }
+</script>

@@ -1,0 +1,56 @@
+{template 'header'}
+<div class="ui-container">
+	<ul class="ui-list ui-list-link ui-list-cover ui-border-tb" id='list_container'>
+		{loop $list $item}
+		<li class="ui-row-flex ui-whitespace ui-border-t "  style="line-height:20px;" onclick="relieve('{$item['defriend_openid']}')">
+			<div class="ui-col ui-col ui-flex ui-flex-ver ui-flex-pack-center ui-flex-align-start">
+				<div class="ui-list-thumb">
+				<span style="border-radius:3px;background-image:url({$item['uinfo']['headimgurl']})"></span>
+				</div>
+			</div>
+			<div class="ui-col ui-col-4 ui-flex ui-flex-ver ui-flex-pack-center ui-flex-align-start">
+				<div>
+					{$item['uinfo']['nickname']}
+				</div>
+				<div class="ui-label-list">
+					{if $item['uinfo']['sex'] == 1}
+					<label class="ui-label-me ui-label-s-3"><span class="fa fa-mars"></span></label>
+					{else}
+					<label class="ui-label-me ui-label-s-1"><span class="fa fa-venus"></span></label>
+					{/if}
+					{if $item['uinfo']['province'] || $item['uinfo']['city']}
+					{php $item['uinfo']['city'] = $item['uinfo']['province'] == $item['uinfo']['city'] ? '':$item['uinfo']['city']}
+					<label class="ui-label-me ui-label-s-2">{$item['uinfo']['province']}{$item['uinfo']['city']}</label>
+					{/if}
+				</div>
+			</div>
+		</li>
+		{/loop}
+	</ul>
+</div>
+<script type="text/javascript">
+	function relieve(openid) {
+		if(!openid) {
+			alert('openid is error');
+			return;
+		}
+
+		if(!confirm('确认从黑名单中移除？移除后可以接收对方消息！')) {
+			return;
+		}
+
+		$.ajax({
+			type:'post',
+			data:{defriend_openid:openid,status:'n'},
+			url:"{php echo $this->createMobileUrl('defriend')}",
+			success:function(d,s) {
+				if(d.res == '100') {
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+	}
+</script>
+{template 'footer'}

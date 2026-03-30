@@ -1,0 +1,77 @@
+{include file="common/header"}
+<body>
+<div class="x-nav">
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<div class="x-body">
+</div>
+<table class="layui-table">
+    <thead>
+    <tr>
+        <th>方案名称</th>
+        <th>月卡种类</th>
+        <th>发行数量</th>
+        <th>未缴数</th>
+        <th>已缴数</th>
+        <th>支付时间</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    {volist name='list' id='vo' empty='暂无数据'}
+    <tr>
+        <td>{$vo.scheme_name}</td>
+        <td>{$vo.month_name}</td>
+        <td>{$vo.month_num}</td>
+        <td>{$vo.payNotNum}</td>
+        <td>{$vo.payNum}</td>
+        <td>{$vo.lottery_pay|date='Y-m-d',###}至{$vo.lottery_pay2|date='Y-m-d',###}</td>
+        <td>
+            <a class="layui-btn layui-btn-normal"  onclick="detail(this,'{$vo.id}');">详情</a>
+            <a class="layui-btn "  onclick="pay(this,'{$vo.id}');">支付管理</a>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+<div class="page">
+    <div>
+        {$page}
+    </div>
+</div>
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    var objs =null;
+    layui.use(['laydate','layer','form'], function(){
+        var laydate = layui.laydate;
+        var layer = layui.layer;
+        var form = layui.form;
+        laydate.render({
+            elem:"#date",
+            type:"datetime",
+            range:"/"
+        })
+    });
+
+
+    function detail(obj,id) {
+        layer.open({
+            type: 2,
+            area:['1122px','457px'],
+            content:"{:Url('month_card/pay_out_manage_info')}&mid="+id//这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+        });
+    }
+    function pay(obj,id) {
+        layer.open({
+            type: 2,
+            area:['1122px','457px'],
+            content:"{:Url('month_card/month_pay')}&mid="+id//这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+        });
+    }
+
+</script>
+</body>
+</html>

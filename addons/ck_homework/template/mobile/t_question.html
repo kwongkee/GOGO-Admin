@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="Cache-Control" content="no-cache"/>
+<title>我出的题目 - {$config['webtitle']}</title>
+<meta http-equiv="description" content="" />
+<meta name="renderer" content="webkit"/>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+<meta name="description" content="" id="description"/>
+<meta name="keywords" content=""/>
+<link rel="stylesheet" href="{$templateurl}css/css.css" type="text/css"/>
+
+<script src="{$templateurl}js/jquery-1.8.0.min.js" language="javascript"></script>
+
+<!--分页 start-->
+<link rel="stylesheet" href="{$templateurl}css/pase.css" type="text/css"/>
+<!--分页 end-->
+</head>
+
+<body>
+
+<div class="banji">
+	<div class="tiobgbj">
+		<h1>我出的题目</h1>
+		{if $tab == 'reward'}
+		<a href="javascript:history.go(-1);"> < 返回</a>
+		{else}
+		<a href="{php echo $this->createMobileUrl('t_index');}"> < 返回</a>
+		{/if}
+	</div>
+    
+    <div class="banjifld">
+		<div style="overflow:scroll;">
+			<font>            
+				<a href="{$urlt}" {if $tab == ''}class="active"{/if}>&nbsp;&nbsp;&nbsp;我的题目&nbsp;&nbsp;&nbsp;</a>
+				<a href="{$urlt}&tab=add" {if $tab == 'add'}class="active"{/if}>&nbsp;&nbsp;上传题目&nbsp;&nbsp;&nbsp;</a>
+				<a href="{$urlt}&tab=reward" {if $tab == 'reward'}class="active"{/if}>&nbsp;&nbsp;奖励说明&nbsp;&nbsp;</a>
+			</font>
+		</div>
+    </div>
+	    
+</div>
+
+{if $tab == 'reward'}
+<!--奖励 strat-->
+<div class="jlshum">{php echo html_entity_decode($config['reward_content']);}</div>
+<!--奖励 end-->
+{else}
+<div class="kaoshizuoyetab kaoshizuoyetabbjzy1">
+  <div id="TabbedPanels1" class="TabbedPanels">
+    <ul class="TabbedPanelsTabGroup">
+      <li class="TabbedPanelsTab {if $op == '0'}TabbedPanelsTabSelected{/if}" ><a href="{$urlt}" style="display:block;">全部题目</a></li>
+      <li class="TabbedPanelsTab {if $op == '1'}TabbedPanelsTabSelected{/if}" ><a href="{$urlt}&op=1" style="display:block;">未提交</a></li>
+      <li class="TabbedPanelsTab {if $op == '2'}TabbedPanelsTabSelected{/if}" ><a href="{$urlt}&op=2" style="display:block;">审核中</a></li>
+      <li class="TabbedPanelsTab {if $op == '3'}TabbedPanelsTabSelected{/if}" ><a href="{$urlt}&op=3" style="display:block;">审核失败</a></li>
+      <li class="TabbedPanelsTab {if $op == '4'}TabbedPanelsTabSelected{/if}" style="border:none;"><a href="{$urlt}&op=4" style="display:block;">审核通过</a></li>
+    </ul>
+    <div class="TabbedPanelsContentGroup">
+      
+      
+      <div class="TabbedPanelsContent zhishidiantab">
+        <div class="warp_content clear">
+          <div class="job_list_content">
+		  
+          	{loop $list $key $value}
+            <div class="job_list_box">
+			  <a href="{$urlt}&tab=show&id={$value['id']}">
+              <h3>{php echo html_entity_decode($value['titlename']);}</h3>
+              <div> <span class="index_wap_joblist_comname_p">[ {$type_arr[$value['type']]} ]</span>
+			  <span class="index_wap_joblist_comname_p" style="margin-left:8px;">发布日期：{php echo date('Y-m-d H:i', $value['addtime']);}</span> </div>
+              <div class="index_wap_joblist_yq_p" style=" margin-top:-5px;"><span>知识点：{$value['zsdname']}</span></div>
+			  </a>
+          	  <div class="index_wap_joblist_flbox" style="padding-top:0; line-height:26px; color:#F60;">
+			  	{if $value['status'] == 1}审核中，审核通过后即可在公开题库中查看
+				{elseif $value['status'] == 2}审核失败，原因：{$value['message']}
+				{elseif $value['status'] == 3}审核通过，<strong>{$value['message']}</strong>
+				{else}本题还未提交到公开题库，<strong>点击提交</strong>{/if}
+			  </div>
+		    </div>
+          	{/loop}
+			
+			<div style="text-align:center;">{$pager}</div>
+			
+          </div>
+        </div>
+      </div>
+	  
+      
+    </div>
+      
+  </div>
+</div>
+{/if}
+
+<div class="clear"></div>
+<div class="clear"></div>
+
+<!--footer strat-->
+{template 't_footer'}
+</body>
+</html>

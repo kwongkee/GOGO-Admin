@@ -1,0 +1,240 @@
+{template 'common/header'}
+<div class="main">
+    <ul class="nav nav-tabs">
+	    <li class="active"><a href="JavaScript:;" onclick="window.location.reload();">参与用户</a></li>
+		<li{if $_GPC['do'] == 'lottery' || $_GPC['do'] == '' } class="active"{/if}><a href="{php echo $this->createWebUrl('lottery',array('rid'=>$_GPC['rid']));}">红包数据</a></li>
+        <li{if $_GPC['do'] == 'manage' || $_GPC['do'] == '' } class="active"{/if}><a href="{php echo $this->createWebUrl('manage');}">活动管理</a></li>
+    </ul>
+    
+    <div class="panel panel-info">
+	<div class="panel-heading">筛选</div>
+	<div class="panel-body">
+		<form action="./index.php" method="get" class="form-horizontal" role="form">
+			<input type="hidden" name="c" value="site" />
+			<input type="hidden" name="a" value="entry" />
+			<input type="hidden" name="rid" value="{$_GPC['rid']}" />
+        	<input type="hidden" name="m" value="tyzm_tuanyuan" />
+        	<input type="hidden" name="do" value="userlist" />
+			<div class="form-group">
+				<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">关键字</label>
+				<div class="col-sm-8 col-lg-9">
+					<input class="form-control" name="keyword" id=""placeholder="昵称" type="text" value="{$_GPC['keyword']}">
+				</div>
+                                <div class=" col-xs-12 col-sm-2 col-lg-2">
+					<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+				</div>
+			</div>
+ 			<div class="form-group">
+			<div class="col-sm-8 col-lg-9">
+			<a class="btn btn-primary" rel="tooltip" href="{php echo $this->createWebUrl('download',array('rid'=>$_GPC['rid']))}"  title="导出数据"><i class="fa fa-check"></i> 导出用户数据</a>  
+			</div>
+			</div>
+		</form>
+	</div>
+ 
+    </div>
+ 
+    
+ 
+
+ 
+     <div style="padding:15px;">
+
+        <table class="table table-hover">
+
+            <thead class="navbar-inner">
+
+                <tr><th class='with-checkbox' width="20">
+
+                    <input type="checkbox" class="check_all" /></th>
+
+                    <th width="200">用户信息</th>
+					<th width="180">领奖信息</th>
+                    <th width="160">参加时间</th>
+					<th>分享 / 访问量</th>
+					<th width="160">ip</th>
+                    <th>入桌人数</th>
+					<th>状态</th>
+                    <th style="width: 220px;min-width:105px;">操作</th>
+
+                </tr>
+
+            </thead>
+            <tbody>
+
+                {loop $list $row}
+
+                <tr>
+
+                    <td class="with-checkbox"><input type="checkbox" name="check" value="{$row['id']}"></td>	 
+
+					<td style="text-align:center"><img src="{$row['avatar']}" width="48"><br />{$row['nickname']}</td>
+					<td>
+					  {if $configdata['inpcon']['inp_1']==1 }
+					  姓名：{$row['inputdata']['name']}<br/>
+					  {/if}
+					  {if $configdata['inpcon']['inp_2']==1 }
+					  手机：{$row['inputdata']['mobile']}<br/>
+					   {/if}
+					  {if $configdata['inpcon']['inp_3']==1 }
+					  微信：{$row['inputdata']['wechat']}<br/>
+					   {/if}
+					  {if $configdata['inpcon']['inp_4']==1 }
+					  QQ：{$row['inputdata']['qq']}<br/>
+					   {/if}
+					  {if $configdata['inpcon']['inp_5']==1 }
+					  地址：{$row['inputdata']['address']}
+					   {/if}
+					</td>
+				   <td>
+					   {php echo date('Y-m-d H:i:s',$row[createtime]);}
+					</td>
+					<td>
+					 <span class="label label-primary " > {$row['sharetotal']}</span> / <span class="label label-info " > {$row['pvtotal']}</span>
+					</td>
+					<td>
+					  {$row['user_ip']}
+					</td>
+                    <td>
+					  
+					  <input class="form-control" name="finishnum" type="text" style="width:60px;float: left;" value="{$row['finishnum']}">  <a class="btn btn-primary upfinishnum" rel="tooltip" href="javascript:;" data-id="{$row['id']}" title="修改">修改</a>  
+					</td>
+                    <td>
+					{if $row['locktime']!=0}<span class="label label-danger lock" data-id="{$row['id']}" data-s="1" title="点击解锁">已锁定</span> {elseif $row['locktime']==0}<span class="label label-success lock" data-id="{$row['id']}" data-s="0"title="点击锁定">非锁定</span>{/if}
+					</td>
+
+                    <td >
+
+              {if $row['cash']==0}
+               <a class="btn btn-primary" rel="tooltip" href="#" onclick="drop_confirm('设置为用户已兑换礼品？', '{php echo $this->createWebUrl('otherset',array('id'=>$row['id'],'rid'=>$row['rid'],'cash'=>1,'ty'=>'cash'))}');" title="设置为已兑换"><i class="fa fa-check"></i> 核销</a>   
+			   {else}
+             <a class="btn  btn-default" rel="tooltip" href="#" onclick="drop_confirm('设置为未兑换礼品？', '{php echo $this->createWebUrl('otherset',array('id'=>$row['id'],'rid'=>$row['rid'],'cash'=>0,'ty'=>'cash'))}');" title="设置为未兑换"><i class="fa fa-minus"></i> 撤回核销</a>  			   
+              {/if}
+			
+                      <a class="btn btn-default" rel="tooltip" href="{php echo $this->createWebUrl('joinuser',array('id'=>$row['id']))}" title="入桌情况"><i class="fa fa-male"></i> 入桌</a>
+						<a class="btn  btn-danger" rel="tooltip" href="#" onclick="drop_confirm('您确定要删除吗?删除不可恢复。', '{php echo $this->createWebUrl('otherset',array('ty'=>'deleteuser','id'=>$row['id'],'rid'=>$row['rid']))}');" title="删除"><i class="fa fa-times"></i></a>
+
+                    </td>
+
+                </tr>
+
+                {/loop}
+
+                <tr>
+
+                    <td colspan="8">
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+        {$pager}
+
+    </div>
+
+
+</div>
+<script>
+            $(function(){
+
+            $(".check_all").click(function(){
+            var checked = $(this).get(0).checked;
+                    $("input[type=checkbox]").attr("checked", checked);
+            });
+                    $("input[name=deleteall]").click(function(){
+
+            var check = $("input:checked");
+                    if (check.length < 1){
+            err('请选择要删除的记录!');
+                    return false;
+            }
+            if (confirm("确认要删除选择的记录?")){
+            var id = new Array();
+                    check.each(function(i){
+                    id[i] = $(this).val();
+                    });
+                    $.post('{php echo create_url('site/module', array('do' => 'deleteAll', 'name' => 'tyzm_tuanyuan'))}', {idArr:id}, function(data){
+                    if (data.errno == 0)
+                    {
+                    location.reload();
+                    } else {
+                    alert(data.error);
+                    }
+
+
+                    }, 'json');
+            }
+
+            });
+                    });
+					
+					
+					
+$(".lock").click(function(){
+    var clickthis=$(this);
+    var did=clickthis.attr('data-id');
+	var lock=clickthis.attr('data-s');
+	$.ajax({
+		type : "post",
+		url : "{php echo $this->createWebUrl('otherset',array('rid'=>$_GPC['rid'],'ty'=>'lock'))}",
+		data : {
+			id : did,
+			lock : lock,
+		},
+		dataType : "json",
+		success : function(res) {
+			if (res.status == 200) {
+			    clickthis.attr('data-s',(1-lock));
+				if(clickthis.hasClass('label-success')){
+				    clickthis.removeClass("label-success");
+                    clickthis.addClass('label-danger');
+					clickthis.html('已锁定');
+                }else{
+				    clickthis.removeClass("label-danger");
+				    clickthis.addClass('label-success');
+					clickthis.html('非锁定');
+				}
+			}
+		}
+
+	});
+});				
+					
+					
+$(".upfinishnum").click(function(){
+    var clickthis=$(this);
+    var did=clickthis.attr('data-id');
+	var finishnum=clickthis.prev().val();
+	$.ajax({
+		type : "post",
+		url : "{php echo $this->createWebUrl('otherset',array('rid'=>$_GPC['rid'],'ty'=>'upfinishnum'))}",
+		data : {
+			id : did,
+			finishnum : finishnum,
+		},
+		dataType : "json",
+		success : function(res) {
+			if (res.status == 200) {
+			    util.message('修改成功','', 'success');
+			}else{
+			   util.message('修改失败','', 'error');
+			}
+		}
+
+	});
+});						
+					
+					
+					</script>
+<script>
+            function drop_confirm(msg, url){
+            if (confirm(msg)){
+            window.location = url;
+            }
+            }
+</script>
+
+{template 'common/footer'}

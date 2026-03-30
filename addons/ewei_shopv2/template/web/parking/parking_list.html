@@ -1,0 +1,186 @@
+{template "parking/_header"}
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">车位</a>
+        <a>
+          <cite>导航元素</cite></a>
+      </span>
+      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+    </div>
+    <div class="x-body">
+      <div class="layui-row">
+        <form class="layui-form layui-col-md12 x-so" action="{php echo WebUrl('parking/list')}" method="post">
+            <div class="layui-input-inline">
+               <select name="contr">
+                 <option value="2">车位号</option>
+               </select>
+            </div>
+          <input type="text" name="search"  placeholder="请输入车牌号" autocomplete="off" class="layui-input">
+          <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+      </div>
+      <xblock>
+        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量修改收费方案</button>
+        <button class="layui-btn" onclick="x_admin_show('添加车位','{php echo WebUrl('parking/list/Park_add')}')"><i class="layui-icon"></i>添加</button>
+          <button class="layui-btn" onclick="addAdminUser()"><i class="layui-icon"></i>添加管理员</button>
+
+          <!-- <span class="x-right" style="line-height:40px">共有数据：{$total} 条</span> -->
+      </xblock>
+      <table class="layui-table">
+        <thead>
+          <tr>
+            <th>
+              <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+            </th>
+            <th>编号</th>
+            <th>车位编号</th>
+            <th>所属公司</th>
+            <th>地理位置</th>
+            <th>收费方案</th>
+            <th>车位状态</th>
+            <th>管理员</th>
+            <th >操作</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {loop $participators $index $item}
+            <tr>
+              <td>
+                <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id="{$item['id']}"><i class="layui-icon">&#xe605;</i></div>
+            </td>
+            <input type="hidden" value="{$item['id']}" name="id"/>
+            <td>{$item['id']}</td>
+            <td>{$item['numbers']}</td>
+            <td>{$_W['account']['name']}</td>
+            <td style="width:200px;">{$item['Province']}{$item['City']}{$item['Area']}{$item['Town']}{$item['Committee']}{$item['Road']}{$item['Road_num']}</td>
+            <td>{$item['ChargeClass']}</td>
+            <td>{if $item['status']==0}
+              空位
+              {else if $item['status']==1}
+              已有车
+              {else}
+              报废
+              {/if}
+            <td>
+                {$item['user']}
+            </td>
+              <td class="td-manage">
+                  <a title="生成二维码" onclick="show_qcodes('{$item['numbers']}')" href="javascript:;">
+                      <i class="layui-icon">&#xe60d;</i>
+                  </a>
+              <a title="查看"  onclick='x_admin_show("编辑","{php echo WebUrl("parking/list/Par_edit",array("id"=>$item["id"]))}")' href="javascript:;">
+                <i class="layui-icon">&#xe63c;</i>
+              </a>
+              <a title="删除" onclick="member_del(this,{$item['id']})" href="javascript:;">
+                <i class="layui-icon">&#xe640;</i>
+              </a>
+            </td>
+          </tr>
+          {/loop}
+        </tbody>
+      </table>
+      <div class="page">
+        <div>
+          {$pager}
+        </div>
+      </div>
+        <div id="qcode">
+
+        </div>
+    </div>
+<script type="text/javascript" src="http://cdn.staticfile.org/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+    <script>
+      layui.use('laydate', function(){
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+          elem: '#start' //指定元素
+        });
+
+        //执行一个laydate实例
+        laydate.render({
+          elem: '#end' //指定元素
+        });
+      });
+
+      /*用户-删除*/
+      function member_del(obj,id){
+          layer.confirm('确认要删除吗？',function(index){
+              //发异步删除数据
+              $.get("{php echo WebUrl('parking/list/Park_del')}",{'id':id},function(data){
+                var st=JSON.parse(data);
+                if(st.status=='1'){
+                  $(obj).parents("tr").remove();
+                  layer.msg('已删除!',{icon:1,time:1000});
+                }
+              })
+          });
+      }
+      function delAll (argument) {
+        var cid='';
+        var data = tableCheck.getData();
+        console.dir(data);
+        for(var i=0;i<data.length;i++){
+            cid+=data[i]+',';
+        }
+        if(data.length!=0){
+            x_admin_show('编辑',"{php echo WebUrl('parking/list/Par_edit')}"+'&id='+cid);
+        }
+        // layer.confirm('确认要删除吗？'+data,function(index){
+        //     //捉到所有被选中的，发异步进行删除
+        //     layer.msg('删除成功', {icon: 1});
+        //     $(".layui-form-checked").not('.header').parents('tr').remove();
+        // });
+      }
+     function show_qcodes(num){
+     var hm='<div class="layui-layer layui-layer-page" id="layui-layer7" type="page" times="7" showtime="0" contype="string" style="z-index: 19891021; top: 174.5px; left: 480px;width:220px;"> <div class="layui-layer-title" style="cursor: move;">信息</div> <div id="layerDemoauto" class="layui-layer-content"> <div id="qrcode"></div> </div> <span class="layui-layer-setwin"> <a class="layui-layer-ico layui-layer-close layui-layer-close1" onclick="clso()" href="javascript:;"></a> </span> <span class="layui-layer-resize"></span></div>';
+     $("#qcode").html(hm);
+         jQuery('#qrcode').qrcode({width:220,height:200,text:"http://shop.gogo198.cn/app/index.php?i=14&c=entry&m=ewei_shopv2&do=mobile&r=parking.info&num="+num+"&scan_type=1"});
+     }
+     function addAdminUser() {
+         var data = tableCheck.getData();
+         $.get("{php echo webUrl('parking/admin/admin_list')}", {}, function(str){
+             var html='';
+             html+='<div class="layui-form-item" style="margin-left:-32px;margin-top:15px;"> <label class="layui-form-label">选择管理员</label> <div class="layui-input-block" style="margin-left:110px;"> <select id="select" name="userid" lay-verify="required" style="height:40px;margin-left:-12px;">';
+             var strs=JSON.parse(str);
+             delete strs.result['url'];
+             Object.keys(strs.result).forEach(function (t) {
+                 html+='<option value="'+ strs.result[t].id +'">'+ strs.result[t].user+'</option>';
+             });
+             html+=' </select> </div> </div><div style="margin-left:180px;"><button class="layui-btn" onclick="reday(this);">提交</button></div>';
+             layer.open({
+                 type: 1,
+                 area:['400px','200px'],
+                 content:html
+             });
+         });
+     }
+    </script>
+    <script>
+    function clso(){
+        $("#qcode").html('');
+    }
+    function reday(obj) {
+        var adminId=$('#select option:selected') .val();
+        var dataId = tableCheck.getData();
+        var cids='';
+        for(var i=0;i<dataId.length;i++){
+            cids+=dataId[i]+',';
+        }
+        if(dataId.length!=0){
+           $.get("{php echo webUrl('parking/admin/addParkingAdminUser')}",{'id':cids,'aid':adminId},function (str) {
+               var s=JSON.parse(str);
+               if(s.status==1){
+                   layer.msg('添加成功', {icon: 6});
+               }else{
+                   layer.msg('失败', {icon: 5});
+               }
+           });
+        }
+    }
+    </script>
+{template 'parking/_footer'}

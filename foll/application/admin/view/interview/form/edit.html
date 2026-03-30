@@ -1,0 +1,83 @@
+{include file="public/header" /}
+<body>
+<div class="layui-tab layui-tab-brief">
+  <div class="layui-tab-content">
+  	<form class="layui-form">
+    <div class="layui-tab-item layui-show">
+    <div class="layui-form-item">
+      <label class="layui-form-label">评测标题</label>
+      <div class="layui-input-block">
+      	<input type="text" name="form_title" autocomplete="off" class="layui-input" value="ceshi">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">请选择岗位</label>
+      <div class="layui-input-block">
+      	<select name="job_id" lay-verify="required">
+      	  <option value="">请选择一个岗位</option>
+      	  {volist name="$joblist" id="vo"}
+          {if condition="$vo.id == $data.job_id" }
+          <option value="{$vo.id}" lay-varify required selected>{$vo.job_name}</option>
+          {else /}
+          <option value="{$vo.id}" lay-varify required>{$vo.job_name}</option>
+          {/if}
+      	  {/volist}
+      	</select>
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">请选择题目</label>
+      	  <div class="layui-input-block">
+      	  {volist name="$queslist" id="vo"}
+          {if condition="in_array($vo['id'],$data.question_id)"}
+      	  <input type="checkbox" name="question_id[]" lay-skin="primary" title="{$vo.question_title}" value="{$vo.id}" checked>
+          {else /}
+          <input type="checkbox" name="question_id[]" lay-skin="primary" title="{$vo.question_title}" value="{$vo.id}">
+          {/if}
+          {/volist}
+      	  </div>
+      </div>
+    </div>
+    <input type="hidden" name="id" value="{$data.id}">
+    <div class="layui-form-item">
+        <div class="layui-input-block"><button type="submit" class="layui-btn" lay-submit="" lay-filter="form-test-submit">提交</button><button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+      </div>
+    </div>
+    </form>
+  </div>
+</div>
+<script type="text/javascript">
+layui.use(['form', 'element'], function(){
+  var $ = layui.jquery
+  ,form = layui.form
+  ,element = layui.element;
+  /* 监听提交 */
+  form.on('submit(form-test-submit)', function(data){
+  	console.log(data);
+  	console.log(data.field);
+    $.ajax({   
+      url:"{:Url('admin/interview/formedit')}",
+      method:'post',
+      data:data.field,
+      dataType:'json',
+      success:function(res){
+          layer.msg(res.msg,{time:2000}, function () {
+              if(res.code == 1)
+              {
+                  var index = parent.layer.getFrameIndex(window.name);
+                  parent.layer.close(index);
+                  parent.window.location.reload();
+              }
+          }); 
+      },
+      error:function (data) {
+          layer.msg('系统错误',{time:2000});
+      }
+    });
+    return false;
+  });
+});
+</script>
+</body>
+</html>

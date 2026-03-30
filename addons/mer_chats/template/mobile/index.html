@@ -1,0 +1,76 @@
+{template '_headers'}
+
+<div class="warp">
+    <div class="banner">
+
+        <div id="slider">
+            <ul class="slides">
+                <li><img class="responsive" src="../addons/mer_chats/static/images/banner.jpg"></li>
+                <li><img class="responsive" src="../addons/mer_chats/static/images/banner.jpg"></li>
+                <li><img class="responsive" src="../addons/mer_chats/static/images/banner.jpg"></li>
+                <li><img class="responsive" src="../addons/mer_chats/static/images/banner.jpg"></li>
+            </ul>
+            <ul class="controls">
+                <li><img src="../addons/mer_chats/static/images/prev.png" alt="previous" style="width: 80%;"></li>
+                <li><img src="../addons/mer_chats/static/images/next.png" alt="next" style="width: 80%; float: right;"></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="map">
+        <div class="index_title">
+            <h2><span>——</span>商户配置<span>——</span></h2>
+        </div>
+        <div class="index_icon">
+            <ul>
+                <a href="{php echo url('entry',array('do'=>'index','p'=>'storeConfig','m'=>'mer_chats'))}"><li class="bgred"><img src="../addons/mer_chats/static/images/index-01.png" alt=""><p>店铺配置</p></li></a>
+                <a href="{php echo url('entry',array('do'=>'index','p'=>'userConfig','m'=>'mer_chats'))}"><li class="bgblue"><img src="../addons/mer_chats/static/images/index-02.png" alt=""><p>用户配置</p></li></a>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+{template '_footers'}
+
+<script>
+
+    /*提示框*/
+    $(function() {
+        $("#slider").easySlider({
+            slideSpeed: 500,
+            autoSlide: true,
+            paginationSpacing: "15px",
+            paginationDiameter: "10px",
+            paginationPositionFromBottom: "0px",
+            slidesClass: ".slides",
+            controlsClass: ".controls",
+            paginationClass: ".pagination"
+        });
+    });
+
+
+    function b(){
+        t = parseInt(x.css('top'));
+        y.css('top','19px');
+        x.animate({top: t - 19 + 'px'},'slow');	//19为每个li的高度
+        if(Math.abs(t) == h-19){ //19为每个li的高度
+            y.animate({top:'0px'},'slow');
+            z=x;
+            x=y;
+            y=z;
+        }
+        setTimeout(b,3000);//滚动间隔时间 现在是3秒
+    }
+    $(document).ready(function(){
+        $('.swap').html($('.news_li').html());
+        x = $('.news_li');
+        y = $('.swap');
+        h = $('.news_li li').length * 19; //19为每个li的高度
+        setTimeout(b,3000);//滚动间隔时间 现在是3秒
+
+    })
+
+</script>
+</body>
+</html>

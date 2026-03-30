@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {include file="common/meta"}
+    <link rel="stylesheet" href="./static/hadmin/layui/css/layui.css" />
+    <link href="./static/hadmin/css/formSelects-v4.css" rel="stylesheet" />
+</head>
+<body style="padding: 10px;">
+
+<form class="layui-form layui-form-pane" id="form">
+    <div class="layui-form-item">
+        <label class="layui-form-label" style="width: 142px;">提单编号</label>
+        <div class="layui-input-block" style="width: 77%;margin-left:142px;">
+        <select name="billId" lay-filter="billId" lay-verify="required" lay-search onchange="getBatch(this);">
+            <option value=""></option>
+            {volist name="billList" id="vo"}
+            <option value="{$vo.bill_num}">{$vo.bill_num}</option>
+            {/volist}
+        </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label" style="width: 142px;">批次</label>
+        <div class="layui-input-block" style="width: 77%;margin-left:142px;">
+            <select name="batchList" id="batchList"  lay-filter="batchList" lay-verify="required" lay-search xm-select="batchList" xm-select-skin="normal">
+                <option value=""></option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label" style="width: 142px;">新提单编号</label>
+        <div class="layui-input-block" style="width: 77%;margin-left:142px;">
+            <input type="text" name="newBill" id="newBill" value="" class="layui-input" lay-verify="required">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label" style="width: 142px;">电商企业编号</label>
+        <div class="layui-input-block" style="width: 77%;margin-left:142px;">
+            <input type="text" name="ebent_no" id="ebent_no" value="" class="layui-input" lay-verify="required">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label" style="width: 142px;">电商企业名称</label>
+        <div class="layui-input-block" style="width: 77%;margin-left:142px;">
+            <input type="text" name="ebent_name" id="ebent_name" value="" class="layui-input" lay-verify="required">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label" style="width: 142px;">电商平台编号</label>
+        <div class="layui-input-block" style="width: 77%;margin-left:142px;">
+            <input type="text" name="ebp_ent_no" id="ebp_ent_no" value="" class="layui-input" lay-verify="required">
+        </div>
+    </div>
+    <div class="layui-form-item">
+
+        <label class="layui-form-label" style="width: 142px;">电商平台名称</label>
+
+        <div class="layui-input-block" style="width: 77%;margin-left:142px;">
+            <input type="text" name="ebp_ent_name" id="ebp_ent_name" value="" class="layui-input" lay-verify="required">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label" style="width: 142px;">电商平台域名</label>
+        <div class="layui-input-block" style="width: 77%;margin-left:142px;">
+            <input type="text" name="internet_domain_name" id="internet_domain_name" value="" class="layui-input" autocomplete="on" lay-verify="required">
+        </div>
+    </div>
+</form>
+
+<div class="layui-form-item">
+    <div class="layui-input-block">
+        <button class="layui-btn"  lay-filter="form1" onclick="sub(this);">提交合并</button>
+    </div>
+</div>
+
+
+</body>
+<script src="//unpkg.com/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="./static/hadmin/layui/layui.all.js"></script>
+<script src="./static/hadmin/js/formSelects-v4.min.js"></script>
+<script>
+    var formSelects = layui.formSelects;
+    // formSelects.render();
+    layui.use(['form','layer'], function(){
+        form = layui.form;
+        $  = layui.jquery;
+        layer = layui.layer;
+        form.on('select(billId)',function (data) {
+            $.ajax({
+                url:"{:Url('admin/billladingordermerge/getBatchListByBillNum')}",
+                type:"GET",
+                dataType:"json",
+                data:{billNum:data.value},
+                success:function (ret) {
+                    console.dir(ret);
+                    if (ret.code===0){
+                        var n=ret.data.length;
+                        console.dir(n);
+                        var html=''
+                        for (var i=0;i<n;i++){
+                            html+='<option value="'+ret.data[i].batch_num+'">'+ret.data[i].batch_num+'</option>';
+                        }
+                        $('#batchList').empty();
+                        $('#batchList').html(html);
+                        formSelects.render();
+                    }
+                }
+            });
+        });
+    });
+    function sub(obj) {
+        var params = $('#form').serializeArray();
+        var value={};
+        $.each(params,function (i,field) {
+            value[field.name]=field.value;
+        });
+        $.ajax({
+            url:"{:Url('admin/billladingordermerge/merge')}",
+            type:"POST",
+            dataType:"json",
+            data:value,
+            success:function (ret) {
+                layer.msg(ret.msg);
+            },error:function (x,j,e) {
+                layer.msg('系统异常');
+            }
+        })
+        return false;
+    }
+
+</script>
+</html>

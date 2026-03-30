@@ -1,0 +1,108 @@
+{template "parking/_header"}
+<link rel="stylesheet" href="../addons/ewei_shopv2/static/css/frozenui/css/frozen.css">
+<link rel="stylesheet" href="../addons/ewei_shopv2/static/ydui/ydui.css">
+<style type="text/css">
+    /*lable{display: inline-block;width: 99px;height: 30px;text-align: center;line-height: 30px;}*/
+    .content{height: 35px;width: 100%;border-bottom: 1px solid lightskyblue;text-align: center;line-height: 35px;}
+    #content{height: 35px;width: 100%;text-align: center;line-height: 35px;
+        font-family: "微软雅黑";
+    }
+    .errors{color: red;}
+    #show_head{display: none;}
+    #itdemo>li{line-height: 28px;}
+    .borderb{border-bottom: 1px solid darkgray;height: 90px;}
+    #bottem{width: 100%;bottom: 0px;}
+
+    #headers{width: 100%;font-size: 16px;height: 70px;border-top: 1px solid white;border-bottom: 1px solid silver;margin-bottom: 15px;}
+    #headers1{width: 80%;height: auto;float: left;line-height: 30px;padding-left: 15px;}
+    #headers2{width: 20%;height: auto;float: left;line-height: 66px;}
+
+    #content{width: 100%;font-size: 16px;height: 138px;border-top: 1px solid white;
+    			/*border-bottom: 1px solid silver;*/
+			    margin-bottom: 15px;
+			    text-align: left;
+    }
+    #content>ul{width: 100%;height: auto;}
+    #content>ul>li{padding-left: 10px;border-bottom: 1px solid silver;}
+    #content>ul>li:first-child{margin-top: 6px;border-bottom: 1px solid silver;padding-left: 10px;}
+    /*#content>ul>li:last-child{border-bottom: 1px solid silver;padding-left: 10px;height: 35px;}*/
+    
+    .ziti{font-size: 18px;font-weight: bold;}
+
+    #footer{width: 100%;font-size: 16px;height: auto;border-top: 1px solid white;border-bottom: 1px solid silver;margin-bottom: 15px;text-align: left;}
+    #footer>ul{width: 100%;}
+    #footer>ul>li{padding-left: 10px;line-height: 35px;}
+    #footer>ul>li:first-child{margin-top: 10px;border-bottom: 1px solid silver;}
+
+    .huise{color: slategrey;margin-right: 12px;}
+    #hed{width: 100%;height: 30px;text-align: center;color: green;line-height: 30px;font-size: 18px;}
+</style>
+<!-- 引入jQuery 2.0+ -->
+<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<!-- 引入YDUI脚本 -->
+<script src="../addons/ewei_shopv2/static/ydui/ydui.js"></script>
+
+<body>
+	
+<div class="ui-form ui-border-t">
+    <i class="ui-icon-return" style="font-size: 18px;" onclick="history.back()">返回</i>
+    <div id="hed">
+        订单已支付
+    </div>
+    <!--<div id="headers">-->
+        <!--<div id="headers1">
+            <ul>
+                <li style="color: green;">路内停车订单已支付</li>
+                <li style="color: green;"><?php echo date('Y-m-d H:i',$history_info['create_date'])?></li>
+            </ul>
+        </div>-->
+        <!--<div id="headers2">-->
+            <!--<a href="<?php echo $history_info['PDF_URL']?>" style="color: green;">下载 》</a>-->
+            <!--<div>》</div>-->
+        <!--</div>-->
+    <!--</div>-->
+
+    <div id="content">
+        <ul>
+            <li><h2 class="ziti">收费项目</h2></li>
+            <li><lable class="huise">缴费名称:</lable><?php echo $porder_info['body']?></li>
+            <li><lable class="huise">车位编号:</lable><?php echo $porder_info['number']?></li>
+            <li><lable class="huise">订单编号:</lable><?php echo $user['ordersn']?></li>
+        </ul>
+    </div>
+
+    <div id="footer">
+        <ul>
+            <li><h2 class="ziti">交易详细</h2></li>
+            <li><lable class="huise">停车时长:</lable>	<?php echo $porder_info['parkTime']?> 分钟</li>
+            <li><lable class="huise">实计时长:</lable> <?php echo $porder_info['realTime']?> 分钟</li>
+            <li><lable class="huise">应付金额:</lable> CNY <lable style="color: orange;"><?php echo $porder_info['payableMoney']?$porder_info['payableMoney']:'0'?></lable> 元</li>
+            <!--<li><lable class="huise">抵扣金额:</lable> ￥<lable style="color: orange;">-<?php echo $porder_info['deducMoney']?$porder_info['deducMoney']:'0'?>.00</lable>元</li>-->
+            <li><lable class="huise">实付金额:</lable> CNY <lable style="color: orange;"><?php echo $porder_info['payMoney']?$porder_info['payMoney']:'0'?></lable> 元</li>
+            
+            <li><lable class="huise">缴费方式:</lable>	 <?php 
+	            	switch($porder_info['pay_type']) {
+	            		case 'wechat':
+	            			echo '微信支付';
+	            		break;
+	            		case 'alipay':
+	            			echo '支付宝支付';
+	            		break;
+	            		case 'park':
+	            			echo '信用卡免密支付';
+	            		break;
+	            		default :
+	            			echo '免密支付';
+	            	}
+            	?></li>
+            
+            <li><lable class="huise">支付时间:</lable>	 <?php echo date('Y-m-d H:i:s',$porder_info['paytime']);?></li>
+            
+        </ul>
+    </div>
+
+</div>
+</body>
+</html>
+
+{template "parking/_footer"}

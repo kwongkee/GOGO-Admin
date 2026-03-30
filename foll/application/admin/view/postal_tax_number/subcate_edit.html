@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>种类编辑</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <style>
+        .layui-form-item .layui-form-checkbox[lay-skin=primary]{margin-top: 0;}
+    </style>
+</head>
+<body>
+
+<form class="layui-form" action="">
+
+    <input type="hidden" name="id" value="{$data['id']}">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">规则名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="name" value="{$data['name']}" required  lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">限制数量</label>
+        <div class="layui-input-block">
+            <input type="number" name="max_num" value="{$data['max_num']}" value="0" placeholder="请输入限制数量" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">限制重量</label>
+        <div class="layui-input-block">
+            <input type="number" name="max_weight" value="{$data['max_weight']}" value="0" placeholder="请输入限制重量" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">匹配关键词(请用,分隔)</label>
+        <div class="layui-input-block">
+            <textarea name="keywords" placeholder="匹配关键词(请用,分隔)" cols="30" rows="10" style="width:98%;">{$data['keywords']}</textarea>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">涉及税号</label>
+        <div class="layui-input-block">
+            <div id="numbers" class="xm-select-demo" style="width: 98%;"></div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+        </div>
+    </div>
+</form>
+
+</body>
+<script src="./static/hadmin/assets/layui/layui.all.js"></script>
+<script src="./static/hadmin/assets/layui/lay/modules/xm-select.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+
+<script>
+    //Demo
+    layui.use(['form','table'], function(){
+        var form = layui.form;
+        var demo1 = xmSelect.render({
+            el: '#numbers', 
+            tips: '选择涉及的税号',
+            language: 'zn',
+            name: 'numbers',
+            autoRow: true,
+            prop: {
+                name: 'code_name',
+                value: 'code_value',
+            },
+            content: `
+                <table class="layui-table" lay-filter="demo">
+                <thead>
+                    <tr>
+                    <th lay-data="{type:'checkbox', width: 50}"></th>
+                    <th lay-data="{field:'code_name', width: 250}">税号名称</th>
+                    <th lay-data="{field:'code_value', width: 120}">税号</th>
+                    <th lay-data="{field:'max_num',width: 100,edit:true}">限制数量</th>
+                    <th lay-data="{field:'max_weight',width: 100,edit:true}">限制重量</th>
+                    </tr> 
+                </thead>
+                
+                </table>
+            `,
+            height: '350px',
+        })
+
+        var numberss = {$numbers};
+        var numbersData = {$data['numbers']};
+        for (var i = 0; i < numbersData.length; i++) {
+            for (var b = 0; b < numberss.length; b++) {
+                if( numberss[b].code_value == numbersData[i].code_value )
+                {
+                    numberss[b].selected = true;
+                    numberss[b].LAY_CHECKED = true;
+                    numberss[b].max_num = numbersData[i].max_num;
+                    numberss[b].max_weight = numbersData[i].max_weight;
+                    continue;
+                }
+            }
+        }
+        layui.table.init('demo', {
+            data: numberss,
+            limit: 100000,
+            done: function(res){
+                demo1.update({ data: res.data });
+                var headertop = $(".layui-table-header").offset().top;
+                $('.scroll-body').scroll(function () {
+                    if(headertop - $('.scroll-body').scrollTop() < 0)
+                    {
+                        $(".layui-table-header").addClass('table-header-fixed');
+                    }else{
+                        $(".layui-table-header").removeClass('table-header-fixed');
+                    }
+                });
+            }
+        }).on('row(demo)', function(obj){
+            var values = demo1.getValue();
+            var item = obj.data;
+            var has = values.find(function(i){
+                return i.code_value === item.code_value
+            })
+            if(has){
+                obj.tr[0].childNodes[0].childNodes[0].children[1].className = 'layui-unselect layui-form-checkbox';
+                demo1.delete([ item ]);
+            }else{
+                if(item['max_num'] == null || item['max_num'] == '' || item['max_weight'] == null || item['max_weight'] == '')
+                {
+                    layer.msg('限制重量和限制数量不能为空！');
+                    return false;
+                }
+                obj.tr[0].childNodes[0].childNodes[0].children[1].className = 'layui-unselect layui-form-checkbox layui-form-checked';
+                demo1.append([ item ]);
+            }
+        });
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            var numbersData = demo1.getValue();
+            var numberss = [];
+            for (var i = 0; i < numbersData.length; i++) {
+                numberss.push({code_value:numbersData[i].code_value, max_num:numbersData[i].max_num, max_weight:numbersData[i].max_weight})
+            }
+            data.field['numbersData'] = numberss;
+            $.ajax({
+                url:"{:Url('admin/PostalTaxNumber/subcate_edit')}",
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (res) {
+                    layer.msg(res.msg, {
+                        icon: 1,
+                        time: 2000
+                    }, function(){
+                        parent.window.location.reload();
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                    });
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            // admin/customssystem/declMenuCreate
+            return false;
+        });
+    });
+</script>
+</html>

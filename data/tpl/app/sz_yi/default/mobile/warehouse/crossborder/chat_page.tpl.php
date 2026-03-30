@@ -1,0 +1,294 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/header', TEMPLATE_INCLUDEPATH)) : (include template('common/header', TEMPLATE_INCLUDEPATH));?>
+<title>评论区</title>
+<link href="../addons/sz_yi/static/css/layui.css" rel="stylesheet">
+<style>
+    .layui-fluid{background:#f8f8f8;}
+    .disf{display:flex;align-items:center;}
+    /**聊天模板**/
+    .conatact_info{padding:10px;box-sizing: border-box;}
+    .chat_content{border:1px solid #eee;height:350px;margin-bottom:5px;overflow-y:scroll;background:rgb(240,230,221);}
+    .chat_content .center{width: fit-content;margin: 0 auto;padding: 5px 20px;box-sizing: border-box;background: unset;border-radius: 8px;margin-top: 10px;font-weight:bolder;}
+    .conatact_info .right{float:right;margin-top:5px;}
+    .conatact_info .left{float:left;margin-top:5px;}
+    .conatact_info .disflex{display:flex;align-items:center;max-width:80%;}
+    /**右**/
+    .conatact_info .right .my_txt{background:rgb(230,254,218);color:#000;font-size:15px;padding:10px 15px;padding-right:70px;box-sizing: border-box;border-radius: 10px;border-top-right-radius:5px;margin-right:15px;box-shadow:0px 0px 10px 2px #efeded;position:relative;max-width:100%;}
+    /*calc(50% - 10px)*/
+    .conatact_info .right .my_txt::after{content: '';width: 0;height: 0;border-top: 10px solid transparent;border-left: 10px solid rgb(230,254,218);border-bottom: 10px solid transparent;position: absolute;right: -8px;top: 0;}
+    .conatact_info .right .my_txt .time_info{position:absolute;bottom:0;right:6px;}
+    .conatact_info .right .my_txt .time_info .time{font-size:12px;font-weight:bold;color:#666;margin-right: 8px;}
+    /**左**/
+    .conatact_info .left .my_txt{background:#fff;color:#000;font-size:15px;padding:10px 15px;padding-left:50px;box-sizing: border-box;border-radius: 10px;border-top-left-radius:5px;margin-left:15px;box-shadow:0px 0px 10px 2px #efeded;position: relative;max-width: 100%;}
+    .conatact_info .left .my_txt::after{width: 0;height: 0;border-top: 10px solid transparent;border-right: 10px solid #fff;border-bottom: 10px solid transparent;content: '';position: absolute;left: -10px;top: 0;}
+    .conatact_info .left .my_txt .time_info{position:absolute;bottom:0;left:8px;}
+    .conatact_info .left .my_txt .time_info .time{font-size:12px;font-weight:bold;color:#666;margin-right: 8px;}
+    .conatact_info .my_ava img{width:30px;height:30px;}
+    .my_txt img,.my_txt video{width:100%;}
+
+    /**对号样式**/
+    .check-style-unequal-width {width: 3px;height: 10px;border-color: #1790FF;border-style: solid;border-width: 0 3px 3px 0;transform: rotate(35deg);}
+    .check-style-unequal-width-1 {width: 3px;height: 10px;border-color: #666;border-style: solid;border-width: 0 3px 3px 0;transform: rotate(35deg);}
+    .check-style-unequal-width2 {width: 2px;height: 10px;border-color: #1790FF;border-style: solid;border-width: 0 3px 3px 0;transform: rotate(35deg);}
+    .check-style-unequal-width2-1 {width: 2px;height: 10px;border-color: #666;border-style: solid;border-width: 0 3px 3px 0;transform: rotate(35deg);}
+
+    .layui-layer-shade{z-index:999 !important;}
+    .layui-layer-page{z-index: 1000 !important;}
+</style>
+<!--百度富文本-->
+<script type="text/javascript" src="../addons/sz_yi/static/ueditor/ueditor.config.js?v=<?php  echo time();?>"></script>
+<script type="text/javascript" src="../addons/sz_yi/static//ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="../addons/sz_yi/static/ueditor/lang/zh-cn/zh-cn.js"></script>
+
+<!--聊天-->
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-card" style="padding:0;">
+            <div class="layui-card-header">评论区</div>
+            <div class="layui-card-body" style="padding: 15px;">
+                <form class="layui-form" action="" lay-filter="chat-demo">
+                    <input type="hidden" name="id" value="<?php  echo $id;?>">
+                    <div class="layui-col-xs12 chat_content" style="position: relative;margin-bottom:0;">
+                        <?php  if(!empty($chat_group)) { ?>
+                            <?php  if(is_array($chat_group)) { foreach($chat_group as $k => $v) { ?>
+                            <div class="center"><?php  echo $v['time'];?></div>
+                            <?php  if(is_array($v['info'])) { foreach($v['info'] as $kk => $vv) { ?>
+                            <?php  if($identify==2) { ?>
+                            <!--管理员-->
+                            <?php  if($vv['who_send']==2) { ?>
+                            <div class="conatact_info layui-col-xs12">
+                                <div class="right disflex">
+                                    <div class="my_txt">
+                                        <?php  if($vv['content_type']==1) { ?>
+                                        <?php  echo $vv['content'];?>
+                                        <?php  } else if($vv['content_type']==2) { ?>
+                                        <?php  echo html_entity_decode($vv['content']);?>
+                                        <?php  } ?>
+                                        <div class="disf time_info">
+                                            <div class="time"><?php  echo $vv['createtime'];?></div>
+                                            <div class="status disf">
+                                                <div class="<?php  if($vv['is_send']==1) { ?>
+                                                                check-style-unequal-width
+                                                            <?php  } else if($vv['is_send']==0) { ?>
+                                                                check-style-unequal-width-1
+                                                            <?php  } ?>" style="margin-right:3px;"></div>
+                                                <div class="<?php  if($vv['is_read']==0) { ?>
+                                                                check-style-unequal-width2-1
+                                                            <?php  } else if($vv['is_read']==1) { ?>
+                                                                check-style-unequal-width2
+                                                            <?php  } ?>"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php  } else if($vv['who_send']==1) { ?>
+                            <div class="conatact_info layui-col-xs12">
+                                <div class="left disflex">
+                                    <div class="my_txt">
+                                        <?php  if($vv['content_type']==1) { ?>
+                                        <?php  echo $vv['content'];?>
+                                        <?php  } else if($vv['content_type']==2) { ?>
+                                        <?php  echo html_entity_decode($vv['content']);?>
+                                        <?php  } ?>
+                                        <div class="disf time_info">
+                                            <div class="time"><?php  echo $vv['createtime'];?></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php  } ?>
+                            <?php  } else { ?>
+                            <!--用户-->
+                            <?php  if($vv['who_send']==1) { ?>
+                            <div class="conatact_info layui-col-xs12">
+                                <div class="right disflex">
+                                    <div class="my_txt">
+                                        <?php  if($vv['content_type']==1) { ?>
+                                        <?php  echo $vv['content'];?>
+                                        <?php  } else if($vv['content_type']==2) { ?>
+                                        <?php  echo html_entity_decode($vv['content']);?>
+                                        <?php  } ?>
+                                        <div class="disf time_info">
+                                            <div class="time"><?php  echo $vv['createtime'];?></div>
+                                            <div class="status disf">
+                                                <div class="<?php  if($vv['is_send']==1) { ?>
+                                                                check-style-unequal-width
+                                                            <?php  } else if($vv['is_send']==0) { ?>
+                                                                check-style-unequal-width-1
+                                                            <?php  } ?>" style="margin-right:3px;"></div>
+                                                <div class="<?php  if($vv['is_read']==0) { ?>
+                                                                check-style-unequal-width2-1
+                                                            <?php  } else if($vv['is_read']==1) { ?>
+                                                                check-style-unequal-width2
+                                                            <?php  } ?>"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php  } else if($vv['who_send']==2) { ?>
+                            <div class="conatact_info layui-col-xs12">
+                                <div class="left disflex">
+                                    <div class="my_txt">
+                                        <?php  if($vv['content_type']==1) { ?>
+                                        <?php  echo $vv['content'];?>
+                                        <?php  } else if($vv['content_type']==2) { ?>
+                                        <?php  echo html_entity_decode($vv['content']);?>
+                                        <?php  } ?>
+                                        <div class="disf time_info">
+                                            <div class="time"><?php  echo $vv['createtime'];?></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php  } ?>
+                            <?php  } ?>
+                            <?php  } } ?>
+                            <?php  } } ?>
+                        <?php  } else { ?>
+                            <div class="layui-col-xs12" style="text-align: center;margin-top:10px;color:#666a73;">——&nbsp;暂无消息记录&nbsp;——</div>
+                        <?php  } ?>
+                    </div>
+                    <div class="layui-col-xs12" style="text-align: center;">
+                        <div class="layui-btn layui-btn-warm start_chat layui-col-xs12">发表评论</div>
+                    </div>
+                    <div class="layui-form-item">
+<!--                        <div class="layui-tab layui-tab-card">-->
+<!--                            <ul class="layui-tab-title">-->
+<!--                                <li class="layui-this" data-i='1'>普通文本</li>-->
+<!--                                <li data-i='2'>富文本</li>-->
+<!--                            </ul>-->
+<!--                            <div class="layui-tab-content">-->
+<!--                                <div class="layui-tab-item layui-show">-->
+<!--                                    <textarea class="layui-textarea" name="content" placeholder="开始聊天~~"></textarea>-->
+<!--                                </div>-->
+<!--                                <div class="layui-tab-item">-->
+<!--                                    <script id="content" type="text/plain" style="width:100%;height:100px;">-->
+
+<!--                                    </script>-->
+<!--                                    <div class="clearfix"></div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+
+<!--                        <div class="layui-col-xs12" style="text-align: center;margin-top:10px;">-->
+<!--                            <div class="layui-btn layui-btn-md back">返回主页</div>-->
+<!--                            <button class="layui-btn layui-btn-warm" lay-submit="" lay-filter="chat-demo1">立即提交</button>-->
+<!--                        </div>-->
+                        <div class="layui-col-xs12" style="text-align: center;margin-top:30px;">
+                            <div class="layui-btn layui-btn-md layui-btn-primary back">返回主页</div>
+<!--                            <button class="layui-btn layui-btn-warm start_chat">发表评论</button>-->
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="chat_box" style="display:none;">
+    <form class="layui-form" action="" lay-filter="chat-demo">
+        <input type="hidden" name="id" value="<?php  echo $id;?>">
+        <div class="layui-form-item">
+            <div class="layui-tab layui-tab-card" lay-filter="tab">
+                <ul class="layui-tab-title">
+                    <li class="layui-this" data-i='1' lay-id="1">普通文本</li>
+                    <li data-i='2'  lay-id="2">富文本</li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <textarea class="layui-textarea" name="content" placeholder="开始聊天~~"></textarea>
+                    </div>
+                    <div class="layui-tab-item">
+                        <script id="content" type="text/plain" style="width:100%;height:100px;">
+
+                        </script>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-xs12" style="text-align: center;margin-top:10px;">
+                <button class="layui-btn layui-btn-warm" lay-submit="" lay-filter="chat-demo1">立即提交</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="../addons/sz_yi/static/js/layui/layui.js"></script>
+<script>
+    layui.use(['layer','jquery','element','laydate','form'], function() {
+        var layer = layui.layer
+            , $ = layui.jquery
+            , element = layui.element
+            , laydate = layui.laydate
+            , form = layui.form;
+
+        var ue = UE.getEditor('content', {
+            initialFrameHeight: 200,
+            serverUrl: '../addons/sz_yi/static/ueditor/php/controller.php'
+        });
+
+        // element.on('tab(tab)', function(){
+        //     if(this.getAttribute('lay-id')==1){
+        //         $('.layui-layer-page').css('height','50%').css('top','25%');
+        //         $('.layui-layer-content').css('height','82%');
+        //     }else{
+        //         $('.layui-layer-page').css('height','80%').css('top','10%');
+        //         $('.layui-layer-content').css('height','90%');
+        //     }
+        // });
+
+        $('.start_chat').click(function(){
+            form.render(null,'chat-demo');
+            layer.open({
+                type:1,
+                title:'发表评论',
+                area:['90%','68%'],
+                shadeClose:true,
+                content:$('#chat_box')
+            });
+        });
+
+        $('.chat_content').scrollTop($('.chat_content').height(), -1);
+
+        $('.back').click(function(){
+            window.history.back(-1);
+        });
+
+        /* 监听提交 */
+        form.on('submit(chat-demo1)', function (data) {
+            data.field['content_type']=1;
+            if($('.layui-tab-title').find('.layui-this').attr('data-i')==2){
+                data.field['content_type']=2;
+                data.field['content'] = data.field['editorValue'];
+            }
+
+            if(data.field['content']==''){
+                layer.msg('请输入内容！');
+                return false;
+            }
+
+            $.ajax({
+                url: "https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=warehouse&p=crossborder&op=crossorder_chat&m=sz_yi&id=<?php  echo $id;?>",
+                method: 'post',
+                data: data.field,
+                dataType: 'JSON',
+                success: function (res) {
+                    layer.msg(res.msg, {time: 2000}, function () {
+                        if (res.code == 0) {
+                            // var index = parent.layer.getFrameIndex(window.name);
+                            // parent.layer.close(index);
+                            window.location.reload();
+                        }
+                    });
+                },
+                error: function (data) {
+                    layer.msg('系统错误', {time: 2000});
+                }
+            });
+            return false;
+        });
+    });
+</script>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>企业应付订单与结算</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  	<link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+	<script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+	<style type="text/css">
+		p{width: 100%;margin: 5px auto;font-size: 16px;color: green;font-weight: bold;text-align: center;padding-left: 45px;}
+		.show{display: none;};
+	</style>
+</head>
+<body>
+
+<div style="margin-top: 10px;"></div>
+<p>订单统计与收付结算</p>
+<table class="layui-table">
+  <thead>
+    <tr>
+        <th>编号</th>
+        <th>订单时间</th>
+        <th>订单编号</th>
+        <th>订单金额</th>
+        <th>订单买家</th>
+        <th>操作</th>
+    </tr>
+  </thead>
+  
+  <tbody>
+	    {volist name='data.info.lists' id='vo' key='index'}
+	    <tr>
+	    		<td>{$index}</td>
+					<td>{$vo.submitTime}</td>
+					<td>{$vo.orderNo}</td>
+					<td>￥{$vo.payAmount}</td>
+					<td>{$vo.payerName}</td>
+	        <td><a href="javascript:;" class="layui-btn layui-btn-sm layui-btn-radius" onclick="getInfo('{$vo.id}')">查看详细</a></td>
+	    </tr>
+	    {/volist}
+    <tr>
+    	<td>统计</td>
+    	<td colspan="10">
+    		服务费用：<span style="color: red;font-size: 16px;">￥{$data.sunNum} </span>元
+    		&nbsp;&nbsp;
+    		验核费用：<span style="color: red;font-size: 16px;">￥{$data.RealMoney}元</span>
+    		&nbsp;&nbsp;
+    		交易费用：<span style="color: red;font-size: 16px;">￥{$data.payMoney}元</span>
+    		&nbsp;&nbsp;
+    		应付总额：<span style="color: red;font-size: 16px;">￥{$data.Total}元</span>
+    		&nbsp;&nbsp;
+    		
+    		{if condition="$data.status eq 3"}
+    			<input type="button" class="layui-btn layui-btn-sm" value="确认" onclick="Confirm()"/>
+    			<input type="button" class="layui-btn layui-btn-sm layui-btn-danger" value="有误" onclick="Mistaken('order')" />
+    	  {/if}
+    	  
+    	  {if condition="$data.status eq 1"}
+    	  	<span>您的统计账单已发送到您的邮箱，请注意查收！</span>
+    	  {elseif condition="$data.status eq 2"/}
+    	  	<span>您的有误账单已提交给管理员，请等待管理员联系！</span>
+    	  {/if}
+    	</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="layui-box layui-laypage layui-laypage-default">
+	{$data.info.pages}
+</div>
+
+<script type="text/javascript">
+		layui.use(['layer','jquery'],function(){
+			layer = layui.layer;
+			$ = layui.jquery;
+		});
+		
+		//商品详细
+		function getInfo(id)
+		{
+			layer.open({
+			  type: 2,
+			  title:'订单详细',
+			  shadeClose: true,
+			  shade: 0.3,
+			  area: ['490px', '489px'],
+			  content: "{:Url('Reconcil/Checkdetail/')}&id="+id //iframe的url
+			}); 
+		}
+		
+		//确认对账  商品列表
+		function Confirm()
+		{
+			/**
+			 * 打开确认页面，默认显示用户邮箱，没有的话需要商户输入；
+			 */
+				layer.open({
+					type:2,
+					title:'确认对账下载',
+					shade:0.3,
+					content:"{:Url('Reconcil/CheckBtn')}"
+				});
+		}
+		
+
+		//有误对账  商品列表
+		function Mistaken(val)
+		{
+			$.post("{:Url('Reconcil/Mistaken')}",{'token':val},function(res){
+				console.dir(res);
+				if(res.code > 0){
+					layer.alert(res.msg,{icon:5});
+				} else {
+					layer.msg(res.msg,{icon:6});
+					setTimeout(function(){
+						window.location.reload();
+					},1000);
+				}
+			});
+		}
+		
+	</script>
+</body>
+</html>

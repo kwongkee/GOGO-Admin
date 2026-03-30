@@ -1,0 +1,177 @@
+{include file="public/header_new"}
+<style>
+    img{ width:20px;height:20px;}
+</style>
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <h3 style="text-align: center;">[{$decl['pre_batch_num']}]商品列表</h3>
+                <div id="toolbar" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;">
+                <button type="button" href="javascript:;" onClick="batchView('{$decl[\'pre_batch_num\']}','',3)" class="btn btn-default">风险商品</button>
+                </div>
+                <table id="table"
+
+                /*默认排序项*/
+                data-sort-name="createtime"
+                data-sort-order="desc"
+                /*工具栏相关*/
+                data-toolbar="#toolbar"
+                data-search="true"          /*搜索框*/
+                data-search-on-enter-key="false"
+                data-show-refresh="true"    /*刷新按钮*/
+                /*分页相关*/
+                data-side-pagination="server"
+                data-pagination="true"      /*显示分页*/
+                data-page-size="10"         /*每页显示条数*/
+                /*移动端相关*/
+                data-mobile-responsive="true"
+                data-card-view="true"
+                data-show-columns="true"
+                /*radio or checkbox字段名称*/
+                data-select-item-name="id" >
+
+                <thead>
+                <tr>
+                    <th data-field="checkbox"
+                        data-align="center"
+                        data-checkbox="true"></th>
+                    <th data-field="id"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="false">ID</th>
+                    <th data-field="itemNo"
+                        data-align="center"
+                        data-sortable="true">商品货号</th>
+                    <th data-field="gname"
+                        data-align="center"
+                        data-sortable="true">商品名称</th>
+                    <th data-field="gcode"
+                        data-align="center"
+                        data-sortable="true">商品编码</th>
+                    <th data-field="currency"
+                        data-align="center"
+                        data-sortable="true">币种</th>
+                    <th data-field="qty"
+                        data-align="center"
+                        data-sortable="true">数量</th>
+                    <th data-field="price"
+                        data-align="center"
+                        data-sortable="true">单价</th>
+                    <th data-field="totalPrice"
+                        data-align="center"
+                        data-sortable="true">总价</th>
+                    <th data-field="manage"
+                        data-align="center"
+                        data-sortable="true"
+                        data-formatter="actionFormatter">操作</th>
+                </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var table;
+
+    $(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:url('admin/predeclare/goods_list')}",
+            queryParams: queryParams,
+        });
+        $('.form-control').attr('placeholder','搜索商品编码');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+            id:"{$id}"
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.id;
+        var pre_batch_num = row.pre_batch_num;
+        var result = "";
+        result += '<button style="margin-right: 5px;" type="button" onclick="batchView('+"'"+pre_batch_num+"'"+','+id+',1)" class="btn btn-primary btn-xs">查看详情</button>';
+
+        // if(row.sid==0){
+        //     result += '<button style="margin-right: 5px;" type="button" onclick="getPortInfo('+id+')" class="btn btn-primary btn-xs">口岸信息</button>';
+        // }
+
+        return result;
+    }
+
+    function batchView(pre_batch_num,id,typ) {
+        // window.open("{:url('admin/reduction/single_window')}&id="+id);
+        if(typ==1){
+            //商品详情
+            var index = layer.open({
+                type: 2,
+                title: '商品详情',
+                content: "{:url('admin/predeclare/good_detail')}&pre_batch_num={$decl['pre_batch_num']}&id="+id
+            });
+            layer.full(index);
+        }else if(typ==2){
+            //商品列表
+            var index = layer.open({
+                type: 2,
+                title: pre_batch_num+'商品列表',
+                content: "{:url('admin/predeclare/goods_list')}&id="+id
+            });
+            layer.full(index);
+        }else if(typ==3){
+            //商品列表
+            var index = layer.open({
+                type: 2,
+                title: pre_batch_num+'风险商品',
+                content: "{:url('admin/predeclare/goods_risk_list')}&pre_batch_num={$decl['pre_batch_num']}"
+            });
+            layer.full(index);
+        }
+    }
+
+    function getPortInfo(id){
+        var index = layer.open({
+            type: 2,
+            title: '口岸信息',
+            area:['600px','500px'],
+            content: "{:url('admin/predeclare/getportinfo')}&id="+id
+        });
+        // layer.full(index);
+    }
+
+    //发送
+    function data_add(title,url)
+    {
+        layer.open({
+            type: 2,
+            title: title,
+            area:['820px','600px'],
+            content: "{:url('admin/export/newOrderMerge')}"
+        });
+        // var index = layer.open({
+        //     type: 2,
+        //     title: title,
+        //     content: url
+        // });
+        // layer.full(index);
+    }
+
+
+
+</script>
+
+</body>
+</html>

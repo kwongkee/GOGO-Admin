@@ -1,0 +1,209 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/warehouse_header', TEMPLATE_INCLUDEPATH)) : (include template('common/warehouse_header', TEMPLATE_INCLUDEPATH));?>
+<?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/warehouse_innerpage_header', TEMPLATE_INCLUDEPATH)) : (include template('common/warehouse_innerpage_header', TEMPLATE_INCLUDEPATH));?>
+
+<style>
+    .banner img {
+        width: 100%;
+    }
+
+    div {
+        overflow: visible;
+    }
+
+    .info_box_top {
+        border-top: 1px solid #eee;
+        border-bottom: 1px solid #eee;
+    }
+
+    .info_box {
+        margin-top: 10px;
+        float: left;
+        width: 100%;
+    }
+
+    .info_box .layui-col-xs12 {
+        background: #fff;
+    }
+
+    .info_search_box .order_head {
+        padding: 10px;
+        box-sizing: border-box;
+        background: #1790FF;
+        color: #fff;
+    }
+
+    .info_search_box .disf {
+        padding: 10px;
+        box-sizing: border-box;
+        color: #666;
+    }
+
+    .info_box .title {
+        color: #666;
+        padding: 10px 10px;
+        box-sizing: border-box;
+    }
+
+    .info_box .val {
+        padding: 10px 10px;
+        box-sizing: border-box;
+    }
+
+    .info_box .line {
+        width: 100%;
+        height: 1px;
+        background: #eee;
+    }
+
+    .line {
+        width: 100%;
+        height: 1px;
+        background: #eee;
+    }
+
+    .info_box .info_box_bottom {
+        border-top: 1px solid #eee;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .info_box .info_box_bottom .btn_desc {
+        color: #999;
+    }
+
+    .info_box .info_box_bottom .layui-col-xs4 {
+        text-align: right;
+    }
+
+    .info_box .title_bar {
+        text-align: center;
+        padding: 10px 0;
+        box-sizing: border-box;
+        border-bottom: 1px solid #eee;
+        color: #fff;
+        background: #1790FF;
+    }
+
+    /**layui框架**/
+    .layui-icon-ok:before {
+        content: "√"
+    }
+
+    .layui-form-checkbox {
+        width: 18px;
+        height: 18px;
+        line-height: 18px;
+        padding-right: 18px;
+        margin-right: 2px;
+    }
+
+    .layui-form-checkbox i {
+        width: 18px;
+        height: 18px;
+        border-left: 1px solid #d2d2d2;
+    }
+
+    .layui-btn-normal {
+        background: #1790FF;
+    }
+
+    .layui-layer-hui .layui-layer-content {
+        color: #fff;
+    }
+
+    .g_info{border-bottom:2px solid #1790FF;background:#fff;padding:10px;box-sizing: border-box;}
+    .g_info:last-child{border-bottom:0;}
+    .layui-tab{margin-bottom:0;}
+    .layui-tab-brief>.layui-tab-title .layui-this{color:#1790FF;}
+    .layui-tab-brief>.layui-tab-title .layui-this:after{border-bottom:2px solid #1790FF;}
+    .layui-tab-title{background:#fff;}
+
+    .common_head{padding:10px;text-align: center;background:#1790FF;color:#fff;box-sizing: border-box;margin-top:10px;margin-bottom:5px;}
+    .layui-table,.layui-table thead th{text-align: center;}
+    .layui-table .spin_input{width:33.33%;}
+</style>
+<div class="layui-col-xs12 inspection_box">
+    <form class="layui-form" lay-filter="component-form-element">
+        <input type="text" name="ispost" value="1" style="display: none;">
+        <div class="layui-col-xs12 g_info">
+            <?php  if(is_array($consolidation_status)) { foreach($consolidation_status as $k => $v) { ?>
+                <?php  if($v['code']==81) { ?>
+                <!--免费仓储-->
+                <div class="common_head layui-col-xs12 ">免费仓储</div>
+                <div class="layui-col-xs12 disf">
+                    <div class="layui-col-xs3 title"><?php  echo $v['name'];?></div>
+                    <div class="layui-col-xs9 val disf">
+                        <input type="text" class="layui-input" name="service_<?php  echo $v['code'];?>" value="" lay-verify="required">天
+                    </div>
+                </div>
+                <?php  } ?>
+                <?php  if($v['code']==82) { ?>
+                    <!--计费仓储-->
+                    <div class="common_head layui-col-xs12"><?php  echo $v['name'];?></div>
+
+                    <div class="layui-col-xs12 disf">
+                        <div class="layui-col-xs3 title"></div>
+                        <div class="layui-col-xs9 val disf">
+
+                        </div>
+                    </div>
+
+                <?php  } ?>
+                <?php  if($v['code']==83) { ?>
+                <!--超期仓储-->
+                <div class="common_head layui-col-xs12">超期仓储</div>
+                <div class="layui-col-xs12 disf" style="margin-top:10px;">
+                    <div class="layui-col-xs3 title"><?php  echo $v['name'];?></div>
+                    <div class="layui-col-xs9 val disf">
+                        <div class="layui-col-xs3 disf">
+                            按<input type="text" class="layui-input" name="service_<?php  echo $v['code'];?>[]" value="" lay-verify="required" style="width:40px;">天
+                        </div>
+                        <div class="layui-col-xs9 disf">
+                            <input type="text" class="layui-input" name="service_<?php  echo $v['code'];?>[]" value="" lay-verify="required" style="width:100px;">/（HK$）收费。
+                        </div>
+                    </div>
+                </div>
+                <?php  } ?>
+            <?php  } } ?>
+            <div class="info_box info_btn_box" style="margin: 10px 0 20px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element1" style="width:90%;">立即提交</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    layui.use(['layer', 'jquery', 'form', 'element', 'upload'], function () {
+        var layer = layui.layer
+            , $ = layui.jquery
+            , form = layui.form
+            , upload = layui.upload
+            , element = layui.element;
+        form.render(null, 'component-form-element');
+
+        form.on('submit(component-form-element1)', function (data) {
+            //layer.msg(JSON.stringify(data.field));
+
+            $.ajax({
+                url: "./index.php?i=3&c=entry&p=index&do=warehouse&m=sz_yi&op=setting",
+                method: 'post',
+                data: data.field,
+                dataType: 'JSON',
+                success: function (res) {
+                    layer.msg(res.result.msg, {time: 3000}, function () {
+                        if (res.status == 0) {
+                            parent.location.reload();
+                            // window.location.href = "./index.php?i=3&c=entry&p=index&do=warehouse&m=sz_yi&op=warehouse_goods_up_down"
+                        }
+                    });
+                },
+                error: function (data) {
+                    layer.msg("系统错误", {time: 3000});
+                }
+            });
+            return false;
+        });
+    });
+</script>

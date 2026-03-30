@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+	<script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+</head>
+<body style="padding: 10px;">
+	
+	{if condition="$set.type eq 'pay'"}
+		<!--  支付订单  -->
+		<form class="layui-form">
+			<input type="hidden" name="id" value="{$info.id}">
+			<input type="hidden" name="type" value="{$set.type}">
+			<div class="layui-form-item">
+				<label class="layui-form-label">订单时间：</label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" lay-verify="required" name="payTimeStr" value="{$info.payTimeStr}">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">订单编号：</label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" lay-verify="required" name="orderId" value="{$info.orderId}">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">订单金额：</label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" lay-verify="required" name="payAmount" value="{$info.payAmount}">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">买家名称：</label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" lay-verify="required" name="payerName" value="{$info.payerName}">
+				</div>
+			</div>
+			
+			<div class="layui-form-item">
+			    <div class="layui-input-block">
+			      <button class="layui-btn" lay-submit lay-filter="save">保 存</button>
+			      <button type="reset" class="layui-btn layui-btn-primary">重 置</button>
+			    </div>
+			</div>
+			
+		</form>
+	{elseif condition="$set.type eq 'goods'"}
+		<!--  支付订单  -->
+		<form class="layui-form">
+			<input type="hidden" name="id" value="{$info.id}">
+			<input type="hidden" name="type" value="{$set.type}">
+			<div class="layui-form-item">
+				<label class="layui-form-label">订单时间：</label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" lay-verify="required"  name="OpTime" value="{$info.OpTime}">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">订单编号：</label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" lay-verify="required" name="EntGoodsNo" value="{$info.EntGoodsNo}">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">订单金额：</label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" lay-verify="required" name="RegPrice" value="{$info.RegPrice}">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">商品名称：</label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" lay-verify="required" name="GoodsName" value="{$info.GoodsName}">
+				</div>
+			</div>
+			
+			<div class="layui-form-item">
+			    <div class="layui-input-block">
+			      <button class="layui-btn" lay-submit lay-filter="save">保 存</button>
+			      <button type="reset" class="layui-btn layui-btn-primary">重 置</button>
+			    </div>
+			</div>
+		</form>
+	{elseif condition="$set.type eq 'auth'"}
+		<!--  支付订单  -->
+		<form class="layui-form">
+			<input type="hidden" name="id" value="{$info.id}">
+			<input type="hidden" name="type" value="{$set.type}">
+			<div class="layui-form-item">
+				<label class="layui-form-label">验证时间：</label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" lay-verify="required" name="completeTime" value="{$info.completeTime}">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">验证编号：</label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" lay-verify="required" name="orderId" value="{$info.orderId}">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">验证金额：</label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" lay-verify="required" name="fee" value="{$info.fee}">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">认证人姓名：</label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" lay-verify="required" name="userName" value="{$info.userName}">
+				</div>
+			</div>
+			
+			<div class="layui-form-item">
+			    <div class="layui-input-block">
+			      <button class="layui-btn" lay-submit lay-filter="save">保 存</button>
+			      <button type="reset" class="layui-btn layui-btn-primary">重 置</button>
+			    </div>
+			</div>
+			
+		</form>
+	{/if}
+	
+<script type="text/javascript">
+layui.use(['layer','form','jquery'],function(){
+	form  = layui.form;
+	layer = layui.layer;
+	$     = layui.jquery;
+	
+	form.on('submit(save)', function(data){
+	    //layer.msg(JSON.stringify(data.field));
+	    //弹窗索引
+	    var index = parent.layer.getFrameIndex(window.name);
+	    $.post("{:Url('Platform/editSave')}",$('form').serialize(),function(res){
+	    	console.dir(res);
+	    	if(res.code == 1){
+	    		layer.msg(res.msg,{'icon':6});
+	    		setTimeout(function(){
+	    			//关闭弹窗
+	    			parent.layer.close(index);
+	    		},1000);
+	    	} else {
+	    		layer.msg(res.msg,{'icon':5});
+	    	}
+		});
+		
+	    return false;
+	});
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+{include file="public/header_new"}
+<style>
+    img{ width:20px;height:20px;}
+</style>
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <h3 style="text-align: center;">平台仓库管理</h3>
+                <div id="toolbar" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;">
+                    <button type="button" href="javascript:;" onclick="save();" class="btn btn-default">
+                        添加仓库
+                    </button>
+                </div>
+                <table id="table"
+
+                /*默认排序项*/
+                data-sort-name="createtime"
+                data-sort-order="desc"
+                /*工具栏相关*/
+                data-toolbar="#toolbar"
+                data-search="false"          /*搜索框*/
+                data-search-on-enter-key="false"
+                data-show-refresh="true"    /*刷新按钮*/
+                /*分页相关*/
+                data-side-pagination="server"
+                data-pagination="true"      /*显示分页*/
+                data-page-size="10"         /*每页显示条数*/
+                /*移动端相关*/
+                data-mobile-responsive="true"
+                data-card-view="true"
+                data-show-columns="true"
+                /*radio or checkbox字段名称*/
+                data-select-item-name="id" >
+
+                <thead>
+                <tr>
+                    <th data-field="checkbox"
+                        data-align="center"
+                        data-checkbox="true"></th>
+                    <th data-field="id"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="false">ID</th>
+                    <th data-field="no"
+                        data-align="center"
+                        data-sortable="true">仓库编号</th>
+                    <th data-field="name"
+                        data-align="center"
+                        data-sortable="true">仓库名称</th>
+                    <th data-field="country"
+                        data-align="center"
+                        data-sortable="true">发货国</th>
+                    <th data-field="address"
+                        data-align="center"
+                        data-sortable="true">地址</th>
+                    <th data-field="tel"
+                        data-align="center"
+                        data-sortable="true">联系方式</th>
+                    <th data-field="manage"
+                        data-align="center"
+                        data-sortable="true"
+                        data-formatter="actionFormatter">操作</th>
+                </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var table;
+
+    $(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:url('admin/supplier/warehouse_list')}",
+            queryParams: queryParams,
+        });
+        // $('.form-control').attr('placeholder','搜索产品编号/产品货号');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.id;
+        var reg_name = row.reg_name;
+        var result = "";
+        result += '<button style="margin-right: 5px;" type="button" onclick="save('+id+',\''+reg_name+'\')" class="btn btn-primary btn-xs">编辑</button>' +
+            '<button style="margin-right: 5px;" type="button" onclick="del('+id+',\''+reg_name+'\')" class="btn btn-danger btn-xs">删除</button>';
+        return result;
+    }
+
+    function addBody(title) {
+        var index = layer.open({
+            type: 2,
+            title: title,
+            area:['600px','500px'],
+            content: "{:url('admin/exportRisk/config_save')}"
+        });
+        // layer.full(index);
+    }
+
+    function save(id){
+        var index = layer.open({
+            type: 2,
+            title: '操作仓库信息',
+            area:['50%','50%'],
+            content: "{:url('admin/supplier/warehouse_save')}&id="+id
+        });
+    }
+
+    function del(id){
+        layer.confirm('确定要删除吗？',{icon:3,btn:['确定','取消']},function() {
+            $.ajax({
+                url:"{:url('admin/supplier/del_warehouse')}",
+                type:'post',
+                dataType:'json',
+                data:{
+                    id: id
+                },success:function(res) {
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            window.location.reload();
+                        }
+                    });
+                }
+            });
+        });
+    }
+
+</script>
+
+</body>
+</html>

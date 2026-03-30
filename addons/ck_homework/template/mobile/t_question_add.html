@@ -1,0 +1,259 @@
+
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
+	<meta name="format-detection" content="telephone=no" />
+	<title>上传题目 - {$config['webtitle']}</title>
+	       
+	<link rel="stylesheet" href="{$templateurl}css/ydui.css?rev=@@hash">
+	<link href="{$templateurl}css/foxui.min.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="{$templateurl}css/selectFilter.css" />
+	<script type="text/javascript" src="{$templateurl}js/jquery.min.js"></script>
+	
+	<script>
+	//显示
+	function ck_zsd(){
+		document.getElementById("agreement").style.display = "none";
+	  	document.getElementById("agreement1").style.display = "block";
+	}
+	//关闭
+	function ckclose(){
+		document.getElementById("agreement").style.display = "block";
+	  	document.getElementById("agreement1").style.display = "none";
+	}
+	</script>
+</head>
+
+<body ontouchstart>
+<div class='fui-page-group'> 
+           
+	<div id="agreement" class='fui-page  fui-page-current'>
+		<div class="fui-header">
+			<div class="fui-header-left">
+				<a class="back" href="{php echo $this->createMobileUrl('t_question');}"></a>
+			</div>
+			<div class="title">题目基本信息</div>
+		</div>
+		<div class='fui-content'>
+			<script type="text/javascript">
+			function checkinfo() {
+				var typename = document.getElementById("typename").value;
+				if (typename == ""){
+					alert("请选择题型!");
+					document.getElementById("typename").focus();
+					return false; 
+				}
+				var levelname = document.getElementById("levelname").value;
+				if (levelname == ""){
+					alert("请选择题目难度!");
+					document.getElementById("levelname").focus();
+					return false; 
+				}
+				var knowledgename = document.getElementById("knowledgename").value;
+				if (knowledgename == ""){
+					alert("请选择知识点!");
+					document.getElementById("knowledgename").focus();
+					return false; 
+				}
+			}
+			</script>
+			<form name="formpt" action="{$urlt}" method="post" class='form-ajax' onSubmit="return checkinfo(this);" enctype="multipart/form-data" >
+			<input type="hidden" name="token" value="{$_W['token']}" />
+			<input type="hidden" id="knowledgeid" name="parentid" value="{$srdb['parentid']}" />
+			<input type="hidden" name="id" value="{$srdb['id']}" />
+			 <div class='fui-cell-group' style="overflow:inherit; padding:0; margin:0;">   
+				
+				   <div class='fui-cell' style=" padding-top:20px; padding-bottom:20px;">
+						<div class='fui-cell-label'>选择题型</div>
+						<div class='fui-cell-info'>
+						
+							<div class="filter-box" style="z-index:9;">
+								<div class="filter-text">
+									<input class="filter-title" id="typename" type="text" value="{$type_arr[$srdb['type']]}" readonly placeholder="选择题型" />
+									<i class="icon icon-filter-arrow"></i>
+								</div>
+								<select name="type">
+									{loop $type_arr $i $typename}
+									<option value="{$i}" {if $srdb['type'] == $i}selected{/if}>{$typename}</option>
+									{/loop}
+								</select>
+							</div>
+						
+						</div>
+					</div>
+							
+					<div class='fui-cell' style=" padding-top:20px; padding-bottom:20px;">
+						<div class='fui-cell-label'>题目难度</div>
+						<div class='fui-cell-info'>
+						
+						  <div class="filter-box1">
+							<div class="filter-text">
+								<input class="filter-title" id="levelname" type="text" value="{$level_arr[$srdb['level']]}" readonly placeholder="选择难度" />
+								<i class="icon icon-filter-arrow"></i>
+							</div>
+							<select name="level">
+								{loop $level_arr $p $levelname}
+								<option value="{$p}" {if $srdb['level'] == $p}selected{/if}>{$levelname}</option>
+								{/loop}
+							</select>
+						  </div>
+						
+						</div>
+					</div>
+	
+	
+				   <div class='fui-cell'>
+						<div class='fui-cell-label'>选择知识点</div>
+						<div class='fui-cell-info c000'><input type="text" id="knowledgename" value="{$srdb_knowle['titlename']}" placeholder='选择知识点' readonly onClick="ck_zsd()" class="fui-input" style=" color:#7C7C7C;"/></div>
+					</div> 
+	
+			 </div>
+	
+			 <input type="submit" name="do_submit" value="下一步" id="btn-submit" class='external btn btn-danger block' style="margin-top:1.25rem; width:95%;"> 
+			</form>
+		</div>
+	</div>
+	
+	<!--选择知识点 start-->
+	<div id="agreement1" class='fui-page  fui-page-current' style="display:none;">
+		<div class="fui-header">
+			<div class="fui-header-left">
+				<a href="javascript:void(0);" onClick="ckclose()" class="back"></a>
+			</div>
+			<div class="title">选择知识点</div>
+		</div>
+		<div class='fui-content'>
+				<style>
+				.fui-cell-group .fui-cell .fui-cell-info-gh {-webkit-box-flex:1;-webkit-flex:1;-ms-flex:1;flex:1;font-size:.7rem;color:#000;}
+				.fui-cell-group .fui-cell .fui-cell-info-gh select {width:100%;font-size:inherit;height:1.2rem; border:1px solid #CCCCCC; margin-bottom:5px;}
+.fui-cell-group .fui-cell .fui-cell-info-gh select {}
+				</style>
+				<div class='fui-cell-group' style="overflow:inherit; padding:0; margin:0;">   
+				
+				   <div class='fui-cell' style=" padding-top:20px; padding-bottom:20px;">
+						<div class='fui-cell-label'>筛选知识点</div>
+						<div class='fui-cell-info-gh'>
+				
+							<select name="craid1" onChange="fetchChildCategory(this.options[this.selectedIndex].value, '0')" >
+								<option value="">--请选择--</option>
+								{loop $category $row}
+								{if $row['pid'] == 0} 
+								<option value="{$row['cid']}" >{$row['name']}</option>
+								{/if} 
+								{/loop}
+							</select>
+						
+							<select id="cate_0" name="craid2" onChange="fetchChildCategory(this.options[this.selectedIndex].value, '1')" style="display:none;">
+								<option value="">--请选择--</option>
+							</select>
+						
+							<select id="cate_1" name="craid3" onChange="fetchChildCategory(this.options[this.selectedIndex].value, '2')"  style="display:none;">
+								<option value="">--请选择--</option>
+							</select>
+					
+							<select id="cate_2" name="craid4" onChange="fetchChildCategory(this.options[this.selectedIndex].value, '3')" style="display:none;">
+								<option value="">--请选择--</option>
+							</select>
+					
+							<select id="cate_3" name="craid5" onChange="ck_list(this.options[this.selectedIndex].value, '4')" style="display:none;">
+								<option value="">--请选择--</option>
+							</select>
+						
+						</div>
+					</div>
+					
+					<div class='fui-cell' style="border-bottom-color:#CCCCCC;">
+						<div class='fui-cell-label'>选择知识点</div>
+						<div class='fui-cell-info'></div>
+					</div>
+					
+					<ul id='show' style="font-size:14px; font-weight:normal;">
+					</ul>
+				</div>
+	
+		</div>
+	</div>
+	<script language="javascript">
+		var category = {php echo json_encode($children)};
+		function fetchChildCategory(cid,labelid) {
+		
+			//获取列表
+			ck_list(cid,labelid);
+			
+			var html = '<option value="0">--请选择--</option>';
+			
+			//清空
+			if(labelid < 1){
+				for (var i=0;i < 4;i++){
+					document.getElementById('cate_'+i).style.display = "none";
+				}
+			}
+			
+			if (!category || !category[cid]) {
+				$('#cate_'+labelid).html(html);
+				return false;
+			}
+			
+			for (i in category[cid]) {
+				html += '<option value="'+category[cid][i][0]+'">'+category[cid][i][1]+'</option>';
+			}
+			$('#cate_'+labelid).html(html);
+			document.getElementById('cate_'+labelid).style.display = "block";
+			
+		}
+		
+		//获取知识点列表
+		function ck_list(cid,labelid){
+			var labeid = Number(labelid) + 1;
+			$.post('{$sosourl}', {cid:cid,labeid:labeid}, function(data) {
+				res = JSON.parse(data);
+				var info = res.info;
+				if(res.msg == 'ok'){
+					var html = '';
+					for (i in info) {
+						html += '<li class="fui-cell" onClick="ck_fuzhi('+info[i][0]+')"><input id="knowledgeid_'+info[i][0]+'" type="hidden" value="'+info[i][0]+'"><input id="knowledgename_'+info[i][0]+'" type="hidden" value="'+info[i][1]+'"> >> '+info[i][1]+'</li>';
+					}
+
+					$('#show').html(html);
+				}else{
+					alert('未找到相应数据！');
+				}
+			});
+		}
+		
+		//选择知识点赋值
+		function ck_fuzhi(zid){
+			document.getElementById("knowledgeid").value = Number(document.getElementById("knowledgeid_"+zid).value);
+			document.getElementById("knowledgename").value = document.getElementById("knowledgename_"+zid).value;
+			//关闭
+			ckclose();
+		}
+	</script> 
+	<!--选择知识点 end--> 
+</div> 
+
+
+<script type="text/javascript" src="{$templateurl}js/selectFilter.js"></script>
+<script type="text/javascript">
+	//本小插件支持移动端哦
+	
+	//这里是初始化
+	$('.filter-box').selectFilter({
+		callBack : function (val){
+			//返回选择的值
+			console.log(val+'-是返回的值')
+		}
+	});//这里是初始化
+	$('.filter-box1').selectFilter({
+		callBack : function (val){
+			//返回选择的值
+			console.log(val+'-是返回的值')
+		}
+	});
+</script>
+	
+</body>
+</html>
+

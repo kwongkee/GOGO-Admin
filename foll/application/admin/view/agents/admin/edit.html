@@ -1,0 +1,100 @@
+{include file="public/header"}
+<body style="padding: 10px;">
+<form action="" class="layui-form">
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">用户名</label>
+        <div class="layui-input-inline">
+            <input type="text" class="layui-input" readonly  value="{$data['uname']}" name="uname">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">手机号码</label>
+        <div class="layui-input-inline">
+            <input type="text" class="layui-input" required value="{$data['uphone']}" name="uphone">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">角色</label>
+        <div class="layui-input-inline">
+            <select name="gid" id="">
+
+                {volist name="group" id="vo"}
+                    <option value="{$vo.gid}" {if condition="$vo.gid == $data['g_id']"} selected {/if}>{$vo.title}</option>
+                {/volist}
+
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">状态</label>
+        <div class="layui-input-inline">
+
+            <input type="radio" name="status" {if condition="$data['status'] == 2"} checked {/if} lay-skin="primary" title="通过" value="2">
+            <input type="radio" name="status" {if condition="$data['status'] == 3"} checked {/if} lay-skin="primary" title="拒绝" value="3">
+
+        </div>
+    </div>
+
+</form>
+
+<div class="layui-form-item">
+    <div class="layui-input-block">
+        <input type="hidden" id="ids" value="{$data['id']}">
+        <button class="layui-btn" onclick="save()">保存</button>
+    </div>
+</div>
+
+
+</body>
+<script type="text/javascript">
+    layui.use(['layer','form'],function(){
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+    })
+
+
+    // 添加管理员
+    function save()
+    {
+        var uname = $('input[name="uname"]').val();
+        var  gid     = $('select[name="gid"]').val();
+        var uphone   = $('input[name="uphone"]').val();
+        var status   = $('input[name="status"]:checked').val();
+
+        if(uname == '') {
+            layer.msg('代理商名称不能为空',{icon:2});
+            return false;
+        }
+
+        if(uname == '') {
+            layer.msg('手机号码不能为空',{icon:2});
+            return false;
+        }
+
+        // 请求处理数据
+        $.post("{:Url('agents/admin/doedit')}",{
+            uname:uname,
+            g_id:gid,
+            uphone:uphone,
+            status:status,
+            id:$('#ids').val(),
+        },function(res){
+
+            if(res.code == 1) {
+                layer.msg(res.msg,{icon:1});
+                setTimeout(function(){
+                    window.location.reload = (parent.window.location.reload());
+                },2000);
+            } else {
+                layer.msg(res.msg,{icon:2});
+            }
+
+        });
+    }
+</script>
+</html>

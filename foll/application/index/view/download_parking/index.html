@@ -1,0 +1,158 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="./static/aui/css/aui.css" />
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body>
+<header class="aui-bar aui-bar-nav">停车备份数据下载</header>
+<div class="aui-content aui-margin-b-15" style="margin-top:0.75rem !important;">
+    <div class="aui-content aui-margin-b-15">
+        <ul class="aui-list aui-form-list">
+            <li class="aui-list-header">邮箱验证</li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        Email
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="text" placeholder="电子邮箱" name="email" id="email">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        验证码
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="number" placeholder="验证码" name="code" id="code" style="float: left;width: 50%;">
+                        <button type="button" onclick="getEmailCode();" class="aui-btn aui-btn-info aui-margin-r-5" style="margin: 10px;width: 40%;border: unset;float: right;" id="getcode">获取验证码</button>
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner aui-list-item-center aui-list-item-btn">
+                    <button type="button" class="aui-btn aui-btn-info aui-margin-r-5" style="margin: 10px;width: 95%;border: unset;" id="godownload" onclick="godownload();">验证下载</button>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+</body>
+<script type="text/javascript" src="./static/aui/script/api.js" ></script>
+<script type="text/javascript" src="./static/aui/script/aui-dialog.js" ></script>
+<script type="text/javascript" src="./static/aui/script/aui-toast.js" ></script>
+<script type="text/javascript">
+    apiready = function () {
+        api.parseTapmode();
+    }
+    var dialog = new auiDialog();
+    var toast = new auiToast();
+    var t = 60;
+    var isClick = false;
+
+    function getEmailCode() {
+        var email = $("#email").val();
+        var reg = new RegExp("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$"); //正则表达式
+        if( email == '' )
+        {
+            toast.fail({title:'邮箱不能为空',duration:2000});
+            return false;
+        }else if( !reg.test(email) )
+        {
+            toast.fail({title:'请输入正确的邮箱地址',duration:2000});
+            return false;
+        }
+
+        if (isClick) {
+            return false;
+        }
+        isClick = true;
+
+        $.ajax({
+            url: "{:Url('DownloadParking/sendcode')}",
+            type: "POST",
+            dataType: "json",
+            data: {
+                email: email,
+            },
+            success: function (res) {
+                if (res.code < 0) {
+                    toast.fali({title:res.msg,duration:2000});
+                    isClick = false;
+                } else {
+                    toast.success({title:res.msg,duration:2000});
+                    tickTime();
+                }
+            },
+            error: function (xhr) {
+                toast.fali({title:'服务错误',duration:2000});
+            }
+        });
+        return false;
+    }
+
+    function tickTime() {
+
+        if (t <= 0) {
+            isClick = false;
+            $('#getcode').html('获取验证码');
+            t = 60;
+        } else {
+            t--;
+            $('#getcode').html(t + '秒重试');
+            setTimeout(function () {
+                tickTime();
+            }, 1000);
+
+        }
+    }
+
+    function godownload() {
+        var email = $("#email").val();
+        var code = $("#code").val();
+
+        if( code == '' )
+        {
+            toast.fali({title:'验证码不能为空',duration:2000});
+        }else{
+            $("#godownload").attr("disabled");
+            $.ajax({
+                        url:"{:Url('DownloadParking/down')}",
+                        type:"post",
+                        dataType:"json",
+                        data:{email: email,code: code},
+                        success:function(res){
+                            if(res.code == 0)
+                            {
+                                toast.fail({
+                                    title:res.msg,
+                                    duration:2000
+                                });
+                                $("#godownload").removeAttr("disabled");
+                            }else{
+                                toast.success({
+                                    title:res.msg,
+                                    duration:2000
+                                });
+                                window.location.href = res.url;
+                            }
+                            
+                        },
+                        error:function () {
+                            toast.fail({
+                                title:res.msg,
+                                duration:2000
+                            });
+                            $("#godownload").removeAttr("disabled");
+                        }
+                    });
+        }
+    }
+</script>
+</html>

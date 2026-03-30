@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{$order.title}</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+	<script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+	<style type="text/css">
+		.clear{clear: both;height: 8px;}
+		.money{color: red;font-weight: bold;font-size: 15px;}
+		.laytable-cell-1-0{ width: 80px; }
+		.laytable-cell-1-2{width: 185px;}
+		.laytable-cell-1-amount{width: 165px;}
+		.laytable-cell-1-4{ width: auto; }
+		
+		.laytable-cell-1-province{ width: 115px; }
+		.laytable-cell-1-city{ width: 80px; }
+		.laytable-cell-1-zone{ width: 80px; }
+		.fee{color: red;}
+		.laytable-cell-1-id{ width: 265px;}
+		.laytable-cell-1-username{ width: 155px;}
+		.laytable-cell-1-sex{ width: 155px;}
+		.laytable-cell-1-city{ width: 185px;}
+	</style>
+</head>
+
+<body>
+<div style="margin-top: 10px;"></div>
+<p><h2 style="text-align: center;color: green;">{$order.title}</h2></p>
+
+<div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" lay-filter='demo'>
+	<div class="layui-table-box">
+			
+		<div class="layui-table-header">
+			<table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+				<thead>
+					<tr>
+						<th data-field="id"><div class="layui-table-cell laytable-cell-1-id" align="center"><span>订单编号</span></div></th>
+						<th data-field="username"><div class="layui-table-cell laytable-cell-1-username" align="center"><span>订单金额</span></div></th>
+						<th data-field="sex"><div class="layui-table-cell laytable-cell-1-sex" align="center"><span>支付状态</span></div></th>
+						<th data-field="city"><div class="layui-table-cell laytable-cell-1-city" align="center"><span>订单时间</span></div></th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+			
+		<div class="layui-table-body layui-table-main">
+			<table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+				<tbody>
+					{volist name="$order.lists" id="vo" key="index"}
+						<tr data-index="{$index}" class="">
+							<td data-field="id" align="center"><div class="layui-table-cell laytable-cell-1-id">{$vo.ordersn}</div></td>
+							<td data-field="username" align="center"><div class="layui-table-cell laytable-cell-1-username">{$vo.price}元</div></td>
+							<td data-field="classify" align="center"><div class="layui-table-cell laytable-cell-1-sex">
+								{if condition="$vo.status eq -1"}订单取消{elseif condition="$vo.status eq 0"/}未付款
+								{elseif condition="$vo.status eq 1"/}已付款{elseif condition="$vo.status eq 2"/}已发货{elseif condition="$vo.status eq 1"/}已付款{elseif condition="$vo.status eq 3"/}已收货{/if}
+							</div></td>
+							<td data-field="sex" align="center"><div class="layui-table-cell laytable-cell-1-city">{$vo.createtime|date='Y-m-d H:i:s',###}</div></td>
+						</tr>
+					{/volist}
+				</tbody>
+			</table>
+		</div>
+	</div>	
+</div>
+	
+<div class="layui-box layui-laypage layui-laypage-default">{$order.pages}</div>
+
+<script>
+layui.use(['layer','form','jquery','laypage','table','flow'],function() {
+	var $ = layui.jquery,form=layui.form,layer=layui.layer,laypage=layui.laypage,table=layui.table,element=layui.element,flow=layui.flow;
+	
+	//实名认证
+	$(document).on('click','#auth',function(vals) {
+		var v = vals.currentTarget;//获取document
+		var m = v.attributes.hrs.value;//选中ID 记录表ID
+		layer.open({
+			type:2,
+			title:'用户实名认证信息',
+			shade:0.3,
+			area:['500px','480px'],
+			content:"{:Url('usersinfo/realname')}&m="+m
+		});
+	});
+		
+	//订单详情
+	$(document).on('click','#orderEdit',function(obj){
+		var o = obj.currentTarget;
+		var opid = o.attributes.hrs.value;
+		layer.open({
+			type:2,
+			title:'交易订单详细',
+			shade:0.3,
+			content:"{:Url('usersinfo/orderedit')}&opid="+opid,
+			area:['950px','850px'],
+			maxmin:true
+		})
+	});
+	
+});
+</script>
+</body>
+</html>

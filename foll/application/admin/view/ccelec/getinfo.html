@@ -1,0 +1,117 @@
+{include file="public/header_new"}
+<style>
+   img{ width:20px;height:20px;}
+</style>
+<body class="gray-bg">
+
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+              <div class="ibox-content">
+
+
+                <table id="table"
+
+                  /*默认排序项*/
+                  data-sort-name="create_time"
+                  data-sort-order="desc"
+                  /*工具栏相关*/
+                  data-toolbar="#toolbar"
+                  data-search="false"          /*搜索框*/
+                  data-search-on-enter-key="false"
+                  data-show-refresh="true"    /*刷新按钮*/
+                  /*分页相关*/
+                  data-side-pagination="server"
+                  data-pagination="false"      /*显示分页*/
+                  data-page-size="15"         /*每页显示条数*/
+                  /*移动端相关*/
+                  data-mobile-responsive="true"
+                  data-card-view="true"
+                  data-show-columns="true"
+                  /*radio or checkbox字段名称*/
+                  data-select-item-name="tids" >
+
+                  <thead>
+                    <tr>
+                      <th data-field="id"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="false">ID</th>
+                      <th data-field="bill_num"
+                        data-align="center"
+                        data-sortable="true">提单号码</th>
+                      <th data-field="batch_num"
+                        data-align="center"
+                        data-sortable="true">批次号</th>
+                    <th data-field="good_num"
+                        data-align="center"
+                        data-sortable="true">总数量</th>
+                      <th data-field="good_weight"
+                        data-align="center"
+                        data-sortable="true">总重量</th>
+                      <th data-field="error_num"
+                        data-align="center"
+                        data-sortable="true">错误数</th>
+                    <th data-field="status"
+                        data-align="center"
+                        data-sortable="true">状态</th>
+                    <th data-field="create_time"
+                        data-align="center"
+                        data-sortable="true">创建时间</th>    
+                    <th data-field="manage"
+                        data-align="center"
+                        class="td-manage">操作</th>
+                      </tr>
+                    </thead>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+  <script type="text/javascript">
+
+var table;
+
+$(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:Url('admin/ccelec/getinfo')}",
+            queryParams: queryParams,
+
+        });
+
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            bill_num: '{$bill_num}',
+
+        };
+        return temp;
+    };
+
+    //发送
+    function seeGoods(batch_num)
+    {
+        var index = layer.open({
+            type: 2,
+            title: "订单详情",
+            content: "{:Url('admin/ccelec/getGoods')}&batch_num="+batch_num
+        });
+        layer.full(index);
+    }
+
+
+
+
+
+
+</script>
+
+</body>
+</html>

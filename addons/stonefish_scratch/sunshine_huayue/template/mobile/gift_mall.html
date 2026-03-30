@@ -1,0 +1,100 @@
+{template 'header'}
+<div class="container">
+	<ul>
+		{loop $list $item}
+		<li style="overflow:hidden;padding:10px 10px;" class="ui-border">
+			<div style="float:left;margin-right:10px;font-size:0px;padding:3px;border-radius:2px;border:1px solid orange">
+				<img style="width:70px;height:70px;padding:0px;" src="{$item['gift_pic']}">
+			</div>
+			<div style="float:left;margin-right:10px;line-height:35px;width:70px;padding:3px;">
+				<p style="font-size:16px;color:orange;">{$item['gift_name']}</p>	
+				<p>￥{$item['gift_price']}</p>
+			</div>
+			<div style="float:right;overflow:hidden;height:76px;display:flex;align-items: center;">
+				<div style="width:120px;height:30px;border:1px solid rgb(150,150,150);border-radius:2px;flex:1;">
+					<button id="down_{$item['id']}" onclick="downClick('{$item['id']}')" style="float:left;background-color:rgb(220,220,220);height:30px;width:45px;font-size:20px;">-</button>
+					<input type="tel" readonly="" id="gift_num_{$item['id']}" style="height:30px;width:30px;border:0px;text-align:center;" value="0">
+					<input type="hidden" id="gift_price_{$item['id']}" value="{$item['gift_price']}">
+					<input type="hidden" id="gift_id_{$item['id']}" value="{$item['id']}">
+					<button id="up_{$item['id']}" onclick="upClick('{$item['id']}')" style="float:right;background-color:rgb(220,220,220);height:30px;width:45px;font-size:20px;">+</button>
+				</div>
+			</div>
+		</li>
+		{/loop}
+	</ul>
+	<div style="height:50px;width:100%;position:fixed;bottom:45px;background-color:rgba(50,50,50,0.9);z-index:100;overflow:hidden;line-height:50px;font-size:18px;">
+		<div style="float:left;color:red;margin-left:20px;">
+			总金额:￥
+			<span id="sum_price">0.00</span>
+		</div>
+		<div style="float:right;margin-right:20px;">
+			<button class="weui_btn weui_btn_mini weui_btn_primary" onclick="doPay()">立即购买</button>
+		</div>
+	</div>
+	<div style="height:100px;">
+	</div>
+</div>
+<script type="text/javascript">
+	function upClick(id) {
+		var obj = $("#gift_num_"+id);
+		var x = obj.val();
+		var num = parseInt(x)+1;
+		if(num <= 0) {
+			obj.val(0);
+		}else {
+			obj.val(num);	
+		}
+		calSumPrice();
+	}
+	function downClick(id) {
+		var obj = $("#gift_num_"+id);
+		var x = obj.val();
+		var num = parseInt(x)-1;
+		if(num <= 0) {
+			obj.val(0);
+		}else{
+			obj.val(num);	
+		}
+		calSumPrice();
+	}
+
+	function calSumPrice() {
+		var objs = $("[id^=gift_num_]");
+		var json_obj = {};
+		var sum_price = 0.00;
+		objs.each(function(i,t) {
+			var item_num = parseInt($(t).val());
+			if(item_num >0) {
+				var id = $(t).attr('id').split('_')[2];
+				var item_price = $("#gift_price_"+id).val();	
+				var item_price_sum = parseFloat(item_price)*item_num;
+
+				json_obj[id] = json_obj.id || {};
+				json_obj[id] = {'id':id,'num':item_num,'price':item_price};
+
+				sum_price += item_price_sum;
+			}
+		})
+		$("#json_data").val(JSON.stringify(json_obj));
+		$("#sum_price_data").val(sum_price);
+		$("#sum_price").html(sum_price);
+	}
+
+	function doPay() {
+		var json_data = $('#json_data').val();
+		var sum_price_data = $('#sum_price_data').val();
+
+		if(!json_data || !sum_price_data) {
+			alert('请选择需要购买的礼物');
+			return;
+		}
+
+		document.getElementById('pay_form').submit();
+	}
+</script>
+<form action="{php echo $this->createMobileUrl('giftBuy')}" method="post" id="pay_form">
+	<input type="hidden" name="json_data" id="json_data">
+	<input type="hidden" name="sum_price_data" id="sum_price_data">
+</form>
+{template 'menu'}
+{template 'footer'}

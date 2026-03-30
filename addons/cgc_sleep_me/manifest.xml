@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.baidu.com" versionCode="0.6">
+	<application setting="true">
+		<name><![CDATA[花钱啪啪]]></name>
+		<identifie><![CDATA[cgc_sleep_me]]></identifie>
+		<version><![CDATA[1.6.8]]></version>
+		<type><![CDATA[other]]></type>
+		<ability><![CDATA[花钱啪啪]]></ability>
+		<description><![CDATA[花钱啪啪]]></description>
+		<author><![CDATA[微赞]]></author>
+		<url><![CDATA[http://www.baidu.com]]></url>
+	</application>
+	<platform>
+		<subscribes>
+			<message type="text" />
+		</subscribes>
+		<handles>
+			<message type="text" />
+		</handles>
+		<rule embed="true" />
+		<card embed="false" />
+	</platform>
+	<bindings>
+		<cover>
+			<entry title="个人中心" do="person" state="" direct="false" />
+			<entry title="活动入口" do="forward" state="" direct="false" />
+		</cover>
+		<menu>
+			<entry title="参与用户" do="cgc_sleep_user" state="" direct="false" />
+			<entry title="交易记录" do="cgc_sleep_record" state="" direct="false" />
+			<entry title="支付随机金额" do="cgc_sleep_fee" state="" direct="false" />
+			<entry title="多公众号设置" do="cgc_sleep_mps" state="" direct="false" />
+		</menu>
+	</bindings>
+	<install><![CDATA[CREATE TABLE IF NOT EXISTS `ims_cgc_sleep_fee` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uniacid` int(3) NOT NULL,
+  `fee` decimal(7,2) NOT NULL COMMENT '随机金额',
+  `desc` varchar(100) NOT NULL COMMENT '描述',
+  `createtime` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_cgc_sleep_mps` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) unsigned NOT NULL,
+  `mp_name` varchar(200) NOT NULL DEFAULT '' COMMENT '公众号名称',
+  `addr` varchar(200) NOT NULL DEFAULT '' COMMENT '地区',
+  `url1` varchar(300) NOT NULL DEFAULT '' COMMENT '生成主页的自定义链接',
+  `url2` varchar(300) NOT NULL DEFAULT '' COMMENT '分享跳转的自定义链接',
+  `url3` varchar(300) NOT NULL DEFAULT '' COMMENT '关注的跳转链接',
+  `createtime` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_cgc_sleep_record` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uniacid` int(3) NOT NULL,
+  `sleep_openid` varchar(100) NOT NULL COMMENT '被睡用户openid',
+  `sleep_nickname` varchar(100) NOT NULL COMMENT '被睡用户昵称',
+  `sleep_headimgurl` varchar(255) NOT NULL COMMENT '被睡用户头像',
+  `openid` varchar(100) NOT NULL COMMENT '参与用户id',
+  `nickname` varchar(200) NOT NULL COMMENT '昵称',
+  `headimgurl` varchar(255) NOT NULL COMMENT '头像',
+  `payment` decimal(7,2) NOT NULL DEFAULT '0.00' COMMENT '支出金额',
+  `pay_status` int(1) NOT NULL DEFAULT '0' COMMENT '支付状态 0未支付,1已支付',
+  `order_sn` varchar(200) NOT NULL DEFAULT '' COMMENT '订单单号',
+  `wechat_no` varchar(200) NOT NULL DEFAULT '' COMMENT '微信单号',
+  `createtime` int(11) DEFAULT NULL,
+  `sx_fee` decimal(9,2) NOT NULL DEFAULT '0.00',
+  `pay_log` varchar(255) NOT NULL DEFAULT '' COMMENT '支付日志',
+  `pay_type` varchar(20) NOT NULL DEFAULT '' COMMENT '支付类型',
+  PRIMARY KEY (`id`),
+  KEY `cgc_sleep_record_index2` (`uniacid`,`openid`),
+  KEY `cgc_sleep_record_index1` (`uniacid`,`sleep_openid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_cgc_sleep_user` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uniacid` int(3) NOT NULL COMMENT '公众号标识',
+  `openid` varchar(100) NOT NULL COMMENT '用户id',
+  `nickname` varchar(200) NOT NULL COMMENT '昵称',
+  `headimgurl` varchar(255) NOT NULL COMMENT '头像',
+  `share_content` varchar(255) NOT NULL DEFAULT '' COMMENT '分享内容',
+  `amount` decimal(9,2) DEFAULT '0.00' COMMENT '财富收入',
+  `pay_amount` decimal(9,2) DEFAULT '0.00' COMMENT '支出金额',
+  `createtime` int(11) DEFAULT NULL,
+  `no_account_amount` decimal(9,2) NOT NULL DEFAULT '0.00',
+  `friend_openid` varchar(100) NOT NULL DEFAULT '',
+  `friend_nickname` varchar(200) NOT NULL DEFAULT '',
+  `friend_headimgurl` varchar(255) NOT NULL DEFAULT '',
+  `sx_fee` decimal(9,2) NOT NULL DEFAULT '0.00' COMMENT '手续费',
+  `total_amount` decimal(9,2) NOT NULL DEFAULT '0.00' COMMENT '总金额',
+  PRIMARY KEY (`id`),
+  KEY `uniacid_openid_index` (`uniacid`,`openid`),
+  KEY `uniacid_amount_index` (`uniacid`,`openid`,`amount`),
+  KEY `uniacid_friend_openid_index` (`uniacid`,`friend_openid`,`openid`),
+  KEY `uniacid_friend_openid_index1` (`uniacid`,`friend_openid`),
+  KEY `uniacid_total_amount_index` (`uniacid`,`openid`,`total_amount`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+]]></install>
+	<uninstall><![CDATA[DROP TABLE IF EXISTS `ims_cgc_sleep_fee`;
+DROP TABLE IF EXISTS `ims_cgc_sleep_mps`;
+DROP TABLE IF EXISTS `ims_cgc_sleep_record`;
+DROP TABLE IF EXISTS `ims_cgc_sleep_user`;
+]]></uninstall>
+	<upgrade><![CDATA[upgrade.php]]></upgrade>
+</manifest>

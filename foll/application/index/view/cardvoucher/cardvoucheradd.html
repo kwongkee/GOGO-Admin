@@ -1,0 +1,151 @@
+{include file="common/header"}
+<blockquote class="layui-elem-quote layui-text">
+	卡卷添加
+</blockquote>
+<div style="margin-top:35px;">
+
+<form class="layui-form  layui-form-pane " action="" >
+	<div class="layui-form-item">
+		<label class="layui-form-label">卡卷名称</label>
+		<div class="layui-input-block">
+			<input type="text" name="c_name" required  lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+		</div>
+	</div>
+
+	<div class="layui-form layui-form-pane">
+		<div class="layui-form-item">
+			<label class="layui-form-label" style="height:38px;" id="l">适用商户</label>
+			<div class="layui-input-block">
+				<select name="c_business" xm-select="select1" lay-verify="required">
+					{volist name="businessList" id="item"}
+
+					<option value="{$item.uniacid}" >{$item.name}</option>
+					{/volist}
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="layui-form layui-form-pane">
+		<div class="layui-form-item">
+			<label class="layui-form-label" style="height:38px;" id="l2">使用业务</label>
+			<div class="layui-input-block">
+				<select name="c_application" xm-select="select2" lay-verify="required">
+					<option value="parking">停车</option>
+					<option value="shop">商城</option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">领取限制</label>
+		<div class="layui-input-block">
+			<input type="number" name="get_max" required  lay-verify="required" placeholder="最大领取" autocomplete="off" class="layui-input">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">开始时间</label>
+		<div class="layui-input-block">
+			<input type="text" name="s_time" required  lay-verify="required" id="time1" autocomplete="off" class="layui-input">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">到期时间</label>
+		<div class="layui-input-block">
+			<input type="text" name="e_time" required  lay-verify="required" id="time2" autocomplete="off" class="layui-input">
+		</div>
+	</div>
+
+	<div class="layui-form-item">
+		<label class="layui-form-label">适用条件</label>
+		<div class="layui-input-block">
+			<input type="radio" name="c_type" value="1" title="满X元使用" checked>
+			<input type="radio" name="c_type" value="2" title="每X元适用" >
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">适用条件金额</label>
+		<div class="layui-input-block">
+			<input type="number" name="enough" required  lay-verify="required" placeholder="x元" autocomplete="off" class="layui-input">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">优惠金额</label>
+		<div class="layui-input-block">
+			<input type="number" name="c_amount" required  lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">发放数量</label>
+		<div class="layui-input-block">
+			<input type="number" name="c_total" required  lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">使用方式</label>
+		<div class="layui-input-block">
+			<input type="radio" name="use_type" value="1" title="主动使用">
+			<input type="radio" name="use_type" value="2" title="被动使用" checked>
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">备注说明</label>
+		<div class="layui-input-block">
+			<input type="text" name="remark"  placeholder="可空" autocomplete="off" class="layui-input">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<div class="layui-input-block">
+			<button class="layui-btn" lay-submit lay-filter="formDemo">立即申请</button>
+			<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+		</div>
+	</div>
+</form>
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="./static/index/xadmin/js/formSelects.js" type="text/javascript" charset="utf-8"></script>
+<link rel="stylesheet" href="./static/index/xadmin/css/formSelects.css">
+<script>
+    layui.use(['form','laydate'], function(){
+        var form = layui.form;
+        var laydate = layui.laydate;
+        //监听提交
+		laydate.render({
+			elem:"#time1"
+            ,type: 'datetime'
+		});
+		laydate.render({
+			elem:"#time2"
+            ,type: 'datetime'
+		});
+        form.on('submit(formDemo)', function(data){
+            var filed = JSON.stringify(data.field);
+            var total_money = parseFloat(data.field.c_amount)*parseFloat(data.field.c_total);
+            console.dir(data);
+            layer.confirm('总金额?：'+total_money+"元", {icon: 3, title:'确认总金额：'}, function(index){
+                //do something
+                layer.close(index);
+                axios.post('{:Url("cardvoucher/save")}',{"data":filed}).then(function (repose) {
+                    console.log(repose.data);
+                    if(repose.data.code == 0){
+                        layer.msg(repose.data.message, {icon: 1});
+                    }else{
+                        layer.msg(repose.data.message, {icon: 5});
+                    }
+                }).catch(function (error) {
+                    layer.msg(error, {icon: 5});
+                });
+            });
+
+            return false;
+        });
+    });
+    layui.formSelects.on('select1',function(id, vals, val, isAdd, isDisabled){
+        console.log(val);
+    });
+    layui.formSelects.on('select2',function(id, vals, val, isAdd, isDisabled){
+        console.log(val);
+    });
+	$("#l").css('height','38px');
+    $("#l2").css('height','38px');
+</script>
+{include file="common/footer"}

@@ -1,0 +1,125 @@
+
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
+	<meta name="format-detection" content="telephone=no" />
+	<title>上传题目 - {$config['webtitle']}</title>
+	<link href="{$templateurl}css/foxui.min.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="{$templateurl}css/selectFilter.css" />
+	
+	<!--编辑器 start-->
+	<script type="text/javascript" charset="utf-8" src="../addons/{$_GPC['m']}/ueditor/ueditor.config.js"></script>
+	<script type="text/javascript" charset="utf-8" src="../addons/{$_GPC['m']}/ueditor/ueditor.all.min.js"> </script>
+	<script type="text/javascript" charset="utf-8" src="../addons/{$_GPC['m']}/ueditor/lang/zh-cn/zh-cn.js"></script>
+    <!--函数插件-->
+    <script type="text/javascript" charset="utf-8" src="../addons/{$_GPC['m']}/ueditor/kityformula-plugin/addKityFormulaDialog.js"></script>
+	<script type="text/javascript" charset="utf-8" src="../addons/{$_GPC['m']}/ueditor/kityformula-plugin/getKfContent.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../addons/{$_GPC['m']}/ueditor/kityformula-plugin/defaultFilterFix.js"></script>
+	<!--编辑器 end-->
+</head>
+
+<body ontouchstart>
+
+<div class='fui-page-group '>
+           
+	<div class='fui-page  fui-page-current'>
+		<div class="fui-header">
+			<div class="fui-header-left">
+				<a class="back" href="{$urlt}"></a>
+			</div>
+			<div class="title">题目详细</div>
+		</div>
+		
+		<div class='fui-content' style="background:#fff; padding-bottom:10px;">
+			<form name="formpt" action="{$urlt}" method="post" class='form-ajax' onSubmit="return checkinfo(this);" enctype="multipart/form-data" >
+			<input type="hidden" name="token" value="{$_W['token']}" />
+			<input type="hidden" name="id" value="{$srdb['id']}" />
+			<input type="hidden" name="type" value="{$srdb['type']}" />
+				<div class="ditudierb">   
+					<div class="a1">
+						<h1>题目</h1>
+						<textarea name="titlename" id="titlename">{$srdb['titlename']}</textarea>
+						<script type="text/javascript">
+							var editor = new UE.ui.Editor();
+							editor.render("titlename");
+						</script>
+					</div>
+					{if $srdb['type'] == 3}<!--填空题-->
+					<div class="a1">
+                    	<h1>正确答案</h1>
+                        <textarea name="zqanswer3" placeholder="注意：多个答案以中文逗号分开，如飘逸，封样，退费。">{$srdb['zqanswer']}</textarea>
+                    </div>
+					{elseif $srdb['type'] == 4}<!--判断题-->
+					<div class="a3">
+                    	<h1>正确答案</h1>
+                        <label><input type="radio" name="zqanswer4" value="A" {if $srdb['zqanswer'] == 'A'}checked{/if}>正确</label>
+                        <label><input type="radio" name="zqanswer4" value="B" {if $srdb['zqanswer'] == 'B'}checked{/if}>错误</label>
+                        <div style="clear:both;"></div>
+                    </div>
+					{elseif $srdb['type'] == 6 || $srdb['type'] == 5}<!--主观题/作文题-->
+					<div class="a1">
+                    	<h1>正确答案</h1>
+                        <textarea name="zqanswer" id="zqanswer">{$srdb['zqanswer']}</textarea>
+						<script type="text/javascript">
+							var editor6 = new UE.ui.Editor();
+							editor6.render("zqanswer");
+						</script>
+                    </div>
+					{else}<!--单、多选题-->
+					<div class="a2">
+						<h1>选项<!--<a href="#">增加选项</a>--></h1>
+						<label>A、<input type="text" name="answer[]" value="{$answer_arll[0]}"/></label>
+						<label>B、<input type="text" name="answer[]" value="{$answer_arll[1]}"/></label>
+						<label>C、<input type="text" name="answer[]" value="{$answer_arll[2]}"/></label>
+						<label>D、<input type="text" name="answer[]" value="{$answer_arll[3]}"/></label>
+						<label>E、<input type="text" name="answer[]" value="{$answer_arll[4]}"/></label>
+						<label>F、<input type="text" name="answer[]" value="{$answer_arll[5]}"/></label>
+						<!--<a href="#" class="cc1">取消一个选项</a>-->
+						<div style="clear:both;"></div>
+					</div>
+					<div class="a3">
+						<h1>正确答案</h1>
+						{if $srdb['type'] == 1}
+						<label><input type="radio" name="zqanswer1" value="A" {if $srdb['zqanswer'] == 'A'}checked{/if}>A</label>
+						<label><input type="radio" name="zqanswer1" value="B" {if $srdb['zqanswer'] == 'B'}checked{/if}>B</label>
+						<label><input type="radio" name="zqanswer1" value="C" {if $srdb['zqanswer'] == 'C'}checked{/if}>C</label>
+						<label><input type="radio" name="zqanswer1" value="D" {if $srdb['zqanswer'] == 'D'}checked{/if}>D</label>
+						<label><input type="radio" name="zqanswer1" value="E" {if $srdb['zqanswer'] == 'E'}checked{/if}>E</label>
+						<label><input type="radio" name="zqanswer1" value="F" {if $srdb['zqanswer'] == 'F'}checked{/if}>F</label>
+						{elseif $srdb['type'] == 2}
+						<label><input type="checkbox" name="zqanswer2[]" value="A" {if in_array('A', $zqanswerarr, true)}checked{/if}>A</label>
+						<label><input type="checkbox" name="zqanswer2[]" value="B" {if in_array('B', $zqanswerarr, true)}checked{/if}>B</label>
+						<label><input type="checkbox" name="zqanswer2[]" value="C" {if in_array('C', $zqanswerarr, true)}checked{/if}>C</label>
+						<label><input type="checkbox" name="zqanswer2[]" value="D" {if in_array('D', $zqanswerarr, true)}checked{/if}>D</label>
+						<label><input type="checkbox" name="zqanswer2[]" value="E" {if in_array('E', $zqanswerarr, true)}checked{/if}>E</label>
+						<label><input type="checkbox" name="zqanswer2[]" value="F" {if in_array('F', $zqanswerarr, true)}checked{/if}>F</label>
+						{/if}
+						<div style="clear:both;"></div>
+					</div>
+					{/if}
+					<div class="a1">
+						<h1>答案解析</h1>
+						<textarea name="content" id="content">{$srdb['content']}</textarea>
+						<script type="text/javascript">
+							var editorp = new UE.ui.Editor();
+							editorp.render("content");
+						</script>
+					</div>
+				</div>
+				
+			   <a id="btn-submit" class='external btn btn-danger block' href="{$urlt}&tab=edit&id={$id}" style="width:30%; margin:0 0 0 8px; float:left; background:#F60;">上一步</a>
+			   <input type="submit" name="save_submit" value="保存" class='external btn btn-danger block' style="width:30%; margin:0 8px 0 0; float:right;">
+			   <input type="submit" name="release_submit" value="保存并发布" class='external btn btn-danger block' style="width:30%; margin:0 8px 0 0; float:right;">
+			</form>
+	   </div>
+	</div> 
+
+</div>
+	
+
+	
+</body>
+</html>
+

@@ -1,0 +1,112 @@
+{include file="public/header"}
+<body style="padding: 10px;">
+<!-- 上级ID -->
+<input type="hidden" id="pid" value="1">
+<div class="header">
+    <span>快递企业列表</span>
+
+    <a style="margin-left: 15px;" class="layui-btn layui-btn-sm" href="javascript:history.go(-1);">返回上一页</a>
+
+    <button class="layui-btn layui-btn-sm" onclick="add({$pid})">添加计费区域</button>
+
+    <div></div>
+</div>
+
+<table class="layui-table">
+    <thead>
+    <tr>
+        <th>区域名称</th>
+        <th>首重计费</th>
+        <th>续重计费</th>
+        <th>新增时间</th>
+        <th>更新时间</th>
+        <th>覆盖区域</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {volist name="data.data" id='vo'}
+        <tr>
+            <td>{$vo['regionName']}</td>
+            <td>{$vo['oneMoney']} / {$vo['oneKg']} Kg</td>
+            <td>{$vo['twoMoney']} / {$vo['twoKg']} Kg</td>
+            <td>{$vo['createTime']|date='Y-m-d H:i:s',###}</td>
+            <td>{$vo['updateTime']|date='Y-m-d H:i:s',###}</td>
+            <td><?php
+                $tmps=[];
+                $tmps = json_decode($vo['province'],true);
+                if(!empty($tmps)) {
+                    foreach($tmps as $v) {echo $v.',';}
+                } else {
+                    echo 'noData';
+                }
+            ?>
+            </td>
+            <td>
+                <button class="layui-btn layui-btn-warm layui-btn-xs" onclick="edit({$vo['id']})">编辑</button>
+                <button class="layui-btn layui-btn-danger layui-btn-xs" onclick="del({$vo['id']})">删除</button>
+            </td>
+        </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<div class="layui-page">
+    {$page}
+</div>
+
+<script type="text/javascript">
+
+    layui.use(['layer'],function(){
+        layer = layui.layer;
+        $     = layui.jquery;
+    });
+
+    // 添加承运线路
+    function add(pid)
+    {
+        layer.open({
+            type:2,
+            title:'添加计费区域',
+            shade:0.3,
+            area:['480px','420px'],
+            content:'{:Url("admin/express/regionadd")}&pid='+pid
+        });
+    }
+
+    // 编辑快递区域
+    function edit(id)
+    {
+        layer.open({
+            type:2,
+            title:'编辑快递区域',
+            shade:0.3,
+            area:['480px','420px'],
+            content:'{:Url("admin/express/regionedit")}&id='+id
+        });
+    }
+
+    // 删除区域
+    function del(id)
+    {
+        layer.confirm('确定要删除吗？',{icon:3,btn:['确定','取消']},function(){
+
+            $.post("{:Url('admin/express/regionDel')}",{id:id},function(resd){
+                var res = JSON.parse(resd);
+                if(res.code == 1) {
+                    layer.msg(res.msg,{icon:1});
+                    setTimeout(function(){
+                        layer.closeAll();
+                        parent.window.location.reload();
+                    },1000);
+                } else {
+                    layer.alert(res.msg,{icon:2});
+                }
+            },'json');
+        })
+    }
+</script>
+
+</body>
+</html>

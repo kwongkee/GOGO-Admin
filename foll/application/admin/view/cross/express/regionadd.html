@@ -1,0 +1,146 @@
+{include file="public/header"}
+
+<body style="padding: 10px;">
+
+<form action="" class="layui-form" id="form1">
+    <input type="hidden" name="pid" value="{$pid}">
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">区域名称</label>
+        <div class="layui-input-inline">
+            <input type="text" class="layui-input" required name="regionName" placeholder="请输入区域名称">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">首重计费</label>
+        <div class="layui-input-inline" style="width: 100px;">
+            <input type="text" name="oneMoney" placeholder="多少元" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-form-mid">/</div>
+        <div class="layui-input-inline" style="width: 100px;">
+            <input type="text" name="oneKg" placeholder="多少公斤" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-form-mid layui-word-aux">Kg</div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">续重计费</label>
+        <div class="layui-input-inline" style="width: 100px;">
+            <input type="text" name="twoMoney" placeholder="多少元" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-form-mid">/</div>
+        <div class="layui-input-inline" style="width: 100px;">
+            <input type="text" name="twoKg" placeholder="多少公斤" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-form-mid layui-word-aux">Kg</div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">覆盖省份</label>
+        <div class="layui-input-block">
+            {foreach name='exp' item="vo" key='k'}
+                <input type="checkbox" name="province" title="{$vo}" value="{$k}" lay-skin="primary">
+            {/foreach}
+        </div>
+    </div>
+
+</form>
+
+<div class="layui-form-item">
+    <div class="layui-input-block">
+        <button class="layui-btn" onclick="save()">确认添加</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    layui.use(['layer','form'],function(){
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+    })
+
+
+    // 添加管理员
+    function save()
+    {
+
+        var regionName      = $('input[name="regionName"]').val();
+        var oneMoney        = $('input[name="oneMoney"]').val();
+        var oneKg           = $('input[name="oneKg"]').val();
+        var twoMoney        = $('input[name="twoMoney"]').val();
+        var twoKg           = $('input[name="twoKg"]').val();
+        var pid           = $('input[name="pid"]').val();
+
+        var data={};
+        var arr = new Array();// 处理复选框
+        $("input:checkbox[name='province']:checked").each(function(i){
+            arr[i] = $(this).val();
+        });
+
+
+        if(regionName == '') {
+            layer.msg('请输入区域名称',{icon:2});
+            return false;
+        }
+
+        if(oneMoney == '') {
+            layer.msg('请输入首重多少元',{icon:2});
+            return false;
+        }
+
+        if(oneKg == '') {
+            layer.msg('请输入首重多少公斤',{icon:2});
+            return false;
+        }
+
+
+        if(twoMoney == '') {
+            layer.msg('请输入续重多少元',{icon:2});
+            return false;
+        }
+        if(twoKg == '') {
+            layer.msg('请输入续重多少公斤',{icon:2});
+            return false;
+        }
+
+        if(arr.length == 0) {
+            layer.msg('请输选择覆盖区域',{icon:2});
+            return false;
+        }
+
+
+        data.province = arr.join(",");//将数组合并成字符串
+
+        data.regionName = regionName;
+        data.oneMoney   = oneMoney;
+        data.oneKg      = oneKg;
+        data.twoMoney   = twoMoney;
+        data.twoKg      = twoKg;
+        data.pid        =  pid;
+        data.Method     = 'add';
+
+        // 请求处理数据
+        $.post("{:Url('admin/express/regionDoadd')}",{data},function(resd){
+
+            var res = JSON.parse(resd);
+
+            console.log(res)
+
+            if(res.code == 1) {
+                layer.msg(res.msg,{icon:1});
+                setTimeout(function(){
+                    layer.closeAll();
+                    parent.window.location.reload();
+                },1000);
+            } else {
+                layer.msg(res.msg,{icon:2});
+            }
+
+        });
+    }
+</script>
+</body>
+</html>

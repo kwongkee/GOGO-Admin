@@ -1,0 +1,82 @@
+{template 'parking/_header'}
+<body ontouchstart>
+<div>
+    <div class="register">用户注册</div>
+    <div id="register" style="margin-top:60px;">
+        <form id="registerForm">
+            <div class="weui_cells weui_cells_form">
+                <div class="username-line"></div>
+                <div class="weui-cell weui-cell_vcode phone" >
+                    <label class="weui-label phone-numer" for="phone">手机号</label>
+                    <input  class="phone-input common-input" id="phone" type="tel" placeholder="请输入手机号">
+                    <button class="code" id="J_GetCode" type="button">获取验证码</button>
+                </div>
+                <div class="username-line"></div>
+              <div class="weui_cell">
+                    <div class="weui_cell_hd" >
+                        <label for="username" class="weui_label ">验证码</label>
+                    </div>
+                    <div class="weui_cell_bd weui_cell_primary">
+                        <input type="text"  name="yzm" class="weui_input common-input" id="code" required="" placeholder="请输入验证码">
+                    </div>
+                    <div class="weui_cell_ft">
+                        <i class="weui_icon_warn"></i>
+                    </div>
+                </div>
+            </div>
+
+            <p class="weui_cells_tips tips" style="color:red"></p>
+
+            <div class="weui_btn_area">
+                <a href="#" class="weui_btn weui_btn_primary js_btn register-submit" onclick="reg(this)">注册</a>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+<script>
+    document.getElementById('J_GetCode').onclick=function(){
+        sencode();
+         var tel=document.getElementById('phone').value;
+        if(tel!==''){
+            sendcode(tel);   
+        }else{
+            $('.phone-numer').css('color','red');
+            return false;
+        }
+    }
+    function sendcode(t){
+         $.get("{php echo mobileUrl('parking/reg/code');}",{'mobile':t},function(data){
+            console.dir(data);
+            });  
+    }
+    function sencode(time=30){
+        var code=document.getElementById('J_GetCode');
+        code.disabled=true;
+        code.innerHTML='已发送'+time;
+        if(time>0){
+            time=time-1;
+            setTimeout(function(){
+            sencode(time);
+        },1000);
+            return false;
+        }
+        code.innerHTML='获取验证码';
+    }
+
+    function reg(object){
+        var mobile=document.getElementById('phone').value;
+        var yzm=document.getElementById('code').value;
+        $.post("{php echo mobileUrl('parking/reg/verify_reg');}",{'mobile':mobile,'yzm':yzm},function(info){
+            var info=$.parseJSON(info);
+                switch(info.status){
+                case 0:
+                    $('.tips').html(info.result.message);
+                    break;
+                case 1:
+                    location.href="跳转授权页面";
+                }
+            })
+    }
+</script>
+{template 'parking/_footer'}

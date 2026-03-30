@@ -1,0 +1,209 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>商户详情</title>
+        <script src="{$modulePublic}shop/js/SetSize.js"></script>
+        <meta name="screen-orientation" content="portrait/landscape">
+        <meta content="yes" name="apple-mobile-web-app-capable">
+        <meta content="yes" name="apple-touch-fullscreen">
+        <meta content="black" name="apple-mobile-web-app-status-bar-style">
+        <meta content="telephone=no" name="format-detection">
+        <link href="{$modulePublic}shop/css/content.css" rel="stylesheet" type="text/css">
+        <link href="{$modulePublic}shop/css/storeUpActivity.css" rel="stylesheet" type="text/css">
+        <script src="{$modulePublic}shop/js/baidu.js"></script>
+        <script src="{$modulePublic}shop/js/jquery-1.8.3.min.js"></script>
+    </head>
+    <body>
+        <script>
+            document.body.style.fontSize = SetSize.getScreenRatio() * 10 + 'px';
+        </script>
+        <script src="{$modulePublic}shop/js/svgPackage.js"></script>
+
+        <section id="main" class="detailMain">
+            <div class="bannerPanel_02">
+                <div class="ADMoodBtn">
+                    <a href="javascript:window.history.back(-1)" class="ADMoodBtn_a"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_goBack_2"></use></svg></a>
+                    <!--<a href="javascript:void()" id="a_share" class="ADMoodBtn_a"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_share_1"></use></svg></a>-->
+                </div>
+                <div class="listField" style="cursor: -webkit-grab;">
+                    <ul class="swiper-wrapper" style="width: 100%; height: 500px;"><li class="swiper-slide" style="width: 100%; height: 500px;"><img src="{php echo $attach_url . '/'.$shop_info['img']}" alt=""></li>
+
+                        <li class="swiper-slide swiper-slide-visible swiper-slide-active" style="width: 100%; height: 500px;"><img src="{php echo $attach_url . '/'.$shop_info['img']}" alt=""></li>
+
+                        <li class="swiper-slide" style="width: 100%;height:100%"><img src="{php echo $attach_url . '/'.$shop_info['img']}" alt=""></li></ul>
+                </div>
+            </div>
+            <div class="shopInfoPanel_01 addStoreUp moveTopHalf">
+                <div class="imgField">
+                    <img style="width: 100%;height:100%" src="{php echo $attach_url . '/'.$shop_info['logo']}" alt="">
+                </div>
+                <div class="detailField">
+                    <h2>{$shop_info['name']}</h2>
+                </div>
+                <div class="btnField collection">
+                    <a href="javascript:" onclick="javascript: like()" class="btn likeAndZan" lang="45"><i><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_like_1"></use></svg></i><span class="goodsNum">{$shop_info['good_num']}</span></a>
+                    <!--<a class="btn collections" href="javascript:coll(1)"><svg><use xlink:href="#icon_service_1" /></svg><small id="collectB">我要收藏</small></a>-->
+                </div>
+            </div>
+
+            <div class="shopLinkPanel_01">
+                <ul>
+                    <li><a href="tel:{if $shop_info['tel']}{$shop_info['tel']}{else}暂无{/if}" class="arrow"><i class="icon1"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_telephone_1"></use></svg></i><span>{if $shop_info['tel']}{$shop_info['tel']}{else}暂无{/if}</span></a></li>
+                    <li><a href="javascript:void(0)" class="arrow"><i class="icon2"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_location_1"></use></svg></i><span>{$shop_info['floor']}</span></a></li>
+                </ul>
+            </div>
+
+            {if $shop_activitys}
+            <div class="eventListPanel_01">
+                <div class="titleField">
+                    <a href="../sale/sale_list"><h2>最新活动</h2></a>
+                </div>
+                <div class="listField">
+                    <ul>
+                        {loop $shop_activitys $row}
+                        <li>
+                            <a href="{php echo $this->createMobileUrl('shop_activity_detail',array('id'=>$row['id']))}">
+                                <div class="img">
+                                    <img data-bg="http://file.capitaland.com.cn/webupload/274-2/Activity/images/201610/201610141119023464.jpg" alt="" src="data:image/PNG;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAEElEQVR42gEFAPr/AP///wAI/AL+Sr4t6gAAAABJRU5ErkJggg==" style="width: 100%; height: 100%; background-position: 50% 50%; background-repeat: no-repeat; background-size: cover; background-image: url(&quot;{php echo $attach_url . '/'.$row['img']}&quot;);">
+                                </div>
+                                <div class="detail">
+                                    <h3>
+                                        {$row['title']}
+                                        <i class="icon2">促</i>
+                                    </h3>
+                                    <p class="time">
+                                        有效期：     {if $row['expiry_date_start']!='0000-00-00'}
+                                        {$row['expiry_date_start']} ~ {$row['expiry_date_end']} 
+                                        {else}
+                                        无限期
+                                        {/if}
+                                    </p>
+                                </div>
+                            </a>
+                        </li>
+                        {/loop}
+                    </ul>
+                </div>
+            </div>
+            {/if}
+
+            {if $shop_coupons}
+            <div class="eventListPanel_01">
+                <div class="titleField">
+                    <a href="../sale/sale_list"><h2>优惠券</h2></a>
+                </div>
+                <div class="listField">
+                    <ul>
+                        {loop $shop_coupons $row}
+                        <li>
+                            <a href="{php echo $this->createMobileUrl('shop_coupon_detail',array('id'=>$row['id']))}">
+                                <div class="img">
+                                    <img data-bg="http://file.capitaland.com.cn/webupload/274-2/Activity/images/201610/201610141119023464.jpg" alt="" src="data:image/PNG;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAEElEQVR42gEFAPr/AP///wAI/AL+Sr4t6gAAAABJRU5ErkJggg==" style="width: 100%; height: 100%; background-position: 50% 50%; background-repeat: no-repeat; background-size: cover; background-image: url(&quot;{php echo $attach_url. '/'.$row['img']}&quot;);">
+                                </div>
+                                <div class="detail">
+                                    <h3>
+                                        {$row['name']}
+                                        <i class="icon2">促</i>
+                                    </h3>
+                                    <p class="time">
+                                        有效期：     {if $row['expiry_date_start']!='0000-00-00'}
+                                        {$row['expiry_date_start']} ~ {$row['expiry_date_end']} 
+                                        {else}
+                                        无限期
+                                        {/if}
+                                    </p>
+                                </div>
+                            </a>
+                        </li>
+                        {/loop}
+                    </ul>
+                </div>
+            </div>
+            {/if}
+
+            <div class="shopDetailPanel_01">
+                <div class="titleField">
+                    <!--<a href="javascript:">--><h2>商户介绍</h2><!--</a>-->
+                </div>
+                <div class="textField">
+                    <p>{php echo htmlspecialchars_decode(preg_replace('/font-size\s*\:\s*\d*px\s*\;*/is', '', $shop_info['desc']))}</p>
+                </div>
+            </div>
+
+        </section>
+        <nav id="nav"><div class="linkField"> 
+                <ul>
+                    <li>
+                        <a href="{php echo $this->createMobileUrl('index2')}" class="current">
+                            <i><svg><use xlink:href = "#icon_index_1"/></svg></i>
+                            <span>逛商场</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="{php echo $this->createMobileUrl('shop_activity_list')}" >
+                            <i><svg><use xlink:href = "#icon_star_1"/></svg></i>
+                            <span>活动</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{php echo $this->createMobileUrl('award_list')}">
+                            <i><svg><use xlink:href = "#icon_gift_1"/></svg></i>
+                            <span>换礼品</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{php echo $this->createMobileUrl('index')}" >
+                            <i><svg><use xlink:href = "#icon_user_2"/></svg></i>
+                            <span>我</span>
+                        </a>
+                    </li>
+                </ul>
+            </div></nav>
+        <header id="header" style="display:none" >
+        </header>
+    </body>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script>
+                function like() {
+                    $.ajax({
+                        url: "{php echo $this->createMobileUrl('ajax',array('sdo'=>'like_shop','id'=>$shop_info['id']))}",
+                        type: "get",
+                        dataType: "json",
+                        success: function (res) {
+                            if (res.error_code == 1) {
+                                var good_num = $(".goodsNum").html() * 1;
+                                $(".goodsNum").html(good_num+1);
+                            }
+                        }
+                    })
+                }
+                wx.config({
+                    debug: false,
+                    appId: "{$_W['account']['jssdkconfig']['appId']}",
+                    timestamp: "{$_W['account']['jssdkconfig']['timestamp']}",
+                    nonceStr: "{$_W['account']['jssdkconfig']['nonceStr']}",
+                    signature: "{$_W['account']['jssdkconfig']['signature']}",
+                    jsApiList: ["onMenuShareAppMessage", "onMenuShareTimeline", "onMenuShareQQ", "chooseImage", "uploadImage", "downloadImage", "onMenuShareTimeline", "showAllNonBaseMenuItem"]
+                });
+                wx.ready(function () {
+                    sharedata = {
+                        title: "{$shop_info['name']}-{$config['name']}",
+                        desc: "地址：{$shopingMallAdd[1]['title']}",
+    //            link: "{php echo $this->createMobileUrl('shop_detail',array('id'=>$shop_info['id']))}",
+                        imgUrl: "{php echo $attach_url . '/'.$shop_info['logo']}",
+                        success: function () {
+                        },
+                        cancel: function () {
+                            //                        alert('分享取消');
+                        }
+                    };
+                    //            wx.onMenuShareAppMessage(sharedata);
+                    wx.onMenuShareTimeline(sharedata);
+                    wx.onMenuShareAppMessage(sharedata);
+                    //            wx.onMenuShareQQ(sharedata);
+                });
+    </script>
+</html>

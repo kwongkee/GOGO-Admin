@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<title>费用设置</title>
+	<link rel="stylesheet" type="text/css" href="../addons/sz_yi/static/travel_express/css/hui.css" />
+	<link rel="stylesheet" type="text/css" href="../addons/sz_yi/static/travel_express/css/style.css" />
+	<style>
+        .hui-header h1{
+            padding: 0px 38px 0px 0;
+        }
+        .hui-list-text{
+            border-bottom: 1px solid #969696;
+            padding: 0 10px;
+            margin-left: 0px;
+        }
+        .hui-form-items-title {
+            width: 25%;
+            height: 30px;
+            line-height: 30px;
+            font-size: 16px;
+        }
+        .hui-wrap{
+			margin-bottom: 60px;
+		}
+        .hui-form-items-content{
+            margin-left: 10px;
+            height: 30px;
+            line-height: 30px;
+            font-size: 16px;
+            text-align: right;
+            width: 70%;
+        }
+        .hui-form-select select{
+            padding: 6px 22px 6px 6px;
+            appearance: auto;
+        }
+        .hui-form-select{
+            text-align: right;
+            width: 73%;
+        }
+    </style>
+</head>
+<body>
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1>费用设置</h1>
+</header>
+
+<div class="hui-wrap">
+    <div class="hui-list" style="margin:10px 0px 0; background: #e4f6fe;">
+        <div class="hui-list-text" style="height:50px; line-height:50px; color: #0276b2;font-weight: 900;font-size: 20px;border-bottom:unset;padding-left: 20px;">
+            企业信息
+        </div>
+    </div>
+    <form class="hui-form" id="form1">
+        <div class="hui-form-items">
+            <div class="hui-form-items-title">企业名称</div>
+            <div class="hui-form-items-content">{$merchant['company_name']}</div>
+        </div>
+        <div class="hui-form-items">
+            <div class="hui-form-items-title">负责人姓名</div>
+            <div class="hui-form-items-content">{$merchant['user_name']}</div>
+        </div>
+        <div class="hui-form-items">
+            <div class="hui-form-items-title">手机号码</div>
+            <div class="hui-form-items-content">{$merchant['user_tel']}</div>
+        </div>
+        <input type="hidden" name="id" value="{$merchant['id']}">
+        <div class="hui-form-items">
+            <div class="hui-form-items-title">入账费用</div>
+            <div class="hui-form-radios" style="line-height:38px;margin-left: 10px;text-align: right;">
+                <input type="radio" value="1" name="entry_cost_type" id="g1" {if $merchant['entry_cost_type'] == 1 } checked {/if} /><label for="g1">定额</label>
+                <input type="radio" value="2" name="entry_cost_type" id="g2" {if $merchant['entry_cost_type'] == 2 } checked {/if} /><label for="g2">百分比</label>
+                <input type="number" class="hui-input" name="entry_cost" value="{$merchant['entry_cost']}" onkeyup="this.value=this.value.replace(/[^0-9\.]/g,'')" style="width: 30% !important;display: inline-block;" />
+            </div>
+        </div>
+        <div class="hui-form-items">
+            <div class="hui-form-items-title">提现费</div>
+            <div class="hui-form-radios" style="line-height:38px;margin-left: 10px;text-align: right;">
+                <input type="radio" value="1" name="withdrawal_cost_type" id="g3" {if $merchant['withdrawal_cost_type'] == 1 } checked {/if} /><label for="g3">定额</label>
+                <input type="radio" value="2" name="withdrawal_cost_type" id="g4" {if $merchant['withdrawal_cost_type'] == 2 } checked {/if} /><label for="g4">百分比</label>
+                <input type="number" class="hui-input" name="withdrawal_cost" value="{$merchant['withdrawal_cost']}" onkeyup="this.value=this.value.replace(/[^0-9\.]/g,'')" style="width: 30% !important;display: inline-block;" />
+            </div>
+        </div>
+        <div class="hui-form-items">
+            <div class="hui-form-items-title">国内所得税</div>
+            <div class="hui-form-radios" style="line-height:38px;margin-left: 10px;text-align: right;">
+                <input type="radio" value="1" name="taxonshore_cost_type" id="g5" {if $merchant['taxonshore_cost_type'] == 1 } checked {/if} /><label for="g5">定额</label>
+                <input type="radio" value="2" name="taxonshore_cost_type" id="g6" {if $merchant['taxonshore_cost_type'] == 2 } checked {/if} /><label for="g6">百分比</label>
+                <input type="number" class="hui-input" name="taxoffshore_cost" value="{$merchant['taxoffshore_cost']}" onkeyup="this.value=this.value.replace(/[^0-9\.]/g,'')" style="width: 30% !important;display: inline-block;" />
+            </div>
+        </div>
+        <div class="hui-form-items">
+            <div class="hui-form-items-title">离岸所得税</div>
+            <div class="hui-form-radios" style="line-height:38px;margin-left: 10px;text-align: right;">
+                <input type="radio" value="1" name="taxoffshore_cost_type" id="g7" {if $merchant['taxoffshore_cost_type'] == 1 } checked {/if} /><label for="g7">定额</label>
+                <input type="radio" value="2" name="taxoffshore_cost_type" id="g8" {if $merchant['taxoffshore_cost_type'] == 2 } checked {/if} /><label for="g8">百分比</label>
+                <input type="number" class="hui-input" name="taxonshore_cost" value="{$merchant['taxonshore_cost']}" onkeyup="this.value=this.value.replace(/[^0-9\.]/g,'')" style="width: 30% !important;display: inline-block;" />
+            </div>
+        </div>
+        
+        <div style="padding: 15px 8px;width: 30%;margin: 20px auto 24px;">
+            <button type="button" class="hui-button hui-primary hui-fr" id="submitBtn" style="background: #1b7ab6 !important;">设置</button>
+        </div>
+    </form>
+</div>
+</div>
+
+<script src="../addons/sz_yi/static/travel_express/js/hui.js" type="text/javascript" charset="utf-8"></script>
+<script src="../addons/sz_yi/static/travel_express/js/hui-form.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+hui.formInit();
+//表单元素数据收集演示
+hui('#submitBtn').click(function(){
+
+    var res = huiFormCheck('#form1');
+    if (res)
+    {
+        // http://shop.gogo198.cn/foll/public/?s=member/account_check&op=agents_set_save
+        var data = hui.getFormData('#form1');
+        hui.ajax({
+            url  : '{php echo $this->createMobileUrl("member/account_check")}&op=agents_set_save',
+            type : 'POST',
+            data : data,
+            beforeSend : function(){hui.loading();},
+            complete   : function(){hui.closeLoading();},
+            success : function(res){
+                hui.toast(res.result.msg);
+                setTimeout(function(){
+                    window.location.reload();
+                }, 1000); 
+            },
+            error : function(e){
+                console.log(JSON.stringify(e));
+                hui.iconToast('系统错误', 'warn');
+            },
+            'backType' : "JSON"
+        });
+    }
+    
+    
+    
+
+});
+
+</script>
+</body>
+</html>

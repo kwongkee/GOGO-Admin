@@ -1,0 +1,59 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template("common/easy_delivery_header", TEMPLATE_INCLUDEPATH)) : (include template("common/easy_delivery_header", TEMPLATE_INCLUDEPATH));?>
+<body>
+<header>
+    <div class="logo"><img src="../addons/sz_yi/static/images/logo.png" alt=""></div>
+    <div class="plane"><img src="../addons/sz_yi/static/images/plane.png" alt=""></div>
+</header>
+<div class="warp">
+    <div class="content">
+        <div class="warp-con">
+            <div class="order-pay">
+                <div class="pay-left">
+                    <img src="../addons/sz_yi/static/images/pay_01.png" alt="">
+                    <h2>直邮费用支付成功</h2>
+                </div>
+                <div class="pay-right" style="margin-top: 5%;">
+                    <button class="but t-blue" onclick="print();">打印面单 <img src="../addons/sz_yi/static/images/icon_07.png" alt=""></button>
+                    <button class="but t-orange" onclick="locapack();">继续打包 <img src="../addons/sz_yi/static/images/icon_07.png" alt=""></button>
+                    <button class="but t-red" onclick="xuangou();">继续选购 <img src="../addons/sz_yi/static/images/icon_07.png" alt=""></button>
+                </div>
+            </div>
+            <div class="pay-line"><span class="pay-title">包裹概要</span></div>
+            <div class="pay-num">
+                <p>直邮编号：<?php  echo $orderSn['ordersn'];?></p>
+                <p>商品数量：<?php  echo $goods['total'];?></p>
+                <p>收件信息：</p>
+                <p style="padding-left: 88px;"><?php  echo $recipient['name'];?> <?php  echo $recipient['phone'];?></p>
+                <p style="padding-left: 88px;"><?php  echo $recipient['address'];?></p>
+            </div>
+            <div class="pay-but">
+                <ul>
+                    <li><button class="but-orange" onclick="locaDetail();"><img src="../addons/sz_yi/static/images/icon_08.png" alt="">查详情</button></li>
+                    <li><button class="but-blue" onclick="locaHome();"><img src="../addons/sz_yi/static/images/icon_09.png" alt="">回首页</button></li>
+                    <li><button class="but-red" onclick="print();"><img src="../addons/sz_yi/static/images/icon_13.png" alt="">去打印</button></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template("common/easy_deliver_footer", TEMPLATE_INCLUDEPATH)) : (include template("common/easy_deliver_footer", TEMPLATE_INCLUDEPATH));?>
+</body>
+<script>
+    function print() {
+        window.location.href="<?php  echo $this->createMobileUrl('order/easy_deliver_order_print')?>";
+    }
+
+    function locaDetail() {
+        window.location.href="<?php  echo $this->createMobileUrl('order/easy_deliver_orderdetail')?>&oid=<?php  echo $orderSn['ordersn'];?>";
+    }
+    function locaHome() {
+        window.location.href="<?php  echo $this->createMobileUrl('member/easy_deliver_index')?>";
+    }
+    function locapack() {
+        window.location.href="<?php  echo $this->createMobileUrl('order/easy_deliver_centralizedpackage')?>&a=main";
+    }
+    function xuangou() {
+        window.location.href="<?php  echo $this->createMobileUrl('shop/easy_deliver_cart')?>";
+    }
+</script>
+</html>

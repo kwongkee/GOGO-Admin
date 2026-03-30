@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>优惠券详情</title>
+        <script src="{$modulePublic}shop/js/SetSize.js"></script>
+        <meta name="screen-orientation" content="portrait/landscape">
+        <meta content="yes" name="apple-mobile-web-app-capable">
+        <meta content="yes" name="apple-touch-fullscreen">
+        <meta content="black" name="apple-mobile-web-app-status-bar-style">
+        <meta content="telephone=no" name="format-detection">
+        <link href="{$modulePublic}shop/css/content.css" rel="stylesheet" type="text/css">
+        <link href="{$modulePublic}shop/css/storeUpActivity.css" rel="stylesheet" type="text/css">
+        <script src="{$modulePublic}shop/js/baidu.js"></script>
+    </head>
+    <body>
+        <script>
+            document.body.style.fontSize = SetSize.getScreenRatio() * 10 + 'px';
+        </script>
+        <script src="{$modulePublic}shop/js/svgPackage.js"></script>
+
+        <section id="main">
+            <div class="bannerPanel_03">
+                <div class="ADMoodBtn">
+                    <a href="javascript:window.history.back(-1)" class="ADMoodBtn_a"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_goBack_2"></use></svg></a>
+                    <a href="javascript:void()" id="a_share" class="ADMoodBtn_a"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_share_1"></use></svg></a>
+                </div>
+                <div class="imgField">
+                    <span><img src="{php echo $attach_url . '/'.$shop_coupon_info['img']}" alt=""></span>
+                </div>
+                <div class="textField">
+                    <h2>{$shop_coupon_info['title']}</h2>
+                </div>
+            </div>
+
+            {if $shop_coupon_info['num']>0 && $isValid}
+            <div class="receivePanel_01 addBorderPanel_01">
+                <div class="btnField">
+                    <a id="collectA" class="btn btn1 getcoupon" href="javascript:void(0)">
+                        <ext>领取</ext>
+                    </a>
+                </div>
+            </div>
+            {/if}
+            {if $shop_coupon_info['num']<=0}
+            <div class="receivePanel_01 addBorderPanel_01">
+                <div class="btnField">
+                    <a id="collectA" class="btn btn1" href="javascript:void(0)">
+                        <ext>已领完</ext>
+                    </a>
+                </div>
+            </div>
+            {/if}
+            {if !$isValid}
+            <div class="receivePanel_01 addBorderPanel_01">
+                <div class="btnField">
+                    <a id="collectA" class="btn btn1" href="javascript:void(0)">
+                        <ext>已过期</ext>
+                    </a>
+                </div>
+            </div>
+             {/if}    
+            <div class="eventInfoPanel_01">
+                <div class="titleField">
+                    <h2>{$shop_coupon_info['sub_title']}</h2>
+                </div>
+
+                <div class="listField">
+                    <ul>
+                        <li><i class="icon_1"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_time_1"></use></svg></i><span>
+                                {if $shop_coupon_info['expiry_date_start']!='0000-00-00'}
+                                {$shop_coupon_info['expiry_date_start']} ~ {$shop_coupon_info['expiry_date_end']} 
+                                {else}
+                                无限期
+                                {/if}
+                            </span></li>
+
+                        <li>
+                            <a href="tel:{if $shop_info['tel']}{$shop_info['tel']}{else}暂无{/if}">
+                                <i class="icon_2"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_telephone_1"></use></svg></i><span>{if $shop_info['tel']}{$shop_info['tel']}{else}暂无{/if}</span>
+                            </a>
+                        </li>
+
+                        <li><!--<a href="../map/map">--><i class="icon_3"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_location_1"></use></svg></i><span>{$shop_info['floor']}
+                                <br/>此优惠券仅限{$levels[$shop_coupon_info['level']]}级以上会员领取（还剩{$shop_coupon_info['num']}张）
+                            </span><!--</a>--></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="rulePanel_01">
+                <div class="titleField">
+                    <h3 id="div_name">适用商户</h3>
+                </div>
+
+                <div class="detailField">
+
+                    <a href="{php echo $this->createMobileUrl('shop_detail',array('id'=>$shop_info['id']))}">
+                        <h3>{$shop_info['name']}</h3>
+                        <p><!--<span class="dianpingRank rank5"><svg><use xlink:href="#dianpingRankBg_1" /></svg></span>--><i><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_location_1"></use></svg></i><span>on{$shop_info['floor']}</span></p>
+                    </a>
+
+
+                    <a href="tel:{$shop_info['tel']}" class="btn"><i class="icon1"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_telephone_1"></use></svg></i></a>
+                </div>
+
+            </div>
+
+            <div class="rulePanel_01">
+                <div class="titleField">
+                    <h3>优惠券详情</h3>
+                </div>
+                <div class="infoField">
+                    {php echo htmlspecialchars_decode(preg_replace('/font-size\s*\:\s*\d*px\s*\;*/is', '', $shop_coupon_info['desc']))}
+                </div>
+            </div>
+        </section>
+        <nav id="nav"><div class="linkField"> 
+         <ul>
+                    <li>
+                        <a href="{php echo $this->createMobileUrl('index2')}">
+                            <i><svg><use xlink:href = "#icon_index_1"/></svg></i>
+                            <span>逛商场</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="{php echo $this->createMobileUrl('shop_activity_list')}" class="current">
+                            <i><svg><use xlink:href = "#icon_star_1"/></svg></i>
+                            <span>活动</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{php echo $this->createMobileUrl('award_list')}">
+                            <i><svg><use xlink:href = "#icon_gift_1"/></svg></i>
+                            <span>换礼品</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{php echo $this->createMobileUrl('index')}" >
+                            <i><svg><use xlink:href = "#icon_user_2"/></svg></i>
+                            <span>我</span>
+                        </a>
+                    </li>
+                </ul>            
+            </div></nav>
+        <header id="header" style="display:none"></header>
+    </body>
+    <script src="{$modulePublic}shop/js/jquery-1.8.3.min.js"></script>
+    <script>
+            //领取优惠券
+            $(".getcoupon").click(function () {
+                $.ajax({
+                    url: "{php echo $this->createMobileUrl('ajax',array('sdo'=>'award_exchange_coupon','id'=>$shop_coupon_info['id']))}",
+                    type: "post",
+                    dataType: "json",
+                    success: function (res) {
+                        if (res.error_code == 1) {
+                            alert('领取成功');
+                            location.href = "{php echo $this->createMobileUrl('shop_coupon_detail',array('id'=>$shop_coupon_info['id']))}";
+                        } else {
+                            alert(res.error_msg);
+                        }
+                    }
+                })
+            })
+    </script>
+     <script src="{$modulePublic}shop/js/PRselector.js"></script>
+     <script src="{$modulePublic}shop/js/Sharebox.js"></script>
+     <script>
+        var defaultConfig = {
+           url: "{$shareData['link']}",
+           title: "{$shareData['title']}",
+           origin: window.location.origin || '',
+           description: "{$shareData['desc']}",
+           img: "{php echo $attach_url . '/'.$shareData['img']}",
+           success: function () { },											//分享成功调用的函数
+           cancel: function () { }											//分享失败调用的函数，仅用于微信
+       }
+        sharebox(defaultConfig);
+        $("#a_share").click(function () {
+            sharebox.openBox();
+        })
+        </script>
+    {template 'share'}
+</html>

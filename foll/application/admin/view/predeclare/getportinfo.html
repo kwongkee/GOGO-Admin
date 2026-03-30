@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+</head>
+<style>
+    .form-group{display:flex;align-items:center;}
+    .userSelect{display:none;}
+    .send_news{display:none;}
+</style>
+<body class="gray-bg">
+<form class="layui-form" lay-filter="component-form-element1">
+    <div class="layui-form-item">
+        <label class="layui-form-label">指定方式</label>
+        <div class="layui-input-block">
+            <input type="radio" name="method" value="1" title="系统默认" lay-filter="method" checked>
+            <input type="radio" name="method" value="2" title="用户指定" lay-filter="method" style="margin-left:10px;">
+        </div>
+    </div>
+    <div class="layui-form-item userSelect">
+        <label class="layui-form-label">选择口岸</label>
+        <div class="layui-input-block">
+            <select name="sid" id="sid" lay-search>
+                {foreach $data as $k=>$v}
+                {if !empty($v['id'])}
+                    <option value="{$v['id']}" {if $v['pre_sid']==$v['id']}selected{/if}>{$v['decl_name']}</option>
+                {else}
+                    <option value="">暂无口岸信息</option>
+                {/if}
+                {/foreach}
+
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="component-form-element">立即提交</button>
+            {if empty($data[0]['id'])}
+            <div class="layui-btn send_news" style="width:72px;">下发消息</div>
+            <div class="layui-btn send_news2" style="width:72px;display:none;background:#999;">下发消息</div>
+            {/if}
+        </div>
+    </div>
+</form>
+</body>
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script type="text/javascript">
+    $(function(){
+        layui.use(['layer','form','laydate'],function(){
+            var laydate = layui.laydate,
+                layer = layui.layer,
+                form  = layui.form,
+                $ = layui.jquery;
+            form.render(null, 'component-form-element1');
+
+            form.on('radio(method)',function(data){
+                var method = data.value;
+                if(method=='2'){
+                    //用户指定
+                    $('.userSelect').show();
+                    $('.send_news').css('display','inline-block');
+                }else{
+                    //系统默认
+                    $('.userSelect').hide();
+                    $('.send_news').hide();
+                }
+            });
+
+            form.on('submit(component-form-element)', function(data){
+                if(data.field['method']==1){
+                    data.field['sid']=30;//广州http
+                }
+                if(data.field['method']==2){
+                    if(data.field['sid']==''){
+                        layer.alert('该客户无口岸信息，请下发消息通知客户增加口岸信息！');return false;
+                    }
+                }
+                data.field['id'] = "{$id}";
+
+                $.ajax({
+                    url:"{:Url('admin/predeclare/getportinfo')}",
+                    type:'POST',
+                    data:data.field,
+                    dataType:'JSON',
+                    success:function(res){
+                        layer.msg(res.msg,{time:3000}, function () {
+                            if(res.status == 1)
+                            {
+                                layer.closeAll();
+                                parent.window.location.reload();
+                            }
+                        });
+                    },
+                    error:function (data) {
+                        layer.msg('系统错误',{time:2000});
+                    }
+                });
+                return false;
+            });
+        });
+
+        $('.send_news').click(function(){
+            let t = $(this);
+            $.ajax({
+                url:"{:url('admin/predeclare/send_news')}",
+                type:'POST',
+                data:{id:"{$id}"},
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.status == 1)
+                        {
+                            $('.send_news').hide();
+                            $('.send_news2').show();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+        });
+
+        $('.send_news2').click(function(){
+            layer.msg('已通知用户，请勿重复通知',{time:2000});
+        });
+    });
+
+    function req() {
+        let data={};
+        let value = $('form').serializeArray();
+        $.each(value,function (index,item) {
+            data[item.name]=item.value;
+        });
+        var i=layer.load(1); //风格1的加载
+        $.ajax({
+            url:"{:url('admin/reduction/add_body')}",
+            type:"POST",
+            dataType:"json",
+            data:data,
+            success:function (res) {
+                layer.close(i);
+                if(res.code<0){
+                    layer.msg(res.msg, {icon:5, time:2000});
+                }else{
+                    layer.msg(res.msg, {icon:6, time:2000});
+                }
+            }
+        });
+        return false;
+    }
+</script>
+</html>

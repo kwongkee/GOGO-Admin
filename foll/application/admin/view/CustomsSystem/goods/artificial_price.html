@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="common/meta"}
+    <link rel="stylesheet" href="./static/hadmin/layui/css/layui.css"></link>
+</head>
+<body class="gray-bg">
+<div class="col-sm-12">
+    <div class="ibox float-e-margins">
+        <input style="float: left;width:20%;margin: 5px;" type="text" name="search" value="" id="where" required lay-verify="required" placeholder="请输入名称或编号" autocomplete="off" class="layui-input">
+        <a class="btn btn-info" href="#"  type="button" id="search" style="line-height:28px; margin-top: 5px;"><i class="fa fa-file-excel-o"></i>搜索</a>
+        <a class="btn btn-info" href="#"  type="button" id="load" style="line-height:28px;background-color: #009688;margin-top: 5px;"><i class="fa fa-file-excel-o"></i>批量(导入)</a>
+        <div class="ibox-content" style="display:block;" id="list1">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>系统编号</th>
+                    <th>商户商品编号</th>
+                    <th>商品名称</th>
+                    <th>价格</th>
+                    <th>错误信息</th>
+                    <th>时间</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name="list" id="vo"}
+                <tr>
+                    <td>{$vo.epb_goodsno}</td>
+                    <td>{$vo.user_goodsno}</td>
+                    <td>{$vo.goods_name}</td>
+                    <td>{$vo.user_price}</td>
+                    <td>{$vo.err_msg}</td>
+                    <td>{$vo.create_time|date="Y-m-d H:i:s",###}</td>
+                    <td>
+                        <a class="btn btn-info" href="#"  type="button" onclick="confirmPrice(this,'{$vo.user_goodsno}')"><i class="fa fa-paste"></i>确定</a>
+                        <a class="btn btn-danger" href="#"  type="button" onclick="Refuse(this,'{$vo.user_goodsno}')"><i class="fa fa-paste"></i>拒绝</a>
+                    </td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+</body>
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/js/bootstrap.min.js?v=3.3.6"></script>
+<!-- Bootstrap table -->
+<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="./static/hadmin/layui/layui.all.js"></script>
+<script>
+    // admin/goods/add
+
+    layui.use(['upload','form'], function () {
+        upload = layui.upload;
+        form = layui.form;
+    });
+
+
+    $('#search').bind('click',function () {
+        var  where = $('#where').val();
+        window.location.href="{:Url('admin/goods/artificialPrice')}&search="+where;
+    });
+
+    function confirmPrice(obj,gno) {
+        $.ajax({
+            url:"{:Url('admin/goods/goodsNuclearPriceHandle')}&goodsno="+gno,
+            type:"get",
+            dataType:"json",
+            success:function (res) {
+                if (res.code==0){
+                    parent.layer.msg(res.message, {icon: 6});
+                } else{
+                    parent.layer.msg(res.message, {icon: 5});
+                }
+            },error:function (xhr) {
+                parent.layer.msg('链接服务错误', {icon: 5});
+            }
+        });
+        return false;
+    }
+
+    function Refuse(obj,gno) {
+        $.ajax({
+            url:"{:Url('admin/goods/goodsNuclearPriceFailHandle')}&goodsno="+gno,
+            type:"get",
+            dataType:"json",
+            success:function (res) {
+                if (res.code==0){
+                    parent.layer.msg(res.message, {icon: 6});
+                } else{
+                    parent.layer.msg(res.message, {icon: 5});
+                }
+            },error:function (xhr) {
+                parent.layer.msg('链接服务错误', {icon: 5});
+            }
+        });
+        return false;
+    }
+
+
+    $('#load').bind("click",function () {
+        layer.open({
+            type: 1,        //弹窗类型
+            title: false,   //显示标题
+            closeBtn: 1,     //是否显示关闭按钮
+            shadeClose: true, //显示模态窗口
+            area: ['390px', '189px'], //宽高
+            content: '<div class="col-sm-12" id="upload">\n' +
+                '        <div class="ibox float-e-margins">\n' +
+                '            <div class="ibox-content">\n' +
+                '                <div class="page-container">\n' +
+                '                    <button type="button" class="layui-btn" id="file2">\n' +
+                '                        <i class="layui-icon">&#xe67c;</i>请上传Excel商品文件,最大上限5000条\n' +
+                '                    </button>\n' +
+                '                </div>\n' +
+                '            </div><p style="margin-left: 50px;">文件内容说明:A-商品货号,B-价格,C-名称,D-优惠价格</p>\n' +
+                '        </div>\n' +
+                '</div>', //弹窗内容
+            cancel:function () {
+                // $('#f').css('display','none');
+                window.location.reload();
+            }
+
+        });
+        var uploadInst = upload.render({
+            elem: '#file2' //绑定元素
+            ,accept:"file"
+            , url: '{:Url("admin/goods/uploadPriceFailGoodsFile")}' //上传接口
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            , done: function (res) {
+                layer.closeAll('loading');
+                if (res.code==0){
+                    parent.layer.msg(res.message, {icon: 6});
+                } else{
+                    parent.layer.msg(res.message, {icon: 5});
+                }
+            }
+            , error: function () {
+                //请求异常回调
+                parent.layer.msg('请求异常', {icon: 5});
+            }
+        });
+        form.render();
+    });
+</script>
+</html>

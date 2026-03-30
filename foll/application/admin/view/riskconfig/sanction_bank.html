@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>限制银行配置</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <style>
+        form{
+            margin-top: 47px;
+            margin-right: 32px;
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form" action="">
+    
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+          <div class="layui-col-md12">
+            
+            <div class="layui-card">
+              <div class="layui-card-header">限制银行配置</div>
+              <div class="layui-card-body">
+                <div class="layui-btn-container">
+                  <button type="button" class="layui-btn" lay-demotransferactive="getData">立即保存</button>
+                </div>
+                <div id="sanction_bank"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+</form>
+
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+
+<script>
+    layui.use(['form','transfer','util'], function(){
+        var form = layui.form,transfer = layui.transfer,util = layui.util;
+
+        transfer.render({
+            elem: '#sanction_bank'
+            ,title: ['银行列表', '限制银行列表']
+            ,showSearch: true
+            ,id: 'key123'
+            ,parseData: function(res){
+                return {
+                    "value": res.bank_code //数据值
+                    ,"title": res.bank_name //数据标题
+                    ,"disabled": false  //是否禁用
+                    ,"checked": false //是否选中
+                }
+            }
+            ,data: {$bank}
+            ,value: [{$datas}]
+        })
+
+        util.event('lay-demoTransferActive', {
+            getData: function(othis){
+                var getData = transfer.getData('key123');
+                var bank_code = '';
+                var bank_name = '';
+                for (var i=0;i<getData.length;i++)
+                { 
+                    if( i == (getData.length - 1) )
+                    {
+                        bank_code += getData[i].value;
+                        bank_name += getData[i].title;
+                    }else{
+                        bank_code += getData[i].value + ',';
+                        bank_name += getData[i].title + ',';
+                    }
+                }
+                
+                $.ajax({
+                    url:'{:Url("admin/riskConfig/sanction_bank")}',
+                    type:"POST",
+                    dataType:"json",
+                    data: { bank_name: bank_name, bank_code: bank_code},
+                    success:function (res) {
+                        layer.msg(res.message, {
+                            icon: 1,
+                            time: 2000
+                        }, function(){
+                            window.location.reload();
+                        });
+                    },
+                    error:function (xhr) {
+                        layer.msg('链接服务错误..');
+                    }
+                });
+                
+            }
+        });
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            $.ajax({
+                url:'{:Url("admin/riskConfig/sanction_country_add")}',
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (res) {
+                    layer.msg(res.message, {
+                                    icon: 1,
+                                    time: 2000
+                                }, function(){
+                                    parent.window.location.reload();
+                                    var index = parent.layer.getFrameIndex(window.name);
+                                    parent.layer.close(index);
+                                });
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</html>

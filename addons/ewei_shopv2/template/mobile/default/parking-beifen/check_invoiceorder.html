@@ -1,0 +1,231 @@
+{template "parking/_header"}
+<link rel="stylesheet" href="../addons/ewei_shopv2/static/css/frozenui/css/frozen.css">
+<link rel="stylesheet" href="../addons/ewei_shopv2/static/ydui/ydui.css">
+<style type="text/css">
+    /*lable{display: inline-block;width: 99px;height: 30px;text-align: center;line-height: 30px;}*/
+    .content{height: 35px;width: 100%;border-bottom: 1px solid lightskyblue;text-align: center;line-height: 35px;}
+    #content{height: 35px;width: 100%;text-align: center;line-height: 35px;
+        font-family: "微软雅黑";
+    }
+    .errors{color: red;}
+    #show_head{display: none;}
+    #itdemo>li{line-height: 28px;}
+    .borderb{border-bottom: 1px solid darkgray;height: 90px;}
+    #bottem{width: 100%;bottom: 0px;}
+
+    #headers{width: 100%;font-size: 16px;height: 70px;border-top: 1px solid white;border-bottom: 1px solid silver;margin-bottom: 15px;}
+    #headers1{width: 80%;height: auto;float: left;line-height: 30px;padding-left: 15px;}
+    #headers2{width: 20%;height: auto;float: left;line-height: 66px;}
+
+    #content{width: 100%;font-size: 16px;height: auto;;border-top: 1px solid white;margin-bottom: 5px;text-align: left;}
+    #content>ul{width: 100%;height: auto;}
+    #content>ul>li{padding-left: 10px;border-bottom: 1px solid silver;}
+    #content>ul>li:first-child{margin-top: 6px;border-bottom: 1px solid silver;padding-left: 10px;}
+    /*#content>ul>li:last-child{border-bottom: 1px solid silver;padding-left: 10px;height: 35px;}*/
+    
+    .ziti{font-size: 18px;font-weight: bold;}
+
+    #footer{width: 100%;font-size: 16px;height: auto;border-top: 1px solid white;border-bottom: 1px solid silver;margin-bottom: 15px;text-align: left;}
+    #footer>ul{width: 100%;}
+    #footer>ul>li{padding-left: 10px;line-height: 35px;}
+    #footer>ul>li:first-child{margin-top: 10px;border-bottom: 1px solid silver;}
+
+    .huise{color: slategrey;margin-right: 12px;}
+    #hed{width: 100%;height: 30px;text-align: center;color: green;line-height: 30px;font-size: 18px;}
+</style>
+<!-- 引入jQuery 2.0+ -->
+<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<!-- 引入YDUI脚本 -->
+<script src="../addons/ewei_shopv2/static/ydui/ydui.js"></script>
+
+<body>
+	
+<div class="ui-form ui-border-t">
+    <!--<i class="ui-icon-return" style="font-size: 18px;" onclick="history.back()">返回</i>-->
+    <div id="hed"><?php echo $paytitle?$paytitle:'电商开票申请';?></div>
+    <div id="content">
+        <ul>
+            <li><h2 class="ziti">需开票订单号</h2></li>
+            <?php foreach($order_data as $key=>$val):?>
+            <li><lable class="huise">商城订单号:</lable><?php echo $val['ordersn']?></li>
+            <?php endforeach;?>
+            <li><lable class="huise">开票金额:</lable> ￥<lable style="color: orange;"><?php echo $involice['price']?></lable> 元</li>
+        </ul>
+    </div>
+
+    <div id="footer">
+        <ul>
+            <li><h2 class="ziti">开票信息</h2></li>        	
+        	<?php if($involice['title'] == '1'){?>
+        		<li><lable class="huise">抬头类型:</lable>个人抬头</li>
+        	<?php }else {?>
+        		<li><lable class="huise">抬头类型:</lable>	企业抬头</li>
+        	<?php }?>
+        		
+            <li><lable class="huise">抬头名称:</lable>	<?php echo $involice['consignee'];?></li>
+         	<li><lable class="huise">纳税人识别号:</lable>	<?php echo $involice['tax_number'];?></li>
+         	<li><lable class="huise">联系地址:</lable>	<?php echo $involice['address'];?></li>
+        </ul>
+    </div>
+	
+	
+	<div class="ui-btn-group">
+		<button type="button" class="ui-btn-lg ui-btn-primary" id="ok">同意开票</button>
+	    <button type="button" class="ui-btn-lg" id="no">拒绝开票</button>
+	</div>
+	
+	<!-- 同意开票 -->
+	<div class="ui-dialog" id="show1" style="display: none;">
+	    <div class="ui-dialog-cnt" style="margin: 150px auto;">	  	
+	        
+	        <header class="ui-dialog-hd ui-border-b">
+                <h3>已开发票</h3>
+                <i class="ui-dialog-close" data-role="button" id="close"></i>
+	        </header>
+	        
+	        <input type="hidden" name="url" id="url" value="{php echo mobileUrl('parking/invoicelist/kp_adv');}" />
+	        
+            <div class="ui-form ui-border-t">
+			    <form action="#" id="kp">			    	
+			        <div class="ui-form-item ui-form-item-show ui-border-b">
+			            <label for="#">发票号码</label>
+			            <input type="text" value="" name="fpordersn" placeholder="请填写发票号码">
+			            <input type="hidden" name="kpstatus" value="yes" />
+			            <input type="hidden" name="money" value="<?php echo $involice['price']?$involice['price']:'0'?>" />
+			            <input type="hidden" value="<?php echo $involice['id'];?>" name="kpids" placeholder="开票对应订单id">
+			            <input type="hidden" value="<?php echo $involice['openid'];?>" name="openid" placeholder="开票人openid">
+			            <input type="hidden" value="<?php echo $order_data[0]['uniacid'];?>" name="uniacid" placeholder="开票公众号ID">
+			        </div>
+
+			       <div class="ui-btn-wrap" style="text-align: center;">
+					    <button type="button" class="ui-btn ui-btn-primary" id="query">确定</button>
+					    <button type="button" class="ui-btn ui-btn" id="quxiao">取消</button>	
+					</div>
+
+			    </form>
+			</div>
+	    </div>
+	</div>
+	
+	
+	<!-- 拒绝开票 -->
+	<div class="ui-dialog" id="show2" style="display: none;">
+	    <div class="ui-dialog-cnt" style="margin: 150px auto;">	  	
+	        
+	        <header class="ui-dialog-hd ui-border-b">
+                <h3>拒绝开票</h3>
+                <i class="ui-dialog-close" data-role="button" id="close1"></i>
+	        </header>
+	        
+	        <input type="hidden" name="url" id="url1" value="{php echo mobileUrl('parking/invoicelist/kp_adv');}" />
+	        
+            <div class="ui-form ui-border-t">
+			    <form action="#" id="kpno">
+			    	
+			        <div class="ui-form-item ui-form-item-show ui-border-b">
+			            <label for="#">拒绝理由</label>
+			            <input type="text" value="" name="jjly" placeholder="请填写拒绝理由">
+			            <input type="hidden" name="kpstatus" value="no" />
+			            <input type="hidden" name="money" value="<?php echo $involice['price']?$involice['price']:'0'?>" />			            
+			            <input type="hidden" value="<?php echo $involice['id'];?>" name="kpids" placeholder="开票对应订单id">
+			            <input type="hidden" value="<?php echo $involice['openid'];?>" name="openid" placeholder="开票人openid">
+			            <input type="hidden" value="<?php echo $involice[0]['uniacid'];?>" name="uniacid" placeholder="开票公众号ID">
+			        </div>
+
+			       <div class="ui-btn-wrap" style="text-align: center;">
+					    <button type="button" class="ui-btn ui-btn-primary" id="query1">确定</button>
+					    <button type="button" class="ui-btn ui-btn" id="quxiao1">取消</button>	
+					</div>
+					
+			    </form>
+			</div>
+	    </div>
+	</div>
+</div>
+</body>
+
+<script type="text/javascript">
+
+	$(function(){
+		
+		$('#ok').click(function(){
+			$('#show1').css('display','block');
+		});
+		
+		
+		$('#quxiao,#close').click(function(){
+			$('#show1').css('display','none');
+		});
+		
+		
+		$('#query').click(function(){
+			var p_url = $('#url').val();
+			$.ajax({
+				type:"POST",
+				url:p_url,
+				data: '&'+$('#kp').serialize(),
+				dataType:'json',
+				success:function(data)
+				{
+					console.dir(data);
+					if(data.status == 1)
+					{
+						alert(data.message);
+						$('#show1').css('display','none');
+						
+						location.reload();
+					}else {
+						alert(data.message);
+						$('#show1').css('display','block');
+					}
+				}
+			});
+		})
+		
+		
+		//  拒绝开票
+		$('#no').click(function(){
+			$('#show2').css('display','block');
+		});
+		
+		
+		$('#quxiao1,#close1').click(function(){
+			$('#show2').css('display','none');
+		});
+		
+		
+		$('#query1').click(function(){
+			var p_url = $('#url1').val();
+			
+			$.ajax({
+				type:"POST",
+				url:p_url,
+				data: '&'+$('#kpno').serialize(),
+				dataType:'json',
+				success:function(data)
+				{
+					console.dir(data);
+					
+					if(data.status == 1)
+					{
+						alert(data.message);
+						$('#show2').css('display','block');
+					}else {
+						alert(data.message);
+						$('#show2').css('display','none');
+					}
+				}
+			});
+		})
+		
+	})
+	
+	
+	
+	
+	
+	
+</script>
+</html>
+
+{template "parking/_footer"}

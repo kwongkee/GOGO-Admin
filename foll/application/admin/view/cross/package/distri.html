@@ -1,0 +1,86 @@
+{include file="public/header"}
+<body style="padding: 10px;">
+<!-- 上级ID -->
+<input type="hidden" id="pid" value="1">
+<div class="header">
+    <span>包材分配列表</span>
+
+    <button class="layui-btn layui-btn-sm" onclick="addName()">包材分配</button>
+
+    <div></div>
+</div>
+
+<table class="layui-table">
+    <thead>
+    <tr>
+        <th>所属公众号</th>
+        <th>所属商户</th>
+        <th>包材名称</th>
+        <th>分配数量</th>
+        <th>分配时间</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {volist name="data.data" id='vo'}
+    <tr>
+        <td>{$vo['publicId']|publicId}</td>
+        <td>{$vo['merchatId']|merchatId}</td>
+        <td>{$vo['packgeId']|packgeId}</td>
+        <td>{$vo['distriNum']}</td>
+        <td>{$vo['createTime']|date='Y-m-d H:i:s',###}</td>
+        <td>
+            <button class="layui-btn layui-btn-danger layui-btn-xs" onclick="del({$vo['id']})">删除</button>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<div class="layui-page">
+    {$page}
+</div>
+
+<script type="text/javascript">
+
+    layui.use(['layer'],function(){
+        layer = layui.layer;
+        $     = layui.jquery;
+    });
+
+    // 添加物流企业
+    function addName() {
+        layer.open({
+            type:2,
+            title:'包材分配',
+            shade:0.3,
+            area:['460px','460px'],
+            content:'{:Url("admin/packages/distriAdd")}'
+        });
+    }
+
+
+    // 删除数据
+    function del(id)
+    {
+        layer.confirm('确定要删除吗？',{icon:3,btn:['确定','取消']},function() {
+            $.post("{:Url('admin/packages/transDel')}",{id:id},function(resd){
+                var res = JSON.parse(resd);
+                if(res.code == 1) {
+                    layer.msg(res.msg,{icon:1});
+                    setTimeout(function() {
+                        layer.closeAll();
+                        window.location.reload();
+                        //parent.window.location.reload();
+                    },1100);
+                } else {
+                    layer.alert(res.msg,{icon:2});
+                }
+            },'json');
+        })
+    }
+</script>
+
+</body>
+</html>

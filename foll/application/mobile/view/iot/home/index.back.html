@@ -1,0 +1,68 @@
+{include file='iot/header'}
+<body style="background: url(./static/iot/images/index_bg.jpg) no-repeat fixed center; background-size: cover;">
+<style>
+    .tip {
+        display: none;
+        font-size: 14px;
+        position: absolute;
+        top: 55%;
+        left: 5%;
+        background: #000;
+        opacity: .5;
+        width: 90%;
+        color: #fff;
+        text-align: center;
+        padding: 5% 0;
+    }
+</style>
+<div class="whole">
+    <div class="header">
+        <div class="toplogo"><img src="./static/iot/images/top-logo.png" alt=""></div>
+        <h2 class="title">设备管理</h2>
+    </div>
+    <div class="content">
+        <!--<div class="banner"><img src="./static/iot/images/banner.jpg" alt=""></div>-->
+        <div class="index">
+            <div class="tip" id="tip"></div>
+            <!--<a href="">-->
+                <!--<div class="index_bg">-->
+                    <!--<div class="index_left"><img src="./static/iot/images/icon_big03.png" alt=""></div>-->
+                    <!--<div class="index_right">-->
+                        <!--<h2 class="index_title">门禁管理</h2>-->
+                        <!--<div class="state">-->
+                            <!--<p class="state_left">状态</p>-->
+                            <!--<p class="state_right">正常</p>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</a>-->
+            {volist name='devList' id="vo"}
+            <a href="#" onclick="turnOn('{$vo.deviceid}');return false;">
+                <div class="index_bg">
+                    <div class="index_left"><img src="./static/iot/images/icon_big04.png" alt=""></div>
+                    <div class="index_right">
+                        <h2 class="index_title">{$vo.device_name}</h2>
+                        <div class="state">
+                            <p class="state_left">状态</p>
+                            <p class="state_right">{if $vo['dev_status']}在线{else}下线{/if}</p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {/volist}
+        </div>
+    </div>
+</div>
+{include file='iot/menu'}
+</body>
+<script>
+    function turnOn(devid){
+        axios.get("{:Url('iot/open')}&deviceid="+devid).then(function (res) {
+            showMsg(res.data.message);
+        }).catch(function (err) {
+            showMsg("打开失败");
+        });
+        return false;
+    }
+</script>
+</html>

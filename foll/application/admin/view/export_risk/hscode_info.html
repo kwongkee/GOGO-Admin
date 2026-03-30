@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {include file="common/meta"}
+    <link rel="stylesheet" href="./static/hadmin/layui/css/layui.css">
+    <style>
+        .disf{display:flex;align-items: baseline;justify-content: space-evenly;}
+        .red{color:red;}
+        .green{color:green;}
+        .wrapper-content {
+            padding: 20px 150px;
+        }
+    </style>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeIn">
+    <h1>{$list['hscode']}的基本信息</h1>
+    <table class="layui-table">
+        <colgroup>
+            <col width="150">
+            <col width="150">
+        </colgroup>
+        {volist name="list.basic_info" id="vo"}
+            <tr>
+                <td>{$vo[0]}</td>
+                <td class="{if $vo[1]=='作废'}red{/if} {if $vo[1]=='正常'}green{/if}">{$vo[1]}</td>
+            </tr>
+        {/volist}
+    </table>
+
+    <div class="disf">
+        <div class="tab">
+            <p style="color:#DD4B39;font-weight:bold">
+                税率信息
+            </p>
+            <table class="layui-table">
+                <colgroup>
+                    <col width="150">
+                    <col width="150">
+                </colgroup>
+                {volist name="list.tax_info" id="vo"}
+                <tr>
+                    <td>{$vo[0]}</td>
+                    <td>{$vo[1]}</td>
+                </tr>
+                {/volist}
+            </table>
+        </div>
+
+        <div class="tab">
+            <p style="color:#DD4B39;font-weight:bold">
+                申报要素
+            </p>
+            <table class="layui-table">
+                <colgroup>
+                    <col width="150">
+                    <col width="150">
+                </colgroup>
+                {volist name="list.declaration_elements" id="vo"}
+                <tr>
+                    <td>{$vo[0]}</td>
+                    <td>{$vo[1]}</td>
+                </tr>
+                {/volist}
+            </table>
+        </div>
+
+        <div class="tab">
+            <p style="color:#DD4B39;font-weight:bold">
+                监管条件
+            </p>
+            <table class="layui-table">
+                <colgroup>
+                    <col width="150">
+                    <col width="150">
+                </colgroup>
+                {if empty($list.regulatory_conditions)}
+                    <tr>
+                        <td colspan="2">无</td>
+                    </tr>
+                {/if}
+                {volist name="list.regulatory_conditions" id="vo"}
+                <tr>
+                    <td>{$vo[0]}</td>
+                    <td>{$vo[1]}</td>
+                </tr>
+                {/volist}
+            </table>
+        </div>
+
+        <div class="tab">
+            <p style="color:#DD4B39;font-weight:bold">
+                检验检疫类别
+            </p>
+            <table class="layui-table">
+                <colgroup>
+                    <col width="150">
+                    <col width="150">
+                </colgroup>
+                {if empty($list.inspect_quarantine)}
+                <tr>
+                    <td colspan="2">无</td>
+                </tr>
+                {/if}
+                {volist name="list.inspect_quarantine" id="vo"}
+                <tr>
+                    <td>{$vo[0]}</td>
+                    <td>{$vo[1]}</td>
+                </tr>
+                {/volist}
+            </table>
+        </div>
+    </div>
+
+    <p style="color:#DD4B39;font-weight:bold">
+        协定税率
+    </p>
+    <table class="layui-table">
+        <colgroup>
+            <col width="150">
+            <col width="150">
+        </colgroup>
+        <tr>
+            {volist name="list.treaty_tax_rate" id="vo"}
+                <td>{$vo[0]}</td>
+            {/volist}
+        </tr>
+        <tr>
+            {volist name="list.treaty_tax_rate" id="vo"}
+                <td>{$vo[1]}</td>
+            {/volist}
+        </tr>
+    </table>
+
+    <p style="color:#DD4B39;font-weight:bold">
+        RCEP税率
+    </p>
+    <table class="layui-table">
+        <colgroup>
+            <col width="150">
+            <col width="150">
+        </colgroup>
+        <tr>
+            {volist name="list.rcep_tax_rate" id="vo"}
+            <td>{$vo[0]}</td>
+            {/volist}
+        </tr>
+        <tr>
+            {volist name="list.rcep_tax_rate" id="vo"}
+            <td>{$vo[1]}</td>
+            {/volist}
+        </tr>
+    </table>
+
+    <div class="disf">
+        <div class="tab">
+            <p class="codelabel">
+                CIQ代码表(13位海关编码)
+            </p>
+            <table class="layui-table">
+                <colgroup>
+                    <col width="150">
+                    <col width="150">
+                </colgroup>
+                {if empty($list.ciq_code_info)}
+                <tr>
+                    <td colspan="2">无</td>
+                </tr>
+                {/if}
+                {volist name="list.ciq_code_info" id="vo"}
+                <tr>
+                    <td>{$vo[0]}</td>
+                    <td>{$vo[1]}</td>
+                </tr>
+                {/volist}
+            </table>
+        </div>
+
+        <div class="tab">
+            <p class="codelabel">
+                所属章节信息
+            </p>
+            <table class="layui-table">
+                <colgroup>
+                    <col width="150">
+                    <col width="150">
+                </colgroup>
+                {volist name="list.chapter_info" id="vo"}
+                <tr>
+                    <td>{$vo[0]}</td>
+                    <td>{$vo[1]}</td>
+                </tr>
+                {/volist}
+            </table>
+        </div>
+    </div>
+</div>
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/js/bootstrap.min.js?v=3.3.6"></script>
+<script src="./static/hadmin/layui/layui.all.js"></script>
+</body>
+<script>
+    layui.use(['upload','layer'], function () {
+        uploads = layui.upload;
+        layer = layui.layer;
+    });
+
+</script>
+</html>

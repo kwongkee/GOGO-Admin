@@ -1,0 +1,213 @@
+{include file="public/header"}
+<link rel="stylesheet" href="static/hjxssl/city-picker/city-picker.css">
+<script src="static/hjxssl/city-picker/city-picker.data.js"></script>
+<body style="padding: 10px;">
+
+<form action="" class="layui-form" id="form1">
+    <input type="text" name="id" value="{if isset($data['id'])}{$data['id']}{/if}" style="display:none;">
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">类型</label>
+        <div class="layui-input-inline">
+            <input type="radio" name="type" value="1" title="汉印打印机" lay-filter="select_type" {if isset($data['type'])==1}checked{/if}>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">设备标识名称</label>
+        <div class="layui-input-inline" style="width:250px;">
+            <input type="text" class="layui-input" name="name" placeholder="请填写设备标识名称" value="{if isset($data['name'])}{$data['name']}{/if}">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">省/市/区</label>
+        <div class="layui-input-inline" style="width:250px;">
+            <input type="text" autocomplete="on" class="layui-input" id="address" name="city" readonly="readonly" data-toggle="city-picker" placeholder="请选择" value="{if isset($data['city'])}{$data['city']}{/if}">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label for="" class="layui-form-label">详细地址</label>
+        <div class="layui-input-inline" style="width:250px;">
+            <input type="text" class="layui-input" name="address" placeholder="请填写详细地址" value="{if isset($data['address'])}{$data['address']}{/if}">
+        </div>
+    </div>
+    <div id="dayinji" style="display:none;">
+        <!--汉印打印机-->
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">访问密匙</label>
+            <div class="layui-input-inline" style="width:250px;">
+                <input type="text" class="layui-input" name="device_id" placeholder="请填写设备访问密匙" value="{if isset($data['device_info'])}{$data['device_info'][0]}{/if}">
+            </div>
+        </div>
+    </div>
+    <div id="kuaidi100" style="display:none;">
+        <!--快递100-->
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">设备编码</label>
+            <div class="layui-input-inline" style="width:250px;">
+                <input type="text" class="layui-input" name="device_id" placeholder="请填写设备编码" value="{if isset($data['device_info'][0])}{$data['device_info'][0]}{/if}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">partnerId</label>
+            <div class="layui-input-inline" style="width:250px;">
+                <input type="text" class="layui-input" name="partnerId" placeholder="请填写设备partnerId" value="{if isset($data['device_info'][1])}{$data['device_info'][1]}{/if}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">partnerKey</label>
+            <div class="layui-input-inline" style="width:250px;">
+                <input type="text" class="layui-input" name="partnerKey" placeholder="请填写设备partnerKey" value="{if isset($data['device_info'][2])}{$data['device_info'][2]}{/if}">
+            </div>
+        </div>
+    </div>
+
+    <!--<div class="layui-form-item">-->
+        <!--<label class="layui-form-label">号段起止</label>-->
+        <!--<div class="layui-input-inline" style="width: 150px;">-->
+            <!--<input type="text" name="expNums" placeholder="开始号码段：0001启" autocomplete="off" class="layui-input">-->
+        <!--</div>-->
+        <!--<div class="layui-form-mid">-</div>-->
+        <!--<div class="layui-input-inline" style="width: 150px;">-->
+            <!--<input type="text" name="expNumd" placeholder="结束号码段：9999止" autocomplete="off" class="layui-input">-->
+        <!--</div>-->
+    <!--</div>-->
+
+    <!--<span style="font-size: 14px;color:#ff5555;margin-bottom:10px;">运单号码：198 + 物流企业编号（后2位） + 商家注册编号（后2位）+ 流水号（0001）</span>-->
+
+</form>
+
+<div class="layui-form-item">
+    <div class="layui-input-block">
+        <button class="layui-btn" onclick="save()">提交</button>
+    </div>
+</div>
+<script type="text/javascript">
+    layui.extend({
+        citypicker:'{/}./static/hjxssl/city-picker/city-picker'
+    }).use(['jquery','citypicker','form'],function(){
+        var $ = layui.$,
+            form = layui.form,
+            citypicker = layui.citypicker;
+
+        var cityPicker = new citypicker("#address",{
+            provincename:"provinceId",
+            cityname:"cityId",
+            districtname: "districtId",
+            level: 'districtId',// 级别
+        })
+    });
+</script>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+
+        laydate.render({
+            elem: '#Times' //指定元素
+        });
+
+        form.on('radio(select_type)',function(data){
+            if(data.value==1){
+                $('#dayinji').show();
+            }else{
+                $('#dayinji').hide();
+            }
+        })
+        {if isset($data['type'])}
+            if("{$data['type']}"==1){
+                $('#dayinji').show();
+                // $('#kuaidi100').show();
+            }
+        {/if}
+    })
+
+
+    // 添加设备
+    function save()
+    {
+        var id = $('input[name="id"]').val();
+        var type = $("input[name='type']:checked").val();
+        var name             = $('input[name="name"]').val();
+        // var getLogi          = $("select[name='getLogi'] option:selected").val();
+        var city             = $('input[name="city"]').val();
+        var address             = $('input[name="address"]').val();
+
+        if(type == '' || typeof(type)=='undefined') {
+            layer.msg('请选择设备类型',{icon:2});
+            return false;
+        }
+        if(name == '') {
+            layer.msg('请填写设备名称',{icon:2});
+            return false;
+        }
+        if(city == '') {
+            layer.msg('请选择城市',{icon:2});
+            return false;
+        }
+
+        if(address == '') {
+            layer.msg('请填写详细地址',{icon:2});
+            return false;
+        }
+        var device_info='';
+        if(type==1) {
+            //汉印打印机
+            var device_id = $('input[name="device_id"]').val();
+
+            if(device_id==''){
+                layer.msg('请填写设备访问密钥',{icon:2});
+                return false;
+            }
+            device_info = device_id+',';
+        }else if(type==2) {
+            //快递100云盒
+            var device_id = $('input[name="device_id"]').val();
+            var partnerId = $('input[name="partnerId"]').val();
+            var partnerKey = $('input[name="partnerKey"]').val();
+
+            if(device_id==''){
+                layer.msg('请填写设备编码',{icon:2});
+                return false;
+            }
+            if(partnerId==''){
+                layer.msg('请填写设备partnerId',{icon:2});
+                return false;
+            }
+            if(partnerKey==''){
+                layer.msg('请填写设备partnerKey',{icon:2});
+                return false;
+            }
+            device_info = device_id+','+partnerId+','+partnerKey;
+        }
+
+        // 请求处理数据
+        $.post("{:Url('admin/elec/addDevice')}",{
+            type:type,
+            city:city,
+            address:address,
+            device_info:device_info,
+            id:id,
+            name:name
+        },function(resd){
+            console.log(resd);
+            var res = resd;
+            if(res.code == 1) {
+                layer.msg(res.msg,{icon:1});
+                setTimeout(function(){
+                    layer.closeAll();
+                    parent.window.location.reload();
+                },1000);
+            } else {
+                layer.msg(res.msg,{icon:2});
+            }
+
+        });
+    }
+</script>
+</body>
+</html>

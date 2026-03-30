@@ -1,0 +1,106 @@
+<template>
+    <div class="page">
+        <div class="navbar">
+            <div class="navbar-inner sliding">
+                <div class="left">
+                    <a href="#" class="link back">
+                        <i class="icon icon-back"></i><span class="ios-only">返回</span>
+                    </a>
+                </div>
+                <div class="title">支付</div>
+            </div>
+        </div>
+        <div class="page-content">
+            <div class="block-title">{{cardType}}</div>
+            <div class="list">
+                <ul>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon f7-icons">calendar_fill</i></div>
+                            <div class="item-inner">
+                                <div class="item-title">{{sdate}}</div>
+                                <div class="item-after">起始日期</div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon f7-icons">alarm_fill</i></div>
+                            <div class="item-inner">
+                                <div class="item-title">{{edate}} 23:59:59</div>
+                                <div class="item-after">截止时间</div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon f7-icons">money_yen_round_fill</i></div>
+                            <div class="item-inner">
+                                <div class="item-title">¥ {{money}}</div>
+                                <div class="item-after">售价</div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon f7-icons">bars_chart_square_fill</i></div>
+                            <div class="item-inner">
+                                <div class="item-title">{{status}}</div>
+                                <div class="item-after">状态</div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon f7-icons">time_fill</i></div>
+                            <div class="item-inner">
+                                <div class="item-title">{{sysTime}}</div>
+                                <div class="item-after">购买时间</div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="list inset paynow">
+                <ul>
+                    <li><a href="#" class="button button-fill button-large list-button color-red" @click="pay">马上支付</a></li>
+                </ul>
+            </div>
+
+        </div> <!-- page content -->
+    </div> <!--  -->
+</template>
+<script>
+    return {
+        data: function () {
+            return {
+                id: parseFloat(this.$route.params.id),
+                cardType: '',
+                sdate: '',
+                edate: '',
+                money: 0,
+                status: '',
+                sysTime: ''
+            };
+        },
+        methods: {
+            pay: function() {
+                payCard();
+            },
+        },
+        on: {
+            pageInit: function () {
+                var self = this, id = self.id;
+                var url = '/app/index.php?i=14&c=entry&m=ewei_shopv2&do=mobile&r=parking.card.buyinfo';
+                getJSON(url, {id: id}, (obj) => {
+                    console.log(obj);
+                    var ctype = cardType[obj.data['card_type']];
+                    self.$setState({cardType: ctype, sdate: obj.data['sdate'], sdate: obj.data['edate'], money: obj.data['money'], status: buyStatus[obj.data['status']], sysTime: obj.data['sysTime']});
+                    if (obj.data['status'] === 'Y') {
+                        $$('.paynow').hide();
+                    }
+                });
+            }
+        }
+    };
+</script>

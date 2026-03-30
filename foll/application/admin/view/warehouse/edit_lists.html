@@ -1,0 +1,383 @@
+{include file="public/header"}
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .is_tax2,.exchange_rate{display:none;}
+    .is_tax2{margin-top:10px;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element1">
+            <input type="text" name="id" value="{$order['id']}" style="display: none;">
+
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header">新增事项</div>
+                    <div class="layui-card-body">
+                        <table class="layui-table">
+                            <thead>
+                            <tr>
+                                <th>日期时间</th>
+                                <th>费用类别</th>
+                                <th>订单事项</th>
+                                <th>计价单位</th>
+                                <th>订单单价</th>
+                                <th>计价数量</th>
+                                <th>应付金额</th>
+                                <th>摘要备注</th>
+                            </tr>
+                            {if empty($order['content'])}
+                                <input type="text" id="dateNum" value="1" style="display: none;">
+                                <tr>
+                                    <td>
+                                        <input type="text" class="layui-input" name="event_date[]" id="event_date0" value="" placeholder="yymmddhhii" lay-verify="required">
+                                    </td>
+                                    <td>
+                                        <select name="event_type[]" lay-search lay-verify="required">
+                                            <option value="">请选择费用类别</option>
+                                            <option value="1">应付费用</option>
+                                            <option value="2">代付费用</option>
+                                            <option value="3">其他费用</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" lay-verify="required" name="event_name[]" value="" placeholder="" autocomplete="off" class="layui-input">
+                                    </td>
+                                    <td>
+                                        <select name="event_unit[]" lay-search lay-verify="required">
+                                            <option value="">请选择计价单位</option>
+                                            {volist name="unit" id="vo"}
+                                            <option value="{$vo.code_value}">{$vo.code_name}</option>
+                                            {/volist}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <div class="disf">
+                                            <select name="event_currency[]" lay-search lay-verify="required" lay-filter="event_currency">
+                                                <option value="">请选择计价币种</option>
+                                                {volist name="currency" id="vo"}
+                                                <option value="{$vo.code_value}">{$vo.code_name}</option>
+                                                {/volist}
+                                            </select>
+                                            <input type="text" name="currency_backup" value="" style="display: none;">
+                                            <input type="number" class="layui-input" name="event_price[]" placeholder="" value="" lay-verify="required">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <input type="number" class="layui-input" name="event_num[]" placeholder="" value="" lay-verify="required">
+                                    </td>
+                                    <td>
+                                        <input type="number" class="layui-input event_totalprice" name="event_totalprice[]" placeholder="" value="" lay-verify="required">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="layui-input" name="event_remark[]" placeholder="" value="">
+                                    </td>
+                                </tr>
+                            {else}
+                                <input type="text" id="dateNum" value="<?php echo count($order['content']['event_date']);?>" style="display: none;">
+                                {volist name="order['content']['event_date']" key="index" id="val"}
+                                        <tr>
+                                            <td>
+                                                <input type="text" class="layui-input" name="event_date[]" id="event_date{$index-1}" value="{$val}" placeholder="yymmddhhii" lay-verify="required">
+                                            </td>
+                                            <td>
+                                                <select name="event_type[]" lay-search lay-verify="required">
+                                                    <option value="">请选择费用类别</option>
+                                                    <option value="1" {if $order['content']['event_type'][$index-1]==1}selected{/if}>应付费用</option>
+                                                    <option value="2" {if $order['content']['event_type'][$index-1]==2}selected{/if}>代付费用</option>
+                                                    <option value="3" {if $order['content']['event_type'][$index-1]==3}selected{/if}>其他费用</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="text" lay-verify="required" name="event_name[]" value="{$order['content']['event_name'][$index-1]}" placeholder="" autocomplete="off" class="layui-input">
+                                            </td>
+                                            <td>
+                                                <select name="event_unit[]" lay-search lay-verify="required">
+                                                    <option value="">请选择计价单位</option>
+                                                    {volist name="unit" id="vo"}
+                                                    <option value="{$vo.code_value}" {if $vo.code_value==$order['content']['event_unit'][$index-1]}selected{/if}>{$vo.code_name}</option>
+                                                    {/volist}
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <div class="disf">
+                                                    <select name="event_currency[]" lay-search lay-verify="required">
+                                                        <option value="">请选择计价币种</option>
+                                                        {volist name="currency" id="vo"}
+                                                        <option value="{$vo.code_value}" {if $vo.code_value==$order['content']['event_currency'][$index-1]}selected{/if}>{$vo.code_name}</option>
+                                                        {/volist}
+                                                    </select>
+                                                    <input type="text" name="currency_backup" value="{$order['currency_backup']}" style="display: none;">
+                                                    <input type="number" class="layui-input" name="event_price[]" placeholder="" value="{$order['content']['event_price'][$index-1]}" lay-verify="required">
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input type="number" class="layui-input" name="event_num[]" placeholder="" value="{$order['content']['event_num'][$index-1]}" lay-verify="required">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="layui-input event_totalprice" name="event_totalprice[]" placeholder="" value="{$order['content']['event_totalprice'][$index-1]}" lay-verify="required">
+                                            </td>
+                                            <td>
+                                                <input type="text" class="layui-input" name="event_remark[]" placeholder="" value="{$order['content']['event_remark'][$index-1]}">
+                                            </td>
+                                        </tr>
+                                {/volist}
+                            {/if}
+                            {if empty($order['id'])}
+                            <tr class="btm_add">
+                                <td colspan="8" align="center">
+                                    <div class="layui-btn layui-btn-md" onclick="add_line()">添加一行</div>
+                                </td>
+                            </tr>
+                            {/if}
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header">订单信息</div>
+                    <div class="layui-card-body">
+                        <table class="layui-table">
+                            <thead>
+                            <tr>
+                                <th>订单类别</th>
+                                <th>付款期限（天）</th>
+                                <th>期限费率（0.01=1%）</th>
+                                <th>付款客户</th>
+                                <th>应付金额</th>
+                                <th>开票税费</th>
+                                <th>实付金额</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <select name="type" lay-search lay-verify="required">
+                                        <option value="">请选择订单类别</option>
+                                        <option value="1" {if $order['type']==1}selected{/if}>仓库存储</option>
+                                        <option value="2" {if $order['type']==2}selected{/if}>仓库操作</option>
+                                        <option value="3" {if $order['type']==3}selected{/if}>仓储物流</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" class="layui-input" name="pay_term" value="{$order['pay_term']}" lay-verify="required">
+                                </td>
+                                <td>
+                                    <input type="number" class="layui-input" name="pay_fee" value="{$order['pay_fee']}" lay-verify="required">
+                                </td>
+                                <td>
+                                    <input type="text" class="layui-input" name="payer_name" value="{$order['payer_name']}" lay-verify="required">
+                                </td>
+                                <td>
+                                    <select name="currency" lay-search lay-filter="currency" lay-verify="required">
+                                        <option value="">请选择币种</option>
+                                        {volist name="currency" id="vo"}
+                                        <option value="{$vo['code_value']}" {if $order['currency']==$vo['code_value']}selected{/if}>{$vo['code_name']}</option>
+                                        {/volist}
+                                    </select>
+
+                                    <input type="number" lay-verify="required" name="price" id="price" value="{$order['price']}" placeholder="请输入应付金额" autocomplete="off" class="layui-input" style="margin:10px 0;">
+                                    <div class="disf exchange_rate" {if $order['exchange_rate']>0}style="display:none;"{/if} >
+                                        <input type="number" name="exchange_rate" class="layui-input" value="{$order['exchange_rate']}" placeholder="请输入汇率">
+                                    </div>
+                                </td>
+                                <td>
+                                    <select name="is_tax" id="is_tax" lay-filter="is_tax" style="margin-bottom:10px;">
+                                        <option value="">请选择包含方式</option>
+                                        <option value="1" {if $order['is_tax']==1}selected{/if}>应付金额包含税费</option>
+                                        <option value="2" {if $order['is_tax']==2}selected{/if}>应付金额不包含税费</option>
+                                    </select>
+
+                                    <div class="is_tax2" {if $order['is_tax']==2}style="display:block;"{/if}>
+                                        <select name="tax_type" id="tax_type">
+                                            <option value="1" {if $order['tax_type']==1}selected{/if}>销售税（Gat）</option>
+                                            <option value="2" {if $order['tax_type']==2}selected{/if}>增值税（Vat）</option>
+                                        </select>
+
+                                        <input type="number" name="tax_num" id="tax_num" value="{$order['tax_num']}" placeholder="请输入税率(例如：0.01)" autocomplete="off" class="layui-input" style="margin-top:10px;">
+                                    </div>
+
+                                    <input type="number" lay-verify="required" name="invoicing_tax" value="{$order['invoicing_tax']}" placeholder="请输入开票税费" autocomplete="off" class="layui-input" style="margin-top:10px;" readonly>
+                                </td>
+                                <td>
+                                    <input type="number" lay-verify="required" name="real_price" value="{$order['real_price']}" placeholder="" autocomplete="off" class="layui-input">
+                                </td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            {if empty($order['id'])}
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+            {/if}
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+
+    layui.use(['layer','form','laydate'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+
+        form.on('select(event_currency)',function(data){
+            let val = data.value;
+            if(val!='142'){
+                $('input[name="currency_backup"]').val(val);
+            }
+        });
+
+        form.on('select(currency)',function(data){
+            let val = data.value;
+            let currency_backup = $('input[name="currency_backup"]').val();
+            if(val!=''){
+                if(val=='142' && val!=currency_backup){
+                    $('.exchange_rate').show();
+                }else{
+                    $('.exchange_rate').hide();
+                }
+            }
+        });
+
+        form.on('select(is_tax)',function(data){
+            let val = data.value;
+
+            if(val==2){
+                $('.is_tax2').show();
+            }else{
+                $('input[name="invoicing_tax"]').val('0');
+                $('input[name="real_price"]').val($('input[name="price"]').val());
+                $('.is_tax2').hide();
+            }
+        });
+
+        {if empty($order['content'])}
+            laydate.render({
+                elem: '#event_date0'
+                ,type: 'date'
+                ,format: 'MM月dd日'
+            });
+        {else}
+            {volist name="order['content']['event_date']" key="index" id="val"}
+                laydate.render({
+                    elem: '#event_date{$index-1}'
+                    ,type: 'date'
+                    ,format: 'MM月dd日'
+                });
+            {/volist}
+        {/if}
+
+        form.render(null,'component-form-element1');
+
+        form.on('submit(component-form-element)', function(data){
+            //layer.msg(JSON.stringify(data.field));
+            $.ajax({
+                url:"{:Url('admin/warehouse/edit_lists')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+        $('#tax_num').bind('input propertychange',function(){
+            var tax = parseFloat($(this).val());//税率
+            var price = parseFloat($('#price').val());//应付金额
+            var val = tax*price;
+            val = val.toFixed(2);
+            $('input[name="invoicing_tax"]').val(val);
+            var totalprice = parseFloat(val) + price;
+            $('input[name="real_price"]').val(totalprice.toFixed(2));
+        });
+    });
+
+    function add_line(){
+        var layer = layui.layer
+            ,form = layui.form
+            ,laydate = layui.laydate;
+        let dateNum = $('#dateNum').val();
+        let html = '                     <tr>\n' +
+            '                                <td>\n' +
+            '                                    <input type="text" class="layui-input" name="event_date[]" id="event_date'+dateNum+'" value="" placeholder="yymmddhhii" lay-verify="required">\n' +
+            '                                </td>\n' +
+            '                                <td>\n' +
+            '                                    <select name="event_type[]" lay-search lay-verify="required">\n' +
+            '                                                    <option value="">请选择费用类别</option>\n' +
+            '                                                    <option value="1">应付费用</option>\n' +
+            '                                                    <option value="2">代付费用</option>\n' +
+            '                                                    <option value="3">其他费用</option>\n' +
+            '                                    </select>\n' +
+            '                                </td>\n'+
+            '                                <td>\n' +
+            '                                    <input type="text" lay-verify="required" name="event_name[]" value="" placeholder="" autocomplete="off" class="layui-input">\n' +
+            '                                </td>\n' +
+            '                                <td>\n' +
+            '                                    <select name="event_unit[]" lay-search lay-verify="required">\n' +
+            '                                        <option value="">请选择计价单位</option>\n';
+                                                    {volist name="unit" id="vo"}
+            html += '                                            <option value="{$vo.code_value}">{$vo.code_name}</option>\n';
+                                                    {/volist}
+            html += '                                    </select>\n'+
+            '                                </td>\n' +
+            '                                <td>\n' +
+            '                                                <div class="disf">\n' +
+            '                                                    <select name="event_currency[]" lay-search lay-verify="required" lay-filter="event_currency">\n' +
+            '                                                        <option value="">请选择计价币种</option>\n';
+                                                                    {volist name="currency" id="vo"}
+            html += '                                                        <option value="{$vo.code_value}">{$vo.code_name}</option>\n';
+                                                                    {/volist}
+            html += '                                            </select>\n' +
+            '                                                    <input type="number" class="layui-input" name="event_price[]" placeholder="" value="" lay-verify="required">\n' +
+            '                                                </div>\n' +
+            '                            </td>\n' +
+            '                            <td>\n' +
+            '                                                <input type="number" class="layui-input" name="event_num[]" placeholder="" value="" lay-verify="required">\n' +
+            '                            </td>\n' +
+            '                            <td>\n' +
+            '                                                <input type="number" class="layui-input event_totalprice" name="event_totalprice[]" placeholder="" value="" lay-verify="required">\n' +
+            '                            </td>\n' +
+            '                            <td>\n' +
+            '                                                <input type="text" class="layui-input" name="event_remark[]" placeholder="" value="">\n' +
+            '                            </td>\n'+
+            '                            </tr>';
+
+        $('#dateNum').val(parseInt(dateNum) + 1);
+        $('.btm_add').before(html);
+        laydate.render({
+            elem: '#event_date'+dateNum
+            ,type: 'date'
+            ,format: 'MM月dd日'
+        });
+
+        form.render(null,'component-form-element1');
+
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,488 @@
+{template "parking/base/header"}
+<body>
+<style>
+	.gray_none{ background:#ccc; pointer-events:none;}
+	.order_tab_button{
+		background:#3389EE;border:1px solid #3389EE;color:#fff;
+		border-radius: 100px;
+		height: 44px;
+		width: 313px;
+		margin: auto;
+		text-align: center;
+		line-height: 44px;
+		margin-bottom: 9px;
+	}
+</style>
+<div class="wx_box">
+	{if !empty($announcement)}
+	<div class="notice">
+		<div>
+			<ul>
+				{loop $announcement $index $item}
+				<li><a href="#">{$item['msg']}</a></li>
+				{/loop}
+			</ul>
+		</div>
+		<em></em>
+	</div>
+	{/if}
+	<!--focus-->
+	<div class="focus" id="focus">
+		<ul>
+			{if !empty($carousel)}
+			{loop $carousel $index $item}
+			<li><a href="{$item}"><img src="../addons/ewei_shopv2/static/images/img/{$index}" style="width:100%;" /></a></li>
+			{/loop}
+			{else}
+			<!--<li><a href="#"><img src="../addons/ewei_shopv2/static/images/img/0.jpg" style="width:100%;" /></a></li>-->
+			{if !empty($video)}
+			{loop $video $index $item}
+			<li><a href="{$item['url']}&item_id={$item['id']}" onclick="adv_view({$item['id']})">{$item['content']}</a></li>
+			{/loop}
+			{else}
+			<li><a href="#"><img src="../addons/ewei_shopv2/static/images/img/0.jpg" style="width:100%;" /></a></li>
+			<li><a href="#"><img src="../addons/ewei_shopv2/static/images/img/002.jpeg" style="width:100%;" /></a></li>
+			<li><a href="#"><img src="../addons/ewei_shopv2/static/images/img/003.jpeg" style="width:100%;" /></a></li>
+			{/if}
+			{/if}
+		</ul>
+		<ol>
+			<li class="on"></li>
+			<li></li>
+			<li></li>
+		</ol>
+	</div>
+	<!--focus end-->
+	<!--<ul class="nav">-->
+		<!--<li class="nav_icon01"><a href="javascript:alert('请等待上线..');">在线客服</a></li>-->
+		<!--<li class="nav_icon02">服务导航</li>-->
+		<!--<li class="nav_icon03">用户须知</li>-->
+	<!--</ul>-->
+
+	<div class="order" style="margin-top: 12px;">
+		<!--<h3 class="title_h3"><span>停车确认</span></h3>-->
+		<div class="order_tab">
+			<!--<h4><span>什么是 [后付费] 与 [预付费]</span></h4>-->
+			<ul class="order_tab_ul">
+				<li><span class="on" style="border-radius: 14px;">后付费/月卡</span></li>
+				<li><span style="border-radius: 14px;">预付费</span></li>
+			</ul>
+			<h4><span>点击下面按钮开始确认停车！</span></h4>
+
+			<p class="order_tab_button">点击确认停车</p>
+
+			<div class="order_tab_box">
+
+				<dl>
+					<!--<dt><span class="otb_font01">地址信息</span><i class="otb_arrow"><img src="../addons/ewei_shopv2/static/images/img/arrow.png" /></i></dt>-->
+					<dd>
+						<p><span class="otb_font01">泊车位置</span><i class="otb_font02">
+							{$data['charges']['adrr']['City']}
+							{$data['charges']['adrr']['Area']}
+							{$data['charges']['adrr']['Committee']}
+						</i></p>
+						{if !empty($num)}
+						<p><span class="otb_font01">泊位编号</span><i class="otb_font02">{$data['charges']['adrr']['Road']} {$num}号车位</i></p>
+						{else}
+						<p><span class="otb_font01">泊位编号</span><i class="otb_font02"></i></p>
+						{/if}
+
+
+						{if !empty($data['stime'])}
+						<p><span class="otb_font01">停入时间</span><i class="otb_font02">{php echo date("Y-m-d H:i:s",strtotime($data['stime']))}</i></p>
+						{else}
+						<p><span class="otb_font01">停入时间</span><i class="otb_font02"></i></p>
+						{/if}
+					</dd>
+					<dd>
+
+						{if empty($data['auth'])}
+						<p><span class="otb_font01">授权扣费</span><i class="otb_font02"><a href="{php echo mobileUrl('parking/auth')}" >还未授权，请前往授权></a></i></p>
+						{else}
+						<p><span class="otb_font01">授权扣费</span><i class="otb_font02 gray" onclick="TraverseData('auth','')">查看</i><input type="hidden" value='{php echo json_encode($data["auth"]["auth_type"]);}' id="authtype"></p>
+						{/if}
+						<!--<p><span class="otb_font01">适用抵扣</span><i class="otb_font02 gray" onclick="TraverseData('dikou','{php echo $data['card'];}')">查看</i></p>-->
+						{if !empty($data['charges']['char'])}
+						<p><span class="otb_font01">缴费标准</span><a href="{php echo mobileUrl('parking/info/period_details')}&number={$num}" class="otb_font03">详情</a><i class="otb_font02">泊位当前时段</i></p>
+						{else}
+						<p><span class="otb_font01">缴费标准</span><i class="otb_font02"></i></p>
+						{/if}
+						<!--<p><span class="otb_font01">通知方式</span><i class="otb_font02 gray" onclick="TraverseData('msg')">查看</i></p>-->
+					</dd>
+				</dl>
+			</div>
+			<div class="order_tab_box hide" style="display: none;">
+				<dl>
+					<!--<dt><span class="otb_font01">地址信息</span><i class="otb_arrow"><img src="../addons/ewei_shopv2/static/images/img//arrow.png" /></i></dt>-->
+					<dd>
+						<p><span class="otb_font01">泊车位置</span><i class="otb_font02">
+							{$data['charges']['adrr']['City']}
+							{$data['charges']['adrr']['Area']}
+							{$data['charges']['adrr']['Committee']}
+						</i></p>
+						{if !empty($num)}
+						<p><span class="otb_font01">泊位编号</span><i class="otb_font02">{$data['charges']['adrr']['Road']} {$num}号车位</i></p>
+						{else}
+						<p><span class="otb_font01">泊位编号</span><i class="otb_font02"></i></p>
+						{/if}
+						{if !empty($data['stime'])}
+						<p><span class="otb_font01">停入时间</span><i class="otb_font02">{php echo date("Y-m-d H:i:s",strtotime($data['stime']))}</i></p>
+						{else}
+						<p><span class="otb_font01">停入时间</span><i class="otb_font02"></i></p>
+						{/if}
+					</dd>
+					<dd>
+						<div class="otb_li">
+							<span class="otb_font01">预付时长</span>
+							<div class="otb_li_time">
+								<div>
+									<i class="otblt_minus">
+										<img src="../addons/ewei_shopv2/static/images/img/minus.png">
+									</i>
+									<input type="text" value="{php echo getPeriodTime($data);}" readonly="readonly" id="J_Input" style="position: absolute;"/>
+									<i class="otblt_add">
+									<img src="../addons/ewei_shopv2/static/images/img/add.png" style="position: relative;margin-left:44px;">
+									</i>
+								</div>分钟
+							</div>
+								<!--<i class="otb_li_price">￥{$data['filtered']['y_price']}</i>-->
+							<i class="otb_li_price">￥<span id="pr"><?php echo getPeriodMoney($data);?></span></i>
+						</div>
+						<!--<p><span class="otb_font01">通知方式</span><i class="otb_font02 gray" onclick="TraverseData('msg')">查看</i></p>-->
+					</dd>
+					<dd>
+
+						{if !empty($data['charges']['char'])}
+						<p><span class="otb_font01">缴费标准</span><a href="{php echo mobileUrl('parking/info/period_details')}&number={$num}" class="otb_font03">详情</a><i class="otb_font02">泊位当前时段</i></p>
+						{else}
+						<p><span class="otb_font01">缴费标准</span><i class="otb_font02"></i></p>
+						{/if}
+						<!--<p><span class="otb_font01">通知方式</span><i class="otb_font02 gray" onclick="TraverseData('msg')">查看</i></p>-->
+					</dd>
+				</dl>
+			</div>
+		</div>
+	</div>
+	<div class="footer">Technology by </div>
+	<div class="footer_placeholder"></div>
+	<div class="black_bg"></div>
+	<!--弹出框 s-->
+	<div class="popup">
+		<h3>请扫码关注注册</h3>
+		<p><img src="<?php echo $_W['account']['qrcode'];?>"></p>
+	</div>
+	<!--弹出框 end-->
+	{if empty($num)}
+	<script>
+        $(".black_bg").show();
+	</script>
+	<div class="popup_code" style="display: block;margin-bottom:237px;border-radius:10px;">
+		<h3><i class="popup_code_close"><img src="../addons/ewei_shopv2/static/images/img/popup_code_close.png" /></i>请输入车位码</h3>
+		<div class="popup_code_pay">
+			<ul><li></li><li></li><li></li><li></li><li></li><li></li></ul>
+			<input type="tel" maxlength="6" name="n" value="" id="n">
+		</div>
+		<!--<p class="popup_code_tips"><span>在哪里能找到 [车位码]</span></p>-->
+		<p class="popup_code_button" style="border-radius:100px;">停车</p>
+	</div>
+	{else}
+	<div class="popup_code" style="margin-bottom:237px;border-radius:10px;">
+		<h3><i class="popup_code_close"><img src="../addons/ewei_shopv2/static/images/img/popup_code_close.png" /></i>请输入车位码</h3>
+		<div class="popup_code_pay">
+			<ul><li></li><li></li><li></li><li></li><li></li><li></li></ul>
+			<input type="tel" maxlength="6" name="n" value="" id="n">
+		</div>
+		<!--<p class="popup_code_tips"><span>在哪里能找到 [车位码]</span></p>-->
+		<p class="popup_code_button" style="border-radius:100px;background:#3389EE">确 定</p>
+	</div>
+	{/if}
+	<div class="popup_select">
+		<ul>
+
+		</ul>
+		<p class="popup_select_cancel">取消</p>
+	</div>
+	<!--提示-->
+	<div class="popup_tips"></div>
+	<!--提示 end-->
+</div>
+<input type="hidden" name="parCode" value="{$num}" id="parNum">
+<!--{if empty($data['card'])}-->
+<!--<input type="hidden" name="monthcard" id="months" value="{$data['card']['id']}">-->
+<!--{else}-->
+
+<!--<input type="hidden" name="monthcard" id="months" value="">-->
+<!--{/if}-->
+<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<!--<script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>-->
+<!--<script src="http://wechatfe.github.io/vconsole/lib/vconsole.min.js?v=3.2.0"></script>-->
+<!--<script>-->
+    <!--var vsConsole = new VConsole();-->
+<!--</script>-->
+<script type="text/javascript">
+    var verifCode={$isVerifNotNull};
+    var faceid ={$faceid};
+    var isSelectChange=0;
+    var y_minute = "{php echo getPeriodTime($data);}"
+    var y_price = "{php echo getPeriodMoney($data);}"
+	/**未支付订单**/
+	$(function () {
+		if(verifCode==1003){
+            $(".order_tab_button").addClass("gray_none");
+            $(".popup_tips").html("有未结订单，请结清费用");
+            $(".popup_tips").show();
+            setTimeout(function () {
+                window.location.href="{php echo mobileUrl('parking/parking_orderdetails')}";
+            },3000);
+		}else if(verifCode == 1008){
+            $(".order_tab_button").addClass("gray_none");
+            $(".popup_tips").html("已有订单");
+            $(".popup_tips").show();
+            setTimeout(function () {
+                window.location.href="{php echo mobileUrl('parking/parking_orderdetails')}";
+            },3000);
+		}
+    });
+    /**轮播**/
+    $(function () {
+        var speed = 1000;
+        var auto = 1000;
+        new Swipe(document.getElementById('focus'), {
+            speed: speed,
+            auto: auto,
+            callback: function () {
+                var lis = $(this.element).next("ol").children();
+                lis.removeClass("on").eq(this.index).addClass("on");
+            }
+        });
+    });
+    /**轮播 end**/
+    /**选项卡**/
+    $(".order_tab_ul li").click(function(){
+        // alert('暂时未开通');return false;
+        var index = $(this).index();
+        isSelectChange=index;
+        console.log(isSelectChange);
+        $(this).find("span").addClass("on");
+        $(".order_tab_ul li").eq(index).siblings("li").find("span").removeClass("on");
+        $(".order_tab_box").eq(index).show().siblings(".order_tab_box").hide();
+    });
+    /**选项卡 end**/
+    /**点击停车位
+	 *    case 1002:
+     $(".popup_tips").html("请先注册");
+     $(".popup_tips").show();
+     setTimeout(function () {
+                            window.location.href="{php echo mobileUrl('parking/reg')}";
+                        },500)
+     break;
+	 **/
+    var isFlas = false;
+    $(".order_tab_button").click(function () {
+
+        if (faceid == 1) {
+            $(".order_tab_button").addClass("gray_none");
+            switch (verifCode) {
+                case 1001:
+                    $(".black_bg").show();
+                    $(".popup_code").show();
+                    $(".popup_code input").focus();
+                    break;
+                case 1004:
+                    $(".popup_tips").html("{$errorMsg}");
+                    $(".popup_tips").show();
+                    setTimeout(function () {
+                        $(".popup_tips").hide();
+                        $(".order_tab_button").removeClass("gray_none");
+                    }, 2000);
+                    setTimeout(function () {
+                        $(".popup_code").show();
+                        $(".popup_code input").focus();
+                    }, 1000);
+                    break;
+                case 1005:
+                    $(".popup_tips").html("查询时间超时");
+                    $(".popup_tips").show();
+                    setTimeout(function () {
+                        $(".popup_tips").hide();
+                        $(".order_tab_button").removeClass("gray_none");
+                    }, 2000);
+                    break;
+                case 1006:
+                    $(".popup_tips").html("未查询到相关时间");
+                    $(".popup_tips").show();
+                    setTimeout(function () {
+                        $(".popup_tips").hide();
+                        $(".order_tab_button").removeClass("gray_none");
+                    }, 2000);
+                    break;
+                default:
+                    if(isFlas){
+                        return false;
+                    }
+                    isFlas =true;
+                    if (isSelectChange == 0) {
+                        ReallyOrder();
+                    } else if (isSelectChange == 1) {
+                        httpPrepaid();
+                    }
+                    break;
+                //确认停车
+            }
+        } else {
+            $(".black_bg,.popup").show();
+        }
+    });
+    /**点击停车位 end**/
+    /**输入停车码**/
+    $(".popup_code_pay input").keyup(function () {
+        var txt = $(this).val().trim();
+        $(".popup_code_pay ul li").html(" ");
+        for (var i = 0; i < txt.length; i++) {
+            $(".popup_code_pay ul li").eq(i).html(txt[i])
+        }
+    });
+    /**输入停车码 end**/
+    /**关闭输入停车码**/
+    $(".popup_code_close").click(function(){
+        $(".black_bg,.popup_code").hide();
+        $(".popup_code_pay ul li").html("");
+        $(".order_tab_button").removeClass("gray_none");
+    });
+    /**关闭输入停车码 end**/
+    $(".order_tab_box .gray").click(function(){
+        $(".black_bg,.popup_select").show();
+    });
+    $(".popup_select_cancel").click(function(){
+        $(".black_bg,.popup_select").hide();
+    });
+    $(".popup_code_button").click(function () {
+        var parval=$("#n").val();
+        if(parval.length==6){
+            window.location.href="{php echo mobileUrl('parking/info')}&num="+parval;
+        }
+    });
+    $(".notification").click(function () {
+        $(".black_bg,.popup_select").show();
+        var _this = $(this);
+        $(document).on("click", ".popup_select ul li", function () {
+            var li_txt = $(this).html();
+            _this.html(li_txt);
+            $(".black_bg,.popup_select").hide();
+        });
+    });
+	/*加减*/
+    $(".otblt_minus").bind("click", function () {
+        var nums = $("#pr").html();
+        if (parseFloat(nums) != parseFloat(y_price)) {
+            $("#pr").html(parseFloat(nums) - parseFloat(y_price));
+        }
+        var n = $('#J_Input').val() - y_minute;
+        if (n < y_minute) {
+            $("#J_Input").val(y_minute);
+        } else {
+            $("#J_Input").val(n);
+        }
+    });
+    $(".otblt_add").bind("click", function () {
+        var nums2 = $("#pr").html();
+        $("#pr").html(parseFloat(nums2) + parseFloat(y_price));
+        $("#J_Input").val(parseFloat(y_minute) + parseFloat($('#J_Input').val()));
+    });
+
+
+    function TraverseData(_isKey, _val) {
+        var _h = '';
+        if (_isKey === 'msg') {
+            _h = "<li>微信</li><li>手机</li>";
+            $(".popup_select ul").html(_h);
+        } else if (_isKey === 'dikou') {
+            if (_val != 'no') {
+                _h = "<li>月卡</li>";
+            }else{
+                _h +="<li><a href={php echo mobileUrl('parking/month_card')}>前往申请月卡</a></li>"
+			}
+            _h += "<li>零钱</li><li>优惠券</li>";
+            $(".popup_select ul").html('');
+            $(".popup_select ul").html(_h);
+        } else if (_isKey == 'auth') {
+            var authType = JSON.parse($("#authtype").val());
+            for (var item in authType) {
+                switch (item) {
+                    case 'wx':
+                        _h = "<li>微信</li>";
+                        break;
+                    case 'wg':
+                        _h = "<li>信用卡</li>";
+                        break;
+                    case 'sd':
+                        _h = "<li>农商卡</li>";
+                        break;
+                }
+            }
+            $(".popup_select ul").html('');
+            $(".popup_select ul").html(_h);
+        }
+    }
+
+    function ReallyOrder() {
+        $(".popup_tips").html('请求中...');
+        $(".popup_tips").show();
+       	var rtime =  Math.ceil(Math.random()*2000);
+        setTimeout(function () {
+            $.ajax({
+                url: "{php echo mobileUrl('parking/info/ReallyOrder')}",
+                type: "post",
+                data: {"parCode": $("#parNum").val(), "monthcard_id": $('#months').val()},
+                dataType: "json",
+                success: function (_str) {
+                    $(".popup_tips").hide();
+                    if (_str.status == 200) {
+                        $(".popup_tips").html(_str.result.message);
+                        $(".popup_tips").show();
+                        setTimeout(function () {
+                            wx.closeWindow();
+                        }, 1200);
+                    } else {
+                        $(".popup_tips").html(_str.result.message);
+                        $(".popup_tips").show();
+                        $(".order_tab_button").removeClass("gray_none");
+                        setTimeout(function () {
+                            $(".popup_tips").hide();
+                        }, 2000);
+                    }
+                },
+                error: function () {
+                    $(".popup_tips").html("确认异常");
+                    $(".popup_tips").show();
+                    $(".order_tab_button").removeClass("gray_none");
+                    setTimeout(function () {
+                        $(".popup_tips").hide();
+                    }, 2000);
+                }
+            });
+        },rtime);
+
+    }
+    
+    function httpPrepaid() {
+        window.location.href="{php echo mobileUrl('parking/prepaid')}&num={$num}&ms="+$("#J_Input").val();
+    }
+    //广告计费
+    // 	function adv_view(id) {
+		// $.ajax({
+		// 	url:"{php echo mobileUrl('parking/info/adv_view')}",
+		// 	type:"post",
+		// 	data:{'id':id},
+		// 	dataType:"json",
+		// 	success:function (data) {
+    //
+    //         },
+		// 	error:function () {
+    //
+    //         }
+		// });
+    // }
+</script>
+
+{template "parking/base/footer"}

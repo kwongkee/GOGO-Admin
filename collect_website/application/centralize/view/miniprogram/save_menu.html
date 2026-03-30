@@ -1,0 +1,263 @@
+{include file="common/header_inner_new"}
+
+<style>
+
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <input type="text" style="display:none;" name="pid" id="pid" value="{$pid}">
+
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">菜单排序</div>
+                            <div class="layui-input-block">
+                                <input type="number" class="layui-input" lay-verify="required" name="displayorder2" value="{$data['displayorder']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">菜单名称</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" lay-verify="required" name="name" value="{$data['name']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">菜单说明</div>
+                            <div class="layui-input-block">
+                                <input type="text" name="desc" class="layui-input" lay-verify="" value="{$data['desc']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">跳转类型</div>
+                            <div class="layui-input-block">
+                                <select name="tz_type" id="tz_type" lay-filter="tz_type">
+                                    <option value="0" {if $data['tz_type']==0}selected{/if}>网页链接</option>
+                                    <option value="1" {if $data['tz_type']==1}selected{/if}>小程序页面</option>
+                                    <option value="2" {if $data['tz_type']==2}selected{/if}>菜单链接</option>
+                                    <option value="3" {if $data['tz_type']==3}selected{/if}>图文链接</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item menu_link" style="display: {if $data['tz_type']==2}block{else}none{/if};">
+                            <div class="layui-form-label">菜单链接</div>
+                            <div class="layui-input-block">
+                                <select name="menu_link" id="menu_link" lay-search>
+                                    {volist name="menu" id="vo"}
+                                    <option value="{$vo['id']}" {if $vo['id']==$data['menu_link']}selected{/if}>{$vo['name']}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item pictxt_link" style="display: {if $data['tz_type']==3}block{else}none{/if};">
+                            <div class="layui-form-label">菜单链接</div>
+                            <div class="layui-input-block">
+                                <select name="pictxt_link" id="pictxt_link" lay-search>
+                                    {volist name="pictxt" id="vo"}
+                                    <option value="{$vo['id']}" {if $vo['id']==$data['pictxt_link']}selected{/if}>{$vo['name']}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item link" style="display: {if($data['tz_type']==1 || $data['tz_type']==0)}block{else}none{/if};">
+                            <div class="layui-form-label">跳转链接</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" name="link" placeholder="请输入跳转链接" value="{$data['link']}">
+                                <div class="layui-form-mid layui-word-aux">网页链接需携带https://作为开头；小程序页面调用方法时用“@方法名”，调用页面链接“/pages/page/index”，两者合一用该方法“@方法名@web@页面链接”，两者合一用该方法“@方法名@miniprogram@页面链接”；</div>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">菜单图片<br/>(240*180px)</div>
+                            <div class="layui-input-block">
+                                <div class="layui-upload" style="margin-top: 10px;">
+                                    <button type="button" class="layui-btn" id="img_file-upload">上传图片(一张)</button>
+                                    <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                                        预览图：
+                                        <div class="layui-upload-list" id="img_file-upload-list">
+                                            {if !empty($data['thumb'])}
+                                            <div style="display: inline-block;">
+                                                <img onclick="seePic(this);" src="/{$data['thumb']}" class="layui-upload-img" style="width:80px;height:80px;">
+                                                <button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button>
+                                                <input type="hidden" name="thumb[]" value="{$data['thumb']}">
+                                            </div>
+                                            {/if}
+                                        </div>
+                                    </blockquote>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">色块颜色</div>
+                            <div class="layui-input-block">
+                                <div id="color"></div>
+                                <input type="hidden" name="color_background" value="{$data['color_background']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">文字颜色</div>
+                            <div class="layui-input-block">
+                                <div id="color_word"></div>
+                                <input type="hidden" name="color_word" value="{$data['color_word']}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload','colorpicker'],function(){
+        var laydate = layui.laydate
+            ,layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery
+            ,upload = layui.upload
+            ,colorpicker = layui.colorpicker;
+
+        {if !empty($data['color_background'])}
+            colorpicker.render({
+                elem:'#color',
+                alpha:true,
+                size:'lg',
+                predefine:true,
+                color:'{$data["color_background"]}',
+                done:function(color){
+                    $('input[name="color_background"]').val(color);
+                }
+            });
+        {else}
+            colorpicker.render({
+                elem:'#color',
+                alpha:true,
+                size:'lg',
+                done:function(color){
+                    $('input[name="color_background"]').val(color);
+                }
+            });
+        {/if}
+
+        {if !empty($data['color_word'])}
+            colorpicker.render({
+                elem:'#color_word',
+                alpha:true,
+                size:'lg',
+                predefine:true,
+                color:'{$data["color_word"]}',
+                done:function(color){
+                    $('input[name="color_word"]').val(color);
+                }
+            });
+        {else}
+            colorpicker.render({
+                elem:'#color_word',
+                alpha:true,
+                size:'lg',
+                done:function(color){
+                    $('input[name="color_word"]').val(color);
+                }
+            });
+        {/if}
+
+        // 轮播图文件
+        upload.render({
+            elem: '#img_file-upload'
+            ,url: '{:Url("admin/basic/upload_file")}'
+            ,accept: 'image'
+            ,data: { folder: 'miniprogram', type: 'website_menu'}
+            ,multiple: false
+            ,number:1
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+
+                    $('#img_file-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="thumb[]" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+
+        form.on('select(tz_type)',function (data) {
+            let val = data.value;
+
+            if(val==0 || val==1){
+                $('.link').show();
+                $('.menu_link,.pictxt_link').hide();
+            }
+            else if(val==2){
+                $('.menu_link').show();
+                $('.link,.pictxt_link').hide();
+            }
+            else if(val==3){
+                $('.pictxt_link').show();
+                $('.link,.menu_link').hide();
+            }
+        });
+
+        form.on('submit(component-form-element)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+
+            // if(data.field['editorValue']==''){
+            //     layer.msg('请输入内容！');
+            //     return false;
+            // }
+
+            // if( $('#img_file-upload-list').children().length == 0 )
+            // {
+            //     layer.msg('请上传菜单图片！');
+            //     return false;
+            // }
+
+            $.ajax({
+                url:"{:Url('centralize/miniprogram/save_menu')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+</script>
+</body>
+</html>

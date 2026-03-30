@@ -1,0 +1,191 @@
+<div class="tc_b audio_html" style=" width:100%;position:fixed;left:0px; right:0px; bottom:0px; z-index:100000;display:none;">
+    
+    <div id="div_b"></div>
+    <div class="box_b">
+        <div class="row box_b1" style="margin:10px 2%;width: 96%">
+            <ul>
+                <li class="hide_audio" onclick="ck_audio_close()">
+                    <span style="color: #999">取消</span>
+                </li>
+                <li style="text-align: center;font-size: 12px" class="second">
+                    <span>点击开始录音</span>
+                </li>
+                <li style="text-align: right" class="audio_ok" onclick="audio_ok()">
+                    <span>完成</span>
+                </li>
+            </ul>
+        </div>
+        <div class="row box_b2" style="margin-left: 0">
+            <a href="javascript:void(0)" class="start_btn" external onclick="start_audio($(this))">
+                <img src="{MOBILE_ASSETS}img/yuyin-a.png" width="15px" height="15px" alt="">
+            </a>
+        </div>
+        <div style="width: 100%;height: auto;display: none" class="report_audio">
+            <div style="width: 50%;margin: auto;text-align: center">
+                <button class="button button-success" style="display: initial" onclick="restart_audio($('.start_btn'))">重录</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    var color_int;
+    var time_int;
+    var audio_id;
+    var audio_time = 0;
+
+    /**
+     * 开始录音
+     * @param obg
+     */
+    function start_audio(obg) {
+        //if(is_ios() == false){
+        register_jssdk();
+        //}
+		
+        $(obg).find("img").attr('src', MOBILE_ASSETS + 'img/zanting.png');
+        var color = ['#e8f3eb', '#cdecd6', '#a6efbb', '#60b177', '#90DBA6'];
+        var index = 0;
+
+        color_int = setInterval(function () {
+            if (index >= 4) {
+                index = 0;
+            }
+            $(obg).css('border-color', color[index]);
+            index++;
+        }, 500);
+
+        time_int = setInterval(function () {
+            $(".second").find("span").html("00:" + audio_time + " S");
+            audio_time++;
+            if(audio_time >= 3600){
+                stop_audio(obg);
+            }
+        }, 1000);
+
+        $(obg).attr('onclick', 'stop_audio($(this))');
+
+        wx.ready(function () {
+            wx.startRecord();
+        });
+    }
+    
+    function restart_audio(obg) {
+        audio_time = 0;
+        $(".second").find("span").html('');
+        start_audio(obg);
+    }
+
+    /**
+     * 暂停录音
+     * @param obg
+     */
+    function stop_audio(obg) {
+
+        wx.stopRecord({
+            success: function (res) {
+                audio_id = res.localId;
+            }
+        });
+
+        $(obg).find("img").attr('src',MOBILE_ASSETS + "img/sap-zanting.png");
+        clearInterval(time_int);
+        clearInterval(color_int);
+        $(obg).css('border-color', '#90DBA6');
+        $(".report_audio").show();
+        $(obg).attr('onclick', 'open_audio($(this))');
+
+    }
+
+    /**
+     * 播放语言
+     */
+    function open_audio(obg) {
+        $(".second").find("span").html("播放中...");
+        $(obg).find("img").attr('src',MOBILE_ASSETS + "img/stop_audio.png");
+        $(obg).attr('onclick', 'close_open_audio($(this))');
+        $(".report_audio").hide();
+        wx.playVoice({
+            localId:audio_id // 需要播放的音频的本地ID，由stopRecord接口获得
+        });
+
+        wx.onVoicePlayEnd({
+            success: function (res) {
+                var localId = res.localId; // 返回音频的本地ID
+                $(obg).find("img").attr('src',MOBILE_ASSETS + "img/sap-zanting.png");
+                $(obg).attr('onclick', 'open_audio($(this))');
+                $(".second").find("span").html("00:"+audio_time+" S");
+                $(".report_audio").show();
+            }
+        });
+    }
+
+    /**
+     * 停止播放
+     */
+    function close_open_audio(obg) {
+        wx.pauseVoice({
+            localId: audio_id // 需要停止的音频的本地ID，由stopRecord接口获得
+        });
+        $(".second").find("span").html("00:"+audio_time+" S");
+        $(obg).find("img").attr('src',MOBILE_ASSETS + "img/sap-zanting.png");
+        $(obg).attr('onclick', 'open_audio($(this))');
+        $(".report_audio").show();
+    }
+
+    /**
+     * 点击完成
+     */
+    function audio_ok() {
+        if(audio_id != "")
+        {
+            wx.uploadVoice({
+                localId: audio_id, // 需要上传的音频的本地ID，由stopRecord接口获得
+                isShowProgressTips: 1, // 默认为1，显示进度提示
+                success: function (res) {
+                    console.dir(res);
+                    var serverId = res.serverId; // 返回音频的服务器端ID
+                    $("input[name='audio']").val(serverId);
+                    $("input[name='audio_local']").val(audio_id);
+                    $("input[name='audio_time']").val(audio_time);
+
+                    set_audio(audio_id,audio_time,serverId);
+                    audio_time=0;
+                }
+            });
+        }
+        $(".tc_b").hide();
+        $(".second").find("span").html('点击开始录音');
+        $(".start_btn").attr('onclick',"start_audio($(this))");
+        $(".start_btn").find("img").attr('src',MOBILE_ASSETS+"img/yuyin-a.png")
+        $(".report_audio").hide();
+		$('#footerjob1').show();
+    }
+	
+	//显示
+	function set_audio(local,time,serverId) {
+		$(".show_audio1").show();
+		$(".audio_boder").attr('local',local);
+		$(".audio_boder").find('em').html(time+"s'");
+		
+		if(serverId){
+			$.ajax({
+				url : COMMENT_ZAN,type:'post',data:{server_id:serverId},
+				beforeSend:function () {
+					
+				},success:function (res) {
+					if(res != 0){
+						var data = $.parseJSON(res);
+						if(data.result == 'ok'){
+							$("input[name='filePath']").val(data.filePath);
+                    		$("input[name='baseUrl']").val(data.baseUrl);
+							$("input[name='mp3_filename']").val(data.mp3_filename);
+							$(".show_audio1").hide();
+							$(".show_audio").show();
+						}
+					}
+				}
+			});
+		}
+	}
+</script>

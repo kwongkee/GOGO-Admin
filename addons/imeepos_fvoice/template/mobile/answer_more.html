@@ -1,0 +1,21 @@
+{loop $questions['list'] $li}
+{php $member = M('member')->getInfo($li['openid'])}
+<li class="a-question">
+    <a class="AQ" href="{php echo $this->createMobileUrl('question',array('id'=>$li['id']))}">
+        <div class="question-content">
+            <p>{$li['title']}</p>
+        </div>
+        <div>
+                <span class="question-respondent">
+                    {$member['nickname']}｜{$member['desc']}
+                    {if $li['status'] == 2}
+                        <span style="color:red;float: right;">已回答</span>
+                    {/if}
+                    {if $li['status'] == 1}
+                        <span style="color:red;float: right;">等待回答</span>
+                    {/if}
+                </span>
+        </div>
+    </a>
+</li>
+{/loop}

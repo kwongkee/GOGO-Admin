@@ -1,0 +1,93 @@
+{include file="public/header"}
+<body style="padding: 10px;">
+<!-- 上级ID -->
+<input type="hidden" id="pid" value="1">
+<div class="header">
+    <span>分配运单列表</span>
+
+    <button class="layui-btn layui-btn-sm" onclick="addName()">分配运单</button>
+
+    <div></div>
+</div>
+
+<table class="layui-table">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>商家企业名称</th>
+        <th>商家名称</th>
+        <th>分配时间</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {volist name="data" id='vo'}
+    <tr>
+        <td>{$vo['id']}</td>
+        <td>{$vo['merchat_name']}</td>
+        <td>{$vo['nickname']}</td>
+        <td>{$vo['createtime']|date='Y-m-d H:i:s',###}</td>
+        <td>
+            <button class="layui-btn layui-btn-normal layui-btn-xs" onclick="see({$vo['id']})">查看</button>
+            <!--<button class="layui-btn layui-btn-danger layui-btn-xs" onclick="del({$vo['id']})">删除</button>-->
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<div class="layui-page">
+    <!--$page-->
+</div>
+
+<script type="text/javascript">
+
+    layui.use(['layer'],function(){
+        layer = layui.layer;
+        $     = layui.jquery;
+    });
+
+    // 分配商家运单号码
+    function addName() {
+        layer.open({
+            type:2,
+            title:'分配运单',
+            shade:0.3,
+            area:['600px','500px'],
+            content:'{:Url("admin/waybill/numberassign_add")}'
+        });
+    }
+
+    function see(id){
+        layer.open({
+            type:2,
+            title:'运单号列表',
+            shade:0.3,
+            area:['100%','100%'],
+            content:"{:Url('admin/waybill/numberassign_list')}&id="+id
+        })
+    }
+
+    // 删除数据
+    function del(id,bill)
+    {
+        layer.confirm('确定要删除吗？',{icon:3,btn:['确定','取消']},function() {
+            $.post("{:Url('admin/transport/transDel')}",{id:id,bill:bill},function(resd){
+                var res = JSON.parse(resd);
+                if(res.code == 1) {
+                    layer.msg(res.msg,{icon:1});
+                    setTimeout(function(){
+                        layer.closeAll();
+                        parent.window.location.reload();
+                    },1100);
+                } else {
+                    layer.alert(res.msg,{icon:2});
+                }
+            },'json');
+        })
+    }
+</script>
+
+</body>
+</html>

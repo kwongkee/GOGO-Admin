@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {include file="common/meta"}
+</head>
+<body class="gray-bg">
+<div class="col-sm-12">
+    <div class="ibox float-e-margins">
+        <div class="ibox-content" style="display:block;" id="list1">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>商户</th>
+                    <th>公司名</th>
+                    <th>查验峰值</th>
+                    <th>扣件峰值</th>
+                    <th>退件峰值</th>
+                    <th>放行峰值</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name='list' id='vo'}
+                <tr>
+                    <td>{$vo['user_name']}</td>
+                    <td><input type="text" value="{$vo['company_name']}" readonly="readonly"></td>
+                    <td><input type="text" name="check_rate" id="check_rate" value="{$vo['check_rate']}"></td>
+                    <td><input type="text" name="fastener_rate" id="fastener_rate" value="{$vo['fastener_rate']}"></td>
+                    <td><input type="text" name="return_rate" id="return_rate" value="{$vo['return_rate']}"></td>
+                    <td><input type="text" name="release_rate" id="release_rate" value="{$vo['release_rate']}"></td>
+                    <td><a href="#" class="btn btn-info" onclick="modifyOrAddRate({$vo['busin_id']});return false;">提交修改</a>
+                        {if $vo['user_status']==1}
+                        <a  href="#" onclick="disableUser({$vo['busin_id']},'open');return false;" class="btn btn-danger">启用</a>
+                        {else}
+                        <a  href="#" onclick="disableUser({$vo['busin_id']},'lock');return false;" class="btn btn-danger">禁用</a>
+                        {/if}
+                    </td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="layui-box layui-laypage layui-laypage-default"></div>
+</body>
+<script>
+    function modifyOrAddRate(id){
+        var check_rate = $('#check_rate').val();
+        var fastener_rate = $('#fastener_rate').val();
+        var return_rate = $('#return_rate').val();
+        var release_rate = $('#release_rate').val();
+        $.ajax({
+           url:"{:Url('admin/billrate/set_warningvalue')}",
+           type:"POST",
+           dataType:"json",
+           data:{
+               uid:id,
+               check_rate:check_rate==''?0:check_rate,
+               fastener_rate:fastener_rate==''?0:fastener_rate,
+               return_rate:return_rate==''?0:return_rate,
+               release_rate:release_rate==''?0:release_rate,
+           },
+            success:function (res) {
+                parent.layer.msg(res.message);
+            },
+            error:function (xhr) {
+                parent.layer.msg('失败');
+            }
+        });
+        return false;
+    }
+
+    function disableUser(uid,type){
+        $.ajax({
+            url:"{:Url('admin/billuser/action')}&uid="+uid+"&type="+type,
+            type:"GET",
+            dataType:"json",
+            success:function (res) {
+                parent.layer.msg(res.message);
+            },
+            error:function (xhr) {
+                parent.layer.msg('失败');
+            }
+        });
+        return false;
+    }
+</script>
+</html>

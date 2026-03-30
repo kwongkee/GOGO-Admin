@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<div class="header">
+    <span>清算清单</span>
+    <!--<button class="layui-btn layui-btn-sm" onclick="add();">添加</button>-->
+    <div></div>
+</div>
+<form class="layui-form" action="post">
+
+    <div class="layui-form-item"></div>
+
+    <div class="layui-form-item">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">商户名称:</label>
+            <div class="layui-input-block">
+                <input type="text" value="{$uname}" readonly class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">清算金额:</label>
+            <div class="layui-input-block">
+                <input type="text" name="idcounts" value="{$data['money']}" required  lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">凭证编号:</label>
+            <div class="layui-input-block">
+                <input type="text" name="idfees" value="{$data['voucher']}" required  lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">清算日期:</label>
+            <div class="layui-input-block">
+                <input type="text" name="paycounts" value="{$data['dates']|date='Y-m-d H:i:s',###}" required  lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">提交日期:</label>
+            <div class="layui-input-block">
+                <input type="text" name="payfees" value="{$data['times']|date='Y-m-d H:i:s',###}" required  lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+    </div>
+
+</form>
+
+<script>
+
+    var flag = false;
+    //Demo
+    layui.use(['layer','jquery','form'],function(){
+        layer = layui.layer;
+        var form = layui.form
+        $ = layui.jquery;
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+
+            if(flag) {
+                return false;
+            }
+
+            //layer.msg(JSON.stringify(data.field));
+
+            $('#sub').attr('disabled',true);
+            flag = true;
+
+            $.ajax({
+                url:"{:Url('Financed/setMedits')}",
+                type:'post',
+                dataType:'json',
+                data:data.field,
+                success:function(data) {
+                    var d = JSON.parse(data);
+                    if(d.code == 1 ) {
+                        layer.msg(d.msg,{icon:1});
+                    } else {
+                        layer.msg(d.msg,{icon:2});
+                    }
+
+                    setTimeout(function() {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        // 关闭父级窗口
+                        parent.layer.close(index);
+                        window.location.reload();
+                    },1000);
+
+                },
+                error:function(er) {
+                    //console.log(er)
+                }
+            })
+
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

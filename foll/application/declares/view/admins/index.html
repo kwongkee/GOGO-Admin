@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+	<script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+	<style>
+		.header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+		.header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+		.header button{float: right;margin-top: -5px;}
+	</style>
+</head>
+<body style="padding-top: 10px;">
+	<div class="header">
+		<span>管理员列表</span>
+		<button class="layui-btn layui-btn-sm" onclick="add();">添加</button>
+		<div></div>
+	</div>
+
+	<table class="layui-table">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>用户名</th>
+				<th>真实姓名</th>
+				<th>角色</th>
+				<th>状态</th>
+				<th>添加时间</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			{volist name="data.lists" id="vo" }
+			<tr>
+				<td>{$vo.id}</td>
+				<td>{$vo.user_mobile}</td>
+				<td>{$vo.user_name}</td>
+				<td>{:isset($data['groups'][$vo.role]) ? $data['groups'][$vo.role]['title']:''}</td>
+				<td>{$vo.status == 1?'<span style="color: red;">禁用</span>':'正常'}</td>
+				<td>{$vo.create_time}</td>
+				<td>
+					<button class="layui-btn layui-btn-xs" onclick="add({$vo.id})">编辑</button>
+					{if $data.role == 1}
+					<button class="layui-btn layui-btn-danger layui-btn-xs" onclick="dels({$vo.id})">删除</button>
+					{/if}
+				</td>
+			</tr>
+			{/volist}
+		</tbody>
+	</table>
+	
+	<script type="text/javascript">
+		layui.use(['layer','jquery'],function(){
+			layer = layui.layer;
+			$ = layui.jquery;
+		});
+		// 添加管理员
+		function add(id)
+		{
+			layer.open({
+			  type: 2,
+			  title: id>0?'编辑管理员':'添加管理员',
+			  // shadeClose: true,
+			  shade: 0.3,
+			  area: ['490px', '489px'],
+			  content: "{:Url('admins/add/')}&id="+id //iframe的url
+			}); 
+		}
+
+		// 删除
+		function dels(id){
+			layer.confirm('确定要删除吗？', {
+				icon:3,
+				btn: ['确定','取消'] //按钮
+			}, function() {
+				$.post("{:Url('admins/delete')}",{'id':id},function(res){
+					if(res.code > 0) {
+						layer.msg(res.msg,{icon:2});
+					} else {
+						layer.msg(res.msg,{icon:1});
+						setTimeout(function(){window.location.reload();},1000);
+					}
+				},'json');
+			});
+		}
+	</script>
+</body>
+</html>

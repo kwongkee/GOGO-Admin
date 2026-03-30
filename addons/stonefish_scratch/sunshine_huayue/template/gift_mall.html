@@ -1,0 +1,101 @@
+{template 'header'}
+	<div class="container-fluid">
+		<h4><span class='glyphicon glyphicon-circle-arrow-right'></span>&nbsp;&nbsp;礼物列表</h4>
+		<div class="row">
+			<div class="col-sm-12">
+				<table class="table">
+					<thead>
+						<tr>
+							<td style="width: 80px;">礼物</td>
+							<td style="width:100px;">排序</td>
+							<td style="width: 150px;">名称</td>
+							<td style="width:150px;">单价</td>
+							<td style="width:100px;">出售数量</td>
+							<td>收入（单价x数量）</td>
+							<td>操作</td>
+						</tr>
+					</thead>
+					<tbody>
+						{loop $list $item}
+						<tr>
+							<td>
+								<img src="{php echo $item['gift_pic']}" style="width:50px;">
+							</td>
+							<td>
+								<input type="number" class="form-control" id="sort_id_{php echo $item['id']}" value="{php echo $item['sort_id']}">
+							</td>
+							<td>
+								<input type="text" class="form-control" id="gift_name_{php echo $item['id']}" value="{php echo $item['gift_name']}">
+							</td>
+							<td>
+								<input type="text" class="form-control" id="gift_price_{php echo $item['id']}" value="{php echo $item['gift_price']}">
+							</td>
+							<td>{$item['sale_num']}</td>
+							<td>{php echo $item['sale_num']*$item['gift_price']}</td>
+							<td>
+								<button class="btn btn-warning" onclick="window.location.href='{php echo $this->createWebUrl('giftpicchange',array('id'=>$item['id']))}'">换图</button>
+								<button class="btn btn-info" onclick="saveItem('{php echo $item['id']}')">保存</button>
+								{if $item['is_del'] == 'y'}
+								<button class="btn btn-danger" onclick="delItem('{php echo $item['id']}','n')">上架</button>
+								{else}
+								<button class="btn btn-success" onclick="delItem('{php echo $item['id']}','y')">下架</button>
+								{/if}
+							</td>
+						</tr>
+						{/loop}
+					</tbody>
+				</table>		
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+
+	function saveItem(id) {
+		var sort_id = $("#sort_id_"+id).val();
+		var name = $("#gift_name_"+id).val();
+		var price = $("#gift_price_"+id).val();
+
+		$.ajax({
+			type:'post',
+			data:{
+				sort_id:sort_id,
+				gift_name:name,
+				gift_price:price,
+				gift_id:id,
+				update_type:'normal'
+			},
+
+			url:"{php echo $this->createWebUrl('giftupdate')}",
+			success:function(d) {
+				if(d.res == '100') {
+					alert('保存成功');
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+	}
+
+	function delItem(id,status) {
+		$.ajax({
+			type:'post',
+			data:{
+				gift_id:id,
+				update_type:'is_del',
+				is_del:status
+			},
+
+			url:"{php echo $this->createWebUrl('giftupdate')}",
+			success:function(d) {
+				if(d.res == '100') {
+					alert('保存成功');
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+	} 
+	</script>
+{template 'footer'}

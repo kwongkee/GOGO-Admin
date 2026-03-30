@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>供应配置-对接信息</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <style>
+        .disf{display:flex;align-items: center;}
+        .layui-select-title .layui-input{width:40%;}
+        .layui-form-select .layui-edge{right:61%;}
+        .layui-form-select dl{min-width:40%;}
+    </style>
+</head>
+<body>
+<form class="layui-form" action="">
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                对接信息
+            </div>
+            <div class="layui-card-body" style="padding:15px;">
+                <input type="hidden" name="enterprise_id" value="{$enterprise_id}">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">岗位</label>
+                    <div class="layui-input-block">
+                        <select name="loctNo" id="loctNo" lay-search lay-verify="required">
+                            <option value="">请选择岗位</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">姓名</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="name" value="" placeholder="请输入姓名" lay-verify="required" autocomplete="off" class="layui-input" style="width:40%;">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">电话</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="phone" value="" placeholder="请输入电话" lay-verify="required" autocomplete="off" class="layui-input" style="width:40%;">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label"></label>
+                    <div class="layui-input-block">
+                        <img src="../../app/img/qrcode_for_gogo.jpg" alt="" style="width:258px;">
+                        <p style="font-size:15px;color:#ff2222;">* 请先关注公众号，以便以后消息通知到您。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="formDemo">确认</button>
+                    <button type="reset" class="layui-btn layui-btn-danger">重置数据</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+
+
+<script>
+    //Demo
+    layui.use(['element','form','upload'], function(){
+        var $ = layui.$
+            ,layer = layui.layer
+            ,upload = layui.upload
+            ,element = layui.element
+            ,form = layui.form;
+        //监听提交
+        form.on('submit(formDemo)', function(data) {
+            $.ajax({
+                url:"{:Url('supplier/index/config_docking')}",
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (res) {
+                    if(res.code <= 0) {
+                        layer.msg(res.msg);
+                        return false;
+                    }
+                    layer.msg(res.msg);
+                    setTimeout(function(){
+                        layer.closeAll();
+                        window.location.href='https://shop.gogo198.cn/foll/public/?s=supplier/index/config_trademark&enterprise_id='+res.enterprise_id;
+                    },1200)
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</html>

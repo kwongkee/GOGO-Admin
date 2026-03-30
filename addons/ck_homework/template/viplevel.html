@@ -1,0 +1,209 @@
+{template 'common/header'}
+
+<ul class="nav nav-tabs">
+	{template 'config_header'}
+</ul>
+
+<style>
+	#modeladd li,#modelal li{ padding-top:5px; padding-bottom:5px; list-style: none;}
+	.t_input{ height:35px; border: 1px solid #cccc; line-height: 35px; border-radius: 5px;}
+	.btnptspt{
+	   padding-left:8px; padding-right:8px; padding-bottom:5px; padding-top:5px;
+	   color:#fff;
+	   border-radius:5px;
+	   background-color:#EF4F4F;
+	}
+</style>
+{if $op == 'edit' || $op == 'add'}
+<div class="main">
+	
+	<form name="formpt" action="{$urlt}" method="post" class="form-horizontal form" enctype="multipart/form-data" onsubmit='return formcheck()'>
+	<input type="hidden" name="token" value="{$_W['token']}" />
+	<input type="hidden" name="id" value="{$srdb['id']}" />
+        <div class="panel panel-default">
+            <div class="panel-heading">VIP设置</div>
+            <div class="panel-body">
+			  
+			    <div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span> 等级名称</label>
+					<div class="col-sm-9 col-xs-12">
+						<input type="text" name="level_name" class="form-control" value="{$srdb['level_name']}">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span> 有效期</label>
+					<div class="col-sm-9 col-xs-12">
+						<div class="input-group">
+							<input type="text" name="level_validity" class="form-control" {if $srdb['level_validity']}value="{$srdb['level_validity']}"{else}value="1"{/if} onkeyup="value=value.replace(/[^\d]/g,'')">
+							<span class="input-group-addon">天</span>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span> 价格</label>
+					<div class="col-sm-9 col-xs-12">
+						<div class="input-group">
+							<input type="text" name="level_price" class="form-control" value="{$srdb['level_price']}" onkeyup="value=value.replace(/[^\d.]/g,'')">
+							<span class="input-group-addon">元</span>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span> 是否显示</label>
+					<div class="col-sm-9">
+						<label class="radio-inline"><input type="radio" name="is_show" value="1" {if $srdb['is_show']==1}checked{/if} /> 显示</label> &nbsp;
+						<label class="radio-inline"><input type="radio" name="is_show" value="0" {if $srdb['is_show']==0}checked{/if} /> 隐藏</label>
+						<span class="help-block"><strong></strong>隐藏的VIP等级不会显示在手机端，且用户无法购买</span>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">排序</label>
+					<div class="col-sm-9 col-xs-12">
+						<input type="text" name="sort" class="form-control" value="{$srdb['sort']}" onkeyup="value=value.replace(/[^\d]/g,'')">
+						<span class="help-block">排序越大，排序越靠前</span>
+					</div>
+				</div>
+                
+            </div>
+        </div>
+        <div class="form-group col-sm-12 col-xs-12">
+			<input type="submit" name="{$op}_submit" value="提交" class="btn btn-primary col-lg-1" />
+		</div>
+  </form>
+</div>
+
+{elseif $op == 'config'}
+<div class="main">
+	<form name="formpt" action="" method="post" class="form-horizontal form" enctype="multipart/form-data" onsubmit='return formcheck()'>
+	<input type="hidden" name="token" value="{$_W['token']}" />
+        <div class="panel panel-default">
+            <div class="panel-heading">编辑服务协议</div>
+            <div class="panel-body">
+                
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">服务协议</label>
+                    <div class="col-xs-12 col-sm-9" >
+						{php echo tpl_ueditor('vipfwxieyi', $config['vipfwxieyi']);}
+                    </div>
+                </div>
+				
+	        </div>
+			
+        </div>
+        <div class="form-group col-sm-12 col-xs-12">
+			{if $config['id'] > 0}
+			<input type="submit" name="edit_config" value="保存" class="btn btn-primary col-lg-1" />
+			{else}
+			<input type="submit" name="add_config" value="保存" class="btn btn-primary col-lg-1" />
+			{/if}
+		</div>
+  </form>
+</div>
+{else}
+
+<div class='main'>
+   	<div class="panel panel-info">
+		<div class="panel-heading">筛选</div>
+		<div class="panel-body">
+			<form action="./index.php" method="get" class="form-inline" role="form">
+			<input type="hidden" name="c" value="{$_GPC['c']}">
+			<input type="hidden" name="a" value="{$_GPC['a']}">
+			<input type="hidden" name="do" value="{$_GPC['do']}">
+			<input type="hidden" name="m" value="{$_GPC['m']}">
+			  
+			  <div class="form-group">
+				<label for="exampleInputEmail2">状态：</label>
+				<select class="form-control" style="margin-right:15px;" name="statep" >
+					<option value="">不限</option>
+					<option value="1" {if $_GPC['statep'] == '1'} selected{/if}>显示</option>
+					<option value="2" {if $_GPC['statep'] == '2'} selected{/if}>隐藏</option>
+				</select>
+			  </div>
+			  
+			  <div class="form-group">
+				<label for="exampleInputEmail2">结果排序：</label>
+				<select name="ordersc" class="form-control">
+					<option value="" >不限</option>
+					<option value="desc" $ordersc[desc] >递减</option>
+					<option value="asc" $ordersc[asc] >递增</option>
+				</select>
+				<select name="psize" class="form-control">
+					<option value="20" $perpages[20]>每页显示20个</option>
+					<option value="50" $perpages[50]>每页显示50个</option>
+					<option value="100" $perpages[100]>每页显示100个</option>
+				</select>
+			  </div>
+			  <button type="submit" class="btn btn-primary">搜索</button>
+			</form>
+
+		</div>
+	</div>
+</div>
+
+<script language="javascript" type="text/javascript">
+function checkAll(form, name) {
+	for(var i = 0; i < form.elements.length; i++) {
+		var e = form.elements[i];
+		if(e.name.match(name)) {
+			e.checked = form.elements['chkall'].checked;
+		}
+	}
+}
+</script>
+
+<div class="panel panel-default">
+  <div class="panel-body">
+  	<div class="panel-footer">
+		<a class="btn btn-primary" href="{$urlt}&op=add"><i class="fa fa-plus"></i> 添加新等级</a>
+		<a class="btn btn-info" href="{$urlt}&op=config"><i class="fa fa-pencil"></i> 编辑服务协议</a>
+	</div>
+    <form method="post" class="form">
+	<input name="token" type="hidden" value="{$_W['token']}" />
+	<div class="table-responsive">
+	  <table class="table">
+		<tr>
+			<th width="30">选择</th>
+			<th >ID</th>
+			<th >等级名称</th>
+			<th >有效期</th>
+			<th >价格</th>
+			<th >状态</th>
+			<th >排序</th>
+			<th >操作</th>
+		</tr>
+		{loop $list $key $value}
+		<tr >
+			<td><input type="checkbox" name="ids[]" value="{$value[id]}"></td>
+			<td>{$value['id']}</td>
+			<td>{$value['level_name']}</td>
+			<td>{$value['level_validity']}天</td>
+			<td>{$value['level_price']}元</td>
+			<td>{php echo $value['is_show']==1 ? '显示':'隐藏';}</td>
+			<td>{$value['sort']}</td>
+			<td>
+				<a href="{$urlt}&op=edit&id={$value[id]}" class="btn btn-info btn-sm" title="修改"><i class="fa fa-edit"></i></a>
+				<a href="{$urlt}&op=delete&id={$value[id]}" class="btn btn-danger btn-sm" title="删除" onclick="return confirm('本操作不可恢复，确认删除？');"><i class="fa fa-remove"></i></a>
+			</td>
+		</tr>
+		{/loop}
+		{if $pager}
+		<tr >
+			<td colspan="8">{$pager}</td>
+		</tr>
+		{/if}
+		<tr >
+			<td colspan="8" align="center">
+				<input type="checkbox" id="chkall" name="chkall" onclick="checkAll(this.form, 'ids')">&nbsp;全选 &nbsp;&nbsp;
+				<input type="submit" name="deletesubmit" value="批量删除" class="btn btn-primary" onclick="return confirm('本操作不可恢复，确认删除？');">
+			</td>
+		 </tr>
+	  </table>
+	</div>
+	</form>
+	
+  </div>
+</div>
+{/if}
+
+{template 'common/footer'}

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<!-- 控制浏览器缓存 -->
+		<meta http-equiv="Cache-Control" content="no-store" />
+		<!-- 优先使用 IE 最新版本和 Chrome -->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<!-- 页面描述 -->
+		<meta name="description" content="不超过150个字符" />
+		<!-- 页面关键词 -->
+		<meta name="keywords" content="" />
+		<link rel="stylesheet" href="../addons/ewei_shopv2/static/css/frozenui/css/frozen.css">
+		<link rel="stylesheet" href="../addons/ewei_shopv2/static/ydui/ydui.css">
+		<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+		<!-- 引入YDUI脚本 -->
+		<script src="../addons/ewei_shopv2/static/ydui/ydui.js"></script>
+		
+		<link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.2/style/weui.min.css">
+		<link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.0/css/jquery-weui.min.css">
+		
+		<link rel="stylesheet" href="../addons/ewei_shopv2/static/money/layui/css/layui.css">
+		<style>
+			* {margin: 0;padding: 0;box-sizing: border-box;}
+		</style>
+	</head>
+	<body>
+		
+		
+		<form class="layui-form" action="">			
+			
+			<button class="layui-btn layui-btn-fluid" disabled="disabled" style="font-size: 18px;">对账单确认</button>
+			<table class="layui-table" lay-size="sm">
+			  <colgroup>
+			    <col width="40">
+			    <col width="80">
+			    <col width="100">
+			    <col width="80">
+			  </colgroup>
+			  <thead>
+			    <tr>
+			      <th>数量</th>
+			      <th>账单金额</th>
+			      <th>商品名称</th>
+			      <th>账单日期</th>
+			    </tr> 
+			  </thead>
+			  <tbody id="tbody">
+			    <tr index='1'>
+			    	<input type="hidden"  name="id" value="1"/>
+			      
+			      <td>1</td>
+			      <td>12.00元</td>
+			      <td>鸡爪鸡腿鸡翅</td>
+			      <td>2016-11-29 12:12:21</td>
+			    </tr>
+			   <tr index='1'>
+			   		<input type="hidden"  name="id" value="2"/>
+			      
+			      <td>2</td>
+			      <td>9.00元</td>
+			      <td>麻辣小龙虾</td>
+			      <td>2017-11-29 9:30:21</td>
+			    </tr>
+			    <tr index='1'>
+			    	<input type="hidden"  name="id" value="3"/>
+			      
+			      <td>3</td>
+			      <td>2.00元</td>
+			      <td>鸡爪鸡腿鸡翅</td>
+			      <td>2017-11-29 10:23:22</td>
+			    </tr>
+			  </tbody>
+			</table>
+		</form>
+		
+		<div id="" style="width: 100%;text-align: center;">
+			<button class="layui-btn layui-btn-sm query">确认账单</button>
+			<button class="layui-btn layui-btn-sm btns">账单有误</button>
+			<input type="hidden" id="OkUrl" value="<?php echo mobileUrl('money/salesman/CheckOk');?>" />
+			<input type="hidden" id="NoUrl" value="<?php echo mobileUrl('money/salesman/CheckNo');?>" />
+		</div>
+
+		
+		{template "money/sales/menu"}
+		<script>
+			//用户信息核实
+			$('#query').click(function() {
+				
+				if(!checkForm1()) {//判断表单是否为空
+					$.toast('表单不能为空','cancel');
+					return false;
+				}
+				
+				var personName = $('#personName').val();							
+				var orgName = $('#orgName').val();
+				var creditCode = $('#creditCode').val();
+				var registerNum = $('#registerNum').val();
+				var establishDate = $('#establishDate').val();
+				var uid = $('#uid').val();
+				var keys = $('#key').val();
+				
+				
+				$.ajax({
+					type:'post',
+					url:$('#busiAdd').val(),
+					async:'false',
+					dataType:'json',
+					data:'personName='+personName+'&orgName='+orgName+'&creditCode='+creditCode+'&registerNum='+registerNum+'&establishDate='+establishDate+'&uid='+uid+'&keys='+keys,
+//								data:$('#form1').serialize(),
+					success:function(data) {									
+//									console.dir(data);					
+						if(data.status >= 1 ) {
+							$.toast(data.result.message);
+							$('#show2').css('display','block');
+						}else{
+							$.toast(data.result.message,'cancel');
+						}
+					}
+				})
+				
+			});
+			
+			
+			//判断表单是否有空值 表单一
+	    	function checkForm1()
+	    	{
+	    		var inputs = document.form1.getElementsByTagName("input");
+				
+				for(var i = 0; i < inputs.length; i++) {
+				    if(inputs[i].value == ''){
+				    	return false;
+				    }
+				}
+				return true;
+	    	}
+	    	
+	    	
+		</script>
+					
+	</body>
+	
+	<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+		<script type="text/javascript">
+			$('#tbody tr').each(function() {
+				$(this).bind("click",function(evet) {
+				
+					if(parseInt($(this).attr('index'))%2==0){
+						$(this).css('color','');
+						$(this).children('input').removeClass('check');
+					}else{
+						$(this).css('color','red');
+						$(this).children('input').addClass('check');
+					}
+					$(this).attr('index',parseInt($(this).attr('index'))+1);
+				})
+			});
+			
+			/**
+			 * 确认账单  没问题
+			 */
+			$(".query").bind("click",function(){
+				
+				var data=new Array();
+				$(".check").each(function(index){
+					data[index]=$(this).val();
+				});
+				
+				$.ajax({
+					type:'post',
+					url:$('#OkUrl').val(),
+					async:'false',
+					dataType:'json',
+					data:'CheckData=ok',
+					success:function(data) {									
+						console.dir(data);
+						if(data.status >= 1 ) {
+							alert('确认账单已提交，请耐心等待!');
+						}else{
+							alert('确认账单失败，请重新确认!');
+						}
+					}
+				})
+				return false;
+				
+			})
+			
+			
+			/**
+			 * 确认账单有问题
+			 */
+			$(".btns").bind("click",function(){
+				var data=new Array();
+				$(".check").each(function(index){
+					data[index]=$(this).val();
+				});
+				if(data.length == 0){
+					alert('请选择有误订单')
+					return false;
+				}
+				
+				$.ajax({
+					type:'post',
+					url:$('#NoUrl').val(),
+					async:'false',
+					dataType:'json',
+					data:'CheckData='+data,
+					success:function(data) {									
+						console.dir(data);
+						if(data.status >= 1 ) {
+							alert('有误账单已提交，请耐心等待!');
+						}else{
+							alert(data.result.message);
+						}
+					}
+				})
+				return false;
+			})
+			
+		</script>
+</html>

@@ -1,0 +1,24 @@
+<?php defined('IN_IA') or exit('Access Denied');?><div class="banner">
+
+    <div id="slider">
+        <ul class="slides">
+            <li><img class="responsive" src="../addons/sz_yi/static/images/banner.jpg"></li>
+            <li><img class="responsive" src="../addons/sz_yi/static/images/banner.jpg"></li>
+            <li><img class="responsive" src="../addons/sz_yi/static/images/banner.jpg"></li>
+            <li><img class="responsive" src="../addons/sz_yi/static/images/banner.jpg"></li>
+        </ul>
+        <ul class="controls">
+            <li style="top: 25%;"><img src="../addons/sz_yi/static/images/prev.png" alt="previous" style="width: 80%;"></li>
+            <li style="top: 25%;right: 0;"><img src="../addons/sz_yi/static/images/next.png" alt="next" style="width: 80%; float: right;"></li>
+        </ul>
+    </div>
+    <div class="notice">
+        <div class="t_news">
+            <b><img src="../addons/sz_yi/static/images/icon_04.png" alt=""></b>
+            <ul class="news_li">
+                <li><a href="" target="_blank">跨境购 | 直邮易已开通</a></li>
+            </ul>
+            <ul class="swap"></ul>
+        </div>
+    </div>
+</div>

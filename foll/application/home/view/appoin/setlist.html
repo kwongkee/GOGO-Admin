@@ -1,0 +1,147 @@
+{include file="public/_header" /}
+        
+        <!-- 右侧主体开始 -->
+        <div class="page-content">
+          <div class="content">
+            <!-- 右侧内容框架，更改从这里开始 -->
+            <form class="layui-form xbs" name="form1" id="form1" action="" method="post" >
+                <div class="layui-form-pane" style="text-align: center;">                	
+                    <div class="layui-form-item" style="display: inline-block;">
+                    <p style="width: 100%;display: inline-block;font-size: 20px;font-weight: bold;">预约设置</p>                    
+                    <div class="layui-form-item">
+					    <label class="layui-form-label">确认方式</label>
+					    <div class="layui-input-block">
+					      <input type="radio" class="layui-input" name="checkType" value="print" title="列印确认" checked="">
+					      <input type="radio" class="layui-input" name="checkType" value="online" title="在线确认">
+					    </div>
+				    </div>
+				    
+				  	<div class="layui-form-item">
+					    <label class="layui-form-label">预约时段</label>
+					    <div class="layui-input-inline xbs768">
+					    	<input type="number" class="layui-input" name="times" id="times" value="" placeholder="X分钟为1时段"/>
+					    </div>
+				    </div>
+				    
+				    <div class="layui-form-item">
+					    <label class="layui-form-label">预约限值</label>
+					    <div class="layui-input-inline xbs768">
+					    	<input type="text" class="layui-input" name="limit" id="limit" value="" placeholder="请填写可接受预约人数"/>
+					    </div>
+				    </div>
+				    
+				  
+				    <div class="layui-form-item">
+				    	<label class="layui-form-label xbs768">工作日</label>
+	                    <div class="layui-input-inline xbs768">
+	                      <input class="layui-input" type="time" id="workingStart" name="workingStart" placeholder="开始日">
+	                    </div>
+	                    <div class="layui-input-inline xbs768">
+	                      <input class="layui-input" type="time" id="workingEnd" name="workingEnd" placeholder="截止日">
+	                    </div>
+				    </div>
+				    
+				    <div class="layui-form-item">
+				    	<label class="layui-form-label xbs768">节假日</label>
+	                    <div class="layui-input-inline xbs768">
+	                      <input class="layui-input" type="time" id="holidayStart" name="holidayStart" placeholder="开始日">
+	                    </div>
+	                    <div class="layui-input-inline xbs768">
+	                      <input class="layui-input" type="time" id="holidayEnd" name="holidayEnd" placeholder="截止日">
+	                    </div>
+				    </div>
+				    
+				    <div class="layui-form-item">
+					    <div class="layui-input-block">
+					    	<input type="hidden" id="postUrl" value="{:Url('set/postset')}" />
+					      <button class="layui-btn" type="button" id="sub" >立即提交</button>
+					      <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+					    </div>
+					</div>
+				    
+                </div>
+               </div>
+            </form>
+          </div>
+        </div>
+        <!-- 右侧主体结束 -->
+    </div>
+    <!-- 中部结束 -->
+    
+    
+ {include file="public/_footer" /}
+    
+    
+    <!-- 页面动态效果 -->
+    <script>
+
+        layui.use(['laydate'], function(){
+          laydate = layui.laydate;//日期插件
+			
+          //以上模块根据需要引入          
+          var start = {
+//          min: laydate.now()
+            min: '1970-01-01 00:00:00'
+            ,max: '2099-06-16 23:59:59'
+            ,istoday: false
+            ,choose: function(datas){
+              end.min = datas; //开始日选好后，重置结束日的最小日期
+              end.start = datas //将结束日的初始值设定为开始日
+            }
+          };
+          
+          var end = {
+            min: laydate.now()
+            ,max: '2099-06-16 23:59:59'
+            ,istoday: false
+            ,choose: function(datas){
+              start.max = datas; //结束日选好后，重置开始日的最大日期
+            }
+          };
+          //开始日期
+          document.getElementById('LAY_demorange_s').onclick = function(){
+            start.elem = this;
+            laydate(start);
+          }
+          document.getElementById('LAY_demorange_e').onclick = function(){
+            end.elem = this
+            laydate(end);
+          }
+          
+        });
+
+    </script>
+    
+    
+    <script type="text/javascript">
+    	$('#sub').bind('click',function() {
+    		var postUrl = $('#postUrl').val();
+    		var checkType = $('input[name="checkType"]:checked').val();
+    		var times = $('#times').val();//设置分钟数
+    		var limit = $('#limit').val();//设置可接受预约人数
+    		var workingStart = $('#workingStart').val();//工作日开始
+    		var workingEnd = $('#workingEnd').val();//工作日结束
+    		var holidayStart = $('#holidayStart').val();//节假日开始
+    		var holidayEnd = $('#holidayEnd').val();//节假日结束；
+    		
+    		if(times =='' || limit == '' || workingStart=='' || workingEnd=='' || holidayStart=='' || holidayEnd=='') {
+    			alert('表单不允许为空，请填写完整');
+    			return false;
+    		}else {
+    			$.ajax({//数据提交后台
+    				type:'post',
+    				url:postUrl,
+    				dataType:'json',
+    				async:false,
+    				data:'checkType='+checkType+'&times='+times+'&limit='+limit+'&workingStart='+workingStart+'&workingEnd='+workingEnd+'&holidayStart='+holidayStart+'&holidayEnd='+holidayEnd,
+    				success:function(res){
+    					console.dir(res);
+    				}
+    			});
+    		}    		
+    	});
+    	
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<title>费用设置</title>
+	<link rel="stylesheet" type="text/css" href="../addons/sz_yi/static/travel_express/css/hui.css" />
+	<link rel="stylesheet" type="text/css" href="../addons/sz_yi/static/travel_express/css/style.css" />
+	<style>
+        .hui-header h1{
+            padding: 0px 38px 0px 0;
+        }
+        .hui-list-text{
+            border-bottom: 1px solid #969696;
+            padding: 0 10px;
+            margin-left: 0px;
+        }
+        .hui-form-items-title {
+            width: 25%;
+            height: 30px;
+            line-height: 30px;
+            font-size: 16px;
+        }
+        .hui-wrap{
+			margin-bottom: 60px;
+		}
+        .hui-form-items-content{
+            margin-left: 10px;
+            height: 30px;
+            line-height: 30px;
+            font-size: 16px;
+            text-align: right;
+            width: 70%;
+        }
+        .hui-form-select select{
+            padding: 6px 22px 6px 6px;
+            appearance: auto;
+        }
+        .hui-form-select{
+            text-align: right;
+            width: 73%;
+        }
+    </style>
+</head>
+<body>
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1>费用设置</h1>
+</header>
+
+<div class="hui-wrap">
+    <div class="hui-list" style="margin:10px 0px 0; background: #e4f6fe;">
+        <div class="hui-list-text" style="height:50px; line-height:50px; color: #0276b2;font-weight: 900;font-size: 20px;border-bottom:unset;padding-left: 20px;">
+            企业信息
+        </div>
+    </div>
+    <form class="hui-form" id="form1">
+        <div class="hui-form-items">
+            <div class="hui-form-items-title">企业名称</div>
+            <div class="hui-form-items-content">{$merchant['company_name']}</div>
+        </div>
+        <div class="hui-form-items">
+            <div class="hui-form-items-title">负责人姓名</div>
+            <div class="hui-form-items-content">{$merchant['user_name']}</div>
+        </div>
+        <div class="hui-form-items">
+            <div class="hui-form-items-title">手机号码</div>
+            <div class="hui-form-items-content">{$merchant['user_tel']}</div>
+        </div>
+        <input type="hidden" name="id" value="{$merchant['id']}">
+
+        <div class="hui-form-items">
+            <div class="hui-form-items-title">收费项目</div>
+            <div class="hui-form-select">
+                <select id="cost_id" style="height: 36px;line-height: 36px;">
+                    {loop $cost $v}
+                    <option value="{$v['id']}" data-types="{$v['type']}">{$v['name']}</option>
+                    {/loop}
+                </select>
+            </div>
+            <button type="button" class="hui-button hui-primary hui-fr" style="margin: 0 0 0 5px;height: 36px;line-height: 36px;" onclick="add_cost();">新增规则</button>
+        </div>
+        
+        <div id="cost_list">
+            {if $decl_cost}
+                {loop $decl_cost $k $v}
+                    <div class="hui-form-items" id="rule{$v['cost_id']}"><div class="hui-form-items-title" style="width: 35%;height: auto;">{$v['cost_name']}<button type="button" class="hui-button hui-primary hui-fr" style="margin: 10px 0 0 5px;height: 36px;line-height: 36px;" onclick="del_cost('rule{$v["cost_id"]}');">删除</button></div><div class="hui-form-radios" style="line-height:38px;margin-left: 10px;text-align: right;width: 65% !important;"><input type="radio" value="1" name="cost_type[{$k}]" id="r{$v['ids1']}"  {if $v['cost_type'] == 1}checked{/if}><label for="r{$v['ids1']}">定额</label><input type="radio" value="2" name="cost_type[{$k}]" id="r{$v['ids2']}" {if $v['cost_type'] == 2}checked{/if}><label for="r{$v['ids2']}">百分比</label><input type="hidden" name="cost_id[{$k}]" value="{$v['cost_id']}"><input type="hidden" name="type[{$k}]" value="{$v['type']}"><input type="hidden" name="cost_name[{$k}]" value="{$v['cost_name']}"><input type="number" class="hui-input" name="cost[{$k}]" value="{$v['cost']}" style="width: 65% !important;display: inline-block;"></div></div>
+                {/loop}
+            {/if}
+        </div>
+
+        <div style="padding: 15px 8px;width: 30%;margin: 20px auto 24px;">
+            <button type="button" class="hui-button hui-primary hui-fr" id="submitBtn" style="background: #1b7ab6 !important;">设置</button>
+        </div>
+    </form>
+</div>
+</div>
+
+<script src="../addons/sz_yi/static/js/jquery.js" type="text/javascript" charset="utf-8"></script>
+<script src="../addons/sz_yi/static/travel_express/js/hui.js" type="text/javascript" charset="utf-8"></script>
+<script src="../addons/sz_yi/static/travel_express/js/hui-form.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    hui.formInit();
+
+    // 监听输入
+    $(".hui-input").bind('input propertychange', function() {
+        var v = $(this).val();
+        if(v == '')
+        {
+            // $(this).val('0.00');
+        }else{
+            $(this).val(v.replace(/[^0-9\.]/g,''));
+        }
+    })
+
+//表单元素数据收集演示
+hui('#submitBtn').click(function(){
+
+    var res = huiFormCheck('#form1');
+    if (res)
+    {
+        //var data = hui.getFormData('#form1');
+        var d = {};
+        var t = $('#form1').serializeArray();
+        $.each(t, function() {
+            d[this.name] = this.value;
+        });
+
+        if($('#cost_list .hui-form-items').length == 0)
+        {
+            hui.toast('请先增加收费项目');
+            return false;
+        }
+
+        hui.ajax({
+            url  : '{php echo $this->createMobileUrl("member/account_check")}&op=agents_set_save',
+            type : 'POST',
+            data : d,
+            beforeSend : function(){hui.loading();},
+            complete   : function(){hui.closeLoading();},
+            success : function(res){
+                hui.toast(res.result.msg);
+                setTimeout(function(){
+                    // window.location.reload();
+                    window.location.url = "http://declare.gogo198.cn/agents/index";
+                }, 1000); 
+            },
+            error : function(e){
+                console.log(JSON.stringify(e));
+                hui.iconToast('系统错误', 'warn');
+            },
+            'backType' : "JSON"
+        });
+    }
+});
+
+function add_cost() {
+    var cost_name = $("#cost_id").find("option:selected").text();
+    var cost_types = $("#cost_id").find("option:selected").data('types');
+    var cost_val = $("#cost_id").val();
+    var radio_id1 = _getRandomString(5);
+    var radio_id2 = _getRandomString(5);
+    var rule_len = $('#cost_list .hui-form-items').length;
+    if($("#rule"+cost_val).length>0)
+    {
+        hui.toast('该配置已添加');
+    }else{
+        var html = '<div class="hui-form-items" id="rule'+cost_val+'"><div class="hui-form-items-title" style="width: 35%;height: auto;">'+cost_name+'<button type="button" class="hui-button hui-primary hui-fr" style="margin: 10px 0 0 5px;height: 36px;line-height: 36px;" onclick="del_cost(\'rule'+cost_val+'\');">删除</button></div><div class="hui-form-radios" style="line-height:38px;margin-left: 10px;text-align: right;width: 65% !important;"><input type="radio" value="1" name="cost_type['+rule_len+']" id="r'+radio_id1+'" checked=""><label for="r'+radio_id1+'">定额</label><input type="radio" value="2" name="cost_type['+rule_len+']" id="r'+radio_id2+'"><label for="r'+radio_id2+'">百分比</label><input type="hidden" name="type['+rule_len+']" value="'+cost_types+'"><input type="hidden" name="cost_id['+rule_len+']" value="'+cost_val+'"><input type="hidden" name="cost_name['+rule_len+']" value="'+cost_name+'"><input type="number" class="hui-input" name="cost['+rule_len+']" value="0.00" style="width: 65% !important;display: inline-block;"></div></div>';
+        $("#cost_list").append(html);
+    }
+    
+}
+
+function del_cost(id) {
+    hui.confirm('您确认要删除该配置吗？', ['取消','确定'], function(){
+        $("#"+id).remove();
+    },function(){
+        console.log('取消后执行...');
+    });
+}
+
+// 获取长度为len的随机字符串
+function _getRandomString(len) {
+    len = len || 32;
+    var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678'; // 默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1
+    var maxPos = $chars.length;
+    var pwd = '';
+    for (i = 0; i < len; i++) {
+        pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+    }
+    return pwd;
+}
+
+</script>
+</body>
+</html>

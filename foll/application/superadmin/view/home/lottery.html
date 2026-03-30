@@ -1,0 +1,92 @@
+{extend name='public/public' /}
+{block name='main'}
+<div class="layui-form">
+    <table class="layui-table">
+        <colgroup>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+        </colgroup>
+        <thead>
+        <tr>
+            <th>方案</th>
+            <th>方式</th>
+            <th>抽签地址</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {volist name='list' id='vo'}
+        <tr>
+            <td>{$vo.scheme_name}</td>
+            <td>{$type[$vo.lottery_type]}</td>
+            <td>{$vo.lottery_addr}</td>
+            <td>
+                {if $vo.lottery_type==0}
+                <a 	class="layui-btn">有误重抽</a>
+                <a 	class="layui-btn" onclick="detail('{$vo.id}');">详情</a>
+                {else}
+                <!--<a 	class="layui-btn" onclick="detail('{$vo.id}');">详情</a>-->
+                <!--<a 	class="layui-btn" onclick="upload('{$vo.id}');">上传已有结果</a>-->
+                <a 	class="layui-btn" href="{:Url('superadmin/confirm_win')}&mid={$vo.id}">确认中签</a>
+                {/if}
+            </td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+    <div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+</div>
+
+<script src="./static/plugins/layui/layui.js"></script>
+<script>
+    //JavaScript代码区域
+    layui.use(['layer','upload'], function(){
+        layer = layui.layer;
+       var upload = layui.upload;
+    });
+function detail(id) {
+    console.log(id);
+    layer.open({
+        type: 2,
+        area:['800px','400px'],
+        content: "{:Url('superadmin/lottery_detail')}" //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+    });
+}
+
+function upload(id) {
+    console.log(id);
+    layer.open({
+        type:1,
+        title:'',
+        content:'<button type="button" class="layui-btn" id="test1">\n' +
+        '  <i class="layui-icon">&#xe67c;</i>点击上传\n' +
+        '</button>'
+    });
+    var uploadInst =layui.upload.render({
+        elem: '#test1', //绑定元素
+        accept:'file'
+        ,url: "{:Url('superadmin/upload')}&mid="+id //上传接口
+        ,done: function(res){
+            //上传完毕回调
+            if(res.code==0){
+                setTimeout(function () {
+                    layer.closeAll();
+                },1200);
+            }
+            setTimeout(function () {
+                layer.msg(res.msg);
+            },1800);
+        }
+        ,error: function(err){
+            //请求异常回调
+            // layer.msg(err);
+        }
+    });
+}
+
+
+</script>
+{/block}

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>{$topic['topic_name']}</title>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<meta name="format-detection" content="address=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<script src="//cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+<link rel="stylesheet" href="{TEMPLATE_PATH}/qlCommon.css">
+<link rel="stylesheet" href="{TEMPLATE_PATH}/payIndex.css">
+{php echo register_jssdk();}
+<script type="text/javascript">
+var istopic_end={$istopic_end};
+var istopic_begin={$istopic_begin};
+var begin_time={$topic['begin_time']};
+	var fnTimeCountDown = function(d, o){
+		var f = {
+			haomiao: function(n){
+				if(n < 10)return "00" + n.toString();
+				if(n < 100)return "0" + n.toString();
+				return n.toString();
+			},
+			zero: function(n){
+				var n = parseInt(n, 10);//解析字符串,返回整数
+				if(n > 0){
+					if(n <= 9){
+						n = "0" + n;	
+					}
+					return String(n);
+				}else{
+					return "00";	
+				}
+			},
+			dv: function(){
+				//d = d || Date.UTC(2050, 0, 1); //如果未定义时间，则我们设定倒计时日期是2050年1月1日
+				var now = new Date();
+				//现在将来秒差值
+				//alert(future.getTimezoneOffset());
+				var dur = (d - now.getTime()) / 1000 , mss = d - now.getTime() ,pms = {
+					hm:"000",
+					sec: "00",
+					mini: "00",
+					hour: "00",
+					day: "00",
+					month: "00",
+					year: "0"
+				};
+				if(mss > 0){
+					pms.hm = f.haomiao(mss % 1000);
+					pms.sec = f.zero(dur % 60);
+					pms.mini = Math.floor((dur / 60)) > 0? f.zero(Math.floor((dur / 60)) % 60) : "00";
+					pms.hour = Math.floor((dur / 3600)) > 0? f.zero(Math.floor((dur / 3600)) % 24) : "00";
+					pms.day = Math.floor((dur / 86400)) > 0? f.zero(Math.floor((dur / 86400))) : "00";// % 30
+					//月份，以实际平均每月秒数计算
+					pms.month = Math.floor((dur / 2629744)) > 0? f.zero(Math.floor((dur / 2629744)) % 12) : "00";
+					//年份，按按回归年365天5时48分46秒算
+					pms.year = Math.floor((dur / 31556926)) > 0? Math.floor((dur / 31556926)) : "0";
+				}else{
+					pms.year=pms.month=pms.day=pms.hour=pms.mini=pms.sec="00";
+					pms.hm = "000";
+					//location.reload(true);
+					return;
+				}
+				return pms;
+			},
+			ui: function(){			
+				if(o.hm){
+					o.hm.html(f.dv().hm);
+				}
+				if(o.sec){
+					o.sec.html(f.dv().sec);
+				}
+				if(o.mini){
+					o.mini.html(f.dv().mini);
+				}
+				if(o.hour){
+					o.hour.html(f.dv().hour);
+				}
+				if(o.day){
+					o.day.html(f.dv().day);
+				}
+				if(o.month){
+					o.month.html(f.dv().month);
+				}
+				if(o.year){
+					o.year.html(f.dv().year);
+				}			
+				setTimeout(f.ui, 1);			
+			}
+		};	
+	f.ui();
+	};
+	
+
+$(function(){
+	 var zxx = {
+			  obj: function(){
+			             return {
+			                 sec: $(".sec"),
+			                 mini: $(".mini"),
+			                 hour: $(".hour"),
+			                 day: $(".day")
+			             }
+			  }
+		 };
+			 
+	if(!istopic_end&&istopic_begin==0){
+		  fnTimeCountDown(begin_time+'000', zxx.obj());
+	}
+})
+</script>
+<body>
+	
+<div id="liveTicketBox" class="main_box_3">
+	<div class="topic_ticket_one live_nexttopic_set">
+	<div class="ticket_header">
+		 <img src="{$topic['topic_icon']}" style="height:210px;">
+		</div>
+		
+		<dl class="ticket_content">
+			<dd>
+				<span class="ticket_title">{$topic['topic_name']}</span>
+			</dd>
+			
+ 			<dd class="distribute_btnbox"> 				
+ 			</dd> 			
+			<dd>
+				<span class="ticket_p2 fbold">来自直播间</span><a class="from_live_name " href="{php echo $this->createMobileUrl('c_index',array('room_id'=>$chat_room['room_id']))}">{$chat_room['room_name']}</a>
+			    <a class="fromlive_focus " href="javascript:;">关注</a>
+			</dd>
+			
+			<dd style="display:block;">
+				<span class="ticket_p2 fbold">主讲人</span>
+				<span class="ticket_p1 show_guestName">{$topic['guest_name']}</span>
+			</dd>
+			<dd style="display:block;">
+				<span class="ticket_p1 fbold">主讲人介绍</span>
+				<span class="ticket_p2 show_guestInstro">{$topic['guest_info']}</span>
+			</dd>
+			<dd>
+				<span class="ticket_p1 fbold">开始时间</span><br>
+				<span class="ticket_p2">
+					<var class="show_startTime">{php echo date('Y-m-d H:i:s', $topic['begin_time']);}</var>
+				</span>
+				{if $istopic_end==0&&$istopic_begin==0}
+				<div class="ql_start_box qlTimerShow">
+					<div class="ql_timer">
+						<span>倒计时</span>
+						<dl>
+							<dd><var class="day">00</var>天</dd>
+							<dd><var class="hour">00</var>时</dd>
+							<dd><var class="mini">00</var>分</dd>
+							<dd><var class="sec">00</var>秒</dd>
+						</dl>
+					</div>
+				</div>
+				
+				{/if}
+				
+			</dd>
+			{if $topic['room_paymoney']>0}
+			<dd>
+				<span class="ticket_p1 fbold">票价：</span>
+				<span class="ticket_p2 priceshow">￥<var class="show_price">{$topic['room_paymoney']}</var></span>
+			</dd>
+			{/if}
+			
+			<dd class="ticket_people">
+				<div class="ticket_people_box">
+					<span class="ticket_p1 fbold">已报名人数</span><span class="ticket_p2">{$topic['look_numbers']}人</span><br>
+					<div class="paypeople_imgbox">
+					
+					{loop $join_list $joins}
+					  <span><img src="{$joins['avatar']}"></span>
+					{/loop}
+						
+						<span><a href="javascript:;" class="pp_more_qlbgb"></a></span>
+					</div>
+				</div>
+			</dd>
+			
+			<dd class="ticket_summary" style="display:block;">
+				<span class="ticket_p1 fbold">课程介绍：</span>
+				<span class="ticket_p2  show_topicInstro">{$topic['topic_desc']}</span>
+			</dd>
+		</dl>
+	</div>
+
+</div>
+
+<a class="{if $topic['room_paymoney']>0}ticket_exit2 payinto_btn{else}ticket_exit1 manageinto_btn{/if}" href="{php echo $this->createMobileUrl('chat',array('topic_id'=>$topic['id']))}">
+{if $is_join>0}
+   进入直播
+{else}
+   报名进入
+{/if}
+ </a>
+
+
+
+<div class="qlMsgTips setTopicNameBox">
+	<div class="main">
+	<div class="qlMT_top">话题名称</div>
+	<div class="qlMT_content">
+		<textarea class="qlMT_textarea nexttopicTalk" value="" placeholder="请填写话题名称"></textarea>
+	</div>
+	<div class="qlMTBottom">
+		<span class="boxFlex"><a href="javascript:;" class="tlbtn_cancel">取消</a></span>
+		<span class="boxFlex"><a href="javascript:;" class="tlbtn_confirm">确定</a></span>
+	</div>
+	</div>
+</div>
+
+<div class="qlMsgTips setGuestNameBox">
+	<div class="main">
+	<div class="qlMT_top">填写主讲人</div>
+	<div class="qlMT_content">
+		<textarea class="qlMT_textarea nexttopicTalk" value="" placeholder="请填写主讲人名称,多个主讲人或嘉宾请用空格隔开"></textarea>
+	</div>
+	<div class="qlMTBottom">
+		<span class="boxFlex"><a href="javascript:;" class="tlbtn_cancel">取消</a></span>
+		<span class="boxFlex"><a href="javascript:;" class="tlbtn_confirm">确定</a></span>
+	</div>
+	</div>
+</div>
+<div class="qlMsgTips setGuestIntroBox">
+	<div class="main">
+	<div class="qlMT_top">主持人或嘉宾介绍</div>
+	<div class="qlMT_content">
+		<textarea class="qlMT_textarea nexttopicTalk" value="" placeholder="请输填写主讲人或嘉宾介绍"></textarea>
+	</div>
+	<div class="qlMTBottom">
+		<span class="boxFlex"><a href="javascript:;" class="tlbtn_cancel">取消</a></span>
+		<span class="boxFlex"><a href="javascript:;" class="tlbtn_confirm">确定</a></span>
+	</div>
+	</div>
+</div>
+<div class="qlMsgTips setTicketPriceBox">
+	<div class="main">
+	<div class="qlMT_top">费用金额</div>
+	<div class="qlMT_content">
+		<input class="qlMT_input ticketInput" value="" placeholder="请设置费用金额">
+	</div>
+	<div class="qlMTBottom">
+		<span class="boxFlex"><a href="javascript:;" class="tlbtn_cancel">取消</a></span>
+		<span class="boxFlex"><a href="javascript:;" class="tlbtn_confirm">确定</a></span>
+	</div>
+	</div>
+</div>
+<div class="qlMsgTips setTicketPasswordBox">
+	<div class="main">
+	<div class="qlMT_top">修改密码</div>
+	<div class="qlMT_content">
+		<input class="qlMT_input passwordInput" value="" placeholder="请输入新密码">
+	</div>
+	<div class="qlMTBottom">
+		<span class="boxFlex"><a href="javascript:;" class="tlbtn_cancel">取消</a></span>
+		<span class="boxFlex"><a href="javascript:;" class="tlbtn_confirm">确定</a></span>
+	</div>
+	</div>
+</div>
+<div class="qlMsgTips setTalkShortBox">
+	<span class="qlGbBg"></span>
+	<div class="main">
+	<div class="qlMT_top">直播概要</div>
+	<div class="qlMT_content">
+		<textarea class="qlMT_textarea nexttopicTalk" value="" placeholder="请填写本次直播概要或提纲"></textarea>
+	</div>
+	<div class="qlMTBottom">
+		<span class="boxFlex"><a href="javascript:;" class="tlbtn_cancel">取消</a></span>
+		<span class="boxFlex"><a href="javascript:;" class="tlbtn_confirm">确定</a></span>
+	</div>
+	</div>
+</div>
+
+
+<div class="qlMsgTips focusQr3Box">
+	<span class="qlMTBg"></span>
+	<div class="main">
+		<div class="qlMT_content">
+			<img class="focusPic" src="{$_W['account']['qrcode']}">
+		</div>
+		<span class="focusQr_span_1">长按二维码，识别图中二维码</span>
+		<span class="focusQr_span_2">长按二维码关注，下一次开课会通知你</span>
+	</div>
+</div>
+
+
+
+<div class="qlMsgTips focusLiveBox" style="display:none;">
+	<div class="main">
+		<div class="banner">
+			<i class="ico_choose"></i><b class="banner_title">报名成功</b>
+		</div>
+		<div class="qlMT_content">
+			<span class="focusLiveBtn on">关注本直播间，有新课通知你</span>
+		</div>
+		<div class="qlMTBottom">
+			<span class="boxFlex"><a href="javascript:;" class="tlbtn_confirm" attr-href="http://m.qlchat.com/topic/290000040121437.htm">确定</a></span>
+		</div>
+	</div>
+</div>
+
+<div class="qlMsgTips shareCourseBox" style="display:none;">
+	<a href="javascript:;" class="qlMTBg"></a>
+	<div class="main">
+		<div class="course_content">
+			<span class="course_p1">1.<i class="text_state4">不要关闭此弹框</i>,点击页面右上角  <i class="menu_expland_qlbgi1"></i>,选择    <i class="menu_expland_qlbgi2"></i>   <i class="text_state6">发送给好友</i>或    <i class="menu_expland_qlbgi3"></i>   <i class="text_state6">朋友圈</i></span>
+			<span class="course_p1">2.分享出的带统计的链接标题会有<i class="text_state6">‘我推荐’</i>字样，你可以通过此标记判断链接是否有效</span>
+			<span class="course_p2">另外一种好玩的分享</span>
+			<span class="course_p1"><a href="javascript:;" class="blktlbtn createPrivateCard" attr-sharekey="">获取专属邀请卡</a></span>
+			<span class="course_p3">通过邀请卡上的二维码带来的量都算有效统计</span>
+			<span class="course_bottom"><a href="javascript:;" class="course_cancel">关闭</a></span>
+		</div>
+	</div>
+</div>
+
+
+<div class="qlMsgTips pushBox" style="display:none;">
+	<div class="main">
+		<div class="push_top"><span>推送功能可以将你的新话题推送给所有直播间关注者，所有话题每天最多推送2次，请谨慎使用!</span></div>
+		<span class="push_span_2">还剩<var>2</var>次推送机会</span>
+		<a href="javascript:;" class="tlbtn_confirm">确定推送</a><a href="javascript:;" class="tlbtn_cancel">取消</a>
+	</div>
+</div>
+
+<script type="text/javascript">
+wx.ready(function () {
+    sharedata = {
+        title: "{$sharedata['title']}",
+        desc: "{$sharedata['desc']}",
+        link: "{$sharedata['link']}",
+        imgUrl: "{$sharedata['imgUrl']}",
+        success:function(){
+        	//ajax
+        }
+    };
+    wx.onMenuShareAppMessage(sharedata);
+    wx.onMenuShareTimeline(sharedata);
+});
+
+$(function(){
+	$(".fromlive_focus ").click(function(){
+		$(".focusQr3Box").show()
+	});
+	
+	$(".qlMsgTips").click(function(){
+		$(".qlMsgTips").hide();
+	});	
+});
+</script>
+
+</body></html>

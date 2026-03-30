@@ -1,0 +1,243 @@
+{include file="common/header_new"}
+
+<style>
+    img{ width:20px;height:20px;}
+    #add-to-dataset {
+        margin-left: 10px;
+        padding: 5px 15px;
+    }
+</style>
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <h3 style="text-align: center;">历史对话管理</h3>
+                <div id="toolbar" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;">
+
+                </div>
+                <!-- 添加按钮区域 -->
+                <div style="margin-top: 10px; padding: 10px;padding-bottom: 0;">
+                    <button id="add-to-dataset" class="btn btn-success">添加至数据集</button>
+                </div>
+                <table id="table"
+
+                /*默认排序项*/
+                data-sort-name="id"
+                data-sort-order="desc"
+                /*工具栏相关*/
+                data-toolbar="#toolbar"
+                data-search="false"          /*搜索框*/
+                data-search-on-enter-key="false"
+                data-show-refresh="true"    /*刷新按钮*/
+                /*分页相关*/
+                data-side-pagination="server"
+                data-pagination="true"      /*显示分页*/
+                data-page-size="10"         /*每页显示条数*/
+                /*移动端相关*/
+                data-mobile-responsive="true"
+                data-card-view="true"
+                data-show-columns="true"
+                /*radio or checkbox字段名称*/
+                data-select-item-name="id" >
+
+                <thead>
+                <tr>
+<!--                    data-checkbox="false" data-formatter="checkBoxFormatter"-->
+                    <th data-field="checkbox"
+                        data-align="center"
+                    >
+                        <input type="checkbox" id="table-select-all" class="table-select-all">
+                    </th>
+<!--                    <th data-field="checkbox" data-align="center"></th>-->
+                    <th data-field="id"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">ID</th>
+                    <th data-field="name"
+                        data-align="center"
+                        data-sortable="true">用户名称</th>
+                    <th data-field="text"
+                        data-align="center"
+                        data-sortable="true">问题</th>
+                    <th data-field="status_name"
+                        data-align="center"
+                        data-sortable="true">审批状态</th>
+                    <th data-field="createtime"
+                        data-align="center"
+                        data-sortable="true">创建时间</th>
+                    <th data-field="manage"
+                        data-align="center"
+                        data-sortable="true"
+                        data-formatter="actionFormatter">操作</th>
+                </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var table;
+
+    $(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:url('admin/model/qa_history')}&date={$date}",
+            queryParams: queryParams,
+            columns: [
+                {
+                    field: 'checkbox',
+                    align: 'center',
+                    formatter: checkBoxFormatter
+                },
+                {
+                    field: 'id',
+                    title: 'ID',
+                    align: 'center',
+                    sortable: true
+                },
+                {
+                    field: 'name',
+                    title: '用户名称',
+                    align: 'center',
+                    sortable: true
+                },
+                {
+                    field: 'text',
+                    title: '问题',
+                    align: 'center',
+                    sortable: true
+                },
+                {
+                    field: 'status_name',
+                    title: '审批状态',
+                    align: 'center',
+                    sortable: true
+                },
+                {
+                    field: 'createtime',
+                    title: '创建时间',
+                    align: 'center',
+                    sortable: true
+                },
+                {
+                    field: 'manage',
+                    title: '操作',
+                    align: 'center',
+                    sortable: true,
+                    formatter: actionFormatter
+                },
+            ]
+        });
+
+        // 新增：表头全选按钮事件
+        $('.table-select-all').on('change', function() {
+            var isChecked = $(this).prop('checked');
+            var rows = table.bootstrapTable('getData'); // 获取所有行数据
+
+            rows.forEach(function(row, index) {
+                if (row.is_add_dataset !== 1) { // 仅处理可显示 Checkbox 的行
+                    if (isChecked) {
+                        table.bootstrapTable('check', index); // 选中行
+                    } else {
+                        table.bootstrapTable('uncheck', index); // 取消选中
+                    }
+                }
+            });
+        });
+
+        // 单行 Checkbox 事件（同步全选按钮状态）
+        table.on('check.bs.table uncheck.bs.table', function() {
+            var allRows = table.bootstrapTable('getData').filter(row => row.is_add_dataset !== 1).length;
+            var selectedRows = table.bootstrapTable('getSelections').length;
+            $('.table-select-all').prop('checked', selectedRows === allRows);
+        });
+
+        // 添加按钮事件
+        $('#add-to-dataset').on('click', function() {
+            var selectedRows = table.bootstrapTable('getSelections');
+            var selectedIds = selectedRows.map(row => row.id);
+
+            if (selectedIds.length === 0) {
+                layer.msg('请选择至少一条记录', { icon: 2 });
+                return;
+            }
+
+            // 发送API请求（示例：使用POST方法）
+            $.ajax({
+                url: "{:url('admin/model/add_dataset')}", // 替换为实际API地址
+                type: 'POST',
+                data: { ids: selectedIds },
+                dataType: 'json',
+                success: function(res) {
+                    if (res.code === 0) {
+                        layer.msg('添加成功', { icon: 1 });
+                        setTimeout(function(){
+                            window.location.reload();
+                        },3000);
+                    } else {
+                        layer.msg('添加失败：' + res.msg, { icon: 2 });
+                    }
+                },
+                error: function() {
+                    layer.msg('网络请求失败', { icon: 2 });
+                }
+            });
+        });
+
+        $('.form-control').attr('placeholder','搜索服务名称');
+    });
+
+    function checkBoxFormatter(value, row, index) {
+        if (row.is_add_dataset === 1) {
+            // 禁用Checkbox（显示但不可选，保持原生全选逻辑）
+            return '<input type="checkbox" class="bs-checkbox" name="id" data-index="'+index+'" disabled>';
+        } else {
+            // 标准 Bootstrap Table Checkbox 结构（类名和属性需正确）
+            return '<input type="checkbox" class="bs-checkbox" data-index="' + index + '" name="id">';
+        }
+    }
+
+    // 更新全选按钮状态
+    function updateSelectAllStatus() {
+        var allRows = table.bootstrapTable('getTotalRows');
+        var selectedRows = table.bootstrapTable('getSelections').length;
+    }
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.id;
+        var title = row.origin_text;
+
+        var result = "";
+        result += '<button style="margin-right: 5px;" type="button" onclick="edit('+id+',\''+title+'\')" class="btn btn-primary btn-xs">查看对话</button>';
+        return result;
+    }
+
+    function edit(id,name){
+        var index = layer.open({
+            type: 2,
+            title: '查看对话-'+name,
+            area:['100%','100%'],
+            content: "{:url('admin/model/save_qa_history')}&id="+id
+        });
+        // layer.full(index);
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+</head>
+<style>
+    .form-group{display:flex;align-items:center;}
+    .userSelect{display:none;}
+    .enterprise_name,.realname,.enterprise_info{display:none;}
+    .hui-list-text{display:flex;align-items: center}
+    .hui-list-text span{float: left;display: block;padding: 9px 15px;width: 80px;font-weight: 400;line-height: 20px;text-align: right;}
+    .hui-list-text input{margin-left: 10px;min-height: 36px;}
+    .layui-form-item .layui-form-checkbox{margin-top:0;}
+    .layui-form-checkbox i{border-left:1px solid rgb(210,210,210);}
+</style>
+
+<body class="gray-bg">
+<form class="layui-form" lay-filter="component-form-element1">
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-form-item">
+                <label class="layui-form-label">注册类别</label>
+                <div class="layui-input-block">
+                    <select name="reg_type" id="reg_type" lay-filter="reg_type">
+                        <option value="">请选择注册类别</option>
+                        <option value="1">企业</option>
+                        <option value="2">个人</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item realname">
+                <label class="layui-form-label">真实姓名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="realname" id="realname" value="" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item mobile">
+                <label class="layui-form-label">手机号码</label>
+                <div class="layui-input-block">
+                    <input type="number" name="mobile" id="mobile" value="" lay-verify="required" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item idcard">
+                <label class="layui-form-label">身份证号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="idcard" id="idcard" value="" lay-verify="required" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item idcard">
+                <label class="layui-form-label">权限</label>
+                <div class="layui-input-block">
+                    <leble class="radio-inline">
+                        <input type="checkbox" value="1" name="authType[]">可读
+                    </leble>
+                    <leble class="radio-inline">
+                        <input type="checkbox" value="2" name="authType[]">可写
+                    </leble>
+                </div>
+            </div>
+            <div class="layui-form-item enterprise_name">
+                <label class="layui-form-label">企业名称</label>
+                <div class="layui-input-block">
+                    <div class="layui-col-xs12">
+                        <div class="layui-col-xs8">
+                            <input type="text" name="enterprise_name" id="enterprise_name" value="" class="layui-input">
+                        </div>
+                        <div class="layui-col-xs4">
+                            <div onclick="queryInfo(this);" type="button" class="tj_zuotms layui-btn layui-btn-primary" style="border: unset;background: #3399fe;color: #fff;line-height: 1.8rem;font-size: 0.65rem;">查询企业信息</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--搜索的企业信息-->
+            <div class="enterprise_info">
+                <input type="text" name="basic_info[enterprise_id]" id="enterprise_id" value="" class="layui-input" style="display:none;">
+                <input type="text" name="basic_info[domain]" id="domain" value="" class="layui-input" style="display:none;">
+                <input type="text" name="basic_info[econKindCode]" id="econKindCode" value="" class="layui-input" style="display:none;">
+                <input type="text" name="basic_info[type_new]" id="type_new" value="" class="layui-input" style="display:none;">
+
+                <div class="hui-list-text"><span>统一社会信用代码</span><input type="text" name="basic_info[creditNo]" id="creditNo" value="" class="layui-input"></div>
+                <div class="hui-list-text"><span>企业名称</span><input type="text" name="basic_info[name]" id="name" value="" class="layui-input"></div>
+                <div class="hui-list-text"><span>企业类型</span><input type="text" name="basic_info[econKind]" id="econKind" value="" class="layui-input"></div>
+                <div class="hui-list-text"><span>注册资本</span><input type="text" name="basic_info[registCapi]" id="registCapi" value="" class="layui-input"></div>
+                <div class="hui-list-text"><span>货币单位</span><input type="text" name="basic_info[currency_unit]" id="currency_unit" value="" class="layui-input"></div>
+                <div class="hui-list-text"><span>历史名称</span><input type="text" name="basic_info[historyNames]" id="historyNames" value="" class="layui-input"></div>
+                <div class="hui-list-text"><span>地址</span><input type="text" name="basic_info[address]" id="address" value="" class="layui-input"></div>
+                <div class="hui-list-text"><span>企业注册号</span><input type="text" name="basic_info[regNo]" id="regNo" value="" class="layui-input"></div>
+                <div class="hui-list-text"><span>经营范围</span><input type="text" name="basic_info[scope]" id="scope" value="" class="layui-input"></div>
+                <div class="hui-list-text"><span>营业开始日期</span><input type="text" name="basic_info[termStart]" id="termStart" value="" class="layui-input"></div>
+                <div class="hui-list-text"><span>营业结束日期</span><input type="text" name="basic_info[termEnd]" id="termEnd" value="" class="layui-input"></div>
+                <div class="hui-list-text"><span>所属工商局</span><input type="text" name="basic_info[belongOrg]" id="belongOrg" value="" class="layui-input"></div>
+                <div class="hui-list-text"><span>企业法定代表人</span><input type="text" name="basic_info[operName]" id="operName" value="" class="layui-input"></div>
+                <div class="hui-list-text"><span>成立日期</span><input type="text" name="basic_info[startDate]" id="startDate" value="" class="layui-input"></div>
+                <div class="hui-list-text"><span>注销日期</span><input type="text" name="basic_info[endDate]" id="endDate" value="" class="layui-input"></div>
+                <div class="hui-list-text"><span>核准日期</span><input type="text" name="basic_info[checkDate]" id="checkDate" value="" class="layui-input"></div>
+                <div class="hui-list-text"><span>经营状态</span><input type="text" name="basic_info[status]" id="status" value="" class="layui-input"></div>
+                <div class="hui-list-text"><span>组织机构号</span><input type="text" name="basic_info[orgNo]" id="orgNo" value="" class="layui-input"></div>
+                <div class="hui-list-text"><span>地区代码</span><input type="text" name="basic_info[districtCode]" id="districtCode" value="" class="layui-input"></div>
+                <div class="hui-list-text"><span>实缴资本</span><input type="text" name="basic_info[actualCapi]" id="actualCapi" value="" class="layui-input"></div>
+                <input type="text" id="queren1" style="display:none;">
+                <div style="width: 100%;" id="beneficiaries_list">
+
+                </div>
+                <input type="text" id="queren2" style="display: none;">
+                <div style="width: 100%;" id="taxpayerlist">
+
+                </div>
+                <input type="text" id="queren3" style="display:none;">
+                <div style="width: 100%;" id="customslist">
+
+                </div>
+                <input type="text" id="queren4" style="display:none;">
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="component-form-element">立即提交</button>
+        </div>
+    </div>
+</form>
+</body>
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script type="text/javascript">
+    function queryInfo(t){
+        let enterprise_name = $('#enterprise_name').val();
+        if( enterprise_name == '' )
+        {
+            alert('请输入企业全名或企业注册号！');
+            return false;
+        }
+
+        // 工商照面
+        $.ajax({
+            url  : 'https://declare.gogo198.cn/api/qxbquery/getBasicInfo?name='+enterprise_name,
+            type : 'GET',
+            success : function(res){
+                if(res.status == 200)
+                {
+                    if(res.data.new_status=='注销' || res.data.new_status=='吊销' || res.data.new_status=='撤销' || res.data.new_status=='设立中' || res.data.new_status=='清算中' || res.data.new_status=='停业' || res.data.new_status=='其他'){
+                        alert('你的企业状态为'+res.data.new_status+'，暂不能注册！如有问题请咨询客服。');return false;
+                    }
+                    if(res.data.status=='注销' || res.data.status=='吊销' || res.data.status=='撤销' || res.data.status=='设立中' || res.data.status=='清算中' || res.data.status=='停业' || res.data.status=='其他'){
+                        alert('你的企业状态为'+res.data.status+'，暂不能注册！如有问题请咨询客服。');return false;
+                    }
+                    $("#searchBtn").removeClass('dis');
+                    $("#title_text").text('请核对工商照面信息');
+                    $(".qiye").show();
+                    $("#searchBtn").hide();
+                    //$("#next_btn").show();
+                    $("#enterprise_id").val(res.data.id);
+                    $("#name").val(res.data.name);
+                    $("#econKind").val(res.data.econKind);
+                    $("#econKindCode").val(res.data.econKindCode);
+                    $("#registCapi").val(res.data.registCapi);
+                    $("#currency_unit").val(res.data.currency_unit);
+                    $("#type_new").val(res.data.type_new);
+                    $("#historyNames").val(res.data.historyNames);
+                    $("#address").val(res.data.address);
+                    $("#regNo").val(res.data.regNo);
+                    $("#scope").val(res.data.scope);
+                    $("#termStart").val(res.data.termStart);
+                    $("#termEnd").val(res.data.termEnd);
+                    $("#belongOrg").val(res.data.belongOrg);
+                    $("#operName").val(res.data.operName);
+                    $("#startDate").val(res.data.startDate);
+                    $("#endDate").val(res.data.endDate);
+                    $("#checkDate").val(res.data.checkDate);
+                    $("#status").val(res.data.status);
+                    $("#orgNo").val(res.data.orgNo);
+                    $("#creditNo").val(res.data.creditNo);
+                    $("#districtCode").val(res.data.districtCode);
+                    $("#domain").val(res.data.domain);
+                }else{
+                    //搜索失败
+
+                }
+            },
+            error : function(e){
+                console.log(JSON.stringify(e));
+                // alert(JSON.stringify(e));
+                alert('查询失败');
+            },
+            'backType' : "JSON"
+        });
+        // 实际受益
+        $.ajax({
+            url  : 'https://declare.gogo198.cn/api/qxbquery/getBeneficiariesByName?name='+enterprise_name,
+            type : 'GET',
+            data : {},
+            success : function(res){
+                if(res.status == 200)
+                {
+                    $("#beneficiaries_list").empty();
+                    var items = res.data.items;
+                    for (var i = 0; i < items.length; i++) {
+                        var html = '<li><div class="hui-list-text"><span>受益人'+(i+1)+'：</span></li><li><div class="hui-list-text"><span>企业名称</span><input type="text" value="'+items[i].enterprise+'" name="beneficiaries['+i+'][enterprise]" class="xxinput layui-input"></div></li><li><div class="hui-list-text"><span>受益人</span><input type="text" value="'+items[i].beneficiary+'" name="beneficiaries['+i+'][beneficiary]" class="xxinput layui-input"></div></li><li><div class="hui-list-text"><span>受益所有人类型</span><input type="text" value="'+items[i].type+'" name="beneficiaries['+i+'][type]" class="xxinput layui-input"></div></li><li><div class="hui-list-text"><span>股权占比</span><input type="text" value="'+items[i].percent+'" name="beneficiaries['+i+'][percent]" class="xxinput layui-input"></div></li><li><div class="hui-list-text"><span>任职</span><input type="text" value="'+items[i].title+'" name="beneficiaries['+i+'][title]" class="xxinput layui-input"></div></li><li><div class="hui-list-text"><span>受益人说明</span><input type="text" value="'+items[i].reason+'" name="beneficiaries['+i+'][reason]" class="xxinput layui-input"></div></li><li><div class="hui-list-text"><span>条文依据</span><input type="text" value="'+items[i].law_desc+'" name="beneficiaries['+i+'][law_desc]" class="xxinput layui-input"></div></li>';
+
+                        $("#beneficiaries_list").append(html);
+                    }
+                }
+            },
+            error : function(e){
+                console.log(JSON.stringify(e));
+            },
+            'backType' : "JSON"
+        });
+        // 纳税类型
+        $.ajax({
+            url  : 'https://declare.gogo198.cn/api/qxbquery/getTaxpayerListByName?name='+enterprise_name,
+            type : 'GET',
+            data : {},
+            success : function(res){
+                if(res.status == 200)
+                {
+                    $("#taxpayerlist").empty();
+                    var items = res.data;
+                    for (var i = 0; i < items.length; i++) {
+                        var html = '<li><div class="hui-list-text"><span>纳税人'+(i+1)+'：</span></li><li><div class="hui-list-text"><span>资格类型</span><input type="text" value="'+items[i].qualification+'" name="taxpayerlist['+i+'][qualification]" class="xxinput layui-input"></div></li><li><div class="hui-list-text"><span>登记时间</span><input type="text" value="'+items[i].judge_date+'" name="taxpayerlist['+i+'][judge_date]" class="xxinput layui-input"></div></li>';
+
+                        $("#taxpayerlist").append(html);
+                    }
+                }
+            },
+            error : function(e){
+                console.log(JSON.stringify(e));
+            },
+            'backType' : "JSON"
+        });
+        // 海关登记
+        $.ajax({
+            url  : 'https://declare.gogo198.cn/api/qxbquery/getCustomsListByName?name='+enterprise_name,
+            type : 'GET',
+            data : {},
+            success : function(res){
+                if(res.status == 200)
+                {
+
+                    $("#customslist").empty();
+                    var items = res.data;
+                    for (var i = 0; i < items.length; i++) {
+                        var html = '<li><div class="hui-list-text"><span>企业名称</span><input type="text" value="'+items[i].ename+'" name="customslist['+i+'][ename]" class="xxinput layui-input"></div></li><li><div class="hui-list-text"><span>数据来源</span><input type="text" value="'+items[i].url+'" name="customslist['+i+'][url]"  class="xxinput layui-input"></div></li><li><div class="hui-list-text"><span>海关编号</span><input type="text" value="'+items[i].customs_num+'" name="customslist['+i+'][customs_num]"  class="xxinput layui-input"></div></li><li><div class="hui-list-text"><span>注册海关</span><input type="text" value="'+items[i].customs_reg+'" name="customslist['+i+'][customs_reg]"  class="xxinput layui-input"></div></li><li><div class="hui-list-text"><span>经营类别</span><input type="text" value="'+items[i].business_category+'" name="customslist['+i+'][business_category]" class="xxinput layui-input"></div></li><li><div class="hui-list-text"><span>注册日期</span><input type="text" value="'+items[i].reg_date+'" name="customslist['+i+'][reg_date]"  class="xxinput layui-input"></div></li><li><div class="hui-list-text"><span>工商注册地址</span><input type="text" value="'+items[i].reg_area+'" name="customslist['+i+'][reg_area]"  class="xxinput layui-input"></div></li><li><div class="hui-list-text"><span>行政区划</span><input type="text" value="'+items[i].administrative_divisions+'" name="customslist['+i+'][administrative_divisions]"  class="xxinput layui-input"></div></li><li><div class="hui-list-text"><span>经济区划</span><input type="text" value="'+items[i].economic_regions+'" name="customslist['+i+'][economic_regions]" class="xxinput layui-input"></div></li><li><div class="hui-list-text"><span>特殊贸易区域</span><input type="text" value="'+items[i].special_area+'" name="customslist['+i+'][special_area]"  class="xxinput layui-input"></div></li><li><div class="hui-list-text"><span>行业种类</span><input type="text" value="'+items[i].industry_type+'" name="customslist['+i+'][industry_type]"  class="xxinput layui-input"></div></li><li><div class="hui-list-text"><span>报关有效期</span><input type="text" value="'+items[i].vail_date+'" name="customslist['+i+'][vail_date]"  class="xxinput layui-input"></div></li><li><div class="hui-list-text"><span>海关注销标志</span><input type="text" value="'+items[i].cancel_flag+'" name="customslist['+i+'][cancel_flag]" class="xxinput layui-input"></div></li><li><div class="hui-list-text"><span>年报情况</span><input type="text" value="'+items[i].annual_report+'" name="customslist['+i+'][annual_report]" class="xxinput layui-input"></div></li>';
+                        $("#customslist").append(html);
+                    }
+
+                }
+            },
+            error : function(e){
+                console.log(JSON.stringify(e));
+
+            },
+            'backType' : "JSON"
+        });
+    }
+    $(function(){
+        layui.use(['layer','form','laydate'],function(){
+            var laydate = layui.laydate,
+                layer = layui.layer,
+                form  = layui.form,
+                $ = layui.jquery;
+            form.render(null, 'component-form-element1');
+
+            form.on('select(reg_type)',function(data){
+                let val = data.value;
+
+                if(val==1){
+                    //企业
+                    $('.realname').hide();
+                    $('.enterprise_name').show();
+                    $('.enterprise_info').show();
+                }else if(val==2){
+                    //个人
+                    $('.enterprise_name').hide();
+                    $('.enterprise_info').hide();
+                    $('.realname').show();
+                }
+            });
+
+            form.on('submit(component-form-element)', function(data){
+
+                $.ajax({
+                    url:"{:Url('admin/customssystem/add_merchant')}",
+                    type:'POST',
+                    data:data.field,
+                    dataType:'JSON',
+                    success:function(res){
+                        layer.msg(res.msg,{time:3000}, function () {
+                            if(res.code == 1)
+                            {
+                                layer.closeAll();
+                                window.location.reload();
+                            }
+                        });
+                    },
+                    error:function (data) {
+                        layer.msg('系统错误',{time:2000});
+                    }
+                });
+                return false;
+            });
+        });
+    });
+</script>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>银行卡账户列表</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+
+
+<form class="layui-form">
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+
+            <label class="layui-form-label">银行卡号</label>
+            <div class="layui-input-inline">
+                <input type="text" name="cardNo" required  lay-verify="required" placeholder="银行卡号" autocomplete="off" maxlength="20" class="layui-input">
+            </div>
+
+            <div class="layui-form-mid">账户户名</div>
+            <div class="layui-input-inline">
+                <input type="text" name="accName" required  lay-verify="required" placeholder="账户户名" autocomplete="off" class="layui-input">
+            </div>
+
+            <div class="layui-form-mid">账户类型</div>
+            <div class="layui-input-inline">
+                <select name="accType" lay-filter="accType" lay-verify="required">
+                    <option value="0">卡</option>
+                    <option value="1">存折</option>
+                    <option value="2">对公账号</option>
+                </select>
+            </div>
+
+            <div class="layui-form-mid">所属银行</div>
+            <div class="layui-input-inline">
+                <select name="code" lay-filter="code" lay-verify="required">
+                    <option value="" names>所属银行</option>
+                    {volist name="bank" id='vo'}
+                        <option value="{$vo.code}" names="{$vo.Name}">{$vo.Name}</option>
+                    {/volist}
+                </select>
+            </div>
+
+            <input type="hidden" value="" name="bankName" id="bankName">
+            <div class="layui-input-inline">
+                <button lay-submit lay-filter="*" class="layui-btn">添加账户</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重 置</button>
+            </div>
+
+        </div>
+    </div>
+
+</form>
+
+
+
+
+<table class="layui-table">
+    <thead>
+    <tr>
+        <th>银行卡号</th>
+        <th>账户户名</th>
+        <th>账户类型</th>
+        <th>银行代码</th>
+        <th>银行名称</th>
+        <th>添加日期</th>
+        <th>更新时间</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {volist name='acclist' id='vo' key='k'}
+    <tr>
+        <td>{$vo.cardNo}</td>
+        <td>{$vo.accName}</td>
+        <td>{$accType[$vo.accType]}</td>
+        <td>{$vo.code}</td>
+        <td>{$vo.bankName}</td>
+        <td>{$vo.a_time|date='Y-m-d H:i:s',###}</td>
+        <td>{$vo.u_time|date='Y-m-d H:i:s',###}</td>
+        <td>
+            <a href="javascript:void(0);" onclick="edit({$vo.id});" class="layui-btn layui-btn-sm">编辑</a>
+            <a href="javascript:void(0);" onclick="del({$vo.id});" class="layui-btn layui-btn-sm layui-btn-danger">删除</a>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<div class="layui-box layui-laypage layui-laypage-default">{$pages}</div>
+<!--<div class="layui-box layui-laypage layui-laypage-default">1</div>-->
+
+<script>
+
+    layui.use(['form','layer','jquery'], function() {
+
+        $ = layui.jquery,form = layui.form,layer = layui.layer;
+
+        form.on('select(code)',function(data) {
+
+            var op = data.elem[data.elem.selectedIndex];
+            // 名称
+            var names = $(op).attr('names');
+
+            $('#bankName').val(names);
+
+        });
+
+
+        // 监听体积
+        form.on('submit(*)', function(data) {
+
+            console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+
+            var formData = data.field;
+
+            // 提交数据
+            $.post("{:url('admin/customs/add')}",{formData},function(res) {
+
+                var das = JSON.parse(res);
+                console.log(das);
+                if(das.code == '0' ) {
+                    layer.msg(das.msg);
+                    return false;
+                }
+
+                layer.msg(das.msg);
+
+                setTimeout(function(){
+                    document.location.reload();
+                },800);
+
+            });
+
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+    });
+
+
+    // 删除功能
+    function del(id) {
+
+        if(id == '') {
+            layer.msg('数据不允许删除');
+            return false;
+        }
+
+        layer.confirm('您确定要删除吗？',{title:'消息提示',btn:['确认','取消'],icon:3},function(){
+
+            $.post("{:url('admin/customs/del')}",{id:id},function(res) {
+                var das = JSON.parse(res);
+                if(das.code) {
+                    layer.msg(das.msg);
+                    setTimeout(function(){
+                        document.location.reload();
+                    },800);
+                } else {
+                    layer.msg(das.msg);
+                }
+            })
+
+        },function(){
+            layer.msg('取消删除')
+        })
+    }
+
+
+    function edit(id) {
+        layer.open({
+            type:2,
+            title:'编辑收款账户',
+            shadeClose:true,
+            shade:0.3,
+            area:['480px','450px'],
+            content:"{:Url('admin/customs/edit')}&id="+id,
+            yes:function(){},
+            end:function(){}
+        });
+    }
+
+</script>
+
+
+</body>
+</html>

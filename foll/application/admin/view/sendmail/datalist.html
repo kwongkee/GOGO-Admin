@@ -1,0 +1,112 @@
+{include file="public/header_new"}
+<style>
+   img{ width:20px;height:20px;}
+</style>
+<body class="gray-bg">
+
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+              <div class="ibox-content">
+
+                <div id="toolbar" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;">
+                    <button type="button" href="javascript:;" onClick="data_add('新增发送','{:url('admin/sendmail/gosend')}')" class="btn btn-default">
+                      新增发送
+                    </button>
+                </div>
+                <table id="table"
+
+                  /*默认排序项*/
+                  data-sort-name="create_time"
+                  data-sort-order="desc"
+                  /*工具栏相关*/
+                  data-toolbar="#toolbar"
+                  data-search="true"          /*搜索框*/
+                  data-search-on-enter-key="false"
+                  data-show-refresh="true"    /*刷新按钮*/
+                  /*分页相关*/
+                  data-side-pagination="server"
+                  data-pagination="true"      /*显示分页*/
+                  data-page-size="15"         /*每页显示条数*/
+                  /*移动端相关*/
+                  data-mobile-responsive="true"
+                  data-card-view="true"
+                  data-show-columns="true"
+                  /*radio or checkbox字段名称*/
+                  data-select-item-name="tids" >
+
+                  <thead>
+                    <tr>
+                      <th data-field="checkbox"
+                        data-align="center"
+                        data-checkbox="true"></th>
+                      <th data-field="id"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="false">ID</th>
+                      <th data-field="email"
+                        data-align="center"
+                        data-sortable="true">接收Email</th>
+                      <th data-field="send_title"
+                        data-align="center"
+                        data-sortable="true">标题</th>
+                      <th data-field="send_content"
+                        data-align="center"
+                        data-sortable="true">内容</th>
+                      <th data-field="create_time"
+                        data-align="center"
+                        data-sortable="true">发送时间</th>
+                      <th data-field="status"
+                        data-align="center"
+                        data-sortable="true">发送状态</th>
+
+                      </tr>
+                    </thead>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+  <script type="text/javascript">
+
+var table;
+
+$(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:Url('admin/sendmail/datalist')}",
+            queryParams: queryParams,
+
+        });
+        $('.form-control').attr('placeholder','搜索email或标题');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+
+        };
+        return temp;
+    };
+
+    //发送
+    function data_add(title,url)
+    {
+        var index = layer.open({
+            type: 2,
+            title: title,
+            content: url
+        });
+        layer.full(index);
+    }
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,63 @@
+{include file="common/header"}
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<body>
+<div class="x-nav">
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<div class="x-body">
+</div>
+<table class="layui-table">
+    <thead>
+    <tr>
+        <th>用户姓名</th>
+        <th>手机号码</th>
+        <th>受理编号</th>
+        <th>中签轮次</th>
+    </thead>
+    <tbody>
+
+    {volist name='list' id='vo' empty='暂无数据'}
+    <tr>
+        <td>{$vo.user_name}</td>
+        <td>{$vo.mobile}</td>
+        <td>{$vo.flag_id}</td>
+        <td>{$vo.rname}</td>
+
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+<div class="page">
+    <div>
+        {$page}
+    </div>
+</div>
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    layui.use('laydate','layer', function(){
+        var laydate = layui.laydate;
+        layer = layui.layer;
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#start' //指定元素
+        });
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#end' //指定元素
+        });
+    });
+
+    function detail(obj,id){
+        layer.open({
+            area:['1059px','569px'],
+            type: 2,
+            content: '{:Url("month_card/win_detail")}' //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+        });
+    }
+
+</script>
+</body>
+</html>

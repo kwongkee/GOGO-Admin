@@ -1,0 +1,60 @@
+{template '_headers'}
+<div class="warp">
+    <div class="container">
+        <form action="" id="forms">
+            <div class="shop-input">
+                公众号名称： <input type="text" name="public" value="{$editp['public']}" placeholder="请输入公众号的帐号名称" readonly>
+            </div>
+            <div class="shop-input">
+                公众号账号： <input type="text" name="account" value="{$editp['account']}" placeholder="请输入公众号的帐号，一般为英文帐号">
+            </div>
+            <div class="shop-input">
+                原始ID： <input type="text" name="original" value="{$editp['original']}" placeholder="请输入原始ID">
+            </div>
+            <div class="shop-input">
+                AppId： <input type="text" name="AppId" value="{$editp['AppId']}" placeholder="请输入微信公众平台后台的AppId">
+            </div>
+            <div class="shop-input">
+                AppSecret： <input type="text" name="AppSecret" value="{$editp['AppSecret']}" placeholder="请输入微信公众平台后台的AppSecret">
+            </div>
+            <div class="shop-input">
+                {if $editp['shopUrl']== ''}
+                    网络商铺地址： <input type="text" value="请耐心等待后台管理员审核!">
+                {else}
+                    网络商铺地址： <input type="text" value="{$editp['shopUrl']}">
+                {/if}
+            </div>
+            <input type="hidden" name="method" value="edit">
+            <input type="hidden" name="id" value="{$editp['id']}">
+            <div class="login-btn">
+                <button id="alertBtn" onclick="submits()" type="button" class="zbox-btn zbox-btn-blue zbox-btn-outlined login">提交</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script>
+    function submits() {
+        var url = "{php echo url('entry',array('do'=>'index','p'=>'addPublics','m'=>'mer_chats'))}";
+        var formData = $('#forms').serialize();
+        $.ajax({
+            url:url,
+            type:'POST',
+            data:formData,
+            success:function(res){
+                var red = JSON.parse(res);
+                if(red.code != 1) {
+                    $.DialogByZ.Alert({Title: "提示", Content:red.msg,BtnL:"确定",FunL:alerts})
+                    return false;
+                }
+                $.DialogByZ.Alert({Title: "提示", Content:red.msg,BtnL:"确定",FunL:alerts})
+                setTimeout(function(){
+                    window.location.href = "{php echo url('entry',array('do'=>'index','p'=>'publicAccounts','m'=>'mer_chats'))}";
+                },1200);
+            }
+        })
+    }
+</script>
+
+{template '_footers'}

@@ -1,0 +1,192 @@
+{include file="common/header_inner_new"}
+<style>
+
+</style>
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+
+<body style="padding:15px;box-sizing: border-box;">
+<form class="layui-form" action="">
+    <input type="text" style="display: none;" name="id" value="{$withdraw_log['id']}">
+    <div class="layui-form-item">
+        <div class="layui-form-label">提现金额</div>
+        <div class="layui-input-block">
+            {$withdraw_log['withdraw_money']}
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">提现账号</label>
+        <div class="layui-input-block">
+            {if $account['type']==1}
+                银行名称：{$account['bankname']}<br/>
+                银行账号：{$account['bank_account']}<br/>
+                收款人：{$account['bank_name']}<br/>
+            {elseif($account['type']==2)}
+                收款平台：{$account['platform_name']}<br/>
+                {if $account['type2']==1}
+                    收款码：<a href="https://shop.gogo198.cn/{$account['platform_code']}"><img src="{$account['platform_code']}" style="width:100px;height:100px;"></a><br/>
+                {elseif($account['type']==2)}
+                    收款账号：{$account['platform_account']}<br/>
+                {/if}
+            {/if}
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">费率</label>
+        <div class="layui-input-inline">
+            <input type="number" class="layui-input" name="withdrawal_expenses_rate" id="withdrawal_expenses_rate" placeholder="费率" value="{$withdraw_log['withdrawal_expenses_rate']}">
+        </div>
+        <label class="layui-form-label">费用</label>
+        <div class="layui-input-inline">
+            <input type="number" class="layui-input" name="withdrawal_expenses" id="withdrawal_expenses" placeholder="费用" value="{$withdraw_log['withdrawal_expenses']}">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">到账金额</label>
+        <div class="layui-input-inline">
+            <input type="number" name="real_withdraw" id="true_money" required  lay-verify="required" placeholder="到账金额" autocomplete="off" class="layui-input" value="{$withdraw_log['real_withdraw']}">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">到账时间</label>
+        <div class="layui-input-inline">
+            <input type="text" class="layui-input" name="withdrawtime" lay-verify="required" id="money_date" placeholder="yyyy-MM-dd" value="<?php echo date('Y-m-d',$withdraw_log['withdrawtime']);?>">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">审核结果</label>
+        <div class="layui-input-inline">
+            <select name="status" lay-verify="required" lay-search="" lay-filter="check_status">
+                <option value="">请选择</option>
+                <option value="1" {if $withdraw_log['status']==1}selected{/if}>提现已确认，操作已完成</option>
+                <option value="-1" {if $withdraw_log['status']==-1}selected{/if}>审核不通过，拒绝申请</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- 审核不通过原因 -->
+    <div class="layui-form-item layui-form-text" id="remark_div" style="display: none;">
+        <label class="layui-form-label">原因</label>
+        <div class="layui-input-block">
+            <textarea name="remark" placeholder="请输入拒绝原因" class="layui-textarea">{$withdraw_log['remark']}</textarea>
+        </div>
+    </div>
+    {if $withdraw_log['status']!=1}
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">审核通过</button>
+        </div>
+    </div>
+    {/if}
+</form>
+
+<script>
+    //Demo
+    layui.use(['layer','form','laydate','upload','colorpicker'], function(){
+        var laydate = layui.laydate;
+        var layer = layui.layer;
+        var form  = layui.form;
+        var $ = layui.jquery;
+        var upload = layui.upload;
+        var colorpicker = layui.colorpicker;
+
+        var withdraw_money = Math.abs("{$withdraw_log['withdraw_money']}");
+
+        laydate.render({
+            elem: '#money_date'
+        });
+
+        form.on('select(check_status)', function (data) {
+            $("#status_texts").val( $(this).text() );
+            switch (data.value) {
+                case "1" :
+                    $("#remark_div").hide();
+                    break;
+                case "2" :
+                    $("#remark_div").hide();
+                    break;
+                case "3" :
+                    $("#remark_div").hide();
+                    break;
+                case "4" :
+                    $("#remark_div").hide();
+                    break;
+                case "-1" :
+                    $("#remark_div").show();
+                    break;
+            }
+        });
+
+        // 监听提现费率
+        $("#withdrawal_expenses_rate").on("input",function(e){
+            var val = e.delegateTarget.value ? e.delegateTarget.value : "0";
+            var res = withdraw_money * val;
+            $("#withdrawal_expenses").val( res.toFixed(2));
+            changeMoney(withdraw_money,$("#withdrawal_expenses").val(),$("#withdrawal_taxation").val());
+        });
+
+        $("#withdrawal_taxation_rate").on("input",function(e){
+            var val = e.delegateTarget.value ? e.delegateTarget.value : "0";
+            var res = withdraw_money * val;
+            $("#withdrawal_taxation").val( res.toFixed(2));
+            changeMoney(withdraw_money,$("#withdrawal_expenses").val(),$("#withdrawal_taxation").val());
+        });
+
+        $("#withdrawal_expenses").on("input",function(e){
+            var val = e.delegateTarget.value ? e.delegateTarget.value : "0";
+            changeMoney(withdraw_money,$("#withdrawal_expenses").val(),$("#withdrawal_taxation").val());
+        });
+
+        $("#withdrawal_taxation").on("input",function(e){
+            var val = e.delegateTarget.value ? e.delegateTarget.value : "0";
+            changeMoney(withdraw_money,$("#withdrawal_expenses").val(),$("#withdrawal_taxation").val());
+        });
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            $.ajax({
+                url:"{:Url('admin/operaweb/withdraw_detail')}",
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (res) {
+                    layer.msg(res.msg);
+                    if(res.code==0){
+                        setTimeout(function () {
+                            window.location.reload();
+                        },2000);
+                    }
+
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            return false;
+        });
+    });
+
+    function changeMoney(withdraw_money,withdrawal_expenses,withdrawal_taxation) {
+        var layer = layui.layer,$ = layui.$;
+        var true_money = withdraw_money - withdrawal_expenses;
+        console.log(withdraw_money,withdrawal_expenses,withdrawal_taxation);
+        $("#true_money").val(true_money.toFixed(2));
+    }
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+</script>
+</body>
+</html>

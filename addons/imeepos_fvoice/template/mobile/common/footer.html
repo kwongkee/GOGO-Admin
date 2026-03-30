@@ -1,0 +1,98 @@
+        <script src="{MODULE_URL}public/libs/fastclick.js"></script>
+        <input type="hidden" name="share_title" value="{php echo $this->module['config']['share_title']}"/>
+        <input type="hidden" name="share_image" value="{php echo tomedia($this->module['config']['share_image'])}"/>
+        <input type="hidden" name="share_desc" value="{php echo $this->module['config']['share_desc']}"/>
+        <input type="hidden" name="share_link" value=""/>
+        <script>
+            wx.config(jssdkconfig);
+            initshare();
+
+            function initshare(){
+                var title = $('input[name="share_title"]').val();
+                var imgUrl = $('input[name="share_image"]').val();
+                var desc = $('input[name="share_desc"]').val();
+                var link = $('input[name="share_link"]').val();
+
+                wx.ready(function(cb1,cb2){
+                    wx.onMenuShareTimeline({
+                        title: title, // 分享标题
+                        link: link, // 分享链接
+                        imgUrl: imgUrl, // 分享图标
+                        success: function () {
+                            // 用户确认分享后执行的回调函数
+                            cb1();
+                        },
+                        cancel: function () {
+                            // 用户取消分享后执行的回调函数
+                            cb2();
+                        }
+                    });
+                    wx.onMenuShareAppMessage({
+                        title: title, // 分享标题
+                        desc: desc, // 分享描述
+                        link: link, // 分享链接
+                        imgUrl: imgUrl, // 分享图标
+                        type: '', // 分享类型,music、video或link，不填默认为link
+                        dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+                        success: function () {
+                            // 用户确认分享后执行的回调函数
+                            cb1()
+                        },
+                        cancel: function () {
+                            // 用户取消分享后执行的回调函数
+                            cb2();
+                        }
+                    });
+                    wx.onMenuShareQQ({
+                        title: title, // 分享标题
+                        desc: desc, // 分享描述
+                        link: link, // 分享链接
+                        imgUrl: imgUrl, // 分享图标
+                        success: function () {
+                            // 用户确认分享后执行的回调函数
+                            cb1();
+                        },
+                        cancel: function () {
+                            // 用户取消分享后执行的回调函数
+                            cb2();
+                        }
+                    });
+                    wx.onMenuShareWeibo({
+                        title: title, // 分享标题
+                        desc: desc, // 分享描述
+                        link:link, // 分享链接
+                        imgUrl: imgUrl, // 分享图标
+                        success: function () {
+                            // 用户确认分享后执行的回调函数
+                            cb1();
+                        },
+                        cancel: function () {
+                            // 用户取消分享后执行的回调函数
+                            cb2();
+                        }
+                    });
+                    wx.onMenuShareQZone({
+                        title: title, // 分享标题
+                        desc: desc, // 分享描述
+                        link: link, // 分享链接
+                        imgUrl: imgUrl, // 分享图标
+                        success: function () {
+                            // 用户确认分享后执行的回调函数
+                            cb1();
+                        },
+                        cancel: function () {
+                            // 用户取消分享后执行的回调函数
+                            cb2()
+                        }
+                    });
+                });
+            }
+
+        </script>
+        <script>
+            $(function() {
+                FastClick.attach(document.body);
+            });
+        </script>
+    </body>
+</html>

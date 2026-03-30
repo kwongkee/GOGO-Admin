@@ -1,0 +1,82 @@
+{include file='home_header'}
+<body>
+<!--主体内容-->
+<div class="list-content" style="position: relative;">
+    <!--块元素-->
+    <div class="block">
+        <!--页面有多个表格时，可以用于标识表格-->
+        <h2>列表</h2>
+        <a href="javascript:location.reload();">
+            <button class="button wathet" style="position: absolute;right: 20px;top: 16px;"><span class="icon-reload1"></span> 刷新</button>
+        </a>
+        <!--正文内容-->
+        <div class="main">
+            <div class="admin-search">
+                <div class="input-group">
+                    <input type="text" class="text" id="orderid" placeholder="订单号" />
+                    <select id="select">
+                        <option value="">请选择</option>
+                        <option value="1">主动使用</option>
+                        <option value="2">被动使用</option>
+                    </select>
+                    <button class="button blue" id="search">查询</button>
+                </div>
+            </div>
+            <table id="table" class="table color2  no-vertical-line ">
+                <thead>
+                <tr>
+                    <th>核销时间</th>
+                    <th>核销商户</th>
+                    <th>卡卷名称</th>
+                    <th>发行商户</th>
+                    <th>核销方式</th>
+                    <th>核销订单</th>
+                    <th>抵扣金额</th>
+                    <th>应用</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name='list' id='vo' empty='没有数据'}
+                <tr>
+                    <td>{$vo.create_time|date='Y.m.d H:i',###}</td>
+                    <td>{$vo.use_busin_name}</td>
+                    <td>{$vo.coupon_name}</td>
+                    <td>{$vo.busin_name}</td>
+                    <td>{$type[$vo.use_type]}</td>
+                    <td>{$vo.order_id}</td>
+                    <td>{$vo.discount_amout}</td>
+                    <td>{$app[$vo.application]}</td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+            <div class="page">
+                {$page}
+                <!--<ul id="page" class="pagination">-->
+                <!---->
+                <!--</ul>-->
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+<script>
+
+    javaex.select({
+        id : "select",
+        isSearch : true,
+        // 选择后的回调函数
+        callback: function (rtn) {
+        }
+    });
+
+
+    $('#search').click(function () {
+        var type = $('#select option:selected').val();
+        var orderId = $('#orderid').val();
+        window.location.href="{:Url('coupon/coupon_verifsheet')}&type="+type+"&order_id="+orderId;
+    });
+</script>
+</html>

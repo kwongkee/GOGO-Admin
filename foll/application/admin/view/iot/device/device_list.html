@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="common/meta"}
+</head>
+<body class="gray-bg">
+<div class="col-sm-12">
+
+    <div class="ibox float-e-margins">
+        <a href="" class="btn btn-w-m btn-info" onclick="add();">添加</a>
+        <div class="ibox-content" style="display:block;" id="list1">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>配置名称</th>
+                    <th>设备名称</th>
+                    <th>设备id</th>
+                    <th>设备apiey</th>
+                    <th>设备状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name='data' id='vo'}
+                <tr>
+                    <td>{$vo.api_name}</td>
+                    <td>{$vo.device_name}</td>
+                    <td>{$vo.deviceid}</td>
+                    <td>{$vo.apikey}</td>
+                    <td>{if $vo['dev_status']}在线{else}下线{/if}</td>
+                    <td>
+                        <a href="#" class="btn btn-info" onclick="edit('{$vo.id}')">更改</a>
+                        <a href="#" class="btn btn-danger" onclick="del('{$vo.id}',this)">删除</a>
+                    </td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+<script>
+    function add() {
+        parent.layer.open({
+            type: 2,
+            title: false,
+            // shift: 2 ,//动画类型
+            area: ['420px', '420px'], //宽高
+            content: "{:Url('admin/iot/deviceadd')}",
+            cancel:function () {
+                window.location.reload();
+            }
+        });
+        return false;
+    }
+
+    function del(id,obj) {
+        parent.layer.confirm('是否执行删除?', {
+            btn: ['YES', 'NO'], //按钮
+            title: false,
+        }, function () {
+
+            $.ajax({
+                url:"{:Url('admin/iot/device_del')}&id="+id,
+                type: "get",
+                dataType:"json",
+                success:function (res) {
+                    parent.layer.msg(res.message, {icon: 1});
+                    if (res.code==0){
+                        $(obj).parent().parent().remove();
+                    }
+                }
+            })
+        }, function () {
+            console.log('no');
+        });
+    }
+
+    function edit(id) {
+        parent.layer.open({
+            type: 2,
+            title: false,
+            // shift: 2 ,//动画类型
+            area: ['420px', '480px'], //宽高
+            content: "{:Url('admin/iot/device_edit')}&id="+id,
+            cancel:function () {
+                window.location.reload();
+            }
+        });
+        return false;
+    }
+</script>
+</body>
+</html>

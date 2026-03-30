@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Document</title>
+</head>
+<body>
+	<p style="font-size: 16px;">微信支付</p>
+</body>
+
+<script type="text/javascript">
+	document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+		WeixinJSBridge.invoke('getBrandWCPayRequest', {
+			'appId': 'wx76d541cc3e471aeb',
+			'timeStamp': '1534822750',
+			'nonceStr': 'd7e904f594b0443e91d4d5653b9cab91',
+			'package': 'prepay_id=wx2111391009620177a58fd07d2872484943',
+			'signType': 'RSA',
+			'paySign': 'ow009TlFSbyhSg4cLb9UNuYagcxWw0BAqeC2k7zuV/4M2jmBbg093guMGU2ej2P1MU7RrqszpKX0OP8Sh6/3CLbPB3WrOvtIApBL1S7GwrDVP7DRbrgkl2kgw+bD+6iasBlcmpmEb1ZvY4IDxJQDQPHbJ6uaLictQ/YGnosxc0f7hl6r5TD045dJctNcIYFNGpeoOTahTdzQKYn8R1GVnB0UbZGWoUfnD2hIz3Y33aOU1jWGNSOhsZkQ5XF1wl0/VEyPi1O4KOYiMWMTYtWdkl6CvuCzyNPZHSiAB2XRprltC7jwmnyGZA5a8abVt39yxqrCkdEUXVrFECe7WHIl/g=='
+		}, function(res) {
+			if(res.err_msg == 'get_brand_wcpay_request:ok') {
+				location.search += '&done=1';
+			} else {
+				alert('启动微信支付失败, 请检查你的支付参数. 详细错误为: ' + res.err_msg);
+				//history.go(-1);
+			}
+		});
+	}, false);
+</script>
+</html>

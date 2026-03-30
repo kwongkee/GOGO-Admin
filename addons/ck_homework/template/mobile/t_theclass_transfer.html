@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="Cache-Control" content="no-cache"/>
+<title>班级转让 - {$config['webtitle']}</title>
+<meta http-equiv="description" content="" />
+<meta name="renderer" content="webkit"/>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+<meta name="description" content="" id="description"/>
+<meta name="keywords" content=""/>
+<link rel="stylesheet" href="{$templateurl}css/css.css" type="text/css"/>
+<script src="{$templateurl}js/jquery-1.8.0.min.js" language="javascript"></script>
+</head>
+
+<body>
+<div class="jrbn">
+	<div class="topjrbj">
+		<form action="./index.php" method="get" style="width:100%;">
+		<input type="hidden" name="i" value="{$_GPC['i']}">
+		<input type="hidden" name="c" value="{$_GPC['c']}">
+		<input type="hidden" name="do" value="{$_GPC['do']}">
+		<input type="hidden" name="m" value="{$_GPC['m']}">
+		<input type="hidden" name="ob" value="{$_GPC['ob']}">
+		<input type="hidden" name="id" value="{$_GPC['id']}">
+		<input type="text" name="keyword" value="{$_GPC['keyword']}" placeholder="请输入教师的编号" />
+		<button><i class="iconfont">&#xe69b;</i></button>
+		</form>
+    </div>
+    
+	{if $user_list}
+	{loop $user_list $key $value}
+    <div class="bjssmr">
+    	<h1>{$value['name']}老师</h1>
+        <p><span>老师编号：{$value['usernumber']}</span></p>
+        <a href="{$urltk}&ob=transfer_add&id={$id}&zuid={$value['uid']}" onclick="return confirm('确认要转入？');">转入</a>
+        <div class="clear"></div>
+    </div>
+    {/loop}
+	{else}
+		{if $keyword}
+		<div class="bjssmr" style="padding-top:20px;padding-bottom:20px; text-align:center;">抱歉！未找到相应数据！</div>
+		{else}
+		<div class="bjssmr">
+			<h1>转让方法</h1>
+			<p><span>输入接收老师的教师编号，搜索出来的结果，确定后即可。</span></p>
+			<div class="clear"></div>
+		</div>
+		{/if}
+	{/if}
+	
+</div>
+<div class="clear"></div>
+
+<!--footer strat-->
+{template 't_footer'}
+</body>
+</html>

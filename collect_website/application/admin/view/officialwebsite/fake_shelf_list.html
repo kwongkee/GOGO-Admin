@@ -1,0 +1,153 @@
+{include file="common/header_new"}
+<link rel="stylesheet" href="static/agents/layui/css/layui.css">
+<script src="static/agents/layui/layui.js"></script>
+<style>
+    img{ width:20px;height:20px;}
+</style>
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <h3 style="text-align: center;">拟上架列表</h3>
+                <div class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;display: block !important;">
+                    <button type="button" href="javascript:;" onclick="shelfs('{$pid}');" class="btn btn-success">
+                        批量上架
+                    </button>
+                    <button type="button" href="javascript:;" onclick="shelf('{$pid}');" class="btn btn-info" style="margin-left:15px;">
+                        新增拟上架
+                    </button>
+                </div>
+                <table id="table"
+
+                /*默认排序项*/
+                data-sort-name="id"
+                data-sort-order="desc"
+                /*工具栏相关*/
+                data-toolbar="#toolbar"
+                data-search="false"          /*搜索框*/
+                data-search-on-enter-key="false"
+                data-show-refresh="true"    /*刷新按钮*/
+                /*分页相关*/
+                data-side-pagination="server"
+                data-pagination="true"      /*显示分页*/
+                data-page-size="10"         /*每页显示条数*/
+                /*移动端相关*/
+                data-mobile-responsive="true"
+                data-card-view="true"
+                data-show-columns="true"
+                /*radio or checkbox字段名称*/
+                data-select-item-name="id" >
+
+                <thead>
+                <tr>
+                    <th data-field="id"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">ID</th>
+                    <th data-field="website_id"
+                        data-align="center"
+                        data-sortable="true">网站名称</th>
+                    <th data-field="module_name"
+                        data-align="center"
+                        data-sortable="true">菜单名称</th>
+                    <th data-field="content_id"
+                        data-align="center"
+                        data-sortable="true">模板ID</th>
+                    <th data-field="createtime"
+                        data-align="center"
+                        data-sortable="true">创建时间</th>
+                    <th data-field="shelftime"
+                        data-align="center"
+                        data-sortable="true">上架时间</th>
+<!--                    <th data-field="manage"-->
+<!--                        data-align="center"-->
+<!--                        data-sortable="true"-->
+<!--                        data-formatter="actionFormatter">操作</th>-->
+                </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var table;
+
+    $(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:url('admin/officialwebsite/fake_shelf_list')}",
+            queryParams: queryParams,
+        });
+        $('.form-control').attr('placeholder','搜索标题');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+            pid:"{$pid}"
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.id;
+        var title = row.title;
+
+        var result = "";
+        result += '<button style="margin-right: 5px;" type="button" onclick="edit('+id+',\''+title+'\',1)" class="btn btn-primary btn-xs">编辑</button>';
+        result += '<button style="margin-right: 5px;" type="button" onclick="del('+id+',\''+title+'\',1)" class="btn btn-danger btn-xs">删除</button>';
+        return result;
+    }
+
+    function shelf(pid){
+        var index = layer.open({
+            type: 2,
+            title: '新增上架',
+            area:['100%','100%'],
+            content: "{:url('admin/officialwebsite/fake_shelf_detail')}&pid="+pid
+        });
+    }
+
+    //批量上架
+    function shelfs(pid) {
+        layer.confirm('确认批量上架吗？',function(index){
+            $.ajax({
+                url: "<?php echo Url('admin/officialwebsite/batch_launch'); ?>",
+                data:{'pid':pid},
+                type:'post',
+                cache:false,
+                dataType:'json',
+                success:function(data){
+                    if(data.code==0)
+                    {
+                        layer.msg(data.msg, {
+                            icon: 1,
+                            time: 2000
+                        }, function(){
+                            window.location.reload();
+                        });
+                        return true;
+                    }else {
+                        layer.msg(data.msg, {icon:2, time:2000});
+                        return false;
+                    }
+                },
+                error:function() {
+                    layer.msg('系统出错,请重试',{icon:2,time:1000});
+                }
+            });
+        });
+    }
+</script>
+
+</body>
+</html>

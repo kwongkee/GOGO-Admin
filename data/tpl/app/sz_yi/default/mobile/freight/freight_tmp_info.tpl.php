@@ -1,0 +1,236 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/header', TEMPLATE_INCLUDEPATH)) : (include template('common/header', TEMPLATE_INCLUDEPATH));?>
+<style type="text/css">
+    body {margin:0px; background:#efefef; font-family:'微软雅黑'; -moz-appearance:none;}
+    .info_main {height:auto;  background:#fff; margin-top:14px; border-bottom:1px solid #e8e8e8; border-top:1px solid #e8e8e8;}
+    .info_main .line {margin:0 10px; height:40px; border-bottom:1px solid #e8e8e8; line-height:40px; color:#999;}
+    .info_main .line .title {height:40px; width:80px; line-height:40px; color:#444; float:left; font-size:14px;}
+    .info_main .line .info { width:100%;float:right;margin-left:-80px; }
+    .info_main .line .inner { margin-left:80px; }
+    .info_main .line .inner input {height:40px; width:100%;display:block; padding:0px; margin:0px; border:0px; float:left; font-size:14px;}
+    .table{width:100%;font-size:15px;}
+    .table tr td{vertical-align: middle !important;}
+    .page_head{width:100%;background:#fff;margin-bottom:5px;box-shadow:0 0 4px #ddd;padding:10px 0 10px;text-align: center;}
+    .table-striped>tbody>tr:nth-child(odd)>td, .table-striped>tbody>tr:nth-child(odd)>th {background-color: #F9F9EA !important;}
+    .table-striped>tbody>tr td:nth-of-type(1){text-align:right;}
+    .see{color:#fff;font-size:15px;padding:2px 6px;background:#1E9FFF;width:fit-content;border-radius:5px;}
+    .mask_content,.more_date,.refuse_remark,.container_content{display:none;width: 80%;height:65%;position: absolute;background: #ffffff;border-radius: 5px;z-index:1000;transform:translate(-50%,-50%);top: 50%;left:50%;}
+    .refuse_remark{text-align:center;}
+    .refuse_remark textarea{height:70%;border:1px solid;}
+    .more_date{overflow:scroll;}
+    .mask_content .title,.more_date .title,.refuse_remark .title,.container_content .title{text-align: center;border-bottom: 1px solid #eee;margin-bottom: 10px;position:relative;}
+    .mask_content .title>p,.more_date .title>p,.refuse_remark .title>p,.container_content .title>p{height: 40px;line-height: 40px;text-align: center;font-size: 18px;font-weight: bold;margin-bottom:0;}
+    .mask_content .title .close,.more_date .title .close,.refuse_remark .title .close,.container_content .title .close{position:absolute;right:10px;top:3px;font-size:35px;}
+    .mask_content .important,.more_date .important,.refuse_remark .important,.container_content .important{color: #000;}
+    .foot{display: flex;align-items: center;justify-content: center;margin-top: 20px;margin-bottom:10px;}
+    .foot .queren{width:fit-content;padding:4px 15px;color:#fff;font-size:15px;background:#02af02;border-radius:5px;margin-right:20px;}
+    .foot .refuse{width:fit-content;padding:4px 15px;color:#fff;font-size:15px;background:red;border-radius:5px;}
+</style>
+<link type="text/css" rel="stylesheet" href="../addons/sz_yi/template/pc/default/static/css/bootstrap.min.css" />
+<style>
+    .btn {
+        display: inline-block;
+        vertical-align: middle;
+        background: #f0f0f0 no-repeat center;
+        border: 1px solid #d0d0d0;
+        width: 24px;
+        height: 24px;
+        border-radius: 2px;
+        box-shadow: 0 1px rgba(100, 100, 100, .1);
+        color: #666;
+        transition: color .2s, background-color .2s;
+    }
+
+    .btn:active {
+        box-shadow: inset 0 1px rgba(100, 100, 100, .1);
+    }
+
+    .btn:hover {
+        background-color: #e9e9e9;
+        color: #333;
+    }
+
+    .btn_plus {
+        background-image: linear-gradient(to top, currentColor, currentColor), linear-gradient(to top, currentColor, currentColor);
+        background-size: 10px 2px, 2px 10px;
+    }
+
+    .btn_minus {
+        background-image: linear-gradient(to top, currentColor, currentColor);
+        background-size: 10px 2px;
+    }
+</style>
+<div id="container">
+    <div class="page_head">
+        联系电话[<?php  echo $order['mobile'];?>]的查询信息
+    </div>
+    <table class="table table-striped table-bordered" style="margin-top:10px;margin-bottom:0;table-layout:fixed;word-break: break-all;">
+        <tr>
+            <td style="width:100px;">港口名称</td>
+            <td style="width:310px;"><?php  echo $order['info']['fPort'];?>-<?php  echo $order['info']['sPort'];?></td>
+        </tr>
+        <tr>
+            <td>服务类型</td>
+            <td><?php  echo $order['info']['method'];?></td>
+        </tr>
+        <tr>
+            <td>装/卸地址</td>
+            <td>
+                <table class="table table-striped table-bordered" style="margin-bottom:0;table-layout:fixed;word-break: break-all;">
+                    <?php  if(is_array($order['info']['address'])) { foreach($order['info']['address'] as $val) { ?>
+                    <tr>
+                        <td style="text-align:left;"><?php  echo $val;?></td>
+                    </tr>
+                    <?php  } } ?>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>箱型</td>
+            <td><?php  echo $order['info']['chooseSize'];?></td>
+        </tr>
+        <tr>
+            <td>货重</td>
+            <td><?php  echo $order['info']['chooseWeight'];?>/吨</td>
+        </tr>
+        <tr>
+            <td>查询日期</td>
+            <td>
+                <?php  echo $order['createtime'];?>
+            </td>
+        </tr>
+
+    </table>
+</div>
+
+<script>
+    $(function(){
+        $('.btn_plus').click(function(){
+            let val = $('#price_order_info').val();
+            val = parseFloat(val) + 1;
+            $('#price_order_info').val(val);
+
+            //算总价
+            let weight_fee = $('#weight_fee').text();
+            console.log(weight_fee);
+            let port_fee = $('#port_fee').text();
+            let many_place_fee = $('#many_place_fee').text();
+            let total_price = val + parseFloat(weight_fee) + parseFloat(port_fee) + parseFloat(many_place_fee);
+            $('#totalMoney').text(total_price);
+        });
+
+        $('.btn_minus').click(function(){
+            let val = $('#price_order_info').val();
+            val = parseFloat(val) - 1;
+            $('#price_order_info').val(val);
+
+            //算总价
+            let weight_fee = $('#weight_fee').text();
+            let port_fee = $('#port_fee').text();
+            let many_place_fee = $('#many_place_fee').text();
+            let total_price = val + parseFloat(weight_fee) + parseFloat(port_fee) + parseFloat(many_place_fee);
+            $('#totalMoney').text(total_price);
+        });
+
+        $('.fee_info').click(function(){
+            $('.mask_content').show();
+            $('.mask').show();
+        });
+        $('.container_info').click(function(){
+            $('.container_content').show();
+            $('.mask').show();
+            $('.container_content').css('height','35%');
+        });
+        $('.mask,.close').click(function(){
+            $('.mask_content').hide();
+            $('.more_date').hide();
+            $('.refuse_remark').hide();
+            $('.container_content').hide();
+            $('.mask').hide();
+        });
+        $('#more').click(function(){
+            $('.more_date').show();
+            $('.mask').show();
+        });
+
+        //拒绝
+        $('#refuse').click(function(){
+            $('.refuse_remark').show();
+            $('.mask').show();
+            $('.refuse_remark').css('height','60%');
+        });
+
+        //再次询价
+        $('#place_order').click(function(){
+            window.location.href='https://decl.gogo198.cn/mobile/index';
+        });
+    });
+
+    //拒绝
+    function refuse_submit(t){
+        let remark = $('#remark').val();
+        if($('#remark').isEmpty()){
+            alert('请输入拒绝原因！');return;
+        }
+        $.ajax({
+            url: "<?php  echo $this->createMobileUrl('freight/freight');?>",
+            type: 'POST',
+            dataType: 'json',
+            data: {'op': 'refuse', 'id': "<?php  echo $order['id'];?>",remark:remark},
+            success: function (json) {
+                if (json.status == 1) {
+                    alert(json.result.msg);
+                    setTimeout(function(){
+                        window.location.reload();
+                    },2000);
+                }
+            }
+        });
+    }
+
+    //复制
+    function copy(t){
+        var texts = document.getElementById('copy_info');
+
+        //文字全选
+        // if (document.body.createTextRange) {
+        //     var range = document.body.createTextRange();
+        //     range.moveToElementText(text);
+        //     range.select();
+        // } else if (window.getSelection) {
+        //     var selection = window.getSelection();
+        //     var range = document.createRange();
+        //     range.selectNodeContents(text);
+        //     selection.removeAllRanges();
+        //     selection.addRange(range);
+        // }
+
+        if (navigator.userAgent.match(/(iPhone|iPod|iPad);?/i)) {//区分iPhone设备
+            window.getSelection().removeAllRanges();//这段代码必须放在前面否则无效
+            var Url2=document.getElementById("copy_info");//要复制文字的节点
+            // alert(Url2);
+            var range = document.createRange();
+            // 选中需要复制的节点
+            range.selectNode(Url2);
+            // 执行选中元素
+            window.getSelection().addRange(range);
+            // 执行 copy 操作
+            var successful = document.execCommand('Copy');
+            // 移除选中的元素
+            window.getSelection().removeAllRanges();
+        }else{
+            //先copy
+            var ordersn = $('#copy_info').text();
+            var oInput = document.createElement('textarea');
+            oInput.style.opacity = '0';
+            oInput.value = ordersn;
+            document.body.appendChild(oInput);
+            oInput.select(); // 选择对象
+            var valueLength = ordersn.length;
+            document.execCommand("Copy"); // 执行浏览器复制命令
+        }
+        alert('复制成功');
+        // hui.toast('复制成功');
+    }
+</script>
+
+<?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/footer', TEMPLATE_INCLUDEPATH)) : (include template('common/footer', TEMPLATE_INCLUDEPATH));?>

@@ -1,0 +1,298 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>商家列表</title>
+        <script src="{$modulePublic}shop/js/template.js"></script>
+        <script src="{$modulePublic}shop/js/common.js"></script>
+
+        <script src="{$modulePublic}shop/js/SetSize.js"></script>
+        <meta name="screen-orientation" content="portrait/landscape">
+        <meta content="yes" name="apple-mobile-web-app-capable">
+        <meta content="yes" name="apple-touch-fullscreen">
+        <meta content="black" name="apple-mobile-web-app-status-bar-style">
+        <meta content="telephone=no" name="format-detection">
+        <link href="{$modulePublic}shop/css/content.css" rel="stylesheet" type="text/css">
+        <script src="{$modulePublic}shop/js/baidu.js"></script>
+        <style>
+             /*内容样式*/
+            .bannerPanel_01{ width:100%; height:3rem; position:relative; background:#fff;}
+            .bannerPanel_01 .listField{ width:100%; height:100%; overflow:hidden;}
+            .bannerPanel_01 .listField ul,.bannerPanel_01 .listField li{ display:block; width:100%; height:100%; overflow:hidden;}
+            .bannerPanel_01 .listField img{  display:block; width:100%; height:auto;}
+
+            .bannerPanel_01 .controlField{ position:absolute; bottom:0.12rem; right:0; left:0; text-align:center;}
+            .bannerPanel_01 .controlField span{ display:inline-block; margin:0 0.4em; width:0.6em; height:0.6em; border:0.1em solid #fff; border-radius:0.6em;}
+            .bannerPanel_01 .controlField span.swiper-active-switch{ background:#fff;}
+        </style>
+    </head>
+    <body>
+        <script>
+            document.body.style.fontSize = SetSize.getScreenRatio() * 10 + 'px';</script>
+        <script src="{$modulePublic}shop/js/svgPackage.js"></script>
+
+
+        <form id="myform" action="" onsubmit="return false;">
+            <!--        <header id="header" class="listHeader">
+                            <div class="searchField">
+                                <input type="search" id="txtkey" class="txt" maxlength="50" placeholder="输入商户名或品牌名"><button type="button" onclick="javascript: showDetail('', 4)" class="btn btnSearch"><i><svg><use xlink:href="#icon_search_1" /></svg></i></button><a href="javascript:;" class="btn btnCancel">取消</a>
+                            </div>
+            
+                        </header>
+            
+            -->            <section id="main" class="listMain">
+                         <div class="bannerPanel_01">
+                <div class="listField" style="cursor: -webkit-grab;">
+                    <ul class="swiper-wrapper" style="width: 5376px; height: 300px; transform: translate3d(-3840px, 0px, 0px); transition-duration: 0.3s;">
+                        {php foreach($index_info['banners'] as $banner) { }
+                        <li class="swiper-slide swiper-slide-duplicate" style="width: 768px; height: 300px;">
+                            <a href="{$banner[1]}">
+                                <img src="{php echo $attach_url . '/'.$banner[0]}" alt="">
+                            </a>
+                        </li>
+                        {php } }
+                    </ul>
+                </div>
+                <div class="controlField"><span class="swiper-pagination-switch"></span><span class="swiper-pagination-switch"></span><span class="swiper-pagination-switch"></span><span class="swiper-pagination-switch"></span><span class="swiper-pagination-switch swiper-visible-switch swiper-active-switch"></span></div>
+            </div>
+                
+                <div class="brandListPanel_01" style="margin-top: 5px;padding-top: 0px;">
+                    <!--                    <div class="sortField sortType_01">
+                                            <a href="javascript:;"><span id="sp_floor">楼层</span></a>
+                                            <a href="javascript:;"><span id="sp_type">业态</span></a>
+                                            <a href="javascript:;"><span id="sp_sort">智能排序</span></a>
+                                        </div>
+                                        <div class="sortListField sortListType_01" id="shop_type">
+                    
+                                        </div>-->
+                    <div class="listField">
+                        <ul>
+                            {loop $list $row}
+                            <li>
+                                <a href="{php echo $this->createMobileUrl('shop_detail',array('id'=>$row['id']))}">
+                                    <div class="img">
+                                        <img  alt="" src="data:image/PNG;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAEElEQVR42gEFAPr/AP///wAI/AL+Sr4t6gAAAABJRU5ErkJggg==" style="width: 100%; height: 100%; background-position: 50% 50%; background-repeat: no-repeat; background-size: cover; background-image: url(&quot;{php echo $attach_url . '/'.$row['img_list']}&quot;);">
+                                    </div>
+                                    <div class="detail">
+                                        <h3>
+                                            {$row['name']}
+                                        </h3>
+                                        <h4>{$row['category']}</h4>
+                                        <span class="location"><i><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_location_1"></use></svg></i>{$row['floor']}</span>
+                                        <span class="like"><i><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_like_1"></use></svg></i>({$row['good_num']})</span>
+                                    </div>
+                                </a>
+                            </li>
+                            {/loop}
+                        </ul>
+                        <!--<div class="loading"><span class="loaderIcon"><i><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_loading_1"></use></svg></i></span></div>-->
+                    </div>
+                </div>
+            </section>
+              <nav id="nav"  class="mainNav">
+            <div class="linkField" >
+         <ul>
+                    <li>
+                        <a href="{php echo $this->createMobileUrl('index2')}" class="current">
+                            <i><svg><use xlink:href = "#icon_index_1"/></svg></i>
+                            <span>逛商场</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="{php echo $this->createMobileUrl('shop_activity_list')}"  >
+                            <i><svg><use xlink:href = "#icon_star_1"/></svg></i>
+                            <span>活动</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{php echo $this->createMobileUrl('award_list')}">
+                            <i><svg><use xlink:href = "#icon_gift_1"/></svg></i>
+                            <span>换礼品</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{php echo $this->createMobileUrl('index')}" >
+                            <i><svg><use xlink:href = "#icon_user_2"/></svg></i>
+                            <span>我</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+
+        </form>
+    </body>
+      <script src="{$modulePublic}shop/js/idangerous.swiper.min.js"></script>
+    <script src="{$modulePublic}shop/js/LazyLoad.js"></script>
+    <script>
+                                init();
+                                function init() {
+                                    //添加左右切换
+                                    (function () {
+                                        if (!arguments)
+                                            return;
+                                        for (var i in arguments) {
+                                            var addSwiper = new Swiper(arguments[i].dom, arguments[i].option || {});
+                                        }
+                                    })({
+                                        dom: '.bannerPanel_01 .listField',
+                                        option: {
+                                            pagination: '.bannerPanel_01 .controlField',
+                                            loop: true,
+                                            grabCursor: true,
+                                            autoplay: 3000
+                                        }
+                                    }, {
+                                        dom: '.quickLinkPanel_01 .listField',
+                                        option: {
+                                            pagination: '.quickLinkPanel_01 .controlField',
+                                            loop: false,
+                                            grabCursor: true
+                                        }
+                                    });
+
+                                    //添加惰性加载
+                                    (function ($la) {
+                                        if (!$la || arguments.length < 2)
+                                            return;
+                                        var i = 1;
+                                        for (; i < arguments.length; i++) {
+
+                                            window.lazyImg = $la(arguments[i].img, arguments[i].option || {});
+                                        }
+                                    })(LazyLoad, {
+                                        img: 'img',
+                                        option: {
+                                            preload: SetSize.getFontSize() * 10
+                                        }
+                                    });
+
+
+
+                                    //与样式表结合，自动排版
+                                    (function ($, winSize) {
+                                        var adjustListField = $('.advPanel_01 .listField ul');
+                                        adjustListField.each(function () {
+                                            var listField = $(this),
+                                                    elems = listField.find('li'),
+                                                    showElems = [],
+                                                    classList = {
+                                                        0: [{name: 'one', width: 1}],
+                                                        1: [{name: 'two', width: 0.5}],
+                                                        2: [{name: 'three3rd', width: 1 / 3}, {name: 'three1st', width: 0.5}, {name: 'three2nd', width: 0.5}]
+                                                    },
+                                            classItem,
+                                                    padding = 0.1,
+                                                    parentWidth = winSize.getEmSize(listField.width()) - padding,
+                                                    minHeight = 1000000,
+                                                    maxHeight = 0,
+                                                    tallHeight = 0,
+                                                    tempTallHeight = 0,
+                                                    tempShortHeight = 0,
+                                                    tallObj = [],
+                                                    shortObj = [],
+                                                    heightGroup = [];
+                                            if (elems.length > 1) {
+                                                elems.each(function (i) {
+                                                    var img = $(this).find('img'), src, size, width, height, data;
+                                                    if (img.length != 1 || i >= 3) {
+                                                        $(this).hide();
+                                                    } else {
+                                                        img = img.get(0);
+                                                        src = img.dataset.src || img.src;
+                                                        if (src.indexOf('?s=') != -1) {
+                                                            showElems.push(this);
+                                                            size = src.split('?s=')[1].split('x');
+                                                            width = parseInt(size[0]);
+                                                            height = parseInt(size[1]) * 100 / width;
+                                                            data = {
+                                                                elem: this,
+                                                                height: height
+                                                            }
+                                                            if (minHeight > height) {
+                                                                minHeight = height;
+                                                            }
+                                                            if (maxHeight < height) {
+                                                                maxHeight = height;
+                                                            }
+                                                            heightGroup.push(data);
+                                                        } else {
+                                                            $(this).hide();
+                                                        }
+                                                    }
+                                                });
+                                                tallHeight = maxHeight;
+                                                if (heightGroup.length == 3 && maxHeight - minHeight > (maxHeight + minHeight) / 10) {
+                                                    for (var i in heightGroup) {
+                                                        if (heightGroup[i].height - minHeight < (maxHeight + minHeight) / 10) {
+                                                            shortObj.push(heightGroup[i]);
+                                                        } else if (maxHeight - heightGroup[i].height < (maxHeight + minHeight) / 10) {
+                                                            if (heightGroup[i].height < tallHeight) {
+                                                                tallHeight = heightGroup[i].height;
+                                                            }
+                                                            tallObj.push(heightGroup[i]);
+                                                        }
+                                                    }
+                                                }
+                                                if (heightGroup.length > 1) {
+                                                    if (maxHeight - minHeight < (maxHeight + minHeight) / 10) {
+                                                        classItem = classList[heightGroup.length - 1][0];
+                                                        for (var i in heightGroup) {
+                                                            $(heightGroup[i].elem).css('height', getStyleHeight(classItem.width, minHeight) + padding + 'rem');
+                                                        }
+                                                    } else if (maxHeight - minHeight * 2 < (maxHeight + minHeight) / 10 && maxHeight - minHeight * 2 > -(maxHeight + minHeight) / 20 && shortObj.length >= 2) {
+                                                        classItem = classList[2][1];
+
+                                                        if (getStyleHeight(classItem.width, maxHeight) > getStyleHeight(classItem.width, minHeight) * 2 + padding) {
+                                                            tempShortHeight = getStyleHeight(classItem.width, minHeight);
+                                                            tempTallHeight = tempShortHeight * 2 + padding;
+                                                        } else {
+                                                            tempTallHeight = getStyleHeight(classItem.width, maxHeight);
+                                                            tempShortHeight = (tempTallHeight - padding) / 2
+                                                        }
+                                                        for (var i in tallObj) {
+                                                            $(tallObj[i].elem).css('height', tempTallHeight + padding + 'rem');
+                                                        }
+                                                        for (var i in shortObj) {
+                                                            $(shortObj[i].elem).css('height', tempShortHeight + padding + 'rem').appendTo(listField);
+                                                        }
+                                                    } else if (shortObj.length >= 2) {
+                                                        classItem = classList[2][2];
+
+                                                        for (var i in tallObj) {
+                                                            $(tallObj[i].elem).css('height', getStyleHeight(1, tallHeight) + padding + 'rem');
+                                                        }
+
+                                                        for (var i in shortObj) {
+                                                            $(shortObj[i].elem).css('height', getStyleHeight(classItem.width, minHeight) + padding + 'rem').appendTo(listField);
+                                                        }
+                                                    } else if (tallObj.length >= 2) {
+                                                        classItem = classList[2][2];
+                                                        for (var i in tallObj) {
+                                                            $(tallObj[i].elem).css('height', getStyleHeight(classItem.width, tallHeight) + padding + 'rem').appendTo(listField);
+                                                        }
+                                                        for (var i in shortObj) {
+                                                            $(shortObj[i].elem).css('height', getStyleHeight(1, minHeight) + padding + 'rem');
+                                                        }
+                                                    } else {
+                                                        classItem = classList[0][0];
+                                                    }
+                                                } else {
+                                                    classItem = classList[0][0];
+                                                }
+                                            } else {
+                                                classItem = classList[0][0];
+                                            }
+                                            listField.addClass(classItem.name);
+                                            function getStyleHeight(width, height) {
+                                                return Math.floor(height * (width * parentWidth - padding)) / 100;
+                                            }
+                                        });
+                                    })(PRselector, SetSize);
+                                }
+    </script>
+    {template 'share'}
+</html>

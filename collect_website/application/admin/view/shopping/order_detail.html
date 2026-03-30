@@ -1,0 +1,414 @@
+{include file="common/header_inner_new"}
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">账单编号</div>
+                            <div class="layui-input-block">
+                                {$order['ordersn']}
+                            </div>
+                        </div>
+                        {if $order['origin_type'] == 0}
+                            <!--系统内商品订单-->
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">商品详情</div>
+                                <div class="layui-input-block">
+                                    <table class="layui-table">
+                                        <thead>
+                                        <tr>
+                                            {if $goods['have_specs']==1}
+                                            <th>规格名称</th>
+                                            {/if}
+                                            <th>购买数量</th>
+                                            <th>商品总额</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {volist name="order['content']['buy_attr']" id="vo"}
+                                        <tr>
+                                            {if $goods['have_specs']==1}
+                                            <td>{$vo['attr_name']}</td>
+                                            {/if}
+                                            <td>{$vo['buy_num']} {$order['unit']}</td>
+                                            <td>{$order['currency']} {$vo['now_gprice']}</td>
+                                        </tr>
+                                        {/volist}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">商品数量</div>
+                                <div class="layui-input-block">
+                                    {$order['total_num']} {$order['unit']}
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">商品总额</div>
+                                <div class="layui-input-block">
+                                    {$order['currency']} {$order['total_price']}
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">其他费用</div>
+                                <div class="layui-input-block">
+                                    {$order['content']['other_fee']['otherfee_currency']} {$order['content']['other_fee']['otherfee_total']}
+                                    <table class="layui-table">
+                                        <thead>
+                                        <tr>
+                                            <th>费用名称</th>
+                                            <th>费用说明</th>
+                                            <th>计费标准</th>
+                                            <th>计费价格</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {volist name="order['content']['other_fee']['otherfee_content']['name']" key="key" id="vo"}
+                                        <tr>
+                                            <td>{$vo}</td>
+                                            <td>{$order['content']['other_fee']['otherfee_content']['desc'][$key-1]}</td>
+                                            <td>
+                                                {if(isset($order['content']['other_fee']['otherfee_content']['otherfee_standard_name'][$key-1]))}
+                                                    {$order['content']['other_fee']['otherfee_content']['otherfee_standard_name'][$key-1]}
+                                                {else}
+                                                    其它
+                                                {/if}
+                                            </td>
+                                            <td>{$order['content']['other_fee']['otherfee_currency']} {$order['content']['other_fee']['otherfee_content']['price'][$key-1]}</td>
+                                        </tr>
+                                        {/volist}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">减免金额</div>
+                                <div class="layui-input-block">
+                                    - {$order['currency']} {$order['content']['reduction_money']}
+                                </div>
+                            </div>
+                            {if isset($order['content']['gift_money'])}
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">抵扣费用</div>
+                                <div class="layui-input-block">
+                                    - {$order['currency']} {$order['content']['gift_money']}
+                                </div>
+                            </div>
+                            {/if}
+                            {if !empty($order['content']['prefe_gift'])}
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">订单随赠</div>
+                                <div class="layui-input-block">
+                                    <table class="layui-table">
+                                        <thead>
+                                        <tr>
+                                            <th>类别</th>
+                                            <th>内容</th>
+                                            <th>数量</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {volist name="order['content']['prefe_gift']" key="key" id="vo"}
+                                        <tr>
+                                            <td>{$vo['accgift_typeName']}</td>
+                                            <td>{$vo['accgift_content']}</td>
+                                            <td>{$vo['accgift_num']}</td>
+                                        </tr>
+                                        {/volist}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            {/if}
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">实付金额</div>
+                                <div class="layui-input-block">
+                                    {$order['currency']} {$order['true_money']}
+                                </div>
+                            </div>
+                        {elseif($order['origin_type'] == 1)}
+                            <!--backydrop/其他订单-->
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">商品详情</div>
+                                <div class="layui-input-block">
+                                    <table class="layui-table">
+                                        <thead>
+                                        <tr>
+                                            <th>商品名称</th>
+                                            {if $goods['have_specs']==1}
+                                            <th>规格名称</th>
+                                            {/if}
+                                            <th>购买数量</th>
+                                            <th>商品总额</th>
+                                            <th>操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>{$goods['goods_name']}</td>
+                                            {if($goods['have_specs']==1)}
+                                                <td colspan="3">
+                                                    <table class="layui-table">
+                                                        {volist name="goods_sku" id="v"}
+                                                        <tr>
+                                                            <td>{$v['value_name']}</td>
+                                                            <td>x&nbsp;{$v['good_num']}</td>
+                                                            <td>RMB￥&nbsp;{$v['good_price']}</td>
+                                                        </tr>
+                                                        {/volist}
+                                                    </table>
+                                                </td>
+                                            {else}
+                                                <td>x {$order['content']['good_num']}</td>
+                                                <td>RMB￥ {$order['content']['good_price']}</td>
+                                            {/if}
+                                            <td><a href="https://www.gogo198.cn/goods-{$goods['goods_id']}.html" class="layui-btn layui-btn-primary" target="_blank">查看商品</a></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">实付金额</div>
+                                <div class="layui-input-block">
+                                    RMB￥ {$order['true_money']}
+                                </div>
+                            </div>
+                            {if ($order['status']==-5 || $order['status']==-7)}
+                                <div class="layui-form-item">
+                                    <div class="layui-form-label">退换货信息</div>
+                                    <div class="layui-input-block">
+                                        <table class="layui-table">
+                                            <thead>
+                                            <tr>
+                                                <th>申请类型</th>
+                                                <th>退换货备注</th>
+                                                <th>退换货数量</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td>{if $order['return_content']['applyType']==1}商品退货{elseif($order['return_content']['applyType']==2)}商品换货{/if}</td>
+                                                <td>{$order['return_content']['applyContent']}</td>
+                                                <td>x {$order['return_content']['quantity']}</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            {/if}
+                            <div class="layui-form-item">
+                                <div class="layui-form-label"></div>
+                                <div class="layui-input-block">
+                                    {if $order['status']==-2}
+                                        <!--确认采购，有货-->
+                                        <div class="layui-btn layui-btn-success" onclick="contact()">有货，支付通知</div>
+                                        <div class="layui-btn layui-btn-primary" onclick="cancel()">无货，取消通知</div>
+                                    {/if}
+                                    {if $order['status']==-3}
+                                        <!--确认取消-->
+                                        <div class="layui-btn layui-btn-primary" onclick="cancel()">确认取消订购</div>
+                                        <!--拒绝取消-->
+<!--                                        <div class="layui-btn layui-btn-normal" onclick="reject_cancel()">拒绝取消订购</div>-->
+                                    {/if}
+                                    {if ($order['status']==-5 || $order['status']==-7)}
+                                        <!--确认退换货-->
+                                        <div class="layui-btn layui-btn-success" onclick="apply_return({$order['status']})">同意退换货</div>
+                                        <!--拒绝退换货-->
+                                        <div class="layui-btn layui-btn-primary" onclick="reject_return({$order['status']})">拒绝退换货</div>
+                                    {/if}
+                                </div>
+                            </div>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;display:none;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+
+            $.ajax({
+                url:"{:Url('admin/shopping/save_activity')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+
+    //有货，通知支付
+    function contact(){
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认通知用户支付吗？', {
+            btn: ['确认','取消']
+        }, function() {
+            layer.load();
+            $.ajax({
+                url: "{:Url('admin/shopping/order_detail')}",
+                method: 'post',
+                data: {'id': "{$id}", 'method': 2},
+                dataType: 'JSON',
+                success: function (res) {
+                    layer.closeAll('loading');
+                    layer.msg(res.msg, {time: 2000}, function () {
+                        if (res.code == 0) {
+                            window.location.reload();
+                        }
+                    });
+                },
+                error: function (data) {
+                    layer.msg('系统错误', {time: 2000});
+                }
+            });
+        },function(){
+
+        });
+    }
+
+    //无货，取消
+    function cancel(){
+        var layer = layui.layer,$ = layui.$;
+
+        layer.confirm('确认取消订单吗？', {
+            btn: ['确认','取消']
+        }, function() {
+            layer.load();
+            $.ajax({
+                url: "{:Url('admin/shopping/order_detail')}",
+                method: 'post',
+                data: {'id': "{$id}", 'method': 1},
+                dataType: 'JSON',
+                success: function (res) {
+                    layer.closeAll('loading');
+                    layer.msg(res.msg, {time: 2000}, function () {
+                        if (res.code == 0) {
+                            window.location.reload();
+                        }
+                    });
+                },
+                error: function (data) {
+                    layer.msg('系统错误', {time: 2000});
+                }
+            });
+        },function(){
+
+        });
+    }
+
+    //同意退换货
+    function apply_return(){
+        var layer = layui.layer,$ = layui.$;
+
+        layer.confirm('确认同意退换货吗？', {
+            btn: ['确认','取消']
+        }, function() {
+            layer.load();
+            $.ajax({
+                url:"{:Url('admin/shopping/order_detail')}",
+                method:'post',
+                data:{'id':"{$id}",'method':3},
+                dataType:'JSON',
+                success:function(res){
+                    layer.closeAll('loading');
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            window.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+        }, function(){
+
+        });
+    }
+
+    //拒绝退换货
+    function reject_return(){
+        var layer = layui.layer,$ = layui.$;
+
+        layer.confirm('确认拒绝退换货吗？', {
+            btn: ['确认','取消']
+        }, function() {
+            layer.load();
+            $.ajax({
+                url: "{:Url('admin/shopping/order_detail')}",
+                method: 'post',
+                data: {'id': "{$id}", 'method': 4},
+                dataType: 'JSON',
+                success: function (res) {
+                    layer.closeAll('loading');
+                    layer.msg(res.msg, {time: 2000}, function () {
+                        if (res.code == 0) {
+                            window.location.reload();
+                        }
+                    });
+                },
+                error: function (data) {
+                    layer.msg('系统错误', {time: 2000});
+                }
+            });
+        }, function(){
+
+        });
+    }
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+
+</script>
+</body>
+</html>

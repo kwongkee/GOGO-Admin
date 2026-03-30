@@ -1,0 +1,41 @@
+<?php defined('IN_IA') or exit('Access Denied');?><div class="bottom">
+    <p>版权所有 © Gogo|購購網    粤ICP备09003656号 </p>
+    <p>中国海关注册编码：44289609SL   跨境电商平台备案：C011000000332982</p>
+</div>
+<footer style="height: 60px;">
+    <div class="footer-nav">
+        <ul>
+            <a href="https://im.7x24cc.com/phone_webChat.html?accountId=N000000014488&chatId=f6600c02-b23f-429f-baeb-c6209dbf6219&nickName=<?php  echo $_W['fans']['nickname'];?>"><li><img src="../addons/sz_yi/static/images/icon_01.png" alt="">在线客服</li></a>
+            <li class="navline"></li>
+            <a href="#" id="scan"><li><img src="../addons/sz_yi/static/images/icon_02.png" alt="">扫码选购</li></a>
+            <li class="navline"></li>
+            <a href="#" onclick="locaMember();"><li><img src="../addons/sz_yi/static/images/icon_03.png" alt="">服务中心</li></a>
+        </ul>
+    </div>
+</footer>
+<script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<script>
+
+    wx.config({
+        debug: false,
+        appId: "<?php  echo $_W['account']['jssdkconfig']['appId'];?>",
+        timestamp: "<?php  echo $_W['account']['jssdkconfig']['timestamp'];?>",
+        nonceStr: "<?php  echo $_W['account']['jssdkconfig']['nonceStr'];?>",
+        signature: "<?php  echo $_W['account']['jssdkconfig']['signature'];?>",
+        jsApiList: ['scanQRCode']
+    });
+    $('#scan').bind('click',function () {
+        wx.scanQRCode({
+            needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+            scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+            success: function (res) {
+                var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果\
+
+                window.location.href="<?php  echo $this->createMobileUrl('shop/scan_qrcode_result')?>"+"&code="+result;
+            }
+        });
+    });
+    function locaMember() {
+        window.location.href='<?php  echo $this->createMobileUrl("member/easy_deliver_index")?>';
+    }
+</script>

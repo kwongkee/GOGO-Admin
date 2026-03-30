@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="common/meta"}
+    <link rel="stylesheet" href="./static/hadmin/layui/css/layui.css"></link>
+</head>
+<body class="gray-bg">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-md12">
+
+            <form class="layui-form" id="query_form">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">品牌：</label>
+                        <div class="layui-input-inline">
+                            <input type="tel" name="brand" id="brand" autocomplete="off" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">名称：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="name" id="name" autocomplete="off" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">开始：</label>
+                        <div class="layui-input-inline">
+                            <input  type="text" name="stime" value="" id="stime"  placeholder="请输入开始时间" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">结束：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="etime" value="" id="etime"  placeholder="请输入结束时间" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">状态</label>
+                        <div class="layui-input-inline">
+                            <select name="status" id="status" lay-verify="required">
+                                <option value=""></option>
+                                <option value="0">已处理</option>
+                                <option value="1">未处理</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <div class="layui-input-inline" style="width: 100%;">
+                            <button class="layui-btn" id="query_search"><i class="layui-icon"></i>查询</button>
+                            <button class="layui-btn layui-btn layui-btn-danger" id="updateTotalGoods"><i class="layui-icon layui-icon-refresh"></i>批量更新</button>
+                            <button class="layui-btn" id="load"><i class="layui-icon"></i>导入</button>
+                            <button class="layui-btn" id="exportTotalGoods"><i class="layui-icon layui-icon-export"></i>导出</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <hr class="layui-bg-orange"/>
+        </div>
+        <div class="layui-col-md12">
+            <table id="demoPage"></table>
+        </div>
+    </div>
+</div>
+</body>
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<!--<script src="./static/hadmin/js/bootstrap.min.js?v=3.3.6"></script>-->
+<!--<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>-->
+<script src="./static/hadmin/layui/layui.all.js"></script>
+<script type="text/html" id="barMenu">
+    <a class="layui-btn layui-btn-sm" lay-event="edit" onclick="edit('{{d.id}}');return false;">编辑</a>
+    <a class="layui-btn layui-btn-sm" lay-event="link" onclick="linkList('{{d.goodssn}}');return false;">链接选择</a>
+    <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del" onclick="del(this,'{{d.id}}');return false;">删除</a>
+</script>
+<script>
+    // admin/goods/add
+    var datagrid;
+    layui.use(['upload','form','laydate','table','layer','element'], function () {
+        upload = layui.upload;
+        form = layui.form;
+        var laydate = layui.laydate;
+        table = layui.table;
+        layer = layui.layer;
+        element = layui.element;
+        laydate.render({
+            elem: '#stime', //指定元素
+            type:'datetime'
+        });
+        laydate.render({
+            elem: '#etime', //指定元素
+            type:'datetime'
+        });
+
+        var load = layer.load(1);
+        //执行渲染
+        datagrid = table.render({
+            elem: '#demoPage', //指定原始表格元素选择器（推荐id选择器）
+            url:"{:Url('admin/goods/layuiAjaxGetGoodsInfo')}",
+            where : {}, //增加条件，默认加载表格数据就带上参数
+            page: true,
+            loading:true,
+            toolbar: true,
+            defaultToolbar:['filter', 'exports'],
+            width:"100%",
+            height: "full-100", //容器高度
+            limits: [10,20,50,100,200,500],//每页数据选择项
+            limit: 10 ,//默认采用60
+            cols:  [[ //标题栏
+                {field: 'id', title: '序号', width: 100},
+                {field: 'goods_name', title: '商品名称', width: 200},
+                {field: 'brand', title: '品牌', width: 100},
+                {field: 'origin_country', title: '原产国', width: 80},
+                {field: 'price', title: '单价', width: 80},
+                {field: 'netwt', title: '净重', width: 80},
+                {field: 'grosswt', title: '毛重', width: 80},
+                {field: 'hscode', title: 'hs编码', width: 120},
+                {field: 'create_time', title: '时间', width: 130},
+                {fixed: 'right',width:295, align:'center', 'title':'操作', toolbar: '#barMenu'},
+            ]],
+            response: {
+                statusName: 'code' //数据状态的字段名称，默认：code
+                ,statusCode: 0 //成功的状态码，默认：0
+                ,msgName: 'message' //状态信息的字段名称，默认：msg
+            },
+            done:function () {
+                layer.close(load);
+            }
+        });
+
+    });
+
+
+    $('#load').bind("click",function () {
+        layer.open({
+            type: 1,        //弹窗类型
+            title: false,   //显示标题
+            closeBtn: 1,     //是否显示关闭按钮
+            shadeClose: true, //显示模态窗口
+            area: ['390px', '189px'], //宽高
+            content: '{$select}<div class="col-sm-12" id="upload">\n' +
+                '        <div class="ibox float-e-margins">\n' +
+                '            <div class="ibox-content">\n' +
+                '                <div class="page-container">\n' +
+                '                    <button type="button" class="layui-btn" id="file2">\n' +
+                '                        <i class="layui-icon">&#xe67c;</i>请上传商品文件格式,最大上限1000条\n' +
+                '                    </button>\n' +
+                '                </div>\n' +
+                '            </div>\n' +
+                '        </div>\n' +
+                '</div>', //弹窗内容
+            cancel:function () {
+                // $('#f').css('display','none');
+                window.location.reload();
+            }
+
+        });
+        var uploadInst = upload.render({
+            elem: '#file2' //绑定元素
+            ,accept:"file"
+            , url: '{:Url("admin/goods/add")}' //上传接口
+            ,data:{
+                code:function () {
+                    return $('#code').val();
+                }
+            }
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            , done: function (res) {
+                layer.closeAll('loading');
+                layer.alert(res.message);
+                // if (res.code==0){
+                //     parent.layer.msg(res.message, {icon: 6});
+                // } else{
+                //     parent.layer.msg(res.message, {icon: 5});
+                // }
+            }
+            , error: function () {
+                //请求异常回调
+                parent.layer.msg('请求异常', {icon: 5});
+            }
+        });
+        form.render();
+        return false;
+    });
+    function edit(id) {
+        //页面层
+        layer.open({
+            type: 2,        //弹窗类型
+            title: false,   //显示标题
+            closeBtn: 1,     //是否显示关闭按钮
+            shadeClose: true, //显示模态窗口
+            // skin: 'layui-layer-rim', //加上边框
+            area: ['800px', '600px'], //宽高
+            content: '{:Url("admin/goods/edit")}&id='+id, //弹窗内容
+            cancel:function () {
+                datagrid.reload({
+                    page: {
+                        curr: $(".layui-laypage-em").next().html()
+                    }
+                });
+            }
+        });
+        return false;
+    }
+
+    function linkList(goodid){
+        //页面层
+        layer.open({
+            type: 2,        //弹窗类型
+            title: false,   //显示标题
+            closeBtn: 1,     //是否显示关闭按钮
+            shadeClose: true, //显示模态窗口
+            // skin: 'layui-layer-rim', //加上边框
+            area: ['900px', '600px'], //宽高
+            content: '{:Url("admin/goods/goodsOtherPlatformLinkList")}&oid='+goodid, //弹窗内容
+            cancel:function () {
+                datagrid.reload({
+                    page: {
+                        curr: $(".layui-laypage-em").next().html()
+                    }
+                });
+            }
+        });
+        return false;
+    }
+
+    function del(obj,id) {
+        layer.open({
+            content: '是否确定删除？',
+            yes: function(index, layero){
+                //do something
+                $.ajax({
+                    url: "{:Url('admin/goods/delstock')}&id="+id,
+                    type:'get',
+                    dataType:'json',
+                    success:function (res) {
+                        if (res.code==0){
+                            layer.msg(res.message, {icon: 6});
+                            $(obj).parent().parent().remove();
+                        } else{
+                            layer.msg(res.message, {icon: 5});
+                        }
+                    } ,
+                    error:function (err) {
+                        layer.msg('链接服务错误!', {icon: 5});
+                    }
+                })
+            },
+            no:function () {
+                layer.close(index); //如果设定了yes回调，需进行手工关闭
+            }
+        });
+        return false;
+    }
+
+    $("#query_search").bind('click',function () {
+        var brand = $("#brand").val();
+        var name = $('#name').val();
+        var status = $('#status').val();
+        var stime = $('#stime').val();
+        var etime = $('#etime').val();
+        datagrid.reload({
+            where: { //设定异步数据接口的额外参数，任意设
+                brand: brand,
+                name: name,
+                status:status,
+                stime:stime,
+                etime:etime
+            }
+            ,page: {
+                curr: 1 //重新从第 1 页开始
+            }
+        });
+        return false;
+       // window.location.href="{:Url('admin/goods/list')}&searchVal="+v+"&searchType="+searchType+"&status="+status+"&stime="+stime+"&etime="+etime;
+    });
+    $('#updateTotalGoods').bind('click',function () {
+        layer.open({
+            type: 1,        //弹窗类型
+            title: false,   //显示标题
+            closeBtn: 1,     //是否显示关闭按钮
+            shadeClose: true, //显示模态窗口
+            area: ['485px', '227px'], //宽高
+            content: '<div class="col-sm-12" id="upload2" style="margin-top: 62px;">\n' +
+                '        <div class="ibox float-e-margins">\n' +
+                '            <div class="ibox-content">\n' +
+                '                <div class="page-container">\n' +
+                '                    <button type="button" class="layui-btn" id="file3">\n' +
+                '                        <i class="layui-icon">&#xe67c;</i>请上传更新商品文件格式,最大上限1000条\n' +
+                '                    </button>\n' +
+                '                </div>\n' +
+                '            </div>\n' +
+                '        </div>\n' +
+                '</div>', //弹窗内容
+            cancel: function () {
+                // $('#f').css('display','none');
+                window.location.reload();
+            }
+        });
+        var uploadInst = upload.render({
+            elem: '#file3' //绑定元素
+            ,accept:"file"
+            , url: '{:Url("admin/goods/updateTotalGoodsFormImportExcel")}' //上传接口
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            , done: function (res) {
+                layer.closeAll('loading');
+                layer.alert(res.msg);
+            }
+            , error: function () {
+                //请求异常回调
+                parent.layer.msg('网络连接错误', {icon: 5});
+            }
+        });
+        form.render();
+        return false;
+    });
+    $('#exportTotalGoods').bind('click',function () {
+        var name=$('#name').val();
+        var brand=$('#brand').val();
+        var stime=$('#stime').val();
+        var etime=$('#etime').val();
+        var status=$('#status').val();
+        var url="{:Url('admin/goods/exportTotalGoods')}&name="+name+"&brand="+brand+"&stime="+stime+"&etime="+etime+"&status="+status;
+        window.location.href=url;
+        return false;
+    });
+</script>
+</html>
+

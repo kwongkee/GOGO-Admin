@@ -1,0 +1,174 @@
+{include file="public/header_new"}
+<style>
+   img{ width:20px;height:20px;}
+</style>
+<body class="gray-bg">
+
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+              <div class="ibox-content">
+
+
+                <table id="table"
+
+                  /*默认排序项*/
+                  data-sort-name="create_time"
+                  data-sort-order="desc"
+                  /*工具栏相关*/
+                  data-toolbar="#toolbar"
+                  data-search="true"          /*搜索框*/
+                  data-search-on-enter-key="false"
+                  data-show-refresh="true"    /*刷新按钮*/
+                  /*分页相关*/
+                  data-side-pagination="server"
+                  data-pagination="false"      /*显示分页*/
+                  data-page-size="15"         /*每页显示条数*/
+                  /*移动端相关*/
+                  data-mobile-responsive="true"
+                  data-card-view="true"
+                  data-show-columns="true"
+                  /*radio or checkbox字段名称*/
+                  data-select-item-name="tids" >
+
+                  <thead>
+                    <tr>
+                      <th data-field="id"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="false">ID</th>
+                      <th data-field="bill_num"
+                        data-align="center"
+                        data-sortable="true">提单号码</th>
+                      <th data-field="username"
+                        data-align="center"
+                        data-sortable="true">提交用户</th>
+                    <th data-field="former"
+                        data-align="center"
+                        data-sortable="true">发件人</th>
+                      <th data-field="former_phone"
+                        data-align="center"
+                        data-sortable="true">发件人电话</th>
+                      <th data-field="former_zip"
+                        data-align="center"
+                        data-sortable="true">发件人邮编</th>
+                    <th data-field="former_address"
+                        data-align="center"
+                        data-sortable="true">发件人地址</th>
+                    <th data-field="former_country"
+                        data-align="center"
+                        data-sortable="true">发件人国家</th>
+                    <th data-field="former_city"
+                        data-align="center"
+                        data-sortable="true">发件人城市</th> 
+                        <th data-field="create_time"
+                        data-align="center"
+                        data-sortable="true">创建时间</th>   
+                    <th data-field="manage"
+                        data-align="center"
+                        class="td-manage">操作</th>
+                      </tr>
+                    </thead>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+  <script type="text/javascript">
+
+var table;
+
+$(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:Url('admin/ccelec/datalist')}",
+            queryParams: queryParams,
+
+        });
+        $('.form-control').attr('placeholder','搜索订单号');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+
+        };
+        return temp;
+    };
+
+    //发送
+    function seeInfo(bill_num)
+    {
+        var index = layer.open({
+            type: 2,
+            title: "订单详情",
+            content: "{:Url('admin/ccelec/getinfo')}&bill_num="+bill_num
+        });
+        layer.full(index);
+    }
+
+    function printOrder(ordersn)
+    {
+		layer.confirm('确认提交后台打印？', {
+				btn: ['确认','取消']
+			}, function(){
+				layer.msg('的确很重要', {icon: 1});
+				$.ajax({
+					url:"{:Url('admin/travel_express/printOrder')}",
+					type:"POST",
+					dataType:"json",
+					data:{ordersn: ordersn},
+					success:function (res) {
+						layer.msg(res.msg, {
+							icon: 1,
+							time: 2000
+						}, function(){
+							window.location.reload();
+						});
+					},
+					error:function (xhr) {
+						layer.msg('链接服务错误..');
+					}
+				});
+			}, function(){
+			
+		});
+    }
+
+    function exportOrder(ordersn)
+    {
+      $.ajax({
+					url:"{:Url('admin/travel_express/orderExport')}",
+					type:"POST",
+					dataType:"json",
+					data:{ordersn: ordersn},
+					success:function (res) {
+						layer.msg(res.msg, {
+							icon: 1,
+							time: 2000
+						}, function(){
+              if(res.status==1)
+              {
+                var url = "{:Url('admin/travel_express/downExcel')}&ordersn="+ordersn;
+                window.location.href=url;
+              }else{
+                window.location.reload();
+              }
+						});
+					},
+					error:function (xhr) {
+						layer.msg('链接服务错误..');
+					}
+				});
+    }
+
+
+</script>
+
+</body>
+</html>

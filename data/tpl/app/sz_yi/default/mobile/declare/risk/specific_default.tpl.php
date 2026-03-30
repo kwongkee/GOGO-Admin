@@ -1,0 +1,195 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/header', TEMPLATE_INCLUDEPATH)) : (include template('common/header', TEMPLATE_INCLUDEPATH));?>
+<link href="../addons/sz_yi/static/css/layui.css" rel="stylesheet">
+<style>
+    .layui-table td, .layui-table th{ text-align: center;}
+    .layui-table th{ background-color: #ecf6fc; }
+    .required{color: red;font-size: 1.3rem;right: 3px;position: relative;top: 7px;}
+    .icon-right{
+        font-size: 20px;
+        line-height: 20px;
+        padding-right: 10px;
+        vertical-align: middle;
+    }
+    .layui-layer-adminRight{
+        top : 0px !important;
+    }
+    .layui-layer-btn .layui-layer-btn0{border-color: #F7931E!important;background-color: #F7931E!important;}
+    .layui-table-cell{padding:0 2px;}
+    .laytable-cell-1-0-2{height:auto;min-height:auto;}
+    .layui-layer-shade{z-index:19891017 !important;display:none;}
+    .layui-layer-loading{z-index:19891018 !important;}
+    /**进度条**/
+    .layui-progress{display:none;position: fixed;background: #ffffff;border-radius: 5px;z-index:9999999;transform:translate(-50%,-50%);top: 50%;left:50%;width:80%;}
+</style>
+<div class="mask"  style="position: fixed; margin: 0px; padding: 0px;background: rgba(0, 0, 0,0.6); z-index: 999999; width: 100%; height: 100%; transition: all 0.2s ease 0s;display:none;left: 0;top: 0;"></div>
+<div class="layui-progress" lay-showpercent="true" lay-filter="demo" >
+    <p style="color:#fff;text-align:center;margin-top:10px;">系统进行中，请稍后...</p>
+    <div class="layui-progress-bar layui-bg-red" lay-percent="0%"></div>
+</div>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <div class="layui-btn layui-btn-normal layui-btn-sm" onclick="fillVacancy()">补缺</div>
+                </div>
+                <div class="layui-card-body" style="padding:0;">
+                    <table class="layui-hide" id="mainTable"></table>
+                    <input type="text" name="ids" id="ids" value="" style="display:none;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="../addons/sz_yi/static/js/layui/layui.js"></script>
+<script>
+    $(function() {
+        layui.use(['layer', 'form', 'table', 'upload', 'laydate'], function () {
+            var $ = layui.$
+                , layer = layui.layer
+                , form = layui.form
+                , element = layui.element
+                , laydate = layui.laydate
+                , upload = layui.upload
+                , table = layui.table;
+
+            table.render({
+                elem: '#mainTable'
+                ,url: "<?php  echo $this->createMobileUrl('declare/risk');?>&op=specific_default&pa=1&logisticsNo=<?php  echo $logisticsNo;?>&batch_num=<?php  echo $batch_num;?>"
+                ,cellMinWidth: 200
+                ,cols: [[
+                    {field:'itemNo', title: '商品货号'}
+                    ,{field:'itemName', title: '商品名称'}
+                    ,{field:'gmodel', title: '规格型号'}
+                    // ,{align:'center',  title: '操作', templet: function(d){
+                    //         return [
+                    //             '<a onclick="openWindow('+ "'"+d.logisticsNo+"货值缺省列表'" +',' + "'"+ d.logisticsNo +"'" +','+"'"+d.pre_batch_num+"'"+ ','+1+');" class="layui-btn layui-btn-normal layui-btn-xs">补缺</a>',
+                    //         ].join('');
+                    //     }}
+                ]]
+                ,done: function(res,curr,count){
+                    let len = res.data.length;
+                    let str='';
+                    for(var i=0;i<len;i++){
+                        str+=res.data[i].id+',';
+                    }
+                    $('input[name="ids"]').val(str);
+                }
+                ,page: false
+            });
+
+            var $ = layui.$, active = {
+                reload: function(){
+                    //执行重载
+                    table.reload('mainTable', {
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                        ,where: {
+                            keywords: $("#keywords").val()
+                        }
+                    });
+                }
+            };
+        });
+    });
+
+    //显示进度条
+    function load(){
+        var n = 0;
+        timer = setInterval(function(){//按照时间随机生成一个小于95的进度，具体数值可以自己调整
+            n = n + Math.random()*10|0;
+            if(n>95){
+                n = 95;
+                clearInterval(timer);
+            }
+            $('.mask').show();
+            $('.layui-progress').show();
+            $('.layui-progress').find('.layui-progress-bar').css('width',n+'%').text(n+'%');
+        }, 50+Math.random()*1000);
+
+        return timer;
+    }
+
+    //隐藏进度条
+    function hide_load(timer){
+        clearInterval(timer);
+        $('.layui-progress').find('.layui-progress-bar').css('width','100%').text('100%');
+        setTimeout(function(){
+            $('.mask').hide();
+            $('.layui-progress').find('.layui-progress-bar').css('width','0%').text('0%');
+            $('.layui-progress').hide();
+        },500);
+    }
+
+    function fillVacancy(){
+        var layer = layui.layer;
+        var table = layui.table;
+        let ids = $('#ids').val();
+        if(ids=='' || ids==',' || typeof(ids)=='undefined'){
+            layer.msg('暂无规格缺省记录！');return false;
+        }
+
+        layer.confirm('请选择补缺方式', {
+            btn: ['系统补缺','人工补缺'] //按钮
+        }, function(){
+            // layer.load(); //上传loading
+            var timer = load();
+            $('.layui-layer-shade').show();
+            //系统补缺
+            $.ajax({
+                url:"<?php  echo $this->createMobileUrl('declare/risk');?>",
+                type:'POST',
+                dataType:'json',
+                data:{'op':'system_specific_fill','ids':ids},
+                success:function(json) {
+                    hide_load(timer);
+                    // layer.closeAll('loading'); //关闭loading
+                    $('.layui-layer-shade').hide();
+
+                    layer.msg(json.result.msg,{time:3000}, function () {
+                        if (json.status == -1)
+                        {
+
+                        }else if(json.status==1){
+                            table.reload('mainTable', {
+                                page: false
+                            });
+                        }
+                    });
+                }
+            });
+        }, function(){
+            //人工补缺
+            layer.closeAll('loading'); //关闭loading
+            var index = layer.open({
+                type: 2,
+                title: '人工补缺',
+                content: "<?php  echo $this->createMobileUrl('declare/risk');?>&op=manual_fill_page&type=2&batch_num=<?php  echo $batch_num;?>&ids="+ids,
+                area:['80%','250px']
+            });
+            // layer.full(index);
+        });
+    }
+
+    function openWindow(title,logisticsNo,batch_num,typ)
+    {
+        var layer = layui.layer;
+        var url = '';
+        if(typ==1){
+            //货值缺省列表
+            url="<?php  echo $this->createMobileUrl('declare/risk');?>&op=value_default&logisticsNo="+logisticsNo+"&batch_num="+batch_num;
+        }else if(typ==2){
+            //规格缺省列表
+            url="<?php  echo $this->createMobileUrl('declare/risk');?>&op=transaction_manage&id="+id;
+        }
+        var index = layer.open({
+            type: 2,
+            title: title,
+            content: url
+        });
+        layer.full(index);
+    }
+</script>
+<?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/footer', TEMPLATE_INCLUDEPATH)) : (include template('common/footer', TEMPLATE_INCLUDEPATH));?>

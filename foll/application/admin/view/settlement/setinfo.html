@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 14px;color: #fff;
+            font-size: 16px;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<div class="header">
+    <span>周期结算项目列表</span>
+    <a class="layui-btn" style="margin-right: 10%;" href="javascript:void(0);" onclick="black()">返回上一页</a>
+    <div></div>
+</div>
+
+<table class="layui-table">
+    <thead>
+    <tr class="ths">
+        <th>序号</th>
+        <th>商户</th>
+        <th>项目名称</th>
+        <th>开始时间</th>
+        <th>结束时间</th>
+        <th>计费类型 / 收费标准</th>
+        <th>执行状态</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    {volist name="data" id="vo" key="k"}
+    <tr class="boys">
+        <td>{$k}</td>
+        <td>{$vo['uid']|getDecls}</td>
+        <td>{$vo['project']}</td>
+        <td>{$vo['start']|date="Y-m-d",###}</td>
+        <td>{$vo['end']|date="Y-m-d",###}</td>
+        <td>
+            {switch name="$vo['goType']"}
+            {case value="1"}
+                <div class="layui-inline">
+                    <div class="layui-input-inline">
+                        <button class="layui-btn layui-btn-sm layui-btn-normal">按票</button>
+                    </div>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input" value="按【{$vo['money']}】元 / 票" readonly>
+                    </div>
+                </div>
+            {/case}
+
+            {case value="2"}
+                <div class="layui-inline">
+                    <div class="layui-input-inline">
+                        <button class="layui-btn layui-btn-sm layui-btn-normal">按订单总金额</button>
+                    </div>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input" value="按批次订单总额:【{$vo['percen']}】%" readonly>
+                    </div>
+                </div>
+            {/case}
+
+            {case value="3"}
+                <div class="layui-inline">
+                    <div class="layui-input-inline">
+                        <button class="layui-btn layui-btn-sm layui-btn-warm">按时间</button>
+                    </div>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input" value="按每【{$vo['day']}】天 / 收【{$vo['dayMoney']}】元" readonly>
+                    </div>
+                </div>
+
+            {/case}
+            {/switch}
+        </td>
+
+        <td>
+            {switch name="$vo['marks']"}
+            {case value="1"}
+            <button class="layui-btn layui-btn-sm layui-btn-normal">已完成</button>
+            {/case}
+
+            {case value="2"}
+            <button class="layui-btn layui-btn-sm">待执行</button>
+            {/case}
+
+            {case value="3"}
+            <button class="layui-btn layui-btn-sm layui-btn-warm">执行中</button>
+            {/case}
+            {/switch}
+        </td>
+
+        <td>
+            <button class="layui-btn layui-btn-sm layui-btn-danger" onclick="Del({$vo.id})">删除</button>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<div class="layui-box layui-laypage layui-laypage-default">
+    list->render()
+</div>
+
+<script type="text/javascript">
+
+    layui.use(['layer','jquery'],function(){
+        layer = layui.layer;
+        $ = layui.jquery;
+    });
+
+    function Del(ids) {
+        layer.confirm('您确定要删除吗?',{
+            icon:3,
+            btn:['确定','取消']
+        },function(){
+            $.post({
+                url:'{:Url("Settlement/del")}',
+                data:{id:ids},
+                dataType:'json',
+                success:function(e){
+                    if(e.code <=0) {
+                        layer.msg('删除失败，请稍后重试!')
+                        return false;
+                    }
+                    layer.msg(e.msg);
+                    setTimeout(function(){window.location.reload();},1000);
+                    // console.log(e);
+                }
+            })
+        })
+    }
+
+    // 返回上一页
+    function black() {
+        window.history.go(-1);
+    }
+
+</script>
+</body>
+</html>

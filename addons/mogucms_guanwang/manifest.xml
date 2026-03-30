@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.we7.cc" versionCode="0.8,1.0">
+	<application setting="false">
+		<name><![CDATA[永和首页PC官网代理]]></name>
+		<identifie><![CDATA[mogucms_guanwang]]></identifie>
+		<version><![CDATA[5.9.3]]></version>
+		<type><![CDATA[business]]></type>
+		<ability><![CDATA[合作代理商PC官网]]></ability>
+		<description><![CDATA[合作代理商PC官网]]></description>
+		<author><![CDATA[懒人源码]]></author>
+		<url><![CDATA[https://www.lanrenzhijia.com/]]></url>
+	</application>
+
+	<platform>
+		<subscribes>
+		</subscribes>
+
+		<handles>
+		</handles>
+
+		<rule embed="false" />
+		<card embed="false" />
+		
+		<supports>
+			<item type="system_welcome" />
+			<item type="webapp" />
+		</supports>
+        <plugins></plugins> 
+        <plugin-main name="" />
+
+	</platform>
+
+	<bindings>
+		<cover>
+			<entry title="封面" do="fengmian" state="" direct="false"/>
+		</cover>
+		<menu>
+			<entry title="网站设置" do="webset" state="detail" direct="false"/>
+			<entry title="登录设置" do="loginset" state="lt" direct="false"/>
+			<entry title="banner设置" do="banner" state="lt" direct="false"/>
+			<entry title="导航设置" do="menu" state="lt" direct="false"/>
+			<entry title="页面标题" do="title" state="index" direct="false"/>
+			<entry title="代理加盟" do="daili" state="index" direct="false"/>
+			<entry title="案例管理" do="case" state="index" direct="false"/>
+			<entry title="解决方案" do="solve" state="index" direct="false"/>
+			<entry title="我们的服务" do="service" state="index" direct="false"/>
+			<entry title="开发流程" do="development" state="index" direct="false"/>
+			<entry title="帮助中心" do="help" state="index" direct="false"/>
+			<entry title="我们能做什么" do="cando" state="index" direct="false"/>
+		</menu>
+		<system_welcome>
+			<entry title="Banner设置" do="banner" state="lt" direct="false"/>
+			<entry title="登录设置" do="loginset" state="lt" direct="false"/>
+			<entry title="网站设置" do="webset" state="wt" direct="false"/>
+			<entry title="团队介绍" do="team" state="tm" direct="false"/>
+			<entry title="资质证书" do="cert" state="ct" direct="false"/>
+			<entry title="新闻资讯" do="news" state="index" direct="false"/>
+			<entry title="案例管理" do="case" state="index" direct="false"/>
+			<entry title="适用客户" do="customer" state="index" direct="false"/>
+			<entry title="解决方案" do="solve" state="index" direct="false"/>
+			<entry title="我们的服务" do="service" state="index" direct="false"/>
+			<entry title="开发流程" do="development" state="index" direct="false"/>
+			<entry title="我们能做什么" do="cando" state="index" direct="false"/>
+			<entry title="我们的优势" do="youshi" state="index" direct="false"/>
+			<entry title="域名管理" do="zhandian" state="index" direct="false"/>
+			<entry title="小程序入口" do="rukou" state="index" direct="false"/>
+			<entry title="页面标题" do="title" state="index" direct="false"/>
+			<entry title="导航设置" do="menu" state="index" direct="false"/>
+			<entry title="代理加盟" do="daili" state="index" direct="false"/>
+			<entry title="帮助中心" do="help" state="index" direct="false"/>
+		</system_welcome>
+
+	</bindings>
+
+	<permissions>
+	</permissions>
+
+	<install><![CDATA[
+CREATE TABLE IF NOT EXISTS `ims_mogucms_guanwang_case` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(300) NOT NULL DEFAULT '',
+  `image` varchar(300) NOT NULL DEFAULT '',
+  `erweima` varchar(300) NOT NULL DEFAULT '',
+  `domainid` int(11) NOT NULL,
+  `addtime` int(10) NOT NULL,
+  `category` int(11) NOT NULL COMMENT '类别',
+  `ord` int(11) DEFAULT '0',
+  `myurl` varchar(300) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_mogucms_guanwang_case_category` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `categoryname` varchar(90) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT '分类名',
+  `domainid` int(11) NOT NULL,
+  `ord` int(10) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_mogucms_guanwang_cert` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `domainid` bigint(11) NOT NULL,
+  `name` varchar(60) DEFAULT NULL,
+  `image` varchar(500) DEFAULT NULL,
+  `addtime` int(10) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_mogucms_guanwang_customer` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `domainid` bigint(11) NOT NULL,
+  `title` varchar(60) DEFAULT NULL,
+  `image` varchar(500) DEFAULT NULL,
+  `addtime` int(10) NOT NULL,
+  `dizhi` varchar(300) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_mogucms_guanwang_domain` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `domain` varchar(100) NOT NULL,
+  `username` varchar(30) DEFAULT NULL,
+  `isfounder` smallint(1) NOT NULL DEFAULT '0',
+  `val` longtext,
+  `addtime` int(10) NOT NULL,
+  `loginset` text,
+  `banner` longtext,
+  `ourservice` longtext,
+  `development` longtext,
+  `cando` longtext,
+  `youshi` longtext,
+  `title` longtext,
+  `menu` longtext,
+  `daili` longtext,
+  `module` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_mogucms_guanwang_help` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(300) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '新闻标题',
+  `content` mediumtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '新闻内容',
+  `domainid` int(11) NOT NULL,
+  `addtime` int(10) NOT NULL,
+  `category` int(11) NOT NULL COMMENT '类别',
+  `abstract` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '摘要',
+  `keywords` varchar(900) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `description` varchar(900) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `num` int(11) NULL DEFAULT NULL,
+  `image` varchar(300) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_mogucms_guanwang_help_category` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `categoryname` varchar(90) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT '分类名',
+  `domainid` int(11) NOT NULL,
+  `ord` int(10) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_mogucms_guanwang_news` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(300) NOT NULL DEFAULT '' COMMENT '新闻标题',
+  `content` mediumtext COMMENT '新闻内容',
+  `domainid` int(11) NOT NULL,
+  `addtime` int(10) NOT NULL,
+  `category` int(11) NOT NULL COMMENT '类别',
+  `abstract` text COMMENT '摘要',
+  `keywords` varchar(900) DEFAULT NULL,
+  `description` varchar(900) DEFAULT NULL,
+  `num` int(11) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_mogucms_guanwang_news_category` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `categoryname` varchar(90) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT '分类名',
+  `domainid` int(11) NOT NULL,
+  `ord` int(10) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_mogucms_guanwang_rukou` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `domainid` bigint(11) NOT NULL,
+  `title` varchar(60) DEFAULT NULL,
+  `abstract` varchar(120) DEFAULT NULL,
+  `image` varchar(500) DEFAULT NULL,
+  `addtime` int(10) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_mogucms_guanwang_solve` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(300) NOT NULL DEFAULT '',
+  `content` mediumtext COMMENT '新闻内容',
+  `domainid` int(11) NOT NULL,
+  `addtime` int(10) NOT NULL,
+  `category` int(11) NOT NULL COMMENT '类别',
+  `count` int(11) NOT NULL,
+  `keywords` varchar(900) DEFAULT NULL,
+  `description` varchar(900) DEFAULT NULL,
+  `image` varchar(600) DEFAULT NULL,
+  `erweima` varchar(600) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `ims_mogucms_guanwang_team` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `domainid` bigint(11) NOT NULL,
+  `name` varchar(60) DEFAULT NULL,
+  `zhiwei` varchar(60) DEFAULT NULL,
+  `image` varchar(500) DEFAULT NULL,
+  `addtime` int(10) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+]]></install>
+	<uninstall><![CDATA[DROP TABLE IF EXISTS `ims_mogucms_guanwang_case`;
+DROP TABLE IF EXISTS `ims_mogucms_guanwang_case_category`;
+DROP TABLE IF EXISTS `ims_mogucms_guanwang_cert`;
+DROP TABLE IF EXISTS `ims_mogucms_guanwang_customer`;
+DROP TABLE IF EXISTS `ims_mogucms_guanwang_domain`;
+DROP TABLE IF EXISTS `ims_mogucms_guanwang_help`;
+DROP TABLE IF EXISTS `ims_mogucms_guanwang_help_category`;
+DROP TABLE IF EXISTS `ims_mogucms_guanwang_news`;
+DROP TABLE IF EXISTS `ims_mogucms_guanwang_news_category`;
+DROP TABLE IF EXISTS `ims_mogucms_guanwang_rukou`;
+DROP TABLE IF EXISTS `ims_mogucms_guanwang_solve`;
+DROP TABLE IF EXISTS `ims_mogucms_guanwang_team`;
+]]></uninstall>
+	<upgrade><![CDATA[upgrade.php]]></upgrade>
+
+</manifest>

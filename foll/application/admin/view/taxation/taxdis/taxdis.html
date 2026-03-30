@@ -1,0 +1,304 @@
+{include file="public/header"}
+<style>
+
+    .formBox{
+        margin: 10px auto;
+        width: 60%;
+        height: auto;
+        box-shadow: 0 0 3px skyblue;
+        text-align: center;
+    }
+
+    .formBox .layui-form-item{
+        margin-top: 15px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .disBox{
+        margin: 2px auto;
+        width: 60%;
+        height: auto;
+        box-shadow: 0 0 3px #ccc;
+        text-align: center;
+    }
+    .disBox h2{
+        margin: 5px auto;
+    }
+</style>
+<body style="padding: 10px;background: white;">
+<!-- 上级ID -->
+<div class="header">
+    <span>{$title}</span>
+    <div></div>
+</div>
+
+<script>
+    layui.use(['upload','form'], function(){
+        var upload = layui.upload;
+        var form = layui.form;
+        $   = layui.jquery;
+
+        //导入
+        upload.render({
+            elem: '#test1' //绑定元素
+            ,accept:'file'
+            ,exts:'xls|xlsx'
+            ,url: '{:Url("admin/taxation/imptax")}' //上传接口
+            ,done: function(res){
+                //上传完毕回调
+                if(res.code > 0) {
+                    layer.msg(res.msg,{icon:1});
+                } else {
+                    layer.msg(res.msg,{icon:2});
+                }
+            }
+            ,error: function(e){
+                //请求异常回调
+                console.log(e);
+            }
+        });
+
+        // 更新
+        upload.render({
+            elem: '#test2' //绑定元素
+            ,accept:'file'
+            ,exts:'xls|xlsx'
+            ,url: '{:Url("admin/taxation/imptaxup")}' //上传接口
+            ,done: function(res) {
+                //上传完毕回调
+                if(confirm(res.msg)) {
+                    setTimeout(function() {
+                        layer.closeAll();
+                        window.location.reload();
+                    },1000);
+                }
+            }
+            ,error: function(e) {
+                //请求异常回调
+                console.log(e);
+            }
+        });
+    });
+</script>
+
+
+<div class="formBox" style="margin: 5px auto;">
+
+    <form class="layui-form">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">原税：</label>
+                <div class="layui-input-inline" style="width: 120px;">
+                    <input type="text" name="original" placeholder="请输入0-1的数字" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-form-mid">打折或降税为：</div>
+                <div class="layui-input-inline" style="width: 120px;">
+                    <input type="text" name="news" placeholder="请输入0-1的数字" autocomplete="off" class="layui-input">
+                </div>
+
+                <input type="radio" name="type" value="dis" title="打折">
+                <input type="radio" name="type" value="drop" title="降税" checked>
+
+                <input type="hidden" name="isAdd" value="yes">
+
+            </div>
+
+            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit lay-filter="formDemo">确认添加</button>
+        </div>
+
+    </form>
+</div>
+
+
+<div class="disBox">
+    <h2>现有降税折扣标准</h2>
+    <hr>
+
+    <form class="layui-form">
+
+        {volist name="taxdis" id="item" key="k"}
+
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">原税：</label>
+                    <div class="layui-input-inline" style="width: 120px;">
+                        <input type="text" name="original" onblur="edit({$item['id']},'original',{$item['original']},this)" placeholder="请输入0-1的数字" value="{$item['original']}" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid">打折或降税为：</div>
+                    <div class="layui-input-inline" style="width: 120px;">
+                        <input type="text" name="news" onblur="edit({$item['id']},'news',{$item['news']},this)" placeholder="请输入0-1的数字" value="{$item['news']}" autocomplete="off" class="layui-input">
+                    </div>
+
+                    <div class="layui-input-inline" style="width: 120px;">
+                        <input type="text" readonly value="{$type[$item['type']]}" autocomplete="off" class="layui-input">
+                    </div>
+
+                    <input type="radio" name="type" ids="{$item['id']}" value="dis" title="打折" lay-filter="changes">
+                    <input type="radio" name="type" ids="{$item['id']}" value="drop" title="降税" lay-filter="changes">
+                </div>
+                <a class="layui-btn layui-btn-sm layui-btn-danger" onclick="del({$item['id']});" href="javascript:void(0);">删除</a>
+            </div>
+
+        {/volist}
+
+    </form>
+
+    <div class="layui-page">
+        {$page}
+    </div>
+
+</div>
+
+<script>
+    //Demo
+    layui.use('form', function(){
+        var form = layui.form;
+        var url = "{:Url('admin/taxation/taxadd')}";
+        //监听提交
+        form.on('submit(formDemo)', function(des) {
+            var formData = des.field;
+            if(formData.original == '') {
+                layer.msg('原来税率不能为空')
+                return false;
+            }
+
+            if(formData.news == '') {
+                layer.msg('降税或折扣不能为空')
+                return false;
+            }
+
+            // ajax 添加数据
+            $.ajax({
+                url:url,
+                type:'POST',
+                data:{formData},
+                success:function(e){
+                    var res = JSON.parse(e);
+                    if(res.code <= 0) {
+                        layer.msg(res.msg);
+                        return false;
+                    }
+                    layer.msg(res.msg);
+                    setTimeout(function(){
+                        window.location.reload();
+                    },1200)
+                }
+            })
+
+            //layer.msg(JSON.stringify(data.field));
+            // window.location.href = url + '&cate='+data.field.cate;
+            return false;
+        });
+
+        // 改变事件
+        form.on('radio(changes)', function(data){
+
+            var url = "{:Url('admin/taxation/taxedit')}";
+            var val = data.value;
+            var id  = $(this).attr('ids');
+            $.ajax({
+                url:url,
+                type:'POST',
+                data:{
+                    id:id,
+                    name:'type',
+                    val:val
+                },
+                success:function(e) {
+                    var res = JSON.parse(e);
+                    if(res.code <= 0) {
+                        layer.msg(res.msg);
+                        return false;
+                    }
+                    layer.msg(res.msg);
+                    setTimeout(function(){
+                        window.location.reload();
+                    },1200)
+                }
+            })
+
+
+        });
+    });
+</script>
+
+
+<script type="text/javascript">
+
+    layui.use(['layer'],function(){
+        layer = layui.layer;
+        $     = layui.jquery;
+    });
+
+
+    // 编辑操作
+    function edit(id,names,oval,obj)
+    {
+        var url = "{:Url('admin/taxation/taxedit')}";
+        var val = $(obj).val();
+        if(val != oval) {
+            $.ajax({
+                url:url,
+                type:'POST',
+                data:{
+                    id:id,
+                    name:names,
+                    val:val
+                },
+                success:function(e) {
+                    var res = JSON.parse(e);
+                    if(res.code <= 0) {
+                        layer.msg(res.msg);
+                        return false;
+                    }
+                    layer.msg(res.msg);
+                    setTimeout(function(){
+                        window.location.reload();
+                    },1200)
+                }
+            })
+        }
+
+        return false;
+    }
+
+    // 删除元素
+    function del(id)
+    {
+        layer.confirm('确定要删除吗？',{icon:3,btn:['确定','取消']},function() {
+
+            var url = "{:Url('admin/taxation/taxdels')}";
+            $.ajax({
+                url:url,
+                type:'POST',
+                data:{
+                    id:id,
+                },
+                success:function(e) {
+                    var res = JSON.parse(e);
+                    if(res.code <= 0) {
+                        layer.msg(res.msg);
+                        return false;
+                    }
+                    layer.msg(res.msg);
+                    setTimeout(function(){
+                        window.location.reload();
+                    },1200)
+                }
+            })
+
+        });
+    }
+
+
+    //返回上级菜单
+    function backs(pid) {
+        //var host = '{$_SERVER["SERVER_NAME"]}{$_SERVER["REQUEST_URI"]}&pid='+pid;
+        var host = '{:Url("agents/menu/list")}&pid='+pid;
+        window.location.href = host;
+    }
+</script>
+
+</body>
+</html>

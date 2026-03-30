@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>默认买家配置</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <link href="static/cklein/css/style.css" rel="stylesheet">
+    <link href="static/cklein/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        form{
+            margin-top: 47px;
+            margin-right: 32px;
+        }
+        .layui-form-label{
+            width:110px;
+        }
+    </style>
+</head>
+<body class="gray-bg">
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否报关单位</label>
+            <div class="layui-input-inline">
+                <input type="radio" name="isCustomsDeclUnit" value="1" title="是" lay-filter="isCustomsDeclUnit">
+                <input type="radio" name="isCustomsDeclUnit" value="0" title="否" checked  lay-filter="isCustomsDeclUnit">
+            </div>
+        </div>
+        <div class="layui-form-item bgdw"  style="display: none;">
+            <label class="layui-form-label">选择报关单位</label>
+            <div class="layui-input-inline">
+                <select name="enterprise_id" id="enterprise_id" lay-filter="enterprise_id">
+                    <option value="">请选择报关单位</option>
+                    {volist name="enterprise_customslist" id="item"}
+                        <option value="{$item['id']}">{$item['id']} - {$item['ename']}</option>
+                    {/volist}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">买家类别</label>
+            <div class="layui-input-inline layui-select-fscon">
+                <select name="platform" lay-filter="platform">
+                    <option value="1">平台买家</option>
+                    <option value="2">其他买家</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label">企业名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="company_name" lay-verify="required" placeholder="请输入企业名称" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">注册国地</label>
+            <div class="layui-input-inline">
+                <select name="country_code" lay-search id="country_code" lay-verify="required" lay-filter="country_code">
+                    <option value="">请选择</option>
+                    {volist name="country_code" id="item"}
+                    <option value="{$item['code_value']}">{$item['code_value']} - {$item['code_name']}</option>
+                    {/volist}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item" id="sanction_country" style="display: none;">
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label"></label>
+                <div class="layui-input-inline layui-select-fscon">
+                    <div class="layui-form-mid layui-word-aux" style="color: red!important;">该国家是制裁国家，款项无法收到！</div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item" id="highrisk_country" style="display: none;">
+            <div class="layui-inline layui-select-fs">
+                <label class="layui-form-label"></label>
+                <div class="layui-input-inline layui-select-fscon">
+                    <div class="layui-form-mid layui-word-aux" style="color: red!important;">该国家是高风险国家，款项可能无法收到或收款时间长！是否继续？</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">电话</label>
+            <div class="layui-input-inline">
+                <input type="text" name="company_tel" lay-verify="required" placeholder="请输入电话号码" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">电邮</label>
+            <div class="layui-input-inline">
+                <input type="text" name="company_email" lay-verify="required" placeholder="请输入电子邮箱" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">地址</label>
+            <div class="layui-input-inline">
+                <textarea type="text" name="company_address" lay-verify="required" placeholder="请输入地址" autocomplete="off" cols="30" rows="2" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div style="display: block;" id="platform_1">
+            <div class="layui-form-item">
+                <label class="layui-form-label">注册编码</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="company_code" placeholder="请输入注册编码" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">注册文件</label>
+                <div class="layui-input-block">
+                    <div class="layui-upload" id="contract_type" style="margin-top: 10px;">
+                        <button type="button" class="layui-btn" id="company_file-upload">上传注册文件(多选)</button>
+                        <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                            预览图：
+                            <div class="layui-upload-list" id="company_file-upload-list"></div>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="display: none;" id="platform_2">
+            <div class="layui-form-item">
+                <label class="layui-form-label"><i class="fa icon-right" id="showtip_contract_file" style="display: none;"  onclick="showInfo('contract_file');"></i>采购合同</label>
+                <div class="layui-input-block">
+                    <div class="layui-upload">
+                        <button type="button" class="layui-btn" id="contract_file-upload">上传采购合同</button>
+                        <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                            预览图：
+                            <div class="layui-upload-list" id="contract_file-upload-list"></div>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><i class="fa icon-right" id="showtip_inquiry_file" style="display: none;"  onclick="showInfo('inquiry_file');"></i>询盘记录</label>
+                <div class="layui-input-block">
+                    <div class="layui-upload">
+                        <button type="button" class="layui-btn" id="inquiry_file-upload">上传询盘记录</button>
+                        <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                            预览图：
+                            <div class="layui-upload-list" id="inquiry_file-upload-list"></div>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--其他买家——企业买家-->
+        <div style="display: none;" id="buyer_form">
+
+            <div class="layui-form-item">
+                <div class="layui-inline layui-select-fs">
+                    <label class="layui-form-label"><i class="fa icon-right" id="showtip_buyer_form_type" style="display: none;"  onclick="showInfo('buyer_form_type');"></i>买家来源</label>
+                    <div class="layui-input-inline layui-select-fscon">
+                        <input type="radio" name="buyer_form_type" value="线上" title="线上" checked="">
+                        <input type="radio" name="buyer_form_type" value="线下" title="线下">
+                    </div>
+
+                </div>
+                <div class="layui-inline layui-select-fs">
+                    <label class="layui-form-label"><i class="fa icon-right" id="showtip_buyer_form" style="display: none;"  onclick="showInfo('buyer_form');"></i>来源</label>
+                    <div class="layui-input-block layui-select-fscon">
+                        <input type="text" name="buyer_form" placeholder="请输入买家来源" autocomplete="off" class="layui-input">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <div class="layui-footer" style="left: 0;">
+                    <button class="layui-btn" lay-submit="" lay-filter="component-form-demo1">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+<script>
+    //Demo
+    layui.use(['form','upload'], function(){
+        var form = layui.form,upload = layui.upload;
+
+        form.on('radio(isCustomsDeclUnit)',function(data){
+            var isCustomsDeclUnit = data.value;
+            if(isCustomsDeclUnit=='1'){
+                $('.bgdw').show();
+            }else if(isCustomsDeclUnit=='0'){
+                $('.bgdw').hide();
+            }
+        });
+
+        //监听提交
+        form.on('submit(component-form-demo1)', function(data){
+            if( data.field['platform'] == 1 )
+            {
+                if( data.field['company_code'] == '' )
+                {
+                    layer.msg('请填写注册编码！');
+                    return false;
+                }
+                if( $('#company_file-upload-list').children().length == 0 )
+                {
+                    layer.msg('请上传注册文件！');
+                    return false;
+                }
+            }else{
+                if( $('#contract_file-upload-list').children().length == 0 )
+                {
+                    layer.msg('请上传采购合同！');
+                    return false;
+                }
+                if( $('#inquiry_file-upload-list').children().length == 0 )
+                {
+                    layer.msg('请上传询盘记录！');
+                    return false;
+                }
+                if( data.field['buyer_form'] == '' )
+                {
+                    layer.msg('请填写买家来源！');
+                    return false;
+                }
+            }
+
+            if(data.field['isCustomsDeclUnit']==1 && data.field['enterprise_id']==''){
+                layer.msg('请选择报关单位！');
+                return false;
+            }
+
+            $.ajax({
+                url:"{:Url('admin/defaultInfo/add_enterprise')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 1)
+                        {
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                            parent.window.location.reload();
+                        }else{
+                            layer.msg(res.msg,{time:2000});
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+        //买家类别监控
+        form.on('select(platform)', function(data){
+            if(data.value == 1)
+            {
+                $("#platform_1").show();
+                $("#platform_2").hide();
+                $("#buyer_form").hide();
+            }else{
+                $("#platform_1").hide();
+                $("#platform_2").show();
+                $("#buyer_form").show();
+            }
+        });
+
+        // 买家国地检测
+        form.on('select(country_code)', function(data){
+            if(data.value!='')
+            {
+                checkBuyer(data.value);
+            }
+        });
+
+        // 注册文件
+        upload.render({
+            elem: '#company_file-upload'
+            ,url: '{:Url("admin/defaultInfo/upload_file")}'
+            ,accept: 'image'
+            ,data: { folder: 'buyer', type: 'company_file'}
+            ,multiple: true
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+
+                    $('#company_file-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="company_file[]" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+        // 合同
+        upload.render({
+            elem: '#contract_file-upload'
+            ,url: '{:Url("admin/defaultInfo/upload_file")}'
+            ,accept: 'image'
+            ,data: { folder: 'buyer', type: 'contract_file'}
+            ,multiple: true
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+                    $('#contract_file-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="contract_file[]" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+
+        // 询盘
+        upload.render({
+            elem: '#inquiry_file-upload'
+            ,url: '{:Url("admin/defaultInfo/upload_file")}'
+            ,accept: 'image'
+            ,data: { folder: 'buyer', type: 'inquiry_file'}
+            ,multiple: true
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+                    $('#inquiry_file-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="inquiry_file[]" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $("#inventory_file-upload").removeAttr('disabled');
+            $("#inventory_file-upload").removeClass("disable-btn");
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+
+    function seePic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.open({
+            type: 1,
+            title: false,
+            closeBtn: 1,
+            area: ['auto'],
+            skin: 'layui-layer-nobg',
+            shadeClose: true,
+            content: '<img width="60%" src="' + $(obj)[0].src + '" />'
+        });
+    }
+
+    function checkBuyer(country_code)
+    {
+        // var $ = layui.$;
+        $.ajax({
+            url:"{:url('admin/defaultInfo/country_check')}",
+            method:'get',
+            data:{country_code: country_code},
+            dataType:'JSON',
+            success:function(res){
+                // layer.msg(res.msg,{time:2000}, function () {
+
+                // });
+                if(res.code == 0)
+                {
+                    if(res.type == 'sanction_country')
+                    {
+                        $("#sanction_country").show();
+                        $("#highrisk_country").hide();
+                    }else{
+                        $("#highrisk_country").show();
+                        $("#sanction_country").hide();
+                    }
+                }else{
+                    $("#sanction_country").hide();
+                    $("#highrisk_country").hide();
+                }
+            },
+            error:function (data) {
+                layer.msg('系统错误',{time:2000});
+            }
+        });
+    }
+</script>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {include file="common/meta"}
+</head>
+<body class="gray-bg">
+<div class="col-sm-12">
+    <div class="ibox float-e-margins">
+        <div class="ibox-content" style="display:block;" id="list1">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>姓名</th>
+                    <th>手机号</th>
+                    <th>身份证</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name='user' id='vo'}
+                <tr>
+                    <td>{$vo.name}</td>
+                    <td>{$vo.phone}</td>
+                    <td>{$vo.idcard}</td>
+                    <td>
+                        {if $vo.status==0}
+                        <div class="btn-group" id="openlist">
+                            <button data-toggle="dropdown" class="btn btn-warning dropdown-toggle" onclick="openlist();">审核<span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="#" onclick="check('{$vo.unique_id}',1)">通过</a>
+                                </li>
+                                <li><a href="#" onclick="check('{$vo.unique_id}',2)">拒绝</a>
+                                </li>
+                            </ul>
+                        </div>
+                        {else}
+                        {if $vo.status==3}
+                            <a href="#" class="btn btn-info" onclick="check('{$vo.unique_id}',1)">启用</a>
+                        {else $vo.status==1}
+                            <a href="#" class="btn btn-info" onclick="check('{$vo.unique_id}',3)">禁用</a>
+                        {/if}
+                        {/if}
+                        <!--<a href="" class="btn btn-info">权限设置</a>-->
+                        <a href="#" class="btn btn-danger" onclick="del('{$vo.unique_id}',this);">删除</a>
+                    </td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="layui-box layui-laypage layui-laypage-default"></div>
+<script>
+    var isShut=false;
+    function openlist() {
+        if (isShut){
+            isShut  = false;
+            $("#openlist").removeClass("open");
+        } else{
+            isShut  = true;
+            $("#openlist").addClass("open");
+        }
+        return false;
+    }
+    function check(id,status) {
+        $.ajax({
+            url:"{:Url('admin/iot/checkuser')}&id="+id+"&status="+status,
+            type:'get',
+            dataType:'json',
+            success:function (res) {
+                if (res.code==0){
+                    parent.layer.msg(res.message,{icon: 1});
+                    setTimeout(function () {
+                        window.location.reload();
+                    },1500);
+                } else{
+                    parent.layer.msg(res.message,{icon: 2});
+                }
+            }
+        });
+        return false;
+    }
+    function del(id,obj){
+        parent.layer.confirm('是否确定删除？', {
+            title:false,
+            btn: ['确定','取消'], //按钮
+            shade: false //不显示遮罩
+        }, function(){
+            parent.layer.msg('的确很重要', {icon: 1});
+            $.ajax({
+                url: "{:Url('admin/iot/deluser')}&id="+id,
+                type:'get',
+                dataType: 'json',
+                success:function (res) {
+                    if (res.code==0){
+                        parent.layer.msg(res.message, {icon: 1});
+                        $(obj).parent().parent().remove();
+                    } else{
+                        parent.layer.msg(res.message, {icon: 2});
+                    }
+                }
+            })
+        }, function(){
+
+        });
+    }
+</script>
+</body>
+</html>

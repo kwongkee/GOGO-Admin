@@ -1,0 +1,112 @@
+{include file="common/header_new"}
+
+<style>
+    img{ width:20px;height:20px;}
+</style>
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <h3 style="text-align: center;">内容列表</h3>
+                <table id="table"
+
+                /*默认排序项*/
+                data-sort-name="id"
+                data-sort-order="desc"
+                /*工具栏相关*/
+                data-toolbar="#toolbar"
+                data-search="false"          /*搜索框*/
+                data-search-on-enter-key="false"
+                data-show-refresh="true"    /*刷新按钮*/
+                /*分页相关*/
+                data-side-pagination="server"
+                data-pagination="true"      /*显示分页*/
+                data-page-size="10"         /*每页显示条数*/
+                /*移动端相关*/
+                data-mobile-responsive="true"
+                data-card-view="true"
+                data-show-columns="true"
+                /*radio or checkbox字段名称*/
+                data-select-item-name="id" >
+
+                <thead>
+                <tr>
+                    <th data-field="id"
+                        data-align="center"
+                        data-sortable="true"
+                        data-visible="true">ID</th>
+                    <th data-field="title"
+                        data-align="center"
+                        data-sortable="true">标题</th>
+                    <th data-field="manage"
+                        data-align="center"
+                        data-sortable="true"
+                        data-formatter="actionFormatter">操作</th>
+                </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var table;
+
+    $(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:url('admin/officialwebsite/crawl_content')}",
+            queryParams: queryParams,
+        });
+        $('.form-control').attr('placeholder','搜索标题');
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+            search: params.search,
+            pid:{$pid}
+        };
+        return temp;
+    };
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.id;
+        var title = row.title;
+
+        var result = "";
+        result += '<button style="margin-right: 5px;" type="button" onclick="view('+id+',\'日志内容\')" class="btn btn-primary btn-xs">查看日志</button>';
+        // result += '<button style="margin-right: 5px;" type="button" onclick="add('+id+',\''+title+'\')" class="btn btn-info btn-xs">新增内容</button>';
+        // result += '<button style="margin-right: 5px;" type="button" onclick="del('+id+',\''+title+'\')" class="btn btn-danger btn-xs">删除</button>';
+        return result;
+    }
+
+    function view(id,name){
+        var index = layer.open({
+            type: 2,
+            title: '查看日志-'+name,
+            area:['100%','100%'],
+            content: "{:url('admin/officialwebsite/crawl_children_content')}&pid="+id
+        });
+        // layer.full(index);
+    }
+
+    function add(id,title){
+        var index = layer.open({
+            type: 2,
+            title: '新增内容-'+title,
+            area:['100%','100%'],
+            content: "{:url('admin/officialwebsite/add_content')}&pid="+id
+        });
+    }
+</script>
+
+</body>
+</html>

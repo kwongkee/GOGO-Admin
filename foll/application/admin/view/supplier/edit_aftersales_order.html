@@ -1,0 +1,409 @@
+{include file="public/header"}
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" name="id" style="display:none;" value="{$data['id']}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header">售后信息</div>
+                    <div class="layui-card-body">
+                        <table class="layui-table">
+                            <thead>
+                            <tr>
+                                <th>退款申请单号</th>
+                                <th>退款金额</th>
+                                <th>申请时间</th>
+                                <th>出库状态</th>
+                                <th>状态</th>
+                                <th>驳回原因</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    {$aftersales_data['refund_no']}
+                                </td>
+                                <td>
+                                    {$aftersales_data['refund_currency']} {$aftersales_data['refund_money']}
+                                </td>
+                                <td>
+                                    {$aftersales_data['apply_time']}
+                                </td>
+                                <td  style="color:#ff2222;">
+                                    {$aftersales_data['outbound_status']}
+                                </td>
+                                <td  style="color:#ff2222;">
+                                    {$aftersales_data['status2']}
+                                </td>
+                                <td>
+                                    {$aftersales_data['check_remark']}
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header">售后商品信息</div>
+                    <div class="layui-card-body">
+                        <table class="layui-table goods_info">
+                            <thead>
+                            <tr>
+                                <th>商品名称</th>
+                                <th>商品单价</th>
+                                <th>商品数量</th>
+                                <th>商品金额</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {foreach $goods_info as $k=>$v}
+                            <tr class="gtr0{$k+1}">
+                                <td>
+                                    {$v['goods_id']}
+                                </td>
+                                <td>
+                                    {$aftersales_data['refund_currency']}/<?php echo number_format($v['goods_price'],2);?>
+                                </td>
+                                <td>
+                                    X{$v['goods_num']}
+                                </td>
+                                <td>
+                                    {$aftersales_data['refund_currency']}/<?php echo number_format($v['goods_price']*$v['goods_num'],2)?></td>
+                                </td>
+                            </tr>
+                            {/foreach}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header">订单信息</div>
+                    <div class="layui-card-body">
+                        <table class="layui-table">
+                            <thead>
+                            <tr>
+                                <th>所属商户</th>
+                                <th>订单编号</th>
+                                <th>下单时间</th>
+                                <th>付款时间</th>
+                                <th>订单金额</th>
+                                <th>卖家备注</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    {$decl_user['user_name']}
+                                </td>
+                                <td>
+                                    {$data['orderno']}
+                                </td>
+                                <td>
+                                    {$data['order_time']}
+                                </td>
+                                <td>
+                                    {$data['pay_time']}
+                                </td>
+                                <td>
+                                    <div class="disf">
+                                        {$data['currency']} {$data['order_price']}
+                                    </div>
+                                </td>
+                                <td>
+                                    {$data['seller_remark']}
+                                </td>
+                            </tr>
+
+                            </tbody>
+                            <thead>
+                            <tr>
+                                <th>订单状态</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td style="color:#ff2222;">
+                                    {$data['status']}
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header">收货信息</div>
+                    <div class="layui-card-body">
+                        <table class="layui-table">
+                            <thead>
+                            <tr>
+                                <th>收货人</th>
+                                <th>收货地址</th>
+                                <th>手机号</th>
+                                <th>固定电话</th>
+                                <th>买家留言</th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {$data['buyer_name']}
+                                </td>
+                                <td>
+                                    {$data['buyer_address']}
+                                </td>
+                                <td>
+                                    {$data['buyer_mobile']}
+                                </td>
+                                <td>
+                                    {$data['buyer_tel']}
+                                </td>
+                                <td>
+                                    {$data['buyer_remark']}
+                                </td>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header">供应商信息</div>
+                    <div class="layui-card-body">
+                        <div class="layui-row layui-form-item">
+                            <div class="layui-form-item">
+                                {if $data['check_status']==-1}
+                                <div class="layui-col-md12">
+                                    <label class="layui-form-label">拒绝原因：</label>
+                                    <div class="layui-input-block" style="line-height: 2.8;">
+                                        {$data['check_remark']}
+                                    </div>
+                                </div>
+                                {/if}
+
+                                <!--确认订单&已发货，显示运费规则-->
+                                {if $data['check_status']==1 && $data['status']>=2}
+                                <div class="layui-col-md12">
+                                    <label class="layui-form-label">发货规则：</label>
+                                    <div class="layui-input-block" style="line-height: 2.8;">
+                                        {if is_string($rules)}
+                                            {$rules}
+                                        {else}
+                                            / 运费规则：{$rules['rule_id']} / 发货仓库：{$rules['zn_address']} / 目的国：{$rules['able_country']} /
+                                        {/if}
+                                    </div>
+                                </div>
+                                {if !empty($rules['able_country_in'])}
+                                <div class="layui-col-md12">
+                                    <label class="layui-form-label">平台仓库：</label>
+                                    <div class="layui-input-block">
+                                        <table class="layui-table goods_info">
+                                            <thead>
+                                            <tr>
+                                                <th>仓库名称</th>
+                                                <th>国地</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {foreach $rules['able_country_in'] as $k=>$v}
+                                            <tr>
+                                                <td>{$v['name']}</td>
+                                                <td>{$v['country']}</td>
+                                            </tr>
+                                            {/foreach}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                {/if}
+
+                                {if !empty($rules['buyer_able_country'])}
+                                <div class="layui-col-md12">
+                                    <label class="layui-form-label">买家收货国地：</label>
+                                    <div class="layui-input-block" style="line-height: 2.8;">
+                                        {foreach $rules['buyer_able_country'] as $k=>$v}
+                                        {$v['code_name']}，
+                                        {/foreach}
+                                    </div>
+                                </div>
+                                {/if}
+                                {/if}
+                            </div>
+
+                            {if !empty($data['seller_remark'])}
+                            <div class="layui-form-item">
+                                <div class="layui-col-md12">
+                                    <label class="layui-form-label">商家备注：</label>
+                                    <div class="layui-input-block" style="line-height: 2.8;">
+                                        {$data['seller_remark']}
+                                    </div>
+                                </div>
+                            </div>
+                            {/if}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    window.goods_list = '';
+    layui.use(['layer','form','laydate'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+
+        laydate.render({
+            elem: '#pay_time' //指定元素
+            ,format: 'yyyy-MM-dd HH:mm:ss'
+            ,type:'datetime'
+        });
+        laydate.render({
+            elem: '#order_time' //指定元素
+            ,format: 'yyyy-MM-dd HH:mm:ss'
+            ,type:'datetime'
+        });
+        $('.delGtr').click(function(){
+            let num = $(this).attr('data-num');
+            $('.gtr'+num).remove();
+        });
+
+        //获取商户下的商品
+        form.on('select(user_id)',function(data){
+            $.ajax({
+                url:"{:Url('admin/supplier/get_user_goods')}",
+                method:'post',
+                data:{'user_id':data.value},
+                dataType:'JSON',
+                success:function(res){
+                    if(res.code == 0)
+                    {
+                        window.goods_list=res.list;
+                        let html = '<option value="">请选择该商户下已配置商品</option>';
+                        for(let i=0;i<res.list.length;i++){
+                            html += '<option value="'+res.list[i].id+'">'+res.list[i].gZnName+'('+res.list[i].gEnName+')</option>';
+                        }
+
+                        $('#goods_id').html(html);
+                        form.render(null, 'component-form-element');
+                    }
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+        form.on('submit(component-form-element)', function(data){
+            //layer.msg(JSON.stringify(data.field));
+            $.ajax({
+                url:"{:Url('admin/supplier/edit_order')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+    var num=1;
+    function add(){
+        var layer = layui.layer
+            ,$ = layui.jquery
+            ,form = layui.form;
+        var goods_list = window.goods_list;
+        let html = '<tr class="gtr'+num+'">\n' +
+            '                                    <td>\n' +
+            '<select name="goods_id[]" id="goods_id" lay-search lay-verify="required">\n' +
+            '                                            <option value="">请选择该商户下已配置商品</option>\n';
+        for(let i=0;i<goods_list.length;i++){
+            html += '<option value="'+goods_list[i].id+'">'+goods_list[i].gZnName+'('+goods_list[i].gEnName+')</option>';
+        }
+        html += '                                        </select>\n'+
+            '                                    </td>\n' +
+            '                                    <td>\n' +
+            '                                        <div class="disf">\n' +
+            '                                            <select name="goods_currency[]" lay-search lay-verify="required">\n'+
+            '<option value="398">(ASF)清算瑞士法郎</option>\n'+
+            '<option value="601">(AUD)澳大利亚元</option>\n'+
+            '<option value="501">(CAD)加拿大元</option>\n'+
+            '<option value="331">(CHF)瑞士法郎</option>\n'+
+            '<option value="142">(CNY)人民币</option>\n'+
+            '<option value="302">(DKK)丹麦克朗</option>\n'+
+            '<option value="201">(DZD)阿尔及利亚第纳尔</option>\n'+
+            '<option value="300">(EUR)欧元</option>\n'+
+            '<option value="303">(GBP)英镑</option>\n'+
+            '<option value="110">(HKD)港币</option>\n'+
+            '<option value="112">(IDR)印度尼西亚卢比</option>\n'+
+            '<option value="113">(IRR)伊朗里亚尔</option>\n'+
+            '<option value="116">(JPY)日本元</option>\n'+
+            '<option value="133">(KRW)韩国圆</option>\n'+
+            '<option value="118">(KWD)科威特第纳尔</option>\n'+
+            '<option value="121">(MOP)澳门元</option>\n'+
+            '<option value="122">(MYR)马来西亚林吉特</option>\n'+
+            '<option value="326">(NOK)挪威克朗</option>\n'+
+            '<option value="609">(NZD)新西兰元</option>\n'+
+            '<option value="129">(PHP)菲律宾比索</option>\n'+
+            '<option value="127">(PKR)巴基斯坦卢比</option>\n'+
+            '<option value="344">(RUB)俄罗斯卢布</option>\n'+
+            '<option value="330">(SEK)瑞典克朗</option>\n'+
+            '<option value="132">(SGD)新加坡元</option>\n'+
+            '<option value="136">(THB)泰国铢</option>\n'+
+            '<option value="143">(TWD)新台币</option>\n'+
+            '<option value="502">(USD)美元</option>\n'+
+            '                                            </select>\n'+
+            '                                            <input type="text" lay-verify="required" name="goods_price[]" value="" placeholder="单价" autocomplete="off" class="layui-input">\n' +
+            '                                        </div>\n' +
+            '                                    </td>\n' +
+            '                                    <td>\n' +
+            '                                        <input type="text" lay-verify="required" name="goods_num[]" value="" placeholder="数量" autocomplete="off" class="layui-input">\n' +
+            '                                    </td>\n' +
+            '                                    <td>\n' +
+            '<div class="disf">\n'+
+            '                                        <a href="javascript:add();" class="layui-btn">增加</a>\n' +
+            '                                        <div data-num="'+num+'" class="layui-btn layui-btn-danger delGtr">删除</div>\n' +
+            '</div>\n'+
+            '                                    </td>\n' +
+            '                                </tr>';
+
+        $('.goods_info').append(html);
+        form.render(null, 'component-form-element');
+        num+=1;
+
+        $('.delGtr').click(function(){
+            let num = $(this).attr('data-num');
+            $('.gtr'+num).remove();
+        });
+    }
+
+</script>
+</body>
+</html>

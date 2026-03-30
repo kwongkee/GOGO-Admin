@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{$title}</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: white;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<div class="header">
+    <span><a style="color: white;" onclick="javascript:window.history.back(-1);">返回上一页</a></span>
+    <div></div>
+</div>
+
+<table class="layui-table">
+    <thead>
+        <tr class="ths">
+            <th>ID</th>
+            <th>操作员</th>
+<!--            <th>提单编号</th>-->
+            <th>批次编号</th>
+            <th>预提时间</th>
+            <th>申报状态</th>
+            <th>所选支付企业</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    {volist name="data.lists" id="vo" key="k"}
+    <tr class="boys">
+        <td>{$k}</td>
+        <td>{$vo.user_name}</td>
+<!--        <td>{$vo.bill_num}</td>-->
+        <td>{$vo.batch_num}</td>
+        <td>{$vo.create_time}</td>
+        <td>{$vo.desc}</td>
+        <td><?php echo isset($payType[$vo['pay_id']]) ? $payType[$vo['pay_id']] : '未选择支付企业'?></td>
+        <td>
+            <button class="layui-btn layui-btn-sm" onclick="Declared('{$vo.batch_num}')">进度查看</button>
+            {if $vo.status == 1}
+            <button class="layui-btn layui-btn-sm layui-btn-normal" onclick="Declare('{$vo.batch_num}',{$vo.uid})">申报</button>
+            <button class="layui-btn layui-btn-sm layui-btn-normal" onclick="printElec('{$vo.batch_num}')">打印面单</button>
+            <button class="layui-btn layui-btn-sm" onclick="goPay('{$vo.batch_num}')">去手动支付</button>
+            <button class="layui-btn layui-btn-sm layui-btn-danger" onclick="Returns('{$vo.batch_num}')">退回</button>
+            {elseif $vo.status == 4 }
+            <button class="layui-btn layui-btn-sm ">{$vo.desc}</button>
+            <button class="layui-btn layui-btn-sm layui-btn-normal" onclick="printElec('{$vo.batch_num}')">打印面单</button>
+            <a href="#"  onclick="exprotElist('{$vo.batch_num}');" class="layui-btn layui-btn-sm">导出清单</a>
+            <a href="{:Url('admin/elec/expro_err')}&batch_num={$vo.batch_num}"  class="layui-btn layui-btn-sm layui-btn-danger">导出错误</a>
+            {else}
+            <button class="layui-btn layui-btn-danger layui-btn-sm">{$vo.desc}</button>
+            <a href="{:Url('admin/elec/expro_err')}&batch_num={$vo.batch_num}" class="layui-btn layui-btn-sm layui-btn-danger">导出错误</a>
+            {/if}
+            <a href="{:Url('admin/elec/Risk')}&batch_num={$vo.batch_num}" class="layui-btn layui-btn-sm layui-btn-warm">风险查看</a>
+            <a href="{:Url('admin/elec/idCardVerifFail')}&batch_num={$vo.batch_num}" class="layui-btn layui-btn-sm layui-btn-warm">身份风控</a>
+            <button class="layui-btn layui-btn-sm layui-btn-normal" onclick="editSender('{$vo.batch_num}');">修改发件人</button>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+<!--2021-10-30 打印面单信息-->
+<style>
+    .tanchuang_wrap {
+        display:none;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        z-index: 100;
+        display: none;
+    }
+    .lightbox {
+        width: 100%;
+        z-index: 101;
+        height: 100%;
+        background-color: black;
+        filter: alpha(Opacity=30);
+        -moz-opacity: 0.3;
+        opacity: 0.3;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+    }
+    .tanchuang_neirong {
+        width: 40%;
+        height: auto;
+        padding-bottom: 30px;
+        background-color: #FFF;
+        position: absolute;
+        z-index: 105;
+        left: 300px;
+        top: 30%;
+    }
+    .tanchuang_bg {
+        width: 100%;
+        height: 42px;
+        line-height: 42px;
+        background-color: #ecf6fc;
+        border-bottom: 1px solid #488ccd;
+    }
+    .tanchuang_title {
+        width: 50%;
+        margin-left: 10px;
+        color: #488ccd;
+    }
+    .tanchuang_close {
+        width: 47%;
+        margin-right: 10px;
+        cursor: pointer;
+        text-align: right;
+        position: absolute;
+        right: 0;
+    }
+    .declare_con {
+        width: 95%;
+        margin: 2% auto 3%;
+        line-height: 25px;
+    }
+    .declare_title {
+        width: 100%;
+        height: 30px;
+        line-height: 30px;
+        border-bottom: 1px solid #488ccd;
+        color: #488ccd;
+    }
+    .declare_btn {
+        text-align: right;
+        position: relative;
+        right: 10px;
+        bottom: 10px;
+    }
+    .add {
+        margin: 0 1px;
+        background-color: #1481c5;
+        height: 30px;
+        padding: 0 6px;
+    }
+</style>
+<div style="width:100%; /*height:100%; position:relative; text-align:center;*/">
+    <div class="tanchuang_wrap" id="print">
+        <div class="lightbox"></div>
+        <div class="tanchuang_neirong" style="height: auto;left: 300px;top:30%;">
+            <div class="tanchuang_bg">
+                <span class="tanchuang_title">打印面单</span>
+                <span onClick="closeDiv('print')" class="tanchuang_close">关闭</span>
+            </div>
+            <div class="declare_con">
+                <div class="declare_title">
+                    <label for="" id="btch_tj">批次编号</label>
+                    <input type="text" name="batch_num" id="batch_num" class="batch_num" value="" style="margin: 0;padding: 0;border: 0;outline: none;" readonly>
+                </div>
+            </div>
+            <div class="declare_con" id="selectOrder">
+                <div id="btch_tj" style="width:100px;margin-right:5px;">选择订单</div>
+
+            </div>
+            <div class="declare_con" style="display:flex;align-items:center;">
+                <div id="btch_tj" style="width:100px;margin-right:5px;">选择设备</div>
+                <select name="device" id="device">
+                    <option value="">请选择设备</option>
+                    {volist name="device" id="v" key="k"}
+                    <option value="{$v['id']}">{$v['city']}/{$v['address']}</option>
+                    {/volist}
+                </select>
+            </div>
+
+            <div class="declare_con" style="display:flex;align-items:center;">
+                <div id="btch_tj" style="width:100px;margin-right:5px;">选择快递公司</div>
+                <select name="express" id="express">
+                    <option value="">请选择快递公司</option>
+                    {volist name="express" id="v" key="k"}
+                    <option value="{$v['id']}">{$v['name']}:{$v['code']}</option>
+                    {/volist}
+                </select>
+            </div>
+            <div class="declare_btn">
+                <input name="" type="button" class="add" id="dayin" value="立即打印" style="cursor:pointer;color:#fff;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="layui-box layui-laypage layui-laypage-default">{$data.pages}</div>
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script type="text/javascript">
+    layui.use(['layer','jquery'],function(){
+        layer = layui.layer;
+        $ = layui.jquery;
+    });
+
+    //2021-10-30
+    function closeDiv(){
+        $('#print').hide();
+    }
+
+    function printElec(batch_num){
+        var layer = layui.layer;
+        $('#print').find('.batch_num').val(batch_num);
+        $.ajax({
+            url:"{:Url('admin/elec/get_this_batch_order')}",
+            type:"GET",
+            data:{'batch_num':batch_num},
+            dataType:"json",
+            success:function (res) {
+                if(res.code==-1){
+                    layer.msg(res.msg);
+                }else{
+                    var html = '';
+                    $('#selectOrder').find('.orderno').remove();
+                    for(var i=0;i<res.data.length;i++){
+                        html += '<div style="margin-left:65px;" class="orderno"><label>'+res.data[i]['EntOrderNo']+'</label><input type="checkbox" name="order" value="'+res.data[i]['EntOrderNo']+'-'+res.type+'" style="margin-left:5px;"></div>';
+                    }
+                    $('#selectOrder').append(html);
+                }
+            },
+            error:function(xhr){
+                layer.msg('请求失败!');
+            }
+        });
+        $('#print').show();
+    }
+
+    $(function(){
+        //立即打印-电子面单
+        $('#dayin').click(function(){
+            let batch_num = $('#print').find('.batch_num').val();
+            let device    = $('select[name="device"] option:selected').val();
+            let express    = $('select[name="express"] option:selected').val();
+            // let order    = $('input[type="checkbox"]:checked').val();
+
+            //创建一个空数组
+            var data_arr = [];
+            //index下标 element 当前选中的元素
+            $('input:checkbox[name=order]:checked').each(function(index,element){
+                //压入数组
+                data_arr[index] = $(this).val();
+            });
+
+            var layer = layui.layer;
+            if(batch_num==''){
+                layer.msg('批次编号不能为空');return false;
+            }
+            if(data_arr==''){
+                layer.msg('请勾选至少一个订单号');return false;
+            }
+            if(device==''){
+                layer.msg('设备选择不能为空');return false;
+            }
+            if(express==''){
+                layer.msg('快递公司选择不能为空');return false;
+            }
+
+            $.ajax({
+                url:"{:Url('admin/elec/print_elec')}",
+                type:'POST',
+                dataType:'JSON',
+                data:{
+                    batch_num:batch_num,
+                    device:device,
+                    express:express,
+                    orderno:data_arr,
+                },
+                // alert(res.msg);
+                success:function(res){
+                    // console.log(res.temp);
+
+                    // if(res.code==1){
+                    layer.msg('成功');
+                    //快递鸟
+                    // var index = layer.open({
+                    //     type:1,
+                    //     title: '本地打印',
+                    //     area:['100%','100%'],
+                    //     content: document.write(res.temp+'<input id="btnPrint" type="button" value="打印预览" onclick="preview(1)" />')
+                    // });
+                    // layer.full(index);
+                    // }
+                },
+                error:function(res){
+                    layer.msg('链接服务出错');
+                }
+            })
+        });
+    })
+    //end
+
+    // 状态查询
+    function Declared(batch)
+    {
+        layer.open({
+            type: 2,
+            title: '申报进度',
+            shadeClose: true,
+            shade: 0.3,
+            area: ['490px', '389px'],
+            content: "{:Url('admin/elec/schedulesQuery')}&batch_num="+batch, //iframe的url
+            yes:function(){
+                //setTimeout(function(){window.location.reload();},800);
+            },
+            end:function() {
+                setTimeout(function () {
+                    //window.location.reload();
+                }, 800);
+            }
+        });
+    }
+
+    // 申报
+    function Declare(batch,uid)
+    {
+        layer.confirm('确定要申报么？', function(index){
+            layer.open({
+                type: 2,
+                title: '电子订单申报',
+                shadeClose: true,
+                shade: 0.3,
+                area: ['726px', '489px'],
+                content: "{:Url('admin/elec/declare')}&batch_num="+batch+'&uid='+uid, //iframe的url
+                yes:function(res){
+                    setTimeout(function(){window.location.reload();},800);
+                },
+                end:function() {
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 800);
+                }
+            });
+        });
+    }
+
+    function editSender(batchNum) {
+        layer.open({
+            type:2,
+            title:'修改发件人信息',
+            area:['800px','400px'],
+            content:"{:Url('admin/elec/editordersender')}&batch_num="+batchNum
+        });
+    }
+
+    // 退回操作
+    function Returns(ids) {
+        layer.confirm('您确定退回吗?',{
+            icon:3,
+            btn:['确定','取消']
+        },function(){
+            $.ajax({
+                url:"{:url('admin/elec/returns')}",
+                type:'post',
+                dataType:'json',
+                data:{'batch_num':ids},
+                success:function(data) {
+                    var res = JSON.parse(data);
+                    if(res.code > 0) {
+                        layer.msg(res.msg,{icon:1});
+                    } else {
+                        layer.msg('退回失败',{icon:2});
+                    }
+                    setTimeout(function(){window.location.reload();},1000);
+                }
+            })
+        })
+    }
+
+
+
+    // 请求加入队列
+    function dels(batch){
+        layer.confirm('您确定要申报吗？', {
+            icon:3,
+            btn: ['确定','取消'] //按钮
+        }, function() {
+
+            $.ajax({
+                url:"http://decl.gogo198.cn/api/elec/declares",
+                type:'post',
+                dataType:'json',
+                //async:false,
+                data:{'batch_num':batch},
+                success:function(data) {
+                    if(data.code > 0) {
+                        layer.msg('加入申报队列成功',{icon:1});
+                    } else {
+                        layer.msg('加入申报队列失败',{icon:2});
+                        setTimeout(function(){window.location.reload();},1000);
+                    }
+                },
+                error:function(er) {
+                    //console.log(er)
+                }
+            })
+        });
+    }
+
+    // 2019-12-20
+    function goPay(batchNum) {
+        layer.msg('该功能暂未开通')
+        return false;
+    }
+    function exprotElist(id){
+        layer.open({
+            type: 1,
+            area:['556px','141px'],
+            title:'选择导出格式',
+            content: ' <a href="{:Url(\'admin/elec/export_excel\')}&batch_num='+id+'&type=1" onclick="loding();" class="layui-btn">格式一</a> <a onclick="loding();" href="{:Url(\'admin/elec/export_excel\')}&batch_num='+id+'&type=2" class="layui-btn">格式二</a><a onclick="loding();" href="http://declare.gogo198.cn/download/exportDaWangCbecInventory/'+id+'" class="layui-btn">大旺清单</a><a onclick="loding();" href="http://declare.gogo198.cn/elist/order/exportGogoLogisticsAndInventory/'+id+'" class="layui-btn">自建物流系统清单</a></br>><a style="margin-top: 10px;" onclick="loding();" href="http://declare.gogo198.cn/customs/download/rongtong/'+id+'" class="layui-btn">荣通物流</a><a style="margin-top: 10px;" onclick="loding();" href="http://declare.gogo198.cn//elist/order/commonList/'+id+'" class="layui-btn">清单</a><a style="margin-top: 10px;" onclick="loding();" href="http://declare.gogo198.cn/customs/sourceElecOrderFileDownload?batchNum='+id+'" class="layui-btn">原文件</a><a style="margin-top: 10px;" onclick="loding();" href="http://decl.gogo198.cn/download/boHuiWayBillExport?batch_num='+id+'" class="layui-btn">博汇运单模板</a>' //注意，如果str是object，那么需要字符拼接。
+        });
+        return false;
+    }
+
+    function loding() {
+        layer.load();
+        setTimeout(function () {
+            layer.closeAll();
+        },5000);
+    }
+</script>
+</body>
+</html>

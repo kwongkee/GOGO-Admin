@@ -1,0 +1,113 @@
+{include file='home_header'}
+<body>
+<!--主体内容-->
+<div class="list-content" style="position: relative;">
+    <!--块元素-->
+    <div class="block">
+        <!--页面有多个表格时，可以用于标识表格-->
+        <!--<h2>列表</h2>-->
+        <a href="javascript:location.reload();">
+            <button class="button wathet" style="position: absolute;right: 20px;top: 16px;"><span class="icon-reload1"></span> 刷新</button>
+        </a>
+        <div style="height: 73px; border-bottom: 1px solid #E5E7E9;">
+            <div style="width: 112px;text-align: center;float: left;height: 70px;margin-top:20px;">
+                <div style="padding-bottom:6px;">{$num['receNum']}</div>
+                <div>领取数</div>
+            </div>
+            <div style="border-right: 1px solid #E5E7E9;height: 60px;margin-top: 8px;float:left;"></div>
+            <div style="width: 112px;text-align: center;float: left;height: 70px;margin-top:20px;">
+                <div style="padding-bottom:6px;">{$num['useNum']}</div>
+                <div>使用数</div>
+            </div>
+        </div>
+
+        <!--正文内容-->
+        <div class="main">
+            <div class="admin-search" style="margin-bottom:34px;">
+                <div class="input-group">
+                    <!--<input type="text" class="text" placeholder="优惠券名称" />-->
+                    <input type="text" class="text" id="create_time1"  class="date" style="width: 200px;" value="" readonly placeholder="领取时间起" />
+                    <input type="text" class="text" id="create_time2"  class="date" style="width: 200px;" value="" readonly placeholder="领取时间止" />
+                    <select id="select">
+                        <option value="">请选择</option>
+                        <option value="1">已使用</option>
+                        <option value="0">未使用</option>
+                        <option value="2">已过期</option>
+                    </select>
+                    <button class="button blue" id="search">查询</button>
+                </div>
+            </div>
+            <table id="table" class="table color2  no-vertical-line ">
+                <thead>
+                <tr>
+                    <th>卡卷编码</th>
+                    <th>名称</th>
+                    <th>活动标题</th>
+                    <th>面额</th>
+                    <th>领取时间</th>
+                    <th>优惠券状态</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name='list' id='vo'}
+                <tr>
+                    <td>{$vo.coupon_num}</td>
+                    <td>{$vo.coupon_name}</td>
+                    <td>{$vo.coupon_title}</td>
+                    <td>{$vo.coupon_money}</td>
+                    <td>{$vo.create_time|date='Y-m-d',###}</td>
+                    <td>{$status[$vo.status]}</td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+            <div class="page">
+                {$page}
+                <!--<ul id="page" class="pagination">-->
+                <!---->
+                <!--</ul>-->
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+<script>
+    javaex.select({
+        id : "select",
+        isSearch : true,
+        // 选择后的回调函数
+        callback: function (rtn) {
+        }
+    });
+
+    javaex.date({
+        id : "create_time1",	// 承载日期组件的id
+        isTime : true,
+        date : "2018-04-15 01:01:01",	// 选择的日期
+        // 重新选择日期之后返回一个时间对象
+        callback : function(rtn) {
+            console.log(12);
+        }
+    });
+    javaex.date({
+        id : "create_time2",	// 承载日期组件的id
+        isTime : true,
+        date : "2018-04-15 01:01:01",	// 选择的日期
+        // 重新选择日期之后返回一个时间对象
+        callback : function(rtn) {
+            console.log(12);
+        }
+    });
+    var time1 = $('#create_time1').val('');
+    var time2 = $('#create_time2').val('');
+
+    $('#search').click(function () {
+        var time1 = $('#create_time1').val();
+        var time2 = $('#create_time2').val();
+        var status = $('#select option:selected').val();
+        window.location.href="{:Url('coupon/use_manage')}&time1="+time1+"&time2="+time2+"&status="+status;
+    });
+</script>
+</html>

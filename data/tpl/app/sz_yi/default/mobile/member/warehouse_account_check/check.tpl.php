@@ -1,0 +1,156 @@
+<?php defined('IN_IA') or exit('Access Denied');?><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>注册审批</title>
+    <link rel="stylesheet" type="text/css" href="../addons/sz_yi/static/travel_express/css/hui.css" />
+    <link rel="stylesheet" type="text/css" href="../addons/sz_yi/static/travel_express/css/style.css" />
+    <style>
+        .hui-header h1{
+            padding: 0px 38px 0px 0;
+        }
+        .hui-list-text{
+            border-bottom: 1px solid #969696;
+            padding: 0 10px;
+            margin-left: 0px;
+        }
+        .hui-form-items-title {
+            width: 25%;
+            height: 30px;
+            line-height: 30px;
+            font-size: 16px;
+        }
+        .hui-wrap{
+            margin-bottom: 60px;
+        }
+        .hui-form-items-content{
+            margin-left: 10px;
+            height: 30px;
+            line-height: 30px;
+            font-size: 16px;
+            text-align: right;
+            width: 70%;
+        }
+        .hui-form-select select{
+            padding: 6px 22px 6px 6px;
+            appearance: auto;
+        }
+        .hui-form-select{
+            text-align: right;
+            width: 73%;
+        }
+    </style>
+</head>
+<body>
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1>注册审批</h1>
+</header>
+
+<div class="hui-wrap">
+
+    <!-- 账户信息 -->
+    <div class="hui-list" style="margin:10px 0px 0; background: #e4f6fe;">
+        <div class="hui-list-text" style="height:50px; line-height:50px; color: #0276b2;font-weight: 900;font-size: 20px;border-bottom:unset;padding-left: 20px;">
+            员工信息
+        </div>
+    </div>
+    <form class="hui-form" id="form1">
+        <div class="hui-form-items">
+            <div class="hui-form-items-title">员工名称</div>
+            <div class="hui-form-items-content"><?php  echo $manager['name'];?></div>
+        </div>
+        <div class="hui-form-items">
+            <div class="hui-form-items-title">员工电话</div>
+            <div class="hui-form-items-content"><?php  echo $manager['mobile'];?></div>
+        </div>
+        <div class="hui-form-items">
+            <div class="hui-form-items-title">申请岗位</div>
+            <div class="hui-form-items-content"><?php  echo $job;?></div>
+        </div>
+        <div class="hui-form-items">
+            <div class="hui-form-items-title">仓库名称</div>
+            <div class="hui-form-items-content"><?php  echo $warehouse_name;?></div>
+        </div>
+        <input type="text" name="uid" value="<?php  echo $manager['id'];?>" style="display: none;">
+        <div class="hui-form-items">
+            <div class="hui-form-items-title">是否通过</div>
+            <div class="hui-form-radios" style="line-height:38px;margin-left: 10px;text-align: right;">
+                <input type="radio" value="1" name="status" id="g1" checked /><label for="g1">通过</label>
+                <input type="radio" value="2" name="status" id="g2" /><label for="g2">不通过</label>
+            </div>
+        </div>
+        <div class="hui-form-items">
+            <div class="hui-form-items-title">当前状态</div>
+            <div class="hui-form-items-content"><?php  if($manager['status'] == 0 ) { ?>未审核<?php  } else if($manager['status'] == 1) { ?>已审核<?php  } else { ?>未通过<?php  } ?></div>
+        </div>
+        <div style="padding: 15px 8px;width: 30%;margin: 20px auto 24px;">
+            <button type="button" class="hui-button hui-primary hui-fr" id="submitBtn" style="background: #1b7ab6 !important;">审核</button>
+        </div>
+    </form>
+
+
+</div>
+</div>
+
+<script src="../addons/sz_yi/static/travel_express/js/hui.js" type="text/javascript" charset="utf-8"></script>
+<script src="../addons/sz_yi/static/travel_express/js/hui-form.js" type="text/javascript" charset="utf-8"></script>
+<script src="../addons/sz_yi/template/mobile/default/enterprise/static/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript">
+    hui.formInit();
+    //表单元素数据收集演示
+    hui('#submitBtn').click(function(){
+
+        var data = hui.getFormData('#form1');
+        var datas = {
+            id: data.uid,
+            status: data.status
+        };
+
+        hui.confirm('您确认要提交审核吗？', ['取消','确定'], function(){
+            //
+            // $.ajax({
+            //     url  : 'https://shop.gogo198.cn/foll/public/?s=api_v3/AccountCheck/check',
+            //     type : 'POST',
+            //     dataType: 'json',
+            //     data : {datas},
+            //     sussess:function(res){
+            //         hui.toast(res.message);
+            //         setTimeout(function(){
+            //             window.location.reload();
+            //         }, 1000);
+            //     },
+            //     error:function(res){
+            //         console.log(JSON.stringify(e));
+            //         hui.iconToast('系统错误', 'warn');
+            //     }
+            // });
+
+            hui.ajax({
+                url  : 'https://shop.gogo198.cn/foll/public/?s=api_v3/WarehouseAccountCheck/check',
+                type : 'POST',
+                data : datas,
+                beforeSend : function(){hui.loading();},
+                complete   : function(){hui.closeLoading();},
+                success : function(res){
+                    hui.toast(res.message);
+                    setTimeout(function(){
+                        window.location.reload();
+                    }, 1000);
+                },
+                error : function(e){
+                    console.log(JSON.stringify(e));
+                    hui.iconToast('系统错误', 'warn');
+                },
+                'backType' : "JSON"
+            });
+        },function(){
+
+        });
+
+    });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+{template "parking/_header"}
+<link rel="stylesheet" href="../addons/ewei_shopv2/static/css/frozenui/css/frozen.css">
+<link rel="stylesheet" href="../addons/ewei_shopv2/static/js/build/css/ydui.css" />
+<!-- 引入YDUI自适应解决方案类库 -->
+<script src="../addons/ewei_shopv2/static/js/build/js/ydui.flexible.js"></script>
+<body>
+<header class="m-navbar" style="background-color:#0099FF">
+    <div class="navbar-center"><span class="navbar-title" style="color:#FFFFFF">预付费支付</span></div>
+</header>
+<form method="post" action="{php echo mobileUrl('parking/prepaid/prepaidPay')}&num={$n}">
+<div class="demo-spinner demo-small-pitch" >
+    <ul class="ui-list ui-list-text ui-border-tb" style="margin-top:13px;">
+        <li class="ui-border-t">
+            <div class="ui-list-info">
+                <input type="hidden" id="p" value="{$filtered['y_price']}">
+               <h4 style="color: red"><span>￥</span><span id="pr">{$filtered['y_price']}</span></h4>
+            </div>
+            <span class="m-spinner" id="J_Quantity">
+            <a href="javascript:;" class="J_Del"></a>
+            <input type="text" class="J_Input" name="ms" value="{$filtered['y_minute']}" placeholder=""/>
+            <a href="javascript:;" class="J_Add"></a>
+        </span>
+        </li>
+    </ul>
+</div>
+<div class="demo-item" style="background-color: #FFFFFF">
+    <div class="demo-block" style="line-height:30px;margin-top:10px">
+        <table class="ui-table ui-border">
+            <thead>
+            <tr"><th>时段</th><th>免费时间</th></tr>
+            </thead>
+            <tbody>
+            {loop $charge['payPeriod'] $index $items}
+            <tr><td>{$items['starTime']}-{$items['endTime']}</td><td>{$items['free']}</td></tr>
+            {/loop}
+            </tbody>
+        </table>
+    </div>
+    <!--<a class="ui-btn-lg ui-btn-primary" style="margin-top: 80px;background-color:#0099FF" href="">确认支付</a>-->
+    <button class="ui-btn-lg ui-btn-primary" style="margin-top: 80px;background-color:#0099FF" onclick="SubmitTo()">
+        确认支付
+    </button>
+</div>
+</form>
+<script>
+    var num= $(".J_Input").val();
+    var p=$("#p").val();
+  $(".J_Del").bind("click",function () {
+     var nums= $("#pr").html();
+     if(parseFloat(nums)!=parseFloat(p)){
+         $("#pr").html(parseFloat(nums)-parseFloat(p));
+     }
+      var n=$('.J_Input').val()-num;
+    if(n<num){
+        $(".J_Input").val(num);
+    }else{
+        $(".J_Input").val(n);
+    }
+  });
+  $(".J_Add").bind("click",function () {
+      var nums2= $("#pr").html();
+      $("#pr").html(parseFloat(nums2)+parseFloat(p));
+      $(".J_Input").val(parseFloat(num)+parseFloat($('.J_Input').val()));
+  })
+</script>
+{template "parking/_footer"}

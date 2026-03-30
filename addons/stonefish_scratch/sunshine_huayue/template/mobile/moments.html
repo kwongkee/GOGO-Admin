@@ -1,0 +1,129 @@
+{template 'header'}
+	<div class="ui-container">
+		<div class="weui_panel weui_panel_access">	
+			<div class="weui_panel_bd" id="list_container" style="background-color:#fbf9fe">
+			</div>
+		</div>
+		<div class="ui-loading-wrap" id="loading_more_layer" style="background-color:white;font-size:12px;display:none">
+		    <p>加载中...</p>
+		    <i class="ui-loading"></i>
+		</div>
+		<div id='bottom_sign'></div>
+	</div>
+	<script type="text/javascript">
+		// init page
+		var albumslist = [];
+		var page = 1;
+		var load_key = true;
+		window.onscroll = function() {
+			var div_top = $("#bottom_sign").offset().top;
+			var scroll_top = $("body").scrollTop();
+			var window_height = $(window).height();
+
+			if(div_top - scroll_top <= window_height && load_key)
+			{
+				listload();
+			}
+		}
+		// 加载列表
+		listload();
+
+		function listload() {
+			load_key = false;
+			$("#loading_more_layer").show();
+
+			$.ajax({
+				type:'post',
+				data:{'page':page,'debugger':2},
+				url : "{php echo $this->createMobileUrl('loadAllMoments');}",
+				success :function(d) {
+
+					if(d.res == '100') {
+						var html = '';
+						for(var i in d.list) {
+							html += '<div href="javascript:void(0)" class="weui_media_box weui_media_appmsg ui-border-tb" style="-webkit-align-items:flex-start; margin:0px 0px 10px 0px;background-color:white;" onclick="window.location.href=\'{php echo $this->createMobileUrl('momentdetail')}&mid='+d.list[i].id+'\'">';
+							// html += '<div class="weui_media_hd" style="width:60px;height:60px;line-height:20px;">';
+							// html += '<h1 style="font-weight:bold">'+d.list[i].add_time.year+'</h1>';
+							// html += '<h1 style="font-weight:bold">'+d.list[i].add_time.month+'</h1>';
+							// html += '</div> ';
+							html += '<div class="weui_media_hd">';
+							html += '<img class="weui_media_appmsg_thumb" src="'+d.list[i].uinfo.headimgurl+'">';
+							html += '</div>';
+							html += '<div class="weui_media_bd">';
+							html += '<div  style="color:grey;">'+d.list[i].uinfo.nickname;
+							html += '<span style="float:right;">'+d.list[i].add_time+'</span>';
+							html += '</div>';
+							html += '<p style="margin-bottom:5px;">'+d.list[i].remark+'</p>';
+							html += '<ul class="weui_uploader_files" style="overflow:hidden;">';
+							if(d.list[i].type == 'image') {
+								var albums_length = d.list[i].albums.length;
+								for(var n in d.list[i].albums) {
+									if(albums_length == 1){
+										html += '<li class="weui_uploader_file_1" onclick="watchPic(\''+d.list[i].albums[n].img_url+'\')">';
+									}else if(albums_length >=2 && albums_length <=4) {
+										html += '<li class="weui_uploader_file_2" onclick="watchPic(\''+d.list[i].albums[n].img_url+'\')">';
+									}else {
+										html += '<li class="weui_uploader_file" onclick="watchPic(\''+d.list[i].albums[n].img_url+'\')">';
+									}
+									html += '<a href="javascript:void(0)">';
+									html += '<img src="'+d.list[i].albums[n].img_url+'">';
+									html += '</a>';
+									html += '</li>';
+
+									albumslist.push(d.list[i].albums[n].img_url);
+								}
+							}
+							
+							html += '</ul>';
+							html += '<div style="color:grey;">'
+							if(d.list[i].belong_type == 'self') {
+								html += '<div onclick="doDelete('+d.list[i].id+')" style="display:inline-block;">删除</div>';	
+							}
+							html += '<div style="display:inline-block;float:right">回复&nbsp;'+d.list[i].comment_count+'</div>';
+							html += '</div>';
+							html += '</div>';
+							html += '</div>';
+						}
+
+						$("#list_container").append(html);
+						page ++;
+						// loading 
+						load_key = true;
+					}
+					
+					$("#loading_more_layer").hide();
+				}
+			})
+		};
+
+		function doDelete(id) {
+			if(!id) {
+				return false;
+			}
+			if(!confirm('确认删除?'))
+			{
+				return false;
+			}
+			$.ajax({
+				type:'post',
+				data:{'mid':id},
+				url : "{php echo $this->createMobileUrl('mymomentsdelete');}",
+				success :function(d) {
+					if(d.res == '100') {
+						$("#moments_"+id).remove();
+					}else {
+						alert(d.msg);
+					}
+				}
+			})
+		}
+
+		function watchPic(url) {
+				wx.previewImage({
+					current:url,
+					 urls:albumslist
+				})
+			}
+	</script>
+{template 'menu'}
+{template 'footer'}

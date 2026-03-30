@@ -1,0 +1,102 @@
+<style type="text/css">
+    table {font-size: 13px;font-weight: normal;border: 1px solid #2a94de; border-collapse: collapse;margin-left: 10px;}
+    tr td{height: 25px;border: 1px solid #2a94de;text-align: center;padding: 3px;}
+    tr th{border: 1px solid #2a94de;padding: 5px;}
+    .h{height: 35px;}
+    .hot a{color: #de9a20;}
+    .hot a:hover{color: #2a94de}
+    .bg1{color: green;}
+    .bg2{color: #2a94de;}
+    .bg3{color: red;}
+    .cols{color: red;}
+</style>
+
+<table border="1" cellspacing="0" cellpadding="0">
+
+    <tr class="h">
+        <th colspan="50">Gogo購購網|跨境網 网购直邮进口<br>清单申报 <label class="cols">{$config['endTime']|date='Y-m-d',###} </label> 日对账单</th>
+    </tr>
+
+    <tr>
+        <th>经营商户</th>
+        <th colspan="10" class="sh">{$config['uname']}</th>
+        <th>电话</th>
+        <th colspan="6">{$config['tel']}</th>
+        <th>电邮</th>
+        <th colspan="8">{$config['email']}</th>
+    </tr>
+
+
+    <tr>
+        <th rowspan="1" colspan="1">批次编号</th>
+
+        <th colspan="4" class="">总票数</th>
+
+        <th colspan="4" class="bg1">成功票数</th>
+
+        <th colspan="4" class="bg3">失败票数</th>
+
+        <th colspan="4" class="bg1">成功费用</th>
+
+        <th colspan="4" class="bg3">失败费用</th>
+
+        <th colspan="5" class="bg1">总费用</th>
+    </tr>
+
+    {volist name='datas' id='vo' key='k'}
+    <tr>
+        <td colspan="1">{$vo.bill_batch}</td>
+        <td colspan="4">{$vo.sum}</td>
+        <td colspan="4" class="bg1">{$vo.succSum}</td>
+        <td colspan="4" class="bg3">{$vo.errSum}</td>
+        <td colspan="4" class="bg1">{$vo.succFees}</td>
+        <td colspan="4" class="bg3">{$vo.errFees}</td>
+        <td colspan="5" class="bg1">{$vo.countFees}</td>
+    </tr>
+    {/volist}
+
+    <tr class="bg4">
+        <td style="background:yellow;">本日累计</td>
+        <td colspan="4"><label style="font-size: 16px;font-weight: bold;"> {$config['count']}</label> </td>
+        <td colspan="4"> <label style="font-size: 16px;color: green;font-weight: bold;">{$config['succCount']}</label></td>
+        <td colspan="4"> <label style="font-size: 16px;color: red;font-weight: bold;">{$config['errCount']}</label></td>
+        <td colspan="4"> <label style="font-size: 16px;color: green;font-weight: bold;">{$config['succFee']}</label></td>
+        <td colspan="4"> <label style="font-size: 16px;color: red;font-weight: bold;">{$config['errFee']}</label></td>
+        <td colspan="5"> <label style="font-size: 16px;color: green;font-weight: bold;">{$config['countFee']}</label></td>
+    </tr>
+
+
+    <tr>
+        <td style="background:#de9a20;">本日应付</td>
+        <td colspan="16"><label style="font-size: 18px;font-weight: bold;color: green;">￥{$config['money']}</label> </td>
+        <td colspan="3">止账时间</td>
+        <td colspan="6">{$config['endTime']|date='Y-m-d H:i:s',###}</td>
+    </tr>
+
+    <tr>
+        <td style="border-bottom: 0;">商户确认</td>
+        <td colspan="6" style="border-bottom: 0;">
+            <select name="checks" id="checks">
+                <option value="1" selected>无误，确认对账</option>
+                <option value="2">有误，需要核对</option>
+            </select>
+        </td>
+
+        <td colspan="3" style="border-bottom: 0;">确认员工</td>
+        <td colspan="5" style="border-bottom: 0;">无</td>
+
+        <td colspan="3">确认状态</td>
+
+        <td colspan="8">
+            {$checks[$config['status']]}
+        </td>
+    </tr>
+
+</table>
+
+<div id="pagesd" style="width: 100%;text-align: center;">
+
+    <label onclick="prevs('{$prev_page_url}')">上一页</label>
+    <label onclick="prevs('{$next_page_url}')">下一页</label>
+
+</div>

@@ -1,0 +1,37 @@
+{template "parking/base/header"}
+
+<body>
+	<div class="wx_box">
+        <div class="payment">
+        	<dl>
+            	<dt><span>付款金额</span><i>¥{$orderInfo['pay_account']}元</i></dt>
+                <dd>
+                	<p><span>进入时间</span><i>{$star}</i></p>
+                    <p><span>离开时间</span><i>{$end}</i></p>
+                    <p><span>停车时长</span><i>{$orderInfo['duration']}分钟</i></p>
+                    <p><span>订单编号</span><i>{$orderInfo['ordersn']}</i></p>
+                    <p><span>费用抵扣</span><i>卡券优惠</i></p>
+                </dd>
+            </dl>
+            <p class="payment_service"><a href="#">联系客服</a></p>
+            <div class="payment_price">
+            	<p class="payment_price_font01"><span>实付:<i>¥{$orderInfo['pay_account']}元</i></span></p>
+                <p class="payment_price_font02"><span>应付 ¥{$orderInfo['total']}元</span><span>已抵扣: ¥{$dikou}元</span></p>
+        		
+        		{if $orderInfo['pay_account'] !=''}
+        			<span class="payment_price_pay" id="pay">付费</span>
+        		{else}
+        			<span class="payment_price_pay payment_price_pay_none">付费</span>
+        		{/if}
+        	</div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+	$(function(){
+		$('#pay').bind('click',function(){
+			window.location.href = "<?php echo mobileUrl('parking/pay/payMoney');?>&orderid={$_GPC['orderid']}";
+		});
+	})
+</script>
+{template "parking/base/footer"}

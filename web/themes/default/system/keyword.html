@@ -1,0 +1,78 @@
+{template 'common/header-gw'}
+<ol class="breadcrumb">
+    <li><a href="./?refresh"><i class="fa fa-home"></i></a></li>
+    <li><a href="{url 'system/welcome'}">系统</a></li>
+    <li class="active">关键字</li>
+</ol>
+<button type="button" class="btn btn-primary" id="add" data-toggle="modal" data-target="#myModal">添加</button>
+<div class="rule panel panel-default">
+    <div class="table-responsive panel-body">
+        <table class="table table-hover">
+            <thead class="navbar-inner">
+            <tr>
+                <th style="width:150px;">id</th>
+                <th style="width:200px;">标题</th>
+                <th style="width:50px;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {loop $lists $list}
+            <tr>
+                <td>{$list['id']}</td>
+                <td>{$list['keyword']}</td>
+                <td>
+                    <div>
+                        <a href="{php echo url('system/keyword')}&isdel={$list['id']}">删除</a>&nbsp;&nbsp;
+                    </div>
+                </td>
+            </tr>
+            {/loop}
+            </tbody>
+        </table>
+    </div>
+</div>
+{$pager}
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">添加关键字</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">关键字</label>
+                        <input type="keyword" class="form-control" id="exampleInputkeyword" placeholder="keyword">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" onclick="add(this);return false;">添加</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function add(obj) {
+        $.ajax({
+            url:"{php echo url('system/keyword')}&keyword="+$('#exampleInputkeyword').val(),
+            type:"POST",
+            dataType:"json",
+            success:function (res) {
+                alert(res.message);
+                console.log(res);
+                setTimeout(function () {
+                    window.location.reload();
+                },1200);
+            },error:function (xhr) {
+                alert('请求失败');
+            }
+        })
+        return false;
+    }
+</script>
+{template 'common/footer-gw'}

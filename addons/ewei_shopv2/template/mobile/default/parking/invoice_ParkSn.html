@@ -1,0 +1,325 @@
+{template "parking/_header"}
+<link rel="stylesheet" href="../addons/ewei_shopv2/static/css/frozenui/css/frozen.css">
+<link rel="stylesheet" href="../addons/ewei_shopv2/static/ydui/ydui.css">
+<style type="text/css">
+	/*lable{display: inline-block;width: 99px;height: 30px;text-align: center;line-height: 30px;}*/
+	.content{height: 35px;width: 100%;border-bottom: 1px solid lightskyblue;text-align: center;line-height: 35px;}
+	#content{height: 35px;width: 100%;text-align: center;line-height: 35px;
+		font-family: "微软雅黑";
+	}
+	.errors{color: red;}
+	#show_head{display: none;}
+	#itdemo>li{
+				line-height: 28px;
+	}
+	.borderb{
+		border-bottom: 1px solid darkgray;height: 90px;				
+	}
+	.col{color: orange;}
+	.cols{color: DarkGray;}
+	#bottem{width: 100%;bottom: 0px;}
+	
+	.pagination{
+		margin: 10px 0px;display: inline-block;
+		padding-left: 0px;
+		border-radius: 4px;
+	}
+	/*.active{background-color: green;}
+	a:hover{background-color: skyblue;}*/
+	
+	.pagination>li:first-child>a,.pagination>li:first-child>span
+	{
+		margin-left: 0px;border-top-left-radius: 4px;border-bottom-left-radius: 4px;
+	}
+	.pagination>li>a,.pagination>li>span
+	{
+		background-color: #FFF;border: 1px solid #DDD;color: inherit;float: left;line-height: 1.42857;
+		margin-left: 1px;padding: 4px 10px;position: relative;text-decoration: none;
+	}
+	.pagination>.active>a,.pagination>.active>span,.pagination>.active>a:hover,.pagination>.active>span:hover,.pagination>.active>a:focus,.pagination>.active>span:focus
+	{
+		background-color: #1ab394;border-color: #1ab394;color: #fff;cursor: default;z-index: 2;
+	}
+	.pagination>li{display: inherit;text-align: -webkit-match-parent;float: left;width: auto;text-align: center;font-size: 14px;}
+	
+	
+
+	.pga{margin-top:11px;display:block;width:18%;height:25px;line-height:25px;font-size:14px;background:darkgray;float:left;margin-left:6px;border-radius:3px}
+	
+	.pg{display:block;width:19%;height:25px;line-height:25px;font-size:14px;background:#18b4ed;float:left;margin-left:8px;border-radius:3px}
+	
+	.btn-primary {
+		background-color: #0997F7;
+		color: #FFF;
+	}
+	.btn{    
+		text-align: center;
+		position: relative;
+		border: none;
+		pointer-events: auto;
+		height: 0.4rem;
+		line-height: 0.4rem;
+		font-size: 0.2rem;
+		display: inline-block;
+		padding: 0 .2rem;
+		border-radius: 3px;
+		margin-left:6px;
+	}
+	
+</style>
+<!-- 引入jQuery 2.0+ -->
+<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<!-- 引入YDUI脚本 -->
+<script src="../addons/ewei_shopv2/static/ydui/ydui.js"></script>
+<!--<script src="http://frozenui.github.io/js/frozen.js" type="text/javascript" charset="utf-8"></script>-->
+<body>
+
+
+<header class="ui-header ui-header-stable ui-border-b">
+    <i class="ui-icon-return" onclick="history.back()"></i><h1>{$title}</h1>
+</header>
+<div style="margin-top:50px;"></div>
+
+<body>
+		
+<div class="ui-form ui-border-t">
+    <form action="#" method="post" id="parkOrd">
+    	
+        <div class="ui-form-item ui-form-item-checkbox ui-border-b borderb" style="">
+            <label class="ui-checkbox">
+                <input type="checkbox" name="checkbox" checked class="ckid" value="{$parkNum['id']}"/>
+                <input type="hidden" name="money" value="{$parkNum['pay_account']}" />
+            </label>
+            <div style="width: 80%;height: 100%;text-align: left;margin-left: 10px;">
+            	<ul id="itdemo" style="height: 100%;">
+            		<li class="cols">消费金额：<lable class='col'>￥{$parkNum['pay_account']}</lable>元</li>
+            		<li class="cols">消费项目：<lable style='color: green;'>{$parkNum['body']}</lable></li>
+            		<li><lable class="cols">消费时间：<?php echo date('Y-m-d H:i',$parkNum['pay_time'])?></lable></li>
+            	</ul>
+            </div>
+        </div>
+        
+		
+        <div id="bottem" style="text-align: left;margin-top: 3px;font-size: 16px;">
+			
+        	<label class="ui-checkbox" style="padding-left:12px;margin-top: 3px;float:left">
+                <input type="hidden" name="url" id="url" value="{php echo mobileUrl('parking/invoicelist/CheckHead');}" />
+				<input type="hidden" name="urls" id="urls" value="{php echo mobileUrl('parking/invoicelist/park_post');}" />
+            </label>
+			
+        	<div class="ui-btn-wrap">
+			    <button type="button" id="ucheck" class="ui-btn-lg ui-btn-primary" style="font-size: 25px;">前往开票</button>
+			</div>
+        </div>
+    </form>
+    
+    <!-- 下载提示  -->
+    <div class="ui-dialog" id="show1" style="display:none;">
+	    <div class="ui-dialog-cnt" style="margin: 200px auto;top:-60px;width: 90%;">	    	
+	        <header class="ui-dialog-hd ui-border-b">
+                <h3>发票抬头信息</h3>
+                <i class="ui-dialog-close" data-role="button" id="close"></i>
+	        </header>
+			<hr>
+			
+	        <div class="ui-dialog-bd" style="text-align: center;">
+				<label style="color:#0997F7">发票抬头</label>
+				<p id="copy"></p>
+				<hr>
+				
+				<label style="color:#0997F7">纳税人识别号</label>
+				<p id="nsrsbh"></p>
+				<hr>
+				
+				<label style="color:#0997F7">开票金额(含税金额)</label>
+				<p id="moneys"></p>
+				<hr>
+				
+				<button class="btn btn-primary" id="uchecks">确认开票</button>				
+				<a href="{$selectHead}" class="btn btn-danger"  id="change">抬头管理</a>
+				
+	        </div>
+			
+	    </div>
+	</div>
+	
+	
+	<div class="ui-dialog" id="show3" style="display:none;">
+	    <div class="ui-dialog-cnt" style="margin: 200px auto;">	    	
+	        <header class="ui-dialog-hd ui-border-b">
+                <h3>发票下载</h3>
+                <i class="ui-dialog-close" data-role="button" id="close"></i>
+	        </header>
+	        <div class="ui-dialog-bd" style="text-align: center;">
+	            <a href="" id="pdf" style="color: cornflowerblue;">点击下载发票</a>
+	        </div>      
+	    </div>
+	</div>
+	
+	
+	<!-- 加载提示 -->
+	<div class="ui-dialog" id="show2" style="display: none;">
+	    <div class="ui-dialog-cnt" style="margin: 200px auto;">
+	        <div class="ui-dialog-bd">
+	            <div>
+		            <h4>正在努力开发票中请稍后...</h4>
+	            </div>
+	        </div>	       
+	    </div>	    
+	</div>
+	
+</div>
+
+<script type="text/javascript">
+	
+	$('#close').click(function(){
+		$('#show1').css('display','none');
+		window.location.reload();
+	})
+	
+	// 前往开票按钮
+	$("#ucheck").click(function() {
+		
+		var urls = $('#url').val();
+		var money = 0;
+		$(":checkbox:checked").each(function() {	
+	    	//获取选中的兄弟金额
+	    	money = parseFloat(money + $($(this).siblings()).val()).toFixed(2);
+	    })
+		// 开票金额
+		money = Math.round(money * 100)/100;
+		
+		$.ajax({
+            url:urls,
+            type:'post',
+            data:'payMoney=123',
+            dataType:'json',
+            success:function(data) {
+            	
+                if(data.status == 'success') {
+				
+					$('#show1').css('display','block');
+					$('#copy').html(data.info.head_name);
+					$('#nsrsbh').html(data.info.nsrsbh);
+					$('#moneys').html(money+'元');
+					
+                }else if(data.status == 'error') {
+				
+					if(confirm(data.msg)){
+						window.location.href = data.info.urls;
+					} else {
+						window.location.reload();
+					}
+					
+				}
+            }
+      	});
+		
+	});
+	
+	
+	
+	//确认开票按钮
+	$("#uchecks").click(function(){
+	
+		$('#uchecks').attr('disabled',true);
+		//$('#ucheck').hide();
+      	var str= new Array();
+      	var money  = 0 ;
+		var moneys = 0 ;
+      	var urls = $('#urls').val();
+		var sib  = 0;
+	    $(":checkbox:checked").each(function() {
+	    	//获取
+	    	str.push($(this).val());			
+	    	//获取选中的兄弟金额
+	    	money = parseFloat(money + $($(this).siblings()).val()).toFixed(2);
+	    })
+		// 开票金额
+		money = Math.round(money * 100)/100;
+		
+		if(str.length <= 0){
+	    	alert('请选择开票的订单');
+	    	return false;
+	    }
+		
+	    if(money <= 0) {
+	    	alert('开票金额必须大于0元');
+	    	return false;
+	    }
+		
+	    $('#num').text(str.length);
+	    $('#money').text('￥'+money);
+		
+	    $('#show2').css('display','block');  
+ 		
+		$.ajax({
+           url:urls, 
+              //url:'/app/'+"{php echo $this->createMobileUrl('Signup',array('op'=>'sign'))}",
+            type:'post',
+            data:'payMoney='+money+'&parkCheck='+str,            
+            dataType:'json',
+            success:function(data) {
+				
+                if(data.statu == 'success'){
+                	
+					$('#show2').css('display','none');
+					$('#pdf').attr('href',data.pdfurl);
+					//$('#show3').css('display','block');
+					
+					alert('开票成功');
+					setInterval(function(){
+						window.location.href = data.pdfurl;
+					},200);
+					
+                }else if(data.statu == 'headNodata') {
+					$('#show2').css('display','none');
+					alert(data.msg)
+					setInterval(function(){
+						window.location.href = data.pdfurl;
+					},150)
+                }else if(data.statu == 'error') {
+					alert(data.msg);
+					window.location.reload();
+				}else{
+                	alert('请查看开票历史！')
+                }
+            }
+      	});
+     });
+     
+     
+	 
+     //全选按钮
+     $("#btn1").click(function() {
+     	
+     	if($('input[name="btn"]:checked').val() == 'all') {
+     		$('.ckid').prop("checked",true);
+     		$(this).prop("checked",true);
+     		$(this).val('');
+     		
+     		var str= new Array();
+	      	var money = 0 ;
+		    $(":checkbox:checked").each(function() {
+		    	str.push($(this).val());
+		    	//获取选中的兄弟金额
+		    	money = money + parseFloat($($(this).siblings()).val());
+		    })
+		    $('#num').text(str.length);
+		    $('#money').text('￥'+money);
+     		
+     	} else {     		
+     		$('.ckid').prop("checked",false);
+     		$(this).prop("checked",false);
+     		$(this).val('all');
+     		$('#num').text('0');
+     		$('#money').text('￥0');
+     	}
+     });
+     
+     
+</script>
+</body>
+</html>
+
+{template "parking/_footer"}

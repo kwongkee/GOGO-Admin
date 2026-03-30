@@ -1,0 +1,609 @@
+{template 'common/header'}
+<title>凭证记账</title>
+<style type="text/css">
+    body {margin:0px; background:#efefef; font-family:'微软雅黑'; -moz-appearance:none;}
+    .info_main {height:auto;  background:#fff; margin-top:14px; border-bottom:1px solid #e8e8e8; border-top:1px solid #e8e8e8;}
+    .info_main .line {margin:0 10px; height:40px; border-bottom:1px solid #e8e8e8; line-height:40px; color:#999;}
+    .info_main .line .title {height:40px; width:80px; line-height:40px; color:#444; float:left; font-size:14px;}
+    .info_main .line .info { width:100%;float:right;margin-left:-80px; }
+    .info_main .line .inner { margin-left:80px; }
+    .info_main .line .inner input {height:40px; width:100%;display:block; padding:0px; margin:0px; border:0px; float:left; font-size:14px;}
+    .info_main .line .inner .user_sex {line-height:40px;}
+
+    .table{width:100%;font-size:15px;}
+    .table thead td{background-color: #ecf6fc !important;}
+    .table tr td{vertical-align: middle !important;}
+    .table tr{height:25px;}
+
+    .table tr td:nth-of-type(2){width:20%;}
+    .see{box-sizing: border-box;padding: 4px 8px;font-size: 15px;color: #fff;background: #1E9FFF;text-align:center;}
+
+    /**备注信息**/
+    .send_remark,.download_box,.send_remark2{display:none;width: 80%;position: absolute;background: #ffffff;border-radius: 5px;z-index:1000;transform:translate(-50%,-50%);top: 50%;left:50%;}
+    .download_box .pic_div{height: 200px;max-height: 200px;min-height: 200px;overflow: scroll;padding:4px;width:100%;text-align:center;}
+    .send_remark .confirm,.download_box .confirm,.send_remark2 .confirm{height: 50px;border-top: 1px solid #eee;display: flex;}
+    .send_remark .confirm>span,.download_box .confirm>span,.send_remark2 .confirm>span{flex: 1;height: 50px;line-height: 50px;font-size: 16px;text-align: center;}
+    .send_remark .confirm>span:nth-child(1),.download_box .confirm>span:nth-child(1),.send_remark2 .confirm>span:nth-child(1){color: red;}
+    .send_remark .confirm>span:nth-child(2),.download_box .confirm>span:nth-child(2),.send_remark2 .confirm>span:nth-child(2){border-left: 1px solid #eee;}
+    .send_remark .title,.download_box .title,.send_remark2 .title{text-align: center;border-bottom: 1px solid #eee;margin-bottom: 10px;}
+    .send_remark .title>p,.download_box .title>p,.send_remark2 .title>p{height: 40px;line-height: 40px;text-align: center;font-size: 18px;font-weight: bold;}
+    .send_remark .important,.download_box .important,.send_remark2 .important{color: red;}
+    .voucher_type_radio{font-size:15px;}
+
+    button, input, optgroup, select, textarea{font:unset !important;color:black !important;line-height:1.5 !important;}
+    .page_head{width:100%;background:#fff;margin-bottom:5px;box-shadow:0 0 4px #ddd;padding:10px 0 10px;}
+    .page_head .left{width:20%;display:flex;align-items:center;font-size:15px;}
+    .page_head .left .back{width:13px;height:13px;border-top:2px solid #000;border-left:2px solid #000;transform:rotate(-50deg);margin-left:15px;margin-right:5px;}
+    a{text-decoration: none;text-underline: none;}
+</style>
+
+<link type="text/css" rel="stylesheet" href="../addons/sz_yi/static/css/bootstrap.min.css" />
+<script type="text/javascript" src="../addons/sz_yi/template/pc/default/static/js/bootstrap.min.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../addons/sz_yi/static/travel_express/css/hui.css" />
+<script type="text/javascript" src="../addons/sz_yi/template/mobile/default/enterprise/static/js/hui.js" charset="UTF-8"></script>
+<link href="../addons/sz_yi/static/css/layui.css" rel="stylesheet">
+
+<div class="page_head">
+    <div class="left">
+        <div class="back"></div>
+        <div style="font-size:15px;padding-top:2px;">返回</div>
+    </div>
+</div>
+<div id="container">
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header" style="padding:0 6px;">
+                        <div id="toolbar" class="btn-group" style="display:flex;align-items:center;">
+                            <input type="text" name="ie_date" class="layui-input" id="ie_date" placeholder="请选择月份搜索" value="{$_GPC['date']}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="hui-wrap">
+        <div style="padding-top:10px;">
+            <div class="hui-segment" id="cate">
+                <a href="javascript:changeDom(1);" data-i="1" class="hui-segment-active">已签收未记账</a>
+                <a href="javascript:changeDom(2);" data-i="2">已复核可记账</a>
+            </div>
+            <div id="domsIn" style="padding-top:10px; text-align:center;">
+                {if empty($list)}
+                <div class="line" style="text-align:center;">暂无信息</div>
+                {/if}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mask" style="position: fixed; margin: 0px; padding: 0px;background: rgba(0, 0, 0,0.6); z-index: 999; width: 100%; height: 100%; transition: all 0.2s ease 0s;display:none;left: 0;top: 0;"></div>
+<div class="send_remark" id="send_remark">
+    <div class="title">
+        <p class="important">凭证审核状态</p>
+    </div>
+    <div class="info_main">
+        <div class="line">
+            <div class="title">审核状态</div>
+            <div class="info"><div class="inner">
+                <select name="voucher_type" id="voucher_type">
+                    <option value="1">可记账无需复核</option>
+                    <option value="2">不可记账待复核</option>
+                </select>
+            </div></div>
+        </div>
+    </div>
+    <textarea name="remark" id="remark" style="display:none;width:100%;padding:5px;box-sizing:border-box;border:0;" rows="5" placeholder="请输入待复核备注信息"></textarea>
+        
+    <div class="confirm">
+        <span class="close-but" onClick="fnClose(1)">关闭</span>
+        <span class="close-but" onClick="fnClose(2)">提交</span>
+    </div>
+</div>
+<div class="send_remark2" id="send_remark2">
+    <div class="title">
+        <p class="important">凭证审核状态</p>
+    </div>
+    <div class="info_main">
+        <div class="line">
+            <div class="title">审核状态</div>
+            <div class="info"><div class="inner">
+                <select name="voucher_type2" id="voucher_type2">
+                    <option value="1">复核后可记账</option>
+                    <option value="2">复核后不可记账</option>
+                </select>
+            </div></div>
+        </div>
+    </div>
+    <textarea name="remark2" id="remark2" style="display:none;width:100%;padding:5px;box-sizing:border-box;border:0;" rows="5" placeholder="请输入复核拒绝备注信息"></textarea>
+
+    <div class="confirm">
+        <span class="close-but" onClick="fnClose3(1)">关闭</span>
+        <span class="close-but" onClick="fnClose3(2)">提交</span>
+    </div>
+</div>
+<div class="download_box">
+
+</div>
+<script type="text/javascript" src="../addons/sz_yi/static/js/layui/layui.js"></script>
+<script language="javascript">
+    $(function(){
+        layui.use(['layer', 'form', 'table', 'upload', 'laydate'], function () {
+            var $ = layui.$
+                , layer = layui.layer
+                , form = layui.form
+                , element = layui.element
+                , laydate = layui.laydate
+                , upload = layui.upload;
+
+            // form.render(null, 'component-form-element1');
+
+            laydate.render({
+                elem: '#ie_date'
+                , format: 'yyyy-MM'
+                ,type:'month'
+                ,max: "new Date()"
+                ,done: function(value, date, endDate){
+                    changeDom($('.hui-segment-active').data('i'),value);
+                    window.location.replace('./index.php?i=3&c=entry&do=account&m=sz_yi&p=bookkeeping&op=voucher_keep&date='+value);
+                }
+            });
+        });
+
+        $('.page_head').find('.left').click(function(){
+          window.history.back(-1); 
+       });
+       
+      if("{$view}"==1){
+          changeDom(1,"{$_GPC['date']}");
+      }else if("{$view}"==2){
+          changeDom(2,"{$_GPC['date']}");
+      }
+
+        //凭证类别状态
+      $('#voucher_type').change(function(){
+          let selected = $(this).val();
+          if(selected==1){
+              $('#remark').hide();
+          }else if(selected==2){
+              $('#remark').show();
+          }
+      });
+        //凭证类别状态
+        $('#voucher_type2').change(function(){
+            let selected = $(this).val();
+            if(selected==1){
+                $('#remark2').hide();
+            }else if(selected==2){
+                $('#remark2').show();
+            }
+        });
+    });
+    
+    window.ids = '';
+    window.times = 0;
+    window.batch_id=0;
+
+    //凭证类别状态
+    function voucher_type(t,val){
+        var $this = $(t);
+        // var val = $this.data('val');
+        $('.voucher_type_radio').find('i').css('color', '#999').removeClass('fa-check-circle-o').addClass('fa-circle-o');
+        $(t).find('i').removeClass('fa-circle-o').addClass('fa-check-circle-o').css('color', '#0c9');
+        $('#voucher_type').val(val);
+
+        if(val==1){
+            $this.parent().find('#remark').css('display','none');
+        }else if(val==2){
+            $this.parent().find('#remark').css('display','block');
+        }
+    }
+    
+    //点击切换函数可以根据实际业务需求编写业务代码
+    function changeDom(index,date){
+        index--;
+        if(date=='' || typeof(date)=='undefined'){
+            date = $('#ie_date').val();
+        }
+        var html = '';
+        window.times=0;window.ids = '';
+        $.ajax({
+            url:"<?php echo $this->createMobileUrl('account/bookkeeping');?>",
+            type:'POST',
+            dataType:'json',
+            data:{'op':'voucher_keep','type':index+1,'date':date},
+            success:function(json) {
+                if(json.status==1){
+                    var dat = json.result.data;
+
+                    if(index==0){
+                        //已签收未记账
+                        html += '<table class="table table-striped" style="table-layout:fixed;word-break: break-all;text-align: center;">\n' +
+                                '<thead>\n'+
+                            '                        <tr>\n' +
+                            '                            <td>批次号</td>\n' +
+                            '                            <td>商户</td>\n' +
+                            '                            <td>操作</td>\n' +
+                            '                        </tr>\n'+
+                                '</thead>\n';
+                        var isshow=0;
+                        for(var i2=0;i2<dat.length;i2++){
+                            if(dat[i2]!=''){
+                                for(var i=0;i<dat[i2].length;i++){
+                                    if(dat[i2][i]['is_show']==1){
+                                        isshow=1;
+                                        html += '<tr>\n' +
+                                            '                                <td>'+dat[i2][i]['batch_num']+'</td>\n' +
+                                            '                                <td>'+dat[i2][i]['user_name']+'</td>\n' +
+                                            '                                <td><a class="see" style="width:fit-content;margin:0 auto;" href="./index.php?i=3&c=entry&do=account&m=sz_yi&p=bookkeeping&op=voucher_keepAll&opera=1&batch_id='+dat[i2][i]['id']+'">查看</a></td>\n' +
+                                            '                            </tr>';
+                                    }
+                                }
+                            }
+                        }
+                        if(isshow==0){
+                            html += '<tr><td colspan="3" align="center">暂无信息</td></tr>';
+                        }
+                        html += '</table>';
+                    }else if(index==1){
+                        //已复核可记账
+                        html += '<table class="table table-striped" style="table-layout:fixed;word-break: break-all;text-align: center;">\n' +
+                            '<thead>\n'+
+                            '                        <tr>\n' +
+                            '                            <td>批次号</td>\n' +
+                            '                            <td>商户</td>\n' +
+                            '                            <td>操作</td>\n' +
+                            '                        </tr>\n'+
+                            '</thead>\n';
+                        var isshow=0;
+                        for(var i2=0;i2<dat.length;i2++){
+                            if(dat[i2]!='') {
+                                for(var i=0;i<dat[i2].length;i++) {
+                                    if (dat[i2][i]['is_show'] == 1) {
+                                        isshow=1;
+                                        html += '<tr>\n' +
+                                            '                                <td>' + dat[i2][i]['batch_num'] + '</td>\n' +
+                                            '                                <td>' + dat[i2][i]['user_name'] + '</td>\n' +
+                                            '                                <td><a class="see" style="width:fit-content;margin:0 auto;" href="./index.php?i=3&c=entry&do=account&m=sz_yi&p=bookkeeping&op=voucher_keepAll&opera=2&batch_id=' + dat[i2][i]['id'] + '">查看</a></td>\n' +
+                                            '                            </tr>';
+                                    }
+                                }
+                            }
+                        }
+                        if(isshow==0){
+                            html += '<tr><td colspan="3" align="center">暂无信息</td></tr>';
+                        }
+                        html += '</table>';
+                    }
+
+                    hui('#domsIn').html(html);
+                    hui('#cate a').eq(index).addClass('hui-segment-active').siblings().removeClass('hui-segment-active');
+                }
+            },error:function(json){
+                alert('数据出错！');
+            }
+        });
+    }
+
+    function opera_queren(t,id,batch_id){
+        let selected = $(t).val();
+        if(selected==1){
+            //查看
+            see2(id,1);
+        }else if(selected==2){
+            //待复核中
+            alert('商户补充资料中，请等候！');
+        }else if(selected==3){
+            //选择签收
+            voucher_sel(t,id,1,batch_id);
+        }else if(selected==4){
+            //下载
+            let typ = $(t).children(':selected').data('typ');
+            down(id,typ);
+        }
+    }
+
+    //下载
+    function down(id,typ){
+        //下载凭证文件
+        $('.mask').show();
+        $('.download_box').show();
+        $('#down_id').val(id);
+
+        $.ajax({
+            url:"<?php echo $this->createMobileUrl('account/bookkeeping');?>",
+            type:'POST',
+            dataType:'json',
+            data:{'op':'get_voucher_info','id':id},
+            success:function(json) {
+                if(json.status==1){
+                    let data = json.result.data;
+                    var html = '';
+                    if(typ==3){
+                        if(typeof(data) != 'undefined' || data != ''){
+                            html += '<div class="title">\n' +
+                                '        <p class="important">账单下载</p>\n' +
+                                '    </div>\n'+
+                                '        <div class="pic_div">\n';
+                            for(var i=0;i<data['bill_file'].length;i++) {
+                                if ((navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i))) {
+                                    //移动端
+                                    html += '<div style="margin:0 10px 10px 0;box-shadow: 0px 0px 4px 0px #999;display:inline-block;">' +
+                                        '<a href="https://shop.gogo198.cn/attachment/'+data['bill_file'][i]+'" target="_blank"><img src="https://shop.gogo198.cn/attachment/'+data['bill_file'][i]+'" style="width:100px;height:100px;" onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png" ><p style="text-align:center;margin:0;">点击保存</p></a>\n' +
+                                        '</div>\n';
+                                }else{
+                                    //PC端
+                                    html += '<div style="margin:0 10px 10px 0;box-shadow: 0px 0px 4px 0px #999;display:inline-block;"><a href="https://shop.gogo198.cn/attachment/'+data['bill_file'][i]+'" download="'+data.voucher_typeName+formatZero(i+1,2)+'"><img src="https://shop.gogo198.cn/attachment/'+data['bill_file'][i]+'" style="width:100px;height:100px;" onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png" ><p style="text-align:center;margin:0;">点击下载</p></a></div>\n';
+                                }
+
+                            }
+                            html += '        </div>\n' +
+                                '<div class="confirm">\n' +
+                                '        <span class="close-but" onClick="fnClose2(1)">关闭</span>\n' +
+                                '    </div>';
+                            $('.download_box').html(html);
+                        }
+                    }else if(typ==1 || typ==2){
+                        if(typeof(data) != 'undefined' || data != ''){
+                            html += '<div class="title">\n' +
+                                '        <p class="important">凭证下载</p>\n' +
+                                '    </div>\n'+
+                                '        <div class="pic_div">\n';
+                            for(var i=0;i<data['express_voucher'].length;i++) {
+                                if ((navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i))) {
+                                    //移动端
+                                    html += '<div style="margin:0 10px 10px 0;box-shadow: 0px 0px 4px 0px #999;display:inline-block;">' +
+                                        '<a href="https://shop.gogo198.cn/attachment/'+data['express_voucher'][i]+'" target="_blank"><img src="https://shop.gogo198.cn/attachment/'+data['express_voucher'][i]+'" style="width:100px;height:100px;" onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png" ><p style="text-align:center;margin:0;">点击保存</p></a>\n' +
+                                        '</div>\n';
+                                }else{
+                                    //PC端
+                                    html += '<div style="margin:0 10px 10px 0;box-shadow: 0px 0px 4px 0px #999;display:inline-block;"><a href="https://shop.gogo198.cn/attachment/'+data['express_voucher'][i]+'" download="'+data.voucher_typeName+formatZero(i+1,2)+'"><img src="https://shop.gogo198.cn/attachment/'+data['express_voucher'][i]+'" style="width:100px;height:100px;" onerror=src="https://shop.gogo198.cn/attachment/images/default_file.png" ><p style="text-align:center;margin:0;">点击下载</p></a></div>\n';
+                                }
+
+                            }
+                            html += '        </div>\n' +
+                                '<div class="confirm">\n' +
+                                '        <span class="close-but" onClick="fnClose2(1)">关闭</span>\n' +
+                                '    </div>';
+                            $('.download_box').html(html);
+                        }
+                    }
+
+                    $('.download_box').show();
+                    $('.mask').show();
+                }
+            }
+        });
+        // window.location.href='./index.php?i=3&c=entry&do=account&m=sz_yi&p=bookkeeping&op=download_voucher_info&id='+id;
+    }
+
+    function fnClose(typ){
+        if(typ==1){
+            $('.mask').hide();
+            $('.send_remark').hide();
+            $('.remark').val('');
+        }else if(typ==2){
+            //提交
+            let id = window.ids;
+            let voucher_type = $('#voucher_type').val();
+            if($('#voucher_type').isEmpty()){
+                alert('请选择凭证状态!');return;
+            }
+            var remark = '';
+            var voucher_type2 = 0;
+            if(voucher_type==2){
+                //不可记账
+                remark = $('#remark').val();
+                if($('#remark').isEmpty()){
+                    alert('请输入待复核备注信息!');return;
+                }
+                voucher_type2 = 4;
+            }else if(voucher_type==1){
+                //可记账
+                voucher_type2 = 3;
+            }
+
+            $.ajax({
+                url: "<?php echo $this->createMobileUrl('account/bookkeeping');?>",
+                type: 'POST',
+                dataType: 'json',
+                data: {'op': 'voucher_keep', 'id': id,'type':voucher_type2,'remark':remark},
+                success: function (json) {
+                    if (json.status == 1) {
+                        alert(json.result.msg);
+                        $('.mask').hide();
+                        $('.send_remark').hide();
+                        $('#remark').val('');
+                        window.ids='';
+                        window.times=0;
+                        changeDom(1);
+                        setTimeout(function(){
+                            window.location.reload();
+                        },2000);
+                    }
+                }
+            });
+        }
+    }
+
+    function fnClose3(typ){
+        if(typ==1){
+            $('.mask').hide();
+            $('.send_remark2').hide();
+            $('#remark2').val('');
+        }else if(typ==2){
+            //提交
+            let id = window.ids;
+            let voucher_type = $('#voucher_type2').val();
+            if($('#voucher_type2').isEmpty()){
+                alert('请选择凭证状态!');return;
+            }
+            var remark = '';
+            var voucher_type2 = 0;
+            if(voucher_type==2){
+                //不可记账
+                remark = $('#remark2').val();
+                if($('#remark2').isEmpty()){
+                    alert('请输入复核拒绝备注信息!');return;
+                }
+                voucher_type2 = 6;
+            }else if(voucher_type==1){
+                //可记账
+                voucher_type2 = 5;
+            }
+
+            $.ajax({
+                url: "<?php echo $this->createMobileUrl('account/bookkeeping');?>",
+                type: 'POST',
+                dataType: 'json',
+                data: {'op': 'voucher_keep', 'id': id,'type':voucher_type2,'remark':remark},
+                success: function (json) {
+                    if (json.status == 1) {
+                        alert(json.result.msg);
+                        $('.mask').hide();
+                        $('.send_remark').hide();
+                        $('#remark').val('');
+                        window.ids='';
+                        window.times=0;
+                        changeDom(2);
+                        setTimeout(function(){
+                            window.location.reload();
+                        },2000);
+                    }
+                }
+            });
+        }
+    }
+
+    //选择凭证
+    function see(t,reg_id){
+        //每当选择凭证，其他凭证都要回归为原始状态
+        $(t).parent().parent().parent().parent().find('.add_voucher').show();
+        $(t).parent().parent().parent().parent().find('.add_voucher').parent().find('.cancel').hide();
+        $(t).parent().parent().parent().parent().find('.add_voucher').parent().find('.submit').html('提交(0)').hide();
+        $(t).parent().parent().parent().parent().find('.voucher_sel').hide();
+        $(t).parent().parent().parent().parent().find('.voucher_cancel').hide();
+        
+        $(t).parent().find('.cancel').show();
+        $(t).parent().find('.submit').show();
+        $(t).hide();
+        $(t).parent().parent().parent().find('.table').find('.voucher_sel').show();
+        window.ids='';
+        window.times=0;
+    }
+    
+    //取消凭证
+    function cancel(t){
+        $(t).parent().find('.see').show();
+        $(t).hide();
+        $(t).parent().find('.submit').html('提交(0)').hide();
+        $(t).parent().parent().parent().find('.table').find('.voucher_sel').hide();
+        $(t).parent().parent().parent().find('.table').find('.voucher_cancel').hide();
+
+        window.ids='';
+        window.times=0;
+    }
+    
+    //添加/取消凭证
+    function voucher_sel(t,id,typ,batch_id){
+        if(window.batch_id!=0 && window.batch_id!=batch_id){
+            $(t).find('option:first').prop('selected','true');
+            alert('请先完成上个操作的记账审核！');return;
+        }
+        if(typ==1){
+            //添加
+            if(typeof(window.ids)=='undefined'){
+                window.ids='';
+            }
+            window.ids +=id+',';
+            if(typeof(window.times)=='undefined'){
+                window.times=1;
+            }else{
+                window.times = window.times+1;
+            }
+            window.batch_id =batch_id;
+            // $(t).parent().find('.voucher_cancel').show();
+            // $(t).hide();
+        }else if(typ==2){
+            //取消
+            window.ids = window.ids.split(id+',').join('');
+            window.times -=1;
+            window.batch_id =batch_id;
+            // $(t).parent().find('.voucher_sel').show();
+            // $(t).hide();
+        }
+
+        $(t).parent().parent().parent().parent().parent().find('.submit').html('记账审核('+times+')');
+    }
+    
+    function submit(t){
+        if(window.times==0 || typeof(window.times)=='undefined'){
+            alert('请选择凭证！');return;
+        }
+        
+       $('.mask').show();
+       $('.send_remark').show();
+    }
+    
+    function submit2(t){
+        if(window.times==0 || typeof(window.times)=='undefined'){
+            alert('请选择凭证！');return;
+        }
+        let id = window.ids;
+        $('.send_remark2').show();
+        $('.mask').show();
+    }
+    
+    function see2(id,typ) {
+        if(typ==1){
+            //查看凭证信息
+            window.location.href='./index.php?i=3&c=entry&do=account&m=sz_yi&p=bookkeeping&op=voucher_info&id='+id;
+        }else if(typ==2){
+            //可记账
+            if(confirm('确认可记账无需复核？')){
+                $.ajax({
+                    url: "<?php echo $this->createMobileUrl('account/bookkeeping');?>",
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {'op': 'voucher_keep', 'id': id,'type':3},
+                    success: function (json) {
+                        if (json.status == 1) {
+                            alert(json.result.msg);
+                            changeDom(1);
+                        }
+                    }
+                });
+            }
+        }else if(typ==3){
+            //不可记账
+            $('.mask').show();
+            $('.send_remark').show();
+            $('#record_id').val(id);
+        }else if(typ==4){
+            //确认记账
+            if(confirm('确认记账？')){
+                $.ajax({
+                    url: "<?php echo $this->createMobileUrl('account/bookkeeping');?>",
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {'op': 'voucher_keep', 'id': id,'type':5},
+                    success: function (json) {
+                        if (json.status == 1) {
+                            alert(json.result.msg);
+                            changeDom(2);
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    function fnClose2(){
+        $('.download_box').hide();
+        $('.mask').hide();
+    }
+</script>
+
+{template 'common/footer'}

@@ -1,0 +1,120 @@
+{include file="public/header"}
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">优惠券名称</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" lay-verify="required" name="coupon_name" id="coupon_name" value="{$data['coupon_name']}" placeholder="优惠券名称">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">价值￥</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" lay-verify="required" name="price_value" id="price_value" value="{$data['price_value']}" placeholder="优惠券价值￥">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">满减￥</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" lay-verify="required" name="full_minus_price" id="full_minus_price" value="{$data['full_minus_price']}" placeholder="例如：50元优惠券满1000元立减50">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">有效期(天)</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" lay-verify="required" name="valid_date" id="valid_date" value="{$data['valid_date']}" placeholder="自领取日期开始算起，单位（天）">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">所需积分</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" lay-verify="required" name="require_points" id="require_points" value="{$data['require_points']}" placeholder="领取优惠券所需积分">
+                            </div>
+                        </div>
+                        <div class="layui-form-item" style="display: none;">
+                            <div class="layui-form-label">适用范围</div>
+                            <div class="layui-input-block">
+                                <select name="scope" id="scope">
+                                    <option value="">请选择适用范围</option>
+                                    <option value="1" {if $data['scope']==1}selected{/if}>集运订单</option>
+                                    <option value="2" {if $data['scope']==2}selected{/if}>商城订单</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">优惠券说明</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" lay-verify="required" name="remark" id="remark" value="{$data['remark']}" placeholder="优惠券说明">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">状态</div>
+                            <div class="layui-input-block">
+                                <select name="status" id="status" lay-verify="required">
+                                    <option value="">请选择优惠券状态</option>
+                                    <option value="1" {if $data['status']==1}selected{/if}>上架</option>
+                                    <option value="2" {if $data['status']==2}selected{/if}>下架</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+
+        form.on('submit(component-form-element)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+
+            $.ajax({
+                url:"{:Url('centralize/index/coupon_save')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

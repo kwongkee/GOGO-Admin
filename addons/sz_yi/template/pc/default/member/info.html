@@ -1,0 +1,172 @@
+{template 'member/center'}
+<title>会员资料</title>
+<style type="text/css">
+    body {margin:0px; background:#efefef; font-family:'微软雅黑'; -moz-appearance:none;}
+    .info_main {height:auto;  background:#fff; margin-top:14px; border-bottom:1px solid #e8e8e8; border-top:1px solid #e8e8e8;}
+    .info_main .line {margin:0 10px; height:40px; border-bottom:1px solid #e8e8e8; line-height:40px; color:#999;}
+    .info_main .line .title {height:40px; width:130px; line-height:40px; color:#444; float:left; font-size:14px;}
+    .info_main .line .info { width:93%;float:right;margin-left:-80px;height: 40px }
+    .info_main .line .inner { margin-left:80px; }
+    .info_main .line .inner input {height:38px; width:100%;display:block; padding:0px; margin:0px; border:0px; float:left; font-size:16px;}
+    .info_main .line .inner .user_sex {line-height:40px;}
+    .info_sub {height:44px; margin:14px 5px; background:#31cd00; border-radius:4px; text-align:center; font-size:16px; line-height:44px; color:#fff;}
+    .select { border:0px solid #ccc;height:38px;}
+</style>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.core-2.5.2.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.core-2.5.2-zh.js" type="text/javascript"></script>
+<link href="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.core-2.5.2.css" rel="stylesheet" type="text/css" />
+<link href="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.animation-2.5.2.css" rel="stylesheet" type="text/css" />
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.datetime-2.5.1.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.datetime-2.5.1-zh.js" type="text/javascript"></script>
+<script src="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.android-ics-2.5.2.js" type="text/javascript"></script>
+<link href="../addons/sz_yi/static/js/dist/mobiscroll/mobiscroll.android-ics-2.5.2.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="../addons/sz_yi/static/js/dist/area/cascade.js"></script>
+<div id="container" class="rightlist"></div></div>
+
+<script id="member_info" type="text/html">
+    <div class="page_topbar">
+    <!-- <a href="javascript:;" class="back" onclick="history.back()"><i class="fa fa-angle-left"></i></a> -->
+    <div class="title">{if $_W['uniacid'] == 18}My Profile{else}我的资料{/if}</div>
+</div>
+    <div class="info_main">
+        <div class="line"><div class="title">{if $_W['uniacid'] == 18}Name{else}姓名{/if}</div><div class='info'><div class='inner'><input type="text" id='realname' placeholder="{if $_W['uniacid'] == 18}Please enter your name{else}请输入您的姓名{/if}"  value="<%realname%>" /></div></div></div>
+        <%if mobile%>
+        <div class="line"><div class="title">{if $_W['uniacid'] == 18}Mobile{else}绑定手机{/if}</div><div class='info'><div class='inner'><%mobile%></div></div></div>
+        <input type="hidden" id='mobile' value="<%mobile%>" />
+        <%else%>
+        <div class="line"><div class="title">{if $_W['uniacid'] == 18}Mobile{else}绑定手机{/if}</div><div class='info'><div class='inner'><input type="text" id='mobile' placeholder="{if $_W['uniacid'] == 18}Cannot be modified after binding{else}绑定后不可修改{/if}"  value="<%mobile%>" /></div></div></div>
+        <%/if%>
+        <div class="line"><div class="title">{if $_W['uniacid'] == 18}WeChat ID{else}微信号{/if}</div><div class='info'><div class='inner'><input type="text"  id='weixin' placeholder="{if $_W['uniacid'] == 18}Please enter the WeChat ID{else}请输入微信号{/if}" value="<%weixin%>"/></div></div></div>
+        <div class="line"><div class="title">{if $_W['uniacid'] == 18}Contact Nnumber{else}联系电话{/if}</div><div class='info'><div class='inner'><input type="text"  id='membermobile' placeholder="{if $_W['uniacid'] == 18}Please type your phone number{else}请输入联系电话{/if}" value="<%membermobile%>"/></div></div></div>
+        <div class="line"><div class="title">{if $_W['uniacid'] == 18}Alipay account{else}支付宝帐号{/if}</div><div class='info'><div class='inner'><input type="text"  id='alipay' placeholder="{if $_W['uniacid'] == 18}Please enter Alipay account{else}请输入支付宝帐号{/if}" value="<%alipay%>"/></div></div></div>
+        <div class="line"><div class="title">{if $_W['uniacid'] == 18}Account name{else}账号姓名{/if}</div><div class='info'><div class='inner'><input type="text"  id='alipayname' placeholder="{if $_W['uniacid'] == 18}Please enter your account name{else}请输入账号姓名{/if}" value="<%alipayname%>"/></div></div></div>
+        <div class="line">
+            <div class="title">{if $_W['uniacid'] == 18}Gender{else}性别{/if}</div><div class='info'><div class='inner'>
+            <span class="gender" data-val="1"><i class="fa <%if gender=='1'%>fa-check-circle-o<%else%>fa-circle-o<%/if%>" <%if gender=='1'%>style="color:#0C9;"<%/if%>></i> {if $_W['uniacid'] == 18}Male{else}男{/if}</span>&nbsp;&nbsp;
+            <span class="gender" data-val="2"><i class="fa <%if gender=='2'%>fa-check-circle-o<%else%>fa-circle-o<%/if%>" <%if gender=='2'%>style="color:#0C9;"<%/if%>></i> {if $_W['uniacid'] == 18}Female{else}女{/if}
+                <input type="hidden" id="gender" value="<%sex%>" />
+                </div></div>
+        </div>
+        <div class="line">
+            <div class="title">{if $_W['uniacid'] == 18}City{else}所在城市{/if}</div><div class='info'><div class='inner'>
+            <select id="sel-provance" onChange="selectCity();" class="select">
+                <option value="" selected="true">{if $_W['uniacid'] == 18}State / Province{else}省/直辖市{/if}</option>
+            </select>
+            <select id="sel-city" onChange="selectcounty()" class="select">
+                <option value="" selected="true">{if $_W['uniacid'] == 18}Please choose{else}请选择{/if}</option>
+            </select>
+            <select id="sel-area" class="select" style="display:none">
+                <option value="" selected="true">{if $_W['uniacid'] == 18}Please choose{else}请选择{/if}</option>
+            </select></div></div>
+        </div>
+        <div class="line"  style="border:0px;"><div class="title">{if $_W['uniacid'] == 18}Date of birth{else}生日{/if}</div><div class='info'><div class='inner'><input type="text" id="birthday" placeholder="{if $_W['uniacid'] == 18}Click to select date{else}点击选择日期{/if}" readonly value='<%birthday%>'/></div></div></div>
+
+    </div>
+    <div class="info_sub">{if $_W['uniacid'] == 18}Confirm the changes{else}确认修改{/if}</div>
+</script>
+<script language="javascript">
+    require(['tpl', 'core'], function(tpl, core) {
+        core.json('member/info',{},function(json){
+            if (json.result.member) {
+
+                var data = json.result.member;
+
+                $('#container').html(tpl('member_info', data));
+
+                var currYear = (new Date()).getFullYear();
+                var opt = {};
+                opt.date = {preset: 'date'};
+                opt.datetime = {preset: 'datetime'};
+                opt.time = {preset: 'time'};
+                opt.default = {
+                    theme: 'android-ics light',
+                    display: 'modal',
+                    mode: 'scroller',
+                    lang: 'zh',
+                    startYear: currYear - 100,
+                    endYear: currYear
+                };
+
+                $("#birthday").scroller('destroy').scroller($.extend(opt['date'], opt['default']));
+                cascdeInit(data.province,data.city,data.dist);
+                $('.gender').click(function() {
+                    var $this = $(this);
+                    var val = $this.data('val');
+                    $('.gender').find('i').css('color', '#999').removeClass('fa-check-circle-o').addClass('fa-circle-o');
+                    $(this).find('i').removeClass('fa-circle-o').addClass('fa-check-circle-o').css('color', '#0c9');
+                    $('#gender').val(val);
+                })
+                $('.info_sub').click(function() {
+                    if($(this).attr('saving')=='1')
+                    {
+                        return;
+                    }
+
+                   if($('#realname').isEmpty()){
+                       core.tip.show('{if $_W['uniacid'] == 18}Please type in your name{else}请输入姓名{/if}!');
+                       return;
+                   }
+                  if(!$('#mobile').isMobile() && $('#mobile').val()){
+                       core.tip.show('{if $_W['uniacid'] == 18}Please enter the correct binding mobile phone number{else}请输入正确的绑定手机号{/if}!');
+                       return;
+                   }
+                   if(!$('#membermobile').isMobile()){
+                       core.tip.show('{if $_W['uniacid'] == 18}Please enter the correct contact number{else}请输入正确的联系电话{/if}!');
+                       return;
+                   }
+
+/*                  if( $('#weixin').isEmpty()){
+                       core.tip.show('请输入微信号!');
+                       return;
+                   }
+*/                   $(this).html('{if $_W['uniacid'] == 18}Processing{else}正在处理{/if}...').attr('saving',1);
+                   var birthday = $('#birthday').val().split('-');
+                    core.json('member/info', {
+                       'memberdata':{
+                            'realname': $('#realname').val(),
+                            'mobile': $('#mobile').val(),
+                            'membermobile': $('#membermobile').val(),
+                            'weixin': $('#weixin').val(),
+                            'gender': $('#gender').val(),
+                            'birthyear': $('#birthday').val().length>0?birthday[0]:0,
+                            'birthmonth': $('#birthday').val().length>0?birthday[1]:0,
+                            'birthday': $('#birthday').val().length>0?birthday[2]:0,
+                            'province': $('#sel-provance').val(),
+                            'city': $('#sel-city').val(),
+                             'alipay': $('#alipay').val(),
+                            'alipayname': $('#alipayname').val(),
+                       }, 'mcdata':{
+                            'realname': $('#realname').val(),
+                            'mobile': $('#mobile').val(),
+                            'membermobile': $('#membermobile').val(),
+                            'gender': $('#gender').val(),
+                            'birthyear': $('#birthday').val().length>0?birthday[0]:0,
+                            'birthmonth': $('#birthday').val().length>0?birthday[1]:0,
+                            'birthday': $('#birthday').val().length>0?birthday[2]:0,
+                            'resideprovince': $('#sel-provance').val(),
+                            'residecity': $('#sel-city').val()
+                       }
+                    }, function(json) {
+
+                        if(json.status==1){
+                             core.tip.show('{if $_W['uniacid'] == 18}Saved successfully{else}保存成功{/if}');
+                             {if !empty($_GPC['returnurl'])}
+                                 location.href="{php echo urldecode($_GPC['returnurl'])}";
+                             {else}
+                                 location.href="{php echo $this->createMobileUrl('member')}";
+                             {/if}
+                        }
+                        else{
+                            $('.info_sub').html('{if $_W['uniacid'] == 18}Confirm the changes{else}确认修改{/if}').removeAttr('saving');
+                            core.tip.show('{if $_W['uniacid'] == 18}Save failed{else}保存失败{/if}!');
+                        }
+
+                    },true,true);
+                })
+            }
+        });
+
+    })
+</script>
+
+{template 'common/footer'}

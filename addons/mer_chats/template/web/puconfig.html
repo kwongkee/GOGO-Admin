@@ -1,0 +1,115 @@
+
+    {template 'web/link'}
+    <style>
+        .layui-table thead tr{
+            background-color:#ecf6fc;
+        }
+        .layui-table thead tr th{
+            color: #1b7ab6;
+        }
+        .layui-input-block {
+            margin-left: 0;
+            min-height: 5px;
+        }
+        hr{
+            margin: 41px 0 0;
+        }
+        .pagination{
+            margin: 10px 0px;display: inline-block;
+            padding-left: 0px;
+            border-radius: 4px;
+        }
+
+        .pagination>li:first-child>a,.pagination>li:first-child>span
+        {
+            margin-left: 0px;border-top-left-radius: 4px;border-bottom-left-radius: 4px;
+        }
+        .pagination>li>a,.pagination>li>span
+        {
+            background-color: #FFF;border: 1px solid #DDD;color: inherit;float: left;line-height: 1.42857;
+            margin-left: 1px;padding: 4px 10px;position: relative;text-decoration: none;
+        }
+        .pagination>.active>a,.pagination>.active>span,.pagination>.active>a:hover,.pagination>.active>span:hover,.pagination>.active>a:focus,.pagination>.active>span:focus
+        {
+            background-color: #1ab394;border-color: #1ab394;color: #fff;cursor: default;z-index: 2;
+        }
+        .pagination>li{display: inherit;text-align: -webkit-match-parent;float: left;width: auto;text-align: center;font-size: 14px;}
+    </style>
+        <!-- 内容主体区域 -->
+        <div style="padding: 15px;">
+            <div class="laytitle"><span>公众号配置</span></div>
+            <hr class="layui-bg-blue">
+
+            <div class="layui-form">
+                <table class="layui-table">
+                    <thead>
+                    <tr>
+                        <th>公众号名称</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {loop $puconfig $inx $itm}
+                        <tr>
+                            <td>{$itm['name']}</td>
+                            <td>
+                                <div>
+                                    <button type="button" class="layui-btn layui-btn-normal" style="float: left;" onclick="See({$itm['uniacid']},'{$itm["name"]}');">查看</button>
+                                    <div class="site-demo-button" id="layerDemo" style="margin-bottom: 0; float: left; margin-left: 10px;">
+                                        <button type="button" onclick="addpu({$itm['uniacid']});" class="layui-btn layui-btn-warm" class="">新增接口</button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {/loop}
+                    </tbody>
+                </table>
+
+                <div  style="text-align: center;" id="pager">
+                    {$pager}
+                </div>
+
+            </div>
+        </div>
+
+<script>
+    layui.use('layer', function(){ //独立版的layer无需执行这一句
+        var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
+    });
+
+    function See(uniacid,names) {
+        var urls = "{php echo WebUrl('mer_chats',array('m' => 'mer_chats','do'=>'index', 'p'=>'seepu'))}&uniacid="+uniacid+"&names="+names;
+        window.location.href = urls;
+    }
+
+    function addpu(uniacid) {
+        layer.open({
+            type: 2,
+            title:'新增接口',
+            closeBtn:2,
+            area:['480px','550px'],
+            skin: 'layui-layer-lan',
+            content: "{php echo WebUrl('mer_chats',array('m' => 'mer_chats','do'=>'index', 'p'=>'addpu'))}&uniacid="+uniacid //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+        });
+    }
+
+</script>
+
+
+<script>
+    layui.use(['form', 'layedit', 'laydate'], function(){
+        var form = layui.form
+            ,layer = layui.layer
+            ,layedit = layui.layedit
+            ,laydate = layui.laydate;
+
+        //表单赋值
+        layui.$('#LAY-component-form-setval').on('click', function(){
+            form.val('example', {
+                "like[checkbox]": true //复选框选中状态
+            });
+        });
+
+    });
+
+</script>

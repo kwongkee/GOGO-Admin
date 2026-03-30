@@ -1,0 +1,146 @@
+{include file="iot/header"}
+<body style="background-color:#fff;">
+<style>
+    .tip {
+        display: none;
+        font-size: 14px;
+        position: absolute;
+        top: 55%;
+        left: 5%;
+        background: #000;
+        opacity: .5;
+        width: 90%;
+        color: #fff;
+        text-align: center;
+        padding: 5% 0;
+    }
+</style>
+<div class="whole">
+    <div class="header">
+        <!-- <div><img src="./images/top-logo.png" alt=""></div> -->
+        <h2 class="title">常驻人员登录</h2>
+    </div>
+    <form action="">
+        <div class="content">
+            <div class="logo"><img src="./static/iot/images/logo.png" alt=""></div>
+            <div class="box">
+                <img src="./static/iot/images/icon_01.png" alt="" class="icon">
+                <input type="text" name="phone" value="" placeholder="请输入手机号码" class="box_input" id="phone">
+                <div class="tip" id="tip"></div>
+            </div>
+            <div class="box">
+                <img src="./static/iot/images/icon_02.png" alt="" class="icon">
+                <input type="text" name="code" id="coder" value="" placeholder="请输入验证码" class="code_input">
+                <a href="#" class="code" id="code" onclick="sendCode();return false;">获取验证码</a>
+            </div>
+            <div class="btn"><a href="#" onclick="login();return false;">登录</a></div>
+            <div class="zc" style="color:#000;"><a style="color:#000;" href="{:Url('iot/user/reg')}&uniacid=3">申请账号</a></div>
+        </div>
+    </form>
+    <div class="login_bottom"><img src="./static/iot/images/bottom.jpg" alt=""></div>
+</div>
+</body>
+<script src="./static/iot/js/md5.js"></script>
+<script src="./static/iot/js/jquery-1.11.0.min.js"></script>
+<script>
+
+    var isFlag = false;
+    var timers = 60;
+
+    function isLogin(){
+        var log = get('iot_user',604800);
+        console.log(log);
+        if (!log){
+            return false;
+        } else{
+            document.cookie=hex_md5('iot_user')+'='+log;
+            window.location.href="{:Url('iot')}";
+        }
+
+    }isLogin();
+    function set(key,value){
+        var curtime = new Date().getTime();//获取当前时间
+        localStorage.setItem(key,JSON.stringify({val:value,time:curtime}));//转换成json字符串序列
+    }
+
+    function get(key,exp)//exp是设置的过期时间
+    {
+        var val = localStorage.getItem(key);//获取存储的元素
+        if (val == null){
+            return false;
+        } else{
+            var dataobj = JSON.parse(val);//解析出json对象
+            return dataobj.val;
+        }
+        //如果当前时间-减去存储的元素在创建时候设置的时间 > 过期时间
+        // if(new Date().getTime() - dataobj.time > exp) {
+        //     return false;//提示过期
+        // } else{
+        //     return dataobj.val;
+        // }
+    }
+
+    function sendCode() {
+        if (isFlag){return false;}
+        var phone = window.document.getElementById('phone').value;
+        if (phone==''){
+            var tip = document.getElementById("tip");
+            tip.innerHTML = "请输入手机号";
+            tip.style.display='block';
+            setTimeout(function(){
+                tip.style.display = 'none';
+            },2000);
+            return false;
+        }
+        isFlag = true;
+        reqSendCode(phone);
+        tickTime();
+    }
+
+    function reqSendCode(phone){
+        axios.get("{:Url('iot/sendcode')}&phone="+phone).then(function (res) {
+            showMsg(res.data.message);
+        }).catch(function (err) {
+            showMsg('发送失败');
+        })
+    }
+
+    function login(){
+        var phone = window.document.getElementById('phone').value;
+        var code = window.document.getElementById('coder').value;
+        if (phone==''||code==''){
+            showMsg('请填写必填项');
+            return false;
+        }
+        axios.post("{:Url('iot/login')}",{
+            phone:phone,
+            code:code
+        }).then(function (res) {
+            showMsg(res.data.message);
+            if (res.data.code==0){
+                set('iot_user',res.data.data);
+                setTimeout(function(){
+                    window.location.href="{:Url('iot')}";
+                },2000);
+            }
+        }).catch(function (err) {
+            showMsg('登录失败');
+        })
+    }
+
+    function tickTime() {
+        if (timers<=0){
+            timers = 60;
+            isFlag = false;
+            window.document.getElementById('code').innerHTML='获取验证码';
+        } else {
+            timers = timers- 1;
+            window.document.getElementById('code').innerHTML=timers+'后重试';
+            setTimeout(function () {
+                tickTime();
+            },1000);
+        }
+    }
+
+</script>
+</html>

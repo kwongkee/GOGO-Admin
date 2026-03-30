@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="Cache-Control" content="no-cache"/>
+<title>错题统计 - {$config['webtitle']}</title>
+<meta http-equiv="description" content="" />
+<meta name="renderer" content="webkit"/>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+<meta name="description" content="" id="description"/>
+<meta name="keywords" content=""/>
+<link rel="stylesheet" href="{$templateurl}css/wap_css.css" type="text/css"/>
+<link rel="stylesheet" href="{$templateurl}css/common.css" />
+<script src="{$templateurl}js/jquery-1.8.0.min.js" language="javascript"></script>
+<style type="text/css">.TabbedPanelsTabSelected a { color:#FFFFFF;}</style>
+</head>
+
+<body>
+<div class="kaoshizuoyetab tjaa">
+  <div id="TabbedPanels1" class="TabbedPanels">
+    <ul class="TabbedPanelsTabGroup">
+      <li class="TabbedPanelsTab TabbedPanelsTabSelected" tabindex="0"><a href="{$urlt}" style="display:block;">错题统计</a></li>
+      <li class="TabbedPanelsTab" tabindex="0"><a href="{$urlt}&op=1" style="display:block;">知识点统计</a></li>
+    </ul>
+    <div class="cuottongji">
+		{loop $month_list $value}
+		<a href="{$urltk}&getmonth={$value[0]}" {if $getmonth == $value[0]}class="active"{/if}>{$value[1]}月</a>
+		{/loop}
+    </div>
+    <div style="clear:both; height:86px;"></div>
+    <div class="TabbedPanelsContentGroup">
+      <div class="TabbedPanelsContent">
+        <div class="cuotitongjidd">
+        	<div class="a1">
+            	<span>统计时间：<strong>{$tongjidate}</strong></span>
+                <font>
+                	<div class="p">当月做题总数<h1>{$total_month}道</h1></div>
+                	<div class="p">当月错题数<h1>{$total_month_cw}道</h1></div>
+                	<div class="p">截止当前做题数<h1>{$total_zq}道</h1></div>
+                </font>
+            </div>
+            <div class="clear"></div>
+            <div class="a2">
+            	<span>所做题型分布</span>
+        <main class="container">
+			<div class="row">
+				<div id="echarts-2" class="col-xs-6" style=" padding-top:0;"></div>				
+			</div>
+		</main>
+        </div>
+        <div class="a2 a3"> 
+			<span>错题数据分析</span>       
+			<div class="b1">本月错题：<p>{$total_month_cw}<font class="zeng">（同比上月{$rate_month_tbcw}）</font></p></div>
+			<div class="b1">本月做题总数：<p>{$total_month}<font class="jiang">（同比上月{$rate_month_tbzn}）</font></p></div>
+			<div class="b1">错误率：<p>{$errorrate_month}<font class="zeng">（同比上月{$errorrate_month_on}）</font></p></div>
+			<div class="b1">班级平均错误率：<p>{$errorrate_month_bj}<font class="zeng">（同比上月{$rate_month_tbbj}）</font></p></div>
+			<div class="b1">本月正确率班级排名：<p>{$paiming}<font class="jiang">（同比上月{$rate_month_tbpm}）</font></p></div>
+        </div>
+        <div class="a2">
+            	<span>近六月学习状况走势图</span>
+				<main class="container">
+					<div class="row">
+						<div id="echarts-3" class="col-xs-6"></div>				
+					</div>
+				</main>
+
+            </div>
+        </div>
+      </div>
+      
+      
+    </div>
+  </div>
+</div>
+
+<!--示意图 start-->
+<script src="{$templateurl}plugin/echarts.js"></script>
+<script>
+$(function() {
+	
+	setOption("echarts-2", {
+		backgroundColor: '#f9f6f5',
+		visualMap: {
+			show: true,
+			min: 80,
+			max: 600,
+			inRange: {
+				colorLightness: [2, 5.5]
+			}
+		},
+		series: [{
+			name: '题型分布',
+			type: 'pie',
+			radius: '55%',
+			data: [{
+				value: {$total_xzt},
+				name: '选择题\n{$total_xzt}道'
+			}, {
+				value: {$total_pdt},
+				name: '判断题\n{$total_pdt}道'
+			}, {
+				value: {$total_tkt},
+				name: '填空题\n{$total_tkt}道'
+			}, {
+				value: {$total_jdt},
+				name: '简答题\n{$total_jdt}道'
+			}, {
+				value: {$total_zwt},
+				name: '作文题\n{$total_zwt}道'
+			}],
+			roseType: 'angle',
+			label: {
+				normal: {
+					textStyle: {
+						color: 'rgba(0, 0, 0, 0.3)'
+					}
+				}
+			},
+			labelLine: {
+				normal: {
+					lineStyle: {
+						color: 'rgba(0, 0, 0, 0.3)'
+					}
+				}
+			},
+			itemStyle: {
+				normal: {
+					color: '#000',
+					shadowBlur: 200,
+					shadowColor: 'rgba(0, 0, 0, 0.5)'
+				}
+			}
+		}]
+	});
+	setOption("echarts-3",{	  
+    tooltip: {
+        trigger: 'axis'
+    },
+    legend: {
+        data:['错题','做题量','班级平均错题']
+    },
+    grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+    },
+    toolbox: {
+        feature: {
+            saveAsImage: {}
+        }
+    },
+    xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: [
+		{loop $month_list $value}
+		'{$value[1]}月',
+		{/loop}
+		]
+    },
+    yAxis: {
+        type: 'value'
+    },
+    series: [
+        {
+            name:'错题',
+            type:'line',
+            stack: '总数',
+            data:[{$wrong_q}]
+        },
+        {
+            name:'做题量',
+            type:'line',
+            stack: '总数',
+            data:[{$zuoti_q}]
+        },
+        {
+            name:'班级平均错题',
+            type:'line',
+            stack: '总数',
+            data:[{$banji_q}]
+        }
+    ]
+	});
+});
+/*
+ **功能:柱状、折线图
+ **参数1：元素ID
+ **参数2：配置项设置
+ */
+function setOption(ident, opt) {
+	//基于准备好的dom,初始化echarts实例
+	let myChart = echarts.init($('#' + ident)[0]);
+	// 使用刚指定的配置项和数据显示图表。
+	myChart.setOption(opt);
+}
+/*
+ **功能:南丁格尔图
+ **参数1：元素ID
+ **参数2：配置项设置
+ */
+
+function setOption(ident, opt) {
+	//基于准备好的dom,初始化echarts实例
+	let myChart = echarts.init($('#' + ident)[0]);
+	// 使用刚指定的配置项和数据显示图表。
+	myChart.setOption(opt);
+}
+</script>
+<!--示意图 end-->
+<div class="clear"></div>
+<div class="clear"></div>
+<div class="clear"></div>
+
+<!--footer strat-->
+{template 'footer'}
+</body>
+</html>

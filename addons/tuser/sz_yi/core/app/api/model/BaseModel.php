@@ -1,0 +1,8 @@
+<?php
+// Ä£¿éLTDÌá¹©
+namespace app\api\model;
+
+class BaseModel extends \Think\Model
+{}
+
+?>

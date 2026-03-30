@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="common/meta"}
+    <link rel="stylesheet" href="./static/hadmin/layui/css/layui.css"></link>
+    <style type="text/css">
+        /*您可以将下列样式写入自己的样式表中*/
+        .childBody{padding: 15px;}
+
+        /*layui 元素样式改写*/
+        .layui-btn-sm{line-height: normal; font-size: 12.5px;}
+        .layui-table-view .layui-table-body{min-height: 256px;}
+        .layui-table-cell .layui-input.layui-unselect{height: 30px; line-height: 30px;}
+
+        /*设置 layui 表格中单元格内容溢出可见样式*/
+        .table-overlay .layui-table-view,
+        .table-overlay .layui-table-box,
+        .table-overlay .layui-table-body{overflow: visible;}
+        .table-overlay .layui-table-cell{height: auto; overflow: visible;}
+
+        /*文本对齐方式*/
+        .text-center{text-align: center;}
+    </style>
+
+</head>
+<body class="gray-bg">
+
+<!--<table class="layui-hide" id="tabl" lay-filter="tabl"></table>-->
+<div class="layui-card">
+    <div class="layui-card-body layui-text">
+        <div id="toolbar">
+            <div>
+                <button type="button" class="layui-btn layui-btn-sm" data-type="addRow" title="添加纪录">
+                    <i class="layui-icon layui-icon-add-1"></i> 添加纪录
+                </button>
+                <button class="layui-btn layui-btn-sm" style="float: right;"  id="refresh">
+                    <i class="layui-icon layui-icon-refresh-3" ></i>刷新
+                </button>
+            </div>
+        </div>
+        <div id="tableRes" class="table-overlay">
+            <table id="dataTable" lay-filter="dataTable" class="layui-hide"></table>
+        </div>
+<!--        <div id="action" class="text-center">-->
+<!--            <button type="button" name="btnSave" class="layui-btn" data-type="save"><i class="layui-icon layui-icon-ok-circle"></i>保存</button>-->
+<!--            <button type="reset" name="btnReset" class="layui-btn layui-btn-primary">取消</button>-->
+<!--        </div>-->
+    </div>
+</div>
+</body>
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<!-- Bootstrap table -->
+<script src="./static/hadmin/layui/layui.all.js"></script>
+
+
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script>
+    // admin/goods/add
+
+    layui.use(['jquery', 'table', 'layer'], function () {
+        var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer;
+
+        window.viewObj = {
+            tbData:[],
+        };
+        //数据表格实例化
+
+        var tbWidth = $("#tableRes").width();
+        var layTableId = "layTable";
+        var tableIns = table.render({
+            elem: '#dataTable',
+            id: layTableId,
+            url:'{:Url("admin/HsCodeController/getHscodeRiskList")}',
+            // data: viewObj.tbData,
+            width: tbWidth,
+            page: true,
+            loading: true,
+            even: false, //不开启隔行背景
+            cols: [[
+                {field:'id',title: '序号', type: 'numbers'},
+                {field: 'hscode_start', title: '开始',edit: 'text'},
+                {field: 'hscode_end', title: '结束', edit: 'text'},
+                {field: 'hscode_remark', title: '风险描述',edit:'text'},
+                {field: 'tempId', title: '操作', templet: function(d){
+                        return '<a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="update" lay-id="'+ d.tempId +'"><i class="layui-icon layui-icon-edit"></i>更新</a>' +
+                            '<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del" lay-id="'+ d.tempId +'"><i class="layui-icon layui-icon-delete"></i>移除</a>';
+                }}
+            ]],
+            done: function(res, curr, count){
+                viewObj.tbData = res.data;
+            }
+        });
+
+        //定义事件集合
+        var active = {
+            addRow: function(){	//添加一行
+                layer.open({
+                    type: 2,
+                    area:['545px','420px'],
+                    content: '{:Url("admin/HsCodeController/addHsCodeRisk")}',
+                    cancel:function () {
+                        tableIns.reload();
+                    }
+                });
+            },
+
+            removeEmptyTableCache: function(){
+                var oldData = table.cache[layTableId];
+                for(var i=0, row; i < oldData.length; i++){
+                    row = oldData[i];
+                    if(!row || !row.tempId){
+                        oldData.splice(i, 1);    //删除一项
+                    }
+                    continue;
+                }
+                tableIns.reload({
+                    data: oldData
+                });
+            },
+            save: function(){
+                var oldData = table.cache[layTableId];
+                console.dir(JSON.stringify(table.cache[layTableId], null, 2));
+            }
+        }
+
+        //激活事件
+        var activeByType = function (type, arg) {
+            if(arguments.length === 2){
+                active[type] ? active[type].call(this, arg) : '';
+            }else{
+                active[type] ? active[type].call(this) : '';
+            }
+        }
+
+        //注册按钮事件
+        $('.layui-btn[data-type]').on('click', function () {
+            var type = $(this).data('type');
+            activeByType(type);
+        });
+
+
+        //监听工具条
+        table.on('tool(dataTable)', function (obj) {
+            var data = obj.data, event = obj.event, tr = obj.tr; //获得当前行 tr 的DOM对象;
+            console.log(data);
+            switch(event){
+                case "update":
+                    $.ajax({
+                        url:"{:Url('admin/HsCodeController/upCustomizeHsCodeRisk')}",
+                        type:"POST",
+                        dataType:"json",
+                        data:data,
+                        success:function (resp) {
+                            layer.msg(resp.msg);
+                        }
+                    })
+                    break;
+                case "del":
+                    layer.confirm('真的删除行么？', function(index){
+                        $.ajax({
+                            url:"{:Url('admin/HsCodeController/delCustomizeHsCodeRisk')}",
+                            type:"GET",
+                            dataType:"json",
+                            data:{id:data.id},
+                            success:function (resp) {
+                                if (resp.code==1){
+                                    layer.msg(resp.msg);
+                                }else{
+                                    obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                                    layer.close(index);
+                                    activeByType('removeEmptyTableCache');
+                                }
+                            }
+                        })
+
+                    });
+                    break;
+            }
+        });
+
+        $('#refresh').on('click',function () {
+            tableIns.reload();
+        });
+
+
+    });
+
+
+
+</script>
+</html>
+

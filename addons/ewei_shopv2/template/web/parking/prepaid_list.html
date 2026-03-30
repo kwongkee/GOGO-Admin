@@ -1,0 +1,67 @@
+{template "parking/_header"}
+<div style="margin-top:87px;margin-left:300px">
+    <form class="layui-form layui-form-pane" action="{php echo WebUrl('parking/prepaids/save')}" method="post">
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width:130px;">预付费收费添加￥</label>
+            <div class="layui-input-inline">
+                <input type="text" name="classs" lay-verify="required" placeholder="请输入类别A-Z" autocomplete="off" class="layui-input" value="">
+            </div>
+            <div class="layui-input-inline">
+                <input type="text" name="min" lay-verify="required" placeholder="请输入时间/分" autocomplete="off" class="layui-input" value="">
+            </div>
+            <div class="layui-input-inline">
+                <input type="text" name="prices" lay-verify="required" placeholder="请输入收费金额" autocomplete="off" class="layui-input" value="">
+            </div>
+            <button class="layui-btn" lay-submit="" lay-filter="demo2">提交</button>
+        </div>
+        <!-- <div class="layui-form-item">
+        </div> -->
+    </form>
+</div>
+
+<table class="layui-table" lay-even="" lay-skin="row">
+    <colgroup>
+        <col>
+        <col>
+        <col>
+        <col>
+    </colgroup>
+    <thead>
+    <tr>
+        <th>序号</th>
+        <th>时间</th>
+        <th>收费标准</th>
+        <th>类名</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {loop $data $index $item}
+    <tr>
+        <td>{$item['id']}</td>
+        <td>{$item['Minute']}分</td>
+        <td>￥{$item['Price']}</td>
+        <td>{$item['PriceClass']}</td>
+        <td>
+            <input type="hidden" name="id" value="{$item['id']}" />
+            <button class="layui-btn layui-btn-danger" lay-submit lay-filter="del"><i class="layui-icon"></i></button>
+        </td>
+    </tr>
+    {/loop}
+    </tbody>
+</table>
+<script>
+    layui.use('form', function(){
+        var form = layui.form;
+
+        //监听提交
+        form.on('submit(del)', function(data){
+            var id=$("input[name='id']").val();
+            $.post("{php echo WebUrl('parking/prepaids/del')}",{"id":id},function(data){
+                alert(data);
+                location.reload();
+            })
+        });
+    });
+</script>
+{template "parking/_footer"}

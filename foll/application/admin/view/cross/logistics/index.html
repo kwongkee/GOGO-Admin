@@ -1,0 +1,80 @@
+{include file="public/header"}
+<body style="padding: 10px;">
+<!-- 上级ID -->
+<input type="hidden" id="pid" value="1">
+<div class="header">
+    <span>承运企业列表</span>
+
+    <button class="layui-btn layui-btn-sm" onclick="addName()">添加物流企业</button>
+
+    <div></div>
+</div>
+
+<table class="layui-table">
+    <thead>
+        <tr>
+            <th>承运企业名称</th>
+            <th>添加时间</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {volist name="data.data" id='vo'}
+        <tr>
+            <td>{$vo['logisticName']}</td>
+            <td>{$vo['createTime']|date='Y-m-d H:i:s',###}</td>
+            <td>
+                <a class="layui-btn layui-btn-normal layui-btn-xs" href="{:Url('admin/cross/logisticLine')}&pid={$vo['id']}">承运线路</a>
+                <button class="layui-btn layui-btn-danger layui-btn-xs" onclick="del({$vo['id']})">删除</button>
+            </td>
+        </tr>
+        {/volist}
+    </tbody>
+</table>
+
+<div class="layui-page">
+    {$page}
+</div>
+
+<script type="text/javascript">
+
+    layui.use(['layer'],function(){
+        layer = layui.layer;
+        $     = layui.jquery;
+    });
+
+    // 添加物流企业
+    function addName() {
+        layer.open({
+            type:2,
+            title:'添加物流企业',
+            shade:0.3,
+            area:['420px','220px'],
+            content:'{:Url("admin/cross/logGetname")}'
+        });
+    }
+
+
+    // 删除数据
+    function del(id)
+    {
+        layer.confirm('确定要删除吗？',{icon:3,btn:['确定','取消']},function() {
+            $.post("{:Url('admin/cross/Del')}",{id:id},function(resd){
+                var res = JSON.parse(resd);
+                if(res.code == 1) {
+                    layer.msg(res.msg,{icon:1});
+                    setTimeout(function(){
+                        layer.closeAll();
+                        parent.window.location.reload();
+                    },1100);
+                } else {
+                    layer.alert(res.msg,{icon:2});
+                }
+            },'json');
+        })
+    }
+</script>
+
+</body>
+</html>

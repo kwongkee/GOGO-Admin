@@ -1,0 +1,204 @@
+{template 'header'}
+<!-- container -->
+<div class="ui-container">
+	<ul  class="ui-list ui-list-link  ui-list-active ui-list-cover ui-border-tb">
+		<li class="ui-border-t"  onclick="window.location.href='{php echo $this->createMobileUrl('headimgset')}'">
+			<div class="ui-list-icon" >
+			<span style="background-image:url({$userinfo['headimgurl']});border-radius:5px;"></span>
+			</div>
+			<div class="ui-list-info">
+			<h4 class="ui-nowrap">更换头像</h4>
+			</div>
+		</li>
+	</ul>
+	<div class="ui-form ui-border-t">
+		<div class="ui-form-item ui-border-b">
+			<label>
+			昵称
+			</label>
+			<input type="text" placeholder="昵称" id='nickname' value="{$userinfo['nickname']}">
+		</div>
+		<div class="ui-form-item ui-form-item-textarea ui-border-b">
+			<label>
+			签名
+			</label>
+			<textarea placeholder="个人签名" id='sign'>{$userinfo['sign']}</textarea>
+		</div>
+		<div class="ui-form-item ui-border-b">
+			<label>
+			年龄
+			</label>
+			<input type="text" placeholder="" id='age' value="{$userinfo['age']}">
+		</div>
+		<div class="ui-form-item ui-border-b">
+			<label>
+			性别
+			</label>
+			<input type="text" placeholder="" id='sex' value="{if $userinfo['sex'] == '1'}男{else}女{/if}" readonly="readonly" onclick="choose_user_sex()">
+		</div>
+		<div class="ui-form-item ui-border-b">
+			<label>
+			查看
+			</label>
+			<input type="text" id="user_sex" placeholder="" value="{if $userinfo['choose_sex'] == '1'}男生{else}女生{/if}" onclick="choose_sex()" readonly="readonly">
+		</div>
+		<div class="ui-btn-wrap">
+		    <button class="ui-btn-lg ui-btn-primary" onclick='save(this)'>
+		        保存资料
+		    </button>
+		</div>
+		<div class="ui-form-item ui-form-item-switch ui-border-b">
+        	<p>
+        		对附近的人可见
+        	</p>
+	        <label class="ui-switch">
+	            <input type="checkbox" id="isvisible" {if $userinfo['isvisible'] == 'open'}checked{/if} onclick='change_visible(this)'>
+	        </label>
+	    </div>
+	    <div class="ui-form-item ui-form-item-switch ui-border-b">
+        	<p>
+        		消息提醒推送
+        	</p>
+	        <label class="ui-switch">
+	            <input type="checkbox" id="is_notice" {if $userinfo['is_notice'] == 'y'}checked{/if} onclick='change_notice(this)'>
+	        </label>
+	    </div>
+	</div>
+	<div class="ui-actionsheet" id="sex_list">  
+		<div class="ui-actionsheet-cnt">
+			<h4>选择性别</h4> 
+			<button onclick='select_sex(this)'>男生</button>  
+			<button onclick='select_sex(this)'>女生</button>  
+			<button onclick="$('.ui-actionsheet').removeClass('show')">取消</button> 
+		</div>
+	</div>
+	<!-- user sex -->
+	<div class="ui-actionsheet" id="user_sex_list">  
+		<div class="ui-actionsheet-cnt">
+			<h4>选择性别</h4> 
+			<button onclick='select_user_sex(this)'>男</button>  
+			<button onclick='select_user_sex(this)'>女</button>  
+			<button onclick="$('#user_sex_list').removeClass('show')">取消</button> 
+		</div>
+	</div>
+	<script type="text/javascript">
+	function choose_sex()
+	{
+		$('#sex_list').addClass('show');
+	}
+	function select_sex(obj,val) {
+		var sex = $(obj).html();
+		$("#user_sex").val(sex);
+		$('#sex_list').removeClass('show');
+	}
+	//  self
+	function choose_user_sex()
+	{
+		$('#user_sex_list').addClass('show');
+	}
+	function select_user_sex(obj,val) {
+		var sex = $(obj).html();
+		$("#sex").val(sex);
+		$('#user_sex_list').removeClass('show');
+	}
+	function save(obj) {
+		var nickname  = $("#nickname").val();
+		var sign  = $("#sign").val();
+		var age  = $("#age").val();
+		var sex  = $("#sex").val();
+		var choose_sex  = $("#user_sex").val();
+
+		if(nickname.length > 20) {
+			alert("昵称不能超过20字符");
+			return;
+		}
+
+		if(age < 0 || age > 200) {
+			alert("年龄不能大于200");
+			return;
+		}
+
+		// 按钮状态变化
+		$(obj).html("提交中...");
+		$(obj).attr('disabled','disabled');
+
+		if(sex == '' || nickname=='' || choose_sex == '' || age == '')
+		{
+			alert("资料不能为空");
+			$(obj).html("保存资料");
+			$(obj).attr('disabled','');
+			return;
+		}
+		$.ajax({
+			type:'post',
+			url:"{php echo $this->createMobileUrl('userupdate')}",
+			data:{nickname:nickname,usersign:sign,age:age,sex:sex,choose_sex:choose_sex},
+			success:function(d) {
+				if(d.res == '100') {
+					$(obj).html("保存成功，重新载入..");
+					window.location.href='';
+				}else {
+					$(obj).html("保存资料");
+					$(obj).attr('disabled','');
+					alert(d.msg);
+				}
+			}
+		})
+	}
+	// change visible
+	function change_visible(obj) {
+		var _self = $(obj);
+		// if checked  then false
+		if(_self.attr('checked')) {
+			_self.attr('checked',true);
+			isvisible = 'open';
+		}else {
+			_self.attr('checked',false);
+			isvisible = 'close';
+		}
+
+		// ajax
+		$.ajax({
+			type:'post',
+			url:"{php echo $this->createMobileUrl('visible')}",
+			data:{isvisible:isvisible},
+			success:function(d) {
+				if(d.res == '100') {
+					//
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+	}
+	// change visible
+	function change_notice(obj) {
+		var _self = $(obj);
+		// if checked  then false
+		if(_self.attr('checked')) {
+			_self.attr('checked',true);
+			is_notice = 'y';
+		}else {
+			_self.attr('checked',false);
+			is_notice = 'n';
+		}
+
+		// ajax
+		$.ajax({
+			type:'post',
+			url:"{php echo $this->createMobileUrl('changenotice')}",
+			data:{is_notice:is_notice},
+			success:function(d) {
+				if(d.res == '100') {
+					//
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+	}
+
+	</script>
+	{template 'menu'}
+</div>
+{template 'footer'}

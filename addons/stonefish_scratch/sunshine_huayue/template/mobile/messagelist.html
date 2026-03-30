@@ -1,0 +1,133 @@
+{template 'header'}
+<div class="ui-container">
+	<ul class="ui-list ui-list-link ui-list-cover ui-border-tb" id='list_container'>
+	<!--{loop $list $item}
+		<li class="ui-border-t">
+			<div class="ui-list-thumb">
+				{if $item['headimgurl']}
+				<span style="background-image:url({$item['headimgurl']})"></span>
+				{else}
+				<span style="background-image:url(http://placeholder.qiniudn.com/100x100)"></span>
+				{/if}
+			</div>
+			<div class="ui-list-info">
+				<p>{$item['nickname']}:{$item['last_time_greet']}前</p>
+				<p style="color:black;">向你打了招呼</p>
+			</div>
+		</li>
+		{/loop} -->
+		{loop $list $item}
+		<li class="ui-row-flex ui-whitespace ui-border-t " onclick="Surrounds.openNew('{php echo $this->createMobileUrl('chat',array('chat_openid'=>$item['start_openid']))}')" style="line-height:20px;">
+			<div class="ui-col ui-col ui-flex ui-flex-ver ui-flex-pack-center ui-flex-align-start">
+				<div class="ui-list-thumb {if $item['readed'] == 'n'}ui-reddot{/if}">
+				<span style="border-radius:3px;background-image:url({$item['headimgurl']})"></span>
+				</div>
+			</div>
+			<div class="ui-col ui-col-4 ui-flex ui-flex-ver ui-flex-pack-center ui-flex-align-start">
+				<div>
+					{$item['nickname']}
+					{if $item['sex'] == 1}
+					<span class="ui-icon-male" style="display:inline;font-weight:bold;font-size:20px;line-height:20px;color:#1480E8;"></span>
+					{else}
+					<span class="ui-icon-female" style="display:inline;font-weight:bold;font-size:20px;line-height:20px;color:red;"></span>
+					{/if}
+					{$item['last_time_greet']}前
+				</div>
+				<div style="color:grey;">
+				向你打了招呼
+				</div>
+			</div>
+		</li>
+		{/loop}
+	</ul>
+	<div id='bottom_sign'></div>
+		<!-- bottom -->
+		<div class="ui-loading-wrap" style="display:none;background-color:white;" id="listload_more">
+			<p>上拉加载更多</p>
+		</div>
+		<!-- loading -->
+		<div class="ui-loading-wrap" id="loading_more_layer" style="background-color:white;font-size:12px;">
+		    <p>加载中...</p>
+		    <i class="ui-loading"></i>
+		</div>
+		<div class="ui-loading-wrap" id="loading_over" style="background-color:white;font-size:12px;display:none;">
+		    <p>已全部加载完毕</p>
+		</div>
+</div>
+{template 'menu'}
+<script type="text/javascript">
+	window.onscroll = function() {
+		var div_top = $("#bottom_sign").offset().top;
+		var scroll_top = $("body").scrollTop();
+		var window_height = $(window).height();
+
+		if(div_top - scroll_top <= window_height && load_key)
+		{
+			listload();
+		}
+	}
+	var page = 2;
+	var load_key = true;
+	function listload() {
+
+		load_key = false;
+
+		var _self = $('#listload_more');
+		
+		_self.hide();
+		$("#loading_more_layer").show();
+
+		$.ajax({
+			type:'post',
+			data:{'page':page},
+			url : "{php echo $this->createMobileUrl('loadmessagelist');}",
+			success :function(d) {
+				if(d.res == '100') {
+					var html = '';
+					for (var i in d.list) {
+						var info = d.list[i];
+						html += '<li class="ui-row-flex ui-whitespace ui-border-t " onclick="Surrounds.openNew(\'{php echo $this->createMobileUrl('chat')}&chat_openid='+info.start_openid+'\','+info.id+')" style="line-height:20px;">';
+						html += '<div class="ui-col ui-col ui-flex ui-flex-ver ui-flex-pack-end ui-flex-align-center">';
+						html += '<div class="ui-list-thumb ';
+						if(info.readed=='n') {
+							html += 'ui-reddot';
+						}
+						html += '">';
+						if(info.headimgurl) {
+							html += '<span style="border-radius:3px;background-image:url('+info.headimgurl+')"></span>';
+
+						}else {
+							html += '<span style="border-radius:3px;background-image:url(http://placeholder.qiniudn.com/100x100)"></span>';
+						}
+						
+						html += '</div>';
+						html += '</div>';
+						html += '<div class="ui-col ui-col-4 ui-flex ui-flex-ver ui-flex-pack-center ui-flex-align-start">';
+						html += '<div>'+info.nickname;
+						if(info.sex == '1') {
+							html += '<span class="ui-icon-male" style="display:inline;font-weight:bold;font-size:20px;line-height:20px;color:#1480E8;"></span>';
+						}else {
+							html += '<span class="ui-icon-female" style="display:inline;font-weight:bold;font-size:20px;line-height:20px;color:red;"></span>';
+						}
+						html += info.last_time_greet+'前';
+						html += "</div>";
+						html += '<div style="color:grey;">向你打了招呼</div>';
+						html += '</div>';
+						html += '</li>';
+					}
+					$("#list_container").append(html);
+					page ++;
+					load_key = true;
+
+					// loading 
+					$("#loading_more_layer").hide();
+					_self.show();
+				}else if(d.res=='102') {
+					$("#loading_more_layer").hide();
+					$("#loading_over").show();
+				}
+			}
+		})
+	}
+</script>
+{template 'footer'}

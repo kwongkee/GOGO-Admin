@@ -1,0 +1,208 @@
+{include file="common/header_inner_new"}
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="hidden" name="id" value="{$id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">内页名称</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" name="name" placeholder="请输入内页名称" value="{$data['name']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">内页链接</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" name="link" placeholder="请输入内页链接" value="{$data['link']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">内页底色</div>
+                            <div class="layui-input-block">
+                                <div id="color"></div>
+                                <input type="hidden" name="content[background]" value="{$data['content']['background']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">内容底色</div>
+                            <div class="layui-input-block">
+                                <div id="color3"></div>
+                                <input type="hidden" name="content[content]" value="{$data['content']['content']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">内页文字颜色</div>
+                            <div class="layui-input-block">
+                                <div id="color2"></div>
+                                <input type="hidden" name="content[fontcolor]" value="{$data['content']['fontcolor']}">
+                            </div>
+                        </div>
+
+                        {if $id==20}
+                            <!--商品详情页-->
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">代购须知链接</div>
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input" name="content[agent_link]" placeholder="请输入代购须知链接" value="{$data['content']['agent_link']}">
+                                </div>
+                            </div>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload','colorpicker'],function(){
+        var laydate = layui.laydate,
+            layer = layui.layer,
+            form  = layui.form,
+            $ = layui.jquery,
+            upload = layui.upload,
+            colorpicker = layui.colorpicker;
+
+        {if(!empty($data['content']['background']))}
+            colorpicker.render({
+                elem:'#color',
+                alpha:true,
+                size:'lg',
+                predefine:true,
+                color:"{$data['content']['background']}",
+                done:function(color){
+                    $('input[name="content[background]"]').val(color);
+                }
+            });
+            colorpicker.render({
+                elem:'#color2',
+                alpha:true,
+                size:'lg',
+                predefine:true,
+                color:"{$data['content']['fontcolor']}",
+                done:function(color){
+                    $('input[name="content[fontcolor]"]').val(color);
+                }
+            });
+            colorpicker.render({
+                elem:'#color3',
+                alpha:true,
+                size:'lg',
+                predefine:true,
+                color:"{$data['content']['content']}",
+                done:function(color){
+                    $('input[name="content[content]"]').val(color);
+                }
+            });
+        {else}
+            colorpicker.render({
+                elem:'#color',
+                alpha:true,
+                size:'lg',
+                done:function(color){
+                    $('input[name="content[background]"]').val(color);
+                }
+            });
+            colorpicker.render({
+                elem:'#color2',
+                alpha:true,
+                size:'lg',
+                done:function(color){
+                    $('input[name="content[fontcolor]"]').val(color);
+                }
+            });
+            colorpicker.render({
+                elem:'#color3',
+                alpha:true,
+                size:'lg',
+                done:function(color){
+                    $('input[name="content[content]"]').val(color);
+                }
+            });
+        {/if}
+
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            // if( $('#img_file-upload-list').children().length == 0 )
+            // {
+            //     layer.msg('请上传广告图！');
+            //     return false;
+            // }
+
+            $.ajax({
+                url:"{:Url('admin/shopping/save_guideinner')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+        // 左侧栏
+        upload.render({
+            elem: '#img_file-upload'
+            ,url: '{:Url("admin/basic/upload_file")}'
+            ,accept: 'image'
+            ,data: { folder: 'centralize', type: 'website_index'}
+            ,multiple: false
+            ,number:1
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+
+                    $('#img_file-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="icon[]" value="'+res.file_path+'"></div>');
+                }
+            }
+        });
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+
+</script>
+</body>
+</html>

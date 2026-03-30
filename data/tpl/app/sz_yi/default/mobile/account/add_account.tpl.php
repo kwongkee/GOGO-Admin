@@ -1,0 +1,122 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/header', TEMPLATE_INCLUDEPATH)) : (include template('common/header', TEMPLATE_INCLUDEPATH));?>
+<title>账号配置</title>
+<style type="text/css">
+    body {margin:0px; background:#efefef; font-family:'微软雅黑'; -moz-appearance:none;}
+    .info_main {height:auto;  background:#fff; margin-top:14px; border-bottom:1px solid #e8e8e8; border-top:1px solid #e8e8e8;}
+    .info_main .line {margin:0 10px; height:40px; border-bottom:1px solid #e8e8e8; line-height:40px; color:#999;}
+    .info_main .line .title {height:40px; width:80px; line-height:40px; color:#444; float:left; font-size:15px;}
+    .info_main .line .info { width:100%;float:right;margin-left:-80px; }
+    .info_main .line .inner { margin-left:80px; }
+    .info_main .line .inner input {height:40px; width:100%;display:block; padding:0px; margin:0px; border:0px; float:left; font-size:15px;}
+    .info_main .line .inner .user_sex {line-height:40px;}
+    .info_sub {height:44px; margin:14px 5px; background:#1E9FFF !important; border-radius:4px; text-align:center; font-size:16px; line-height:44px; color:#fff;}
+    .select { border:1px solid #ccc;height:25px;}
+
+    .bigautocomplete-layout{background:#fff;position:absolute;height: 200px;overflow: scroll;border:1px solid #000;}
+    .bigautocomplete-layout table tr td div{height: 30px;line-height: 30px;}
+    .back{height: 44px;margin: 14px 5px;background: #aaa;border-radius: 4px;text-align: center;font-size: 16px;line-height: 44px;color: #fff;}
+</style>
+<script src="../addons/sz_yi/static/js/jquery.bigautocomplete.js"></script>
+
+<div id="container">
+    <div class="info_main">
+        <div class="line">
+            <div class="title">账号类别</div>
+            <div class='info'>
+                <div class='inner'>
+                    <span class="account_type_radio" data-val="1"><i class="fa fa-circle-o"></i>公司账户</span>
+                    <span class="account_type_radio" data-val="2" style="margin-left:5px;"><i class="fa fa-circle-o"></i>个人账户</span>
+                    <span class="account_type_radio" data-val="3" style="margin-left:5px;"><i class="fa fa-circle-o"></i>支付账户</span>
+                    <input type="text" name="account_type" id="account_type" value="" style="display: none;">
+                </div>
+            </div>
+        </div>
+        <div id="baml" style="display:none;">
+            <div class="line name"><div class="title">账号名称</div><div class='info'><div class='inner'><input type="text" id='name' placeholder="请输入账号名称"  value="" /></div></div></div>
+            <div class="line bank_account"><div class="title">银行账号</div><div class='info'><div class='inner'><input type="text" id='bank_account' placeholder="请输入账号"  value="" /></div></div></div>
+            <div class="line bank_name12"><div class="title">银行名称</div><div class='info'><div class='inner'>
+                <input type="text" name="bank_name" id="bank_name" placeholder="请选择银行" class="layui-input">
+                <!--<input type="text" list="browsers2" name="bank_name" id="bank_name" placeholder="请选择银行" class="layui-input">-->
+                <!--<datalist id="browsers2" style="height:100px;">-->
+                    <?php  if(is_array($bank)) { foreach($bank as $v) { ?>
+                    <!--<option value="<?php  echo $v['bank_name'];?>"><?php  echo $v['bank_name'];?></option>-->
+                    <?php  } } ?>
+                <!--</datalist>-->
+            </div></div></div>
+            <div class="line bank_name3"><div class="title">支付公司</div><div class='info'><div class='inner'><input type="text" id='bank_name2' placeholder="请输入支付公司"  value="" /></div></div></div>
+        </div>
+    </div>
+    <div class="info_sub">提交</div>
+    <div class="button back" onclick="javascript:history.back(-1);">返回</div>
+</div>
+
+<script language="javascript">
+    $(function(){
+        $("#bank_name").bigAutocomplete({data:<?php  echo $bank;?>});
+    });
+    require(['tpl', 'core'], function(tpl, core) {
+        //账号类别
+        $('.account_type_radio').click(function() {
+            var $this = $(this);
+            var val = $this.data('val');
+            $('.account_type_radio').find('i').css('color', '#999').removeClass('fa-check-circle-o').addClass('fa-circle-o');
+            $(this).find('i').removeClass('fa-circle-o').addClass('fa-check-circle-o').css('color', '#0c9');
+            $('#account_type').val(val);
+            if(val==1 || val==2){
+                $('#baml').show();
+                $('.bank_account').find('.title').text('银行账号');
+                $('.bank_name3').hide();$('.bank_name12').show();
+            }else if(val==3){
+                $('#baml').show();
+                $('.bank_account').find('.title').text('支付账号');
+                $('.bank_name12').hide();$('.bank_name3').show();
+            }
+        });
+        
+        $('.info_sub').click(function() {
+            let account_type = $('#account_type').val();
+            if( $('#account_type').isEmpty()){
+                core.tip.show('请选择账号类别!');
+                return;
+            }
+            let bank_account = $('#bank_account').val();
+            if( $('#bank_account').isEmpty()){
+                core.tip.show('请输入银行账号/支付账号!');
+                return;
+            }
+            let bank_name = $('#bank_name').val();
+            if(account_type==1 || account_type==2){
+                if( $('#bank_name').isEmpty()){
+                    core.tip.show('请选择银行!');
+                    return;
+                }
+            }else{
+                if( $('#bank_name2').isEmpty()){
+                    core.tip.show('请输入支付公司!');
+                    return;
+                }    
+            }
+            let bank_name2 = $('#bank_name2').val();
+            
+            let name = $('#name').val();
+            if( $('#name').isEmpty()){
+                core.tip.show('请输入账号名称!');
+                return;
+            }
+
+            core.json('account/register',{'op':'add_account','account_type':account_type,'bank_account':bank_account,'bank_name':bank_name,'bank_name2':bank_name2,'name':name},function(json){
+                if(json.status==-1){
+                    core.tip.show(json.result.msg);
+                }else{
+                    core.tip.show('添加成功！');
+                    $('#bank_account').val('');
+                    setTimeout(function(){
+                        window.history.back(-1);
+                    },1500)
+                }
+            });
+        });
+    });
+</script>
+
+<?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/footer', TEMPLATE_INCLUDEPATH)) : (include template('common/footer', TEMPLATE_INCLUDEPATH));?>

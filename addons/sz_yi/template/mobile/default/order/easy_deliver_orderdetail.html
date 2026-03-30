@@ -1,0 +1,52 @@
+{template "common/easy_delivery_header"}
+<body>
+<header>
+    <div class="logo"><img src="../addons/sz_yi/static/images/logo.png" alt=""></div>
+    <div class="plane"><img src="../addons/sz_yi/static/images/plane.png" alt=""></div>
+</header>
+<div class="warp">
+<!--    <div class="title">-->
+<!--        <a href="javascript:window.history.back(-1)"><img src="../addons/sz_yi/static/images/row.png" alt=""></a>订购详情-->
+<!--    </div>-->
+    <div class="content">
+        <div class="warp-con">
+            <p class="details-num">订购编号：{$order['ordersn']}</p>
+            <div class="details-title">
+                <span class="details-line">|</span>已购商品
+            </div>
+            {loop $goods $item}
+            <div class="details-num">
+                <p>商品名称：{$item['title']}</p>
+                <p>规格数量：{$item['value']}-购买数量：{$item['total']}</p>
+                <p>商品总价：¥ {php echo sprintf("%.2f",$item['total']*$item['price'])}</p>
+            </div>
+            {/loop}
+        </div>
+    </div>
+    <div class="content">
+        <div class="warp-con">
+            <div class="details-title">
+                <span class="details-line">|</span>订购详情
+            </div>
+            <div class="details-num">
+                <p>订购状态：已订购</p>
+                <p>订购金额：¥ {$order['price']} </p>
+                <p><span style="padding-left: 28px;">其中：</span>在线支付 ¥ {$order['price']} + 线下支付 ¥ {$order['offline_pay_price']} </p>
+                <p>订购时间：{php echo date('Y-m-d H:i:s',$order['createtime'])}</p>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="warp-con">
+            <div class="details-title">
+                <span class="details-line">|</span>状态跟踪
+            </div>
+            <div class="details-num">
+                <p>{php echo date('Y-m-d H:i:s',$order['logistics_time'])}：{$order['logistics_status']}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{template "common/easy_deliver_footer"}
+</body>
+</html>

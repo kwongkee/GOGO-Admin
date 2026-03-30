@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>我的赞赏</title>
+
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<meta name="format-detection" content="address=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<script src="http://cdn.bootcss.com/zepto/1.1.6/zepto.min.js"></script>
+<link rel="stylesheet" href="{TEMPLATE_PATH}/wtCommon.css?v={php echo time();}">
+<link rel="stylesheet" href="{TEMPLATE_PATH}/live.css?v={php echo time();}">
+<link rel="stylesheet" href="{TEMPLATE_PATH}/whisper.css?v={php echo time();}">
+<script type="text/javascript">
+$(function(){
+	$(".btn_cash").click(function(){
+		var conf=confirm("确认提现吗?");
+		$.post(location.href,{submit:true},function(result){
+			if(result.success==-1){
+				alert(result.data);
+			}else{
+				location.href=location.href;
+			}
+		});
+	});
+});
+</script>
+</head>
+<body class="bind">
+<div class="main_box_4" id="liveIncomeList">
+
+	<ul class="walletUL">
+			<a href="javascript:;" style="display:none;" class="money_takeout_btn takeMoney">提现</a>
+		<li class="li_1">历史总赏金：<var>{$all_cash}</var>元</li>
+		<li class="li_1">可提现金额：
+			<b><var class="timoneyValue">{$my_notcash}</var>元</b>
+			{if $my_notcash>=$cfg['cash_money']}
+                 <span class="btn_cash" style="color:green;float:right;">提现</span>
+            {/if}
+		</li>
+	</ul>
+	
+
+	  <div class="header_peopleEarnings_div2">
+         <div class="header_peopleEarnings_div_div p_bottom">
+                  <p class="header_peopleEarning_div_p2">已提现金额 <span class="p_color2">{$my_hiscash}元</span></p>
+                  <p class="header_peopleEarning_div_p2 p_color p_bottom_padding">请到微信钱包查看具体收益</p>
+         </div>	
+	
+	 <ul class="peopleEarning_ul allWhisperList_earnings">  
+	     {loop $all_records $temp_record}             
+	            <li>
+	                <div class="peopleEarnings_ul_left">
+	                        <span>{php echo date('Y/m/d', $temp_record['create_time']);}</span>
+	                    </div>
+	                <div class="peopleEarning_ul_right">
+	                    <span style="color:{if $temp_record['status']=='处理中'}red{else}green{/if};margin-right:8px;">{$temp_record['status']}</span>
+	                    <span class="p_color2 p_span_padding">{$temp_record['pay_money']}</span>
+	                </div>
+	            </li>
+	       {/loop}
+	</ul>
+
+	</div>
+	
+
+	<ul class="loadStBox">
+		<li class="box_nothing" id="loadNone">
+			<span class="tips_1"></span>
+		</li>
+		<li id="pageLoadBox"></li>
+		<li class="page_loading_box">正在加载中...</li>
+	</ul>
+</div>
+
+
+<div class="loadingBox"><span></span></div>
+</body></html>

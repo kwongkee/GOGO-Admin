@@ -1,0 +1,131 @@
+{include file="common/header"}
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<body>
+<div class="x-nav">
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<div class="x-body">
+    未予受理：{$num[1]}  通过受理：{$num[0]} 拒绝受理：{$num[2]} 总人数：{$num[3]}
+</div>
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>申请日期</th>
+            <th>用户姓名</th>
+            <th>手机号</th>
+            <th>申请方案</th>
+            <th>已上传的资料</th>
+            <th style="width:199px;">操作</th></tr>
+        </thead>
+        <tbody>
+        {volist name='list.data' id='vo' empty='暂无数据'}
+        <tr>
+            <td>{$vo.create_at|date='Y-m-d H:i:s',###}</td>
+            <td>{$vo.user_name}</td>
+            <td>{$vo.mobile}</td>
+            <td>{$vo.scheme_name}</td>
+            <td id="imgs">
+                <div id="layer-photos-demo " class="layer-photos-demo">
+                    {foreach $vo.sub_info as $item}
+                    <img style="height: 59px;" layer-pid="{$vo['id']}" layer-src="../../../../attachment/images/verifed/{$item}.jpg" src="../../../../attachment/images/verifed/{$item}.jpg" alt="">
+                    {/foreach}
+                    <img style="height: 59px;"  layer-pid="{$vo['id']}" layer-src="../../../../attachment/images/verifed/{$vo.user_id}_idcard.jpg" src="../../../../attachment/images/verifed/{$vo.user_id}_idcard.jpg" alt="">
+                    <img style="height: 59px;" layer-pid="{$vo['id']}" layer-src="../../../../attachment/images/verifed/{$vo.user_id}_license.jpg" src="../../../../attachment/images/verifed/{$vo.user_id}_license.jpg" alt="">
+                    <img style="height: 59px;" layer-pid="{$vo['id']}" layer-src="../../../../attachment/images/verifed/{$vo.user_id}_vehicle.jpg" src="../../../../attachment/images/verifed/{$vo.user_id}_vehicle.jpg" alt="">
+                </div>
+            </td>
+            <td>
+                <a class="layui-btn layui-btn-normal"  onclick="checkStatus(this,'{$vo.id}',1);">受理通过</a>
+                <a class="layui-btn layui-btn-danger"  onclick="checkStatus(this,'{$vo.id}',2);">受理拒绝</a>
+            </td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+    <div class="page">
+        <div>
+            {$page}
+        </div>
+    </div>
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    layui.use('laydate','layer', function(){
+        var laydate = layui.laydate;
+        layer = layui.layer;
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#start' //指定元素
+        });
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#end' //指定元素
+        });
+
+        layer.photos({
+            photos: '#layer-photos-demo'
+            ,anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+        });
+    });
+
+
+
+    function sendRequs(obj,id,status,msg) {
+        axios.post("{:Url('month_card/month_applycheck')}",{
+            id:id,
+            status:status,
+            msg:msg
+        }).then(function (value) {
+            console.log(value.data);
+            if(value.data.code==0){
+                $(obj).parent().parent().remove();
+            }
+            layer.msg(value.data.msg);
+        }).catch(function (reason) {
+            layer.msg(reason)
+        });
+    }
+
+    function checkStatus(obj,id,status) {
+        if(status==1){
+            layer.confirm('确定受理吗?', {icon: 3, title:'提示'}, function(index) {
+                sendRequs(obj,id,status);
+                layer.close(index);
+            }, function() {
+                console.log("点击了取消");
+            });
+        }else{
+            layer.prompt({
+                formType: 2,
+                value: '请输入',
+                title: '请输入拒绝说明',
+                area: ['450px', '180px'] //自定义文本域宽高
+            }, function(value, index, elem){
+                sendRequs(obj,id,status,value);
+                setTimeout(function () {
+                    layer.close(index);
+                },1000);
+
+            });
+        }
+        return false;
+    }
+
+
+    $("#imgs img").each(function (index) {
+        $(this).bind("click", function () {
+            layer.msg("<img height='500' width='800' src='" + $(this).attr('src') + "'>", {
+                time: 50000,
+                area: 'auto',
+                maxWidth: 1000,
+                maxHeight: 1000,
+                Boolean: true,
+                btn: '关闭'
+            });
+        });
+    });
+</script>
+</body>
+</html>

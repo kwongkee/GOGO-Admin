@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.baidu.com" versionCode="0.6">
+	<application setting="true">
+		<name><![CDATA[关键字二维码菜单分组]]></name>
+		<identifie><![CDATA[cgc_keyword]]></identifie>
+		<version><![CDATA[4.0.4]]></version>
+		<type><![CDATA[services]]></type>
+		<ability><![CDATA[关键字二维码菜单分组]]></ability>
+		<description><![CDATA[关键字二维码菜单分组]]></description>
+		<author><![CDATA[微赞]]></author>
+		<url><![CDATA[http://www.baidu.com]]></url>
+	</application>
+	<platform>
+		<subscribes>
+			<message type="subscribe" />
+			<message type="qr" />
+		</subscribes>
+		<handles>
+			<message type="text" />
+		</handles>
+		<rule embed="true" />
+		<card embed="false" />
+	</platform>
+	<bindings>
+		<cover>
+			<entry title="网页分组入口" do="group_enter" state="" direct="false" />
+			<entry title="地区分组入口" do="addr_group" state="" direct="false" />
+		</cover>
+		<menu>
+			<entry title="管理二维码" do="manage" state="" direct="false" />
+			<entry title="粉丝分组" do="fansgroup" state="" direct="false" />
+			<entry title="用户分组记录" do="group_record" state="" direct="false" />
+			<entry title="粉丝批量分组" do="fansoper" state="" direct="false" />
+			<entry title="粉丝地区分组" do="addr_group" state="" direct="false" />
+			<entry title="导入临时粉丝" do="imp_fansgroup" state="" direct="false" />
+		</menu>
+	</bindings>
+	<install><![CDATA[CREATE TABLE IF NOT EXISTS `ims_cgc_addr_group` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `weid` int(10) NOT NULL,
+  `addr` varchar(200) NOT NULL COMMENT '用户的地址',
+  `group_id` int(50) NOT NULL DEFAULT '0' COMMENT '分组id',
+  `group_name` varchar(50) NOT NULL DEFAULT '分组名称',
+  `url` varchar(300) NOT NULL COMMENT '跳转链接',
+  `remark` varchar(100) NOT NULL COMMENT '备注',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_cgc_fans_info` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `weid` int(10) NOT NULL,
+  `rid` int(3) NOT NULL,
+  `subscribe` int(2) NOT NULL COMMENT '用户是否订阅该公众号标识，值为0时，代表此用户没有关注该公众号，拉取不到其余信息，只有openid和UnionID（在该公众号绑定到了微信开放平台账号时才有）。',
+  `openid` varchar(100) NOT NULL COMMENT '用户的标识',
+  `nickname` varchar(100) NOT NULL COMMENT '用户昵称',
+  `sex` varchar(2) NOT NULL COMMENT '性别',
+  `city` varchar(50) NOT NULL COMMENT '城市',
+  `country` varchar(50) NOT NULL COMMENT '国家',
+  `province` varchar(50) NOT NULL COMMENT '省份',
+  `language` varchar(50) NOT NULL,
+  `headimgurl` varchar(1000) NOT NULL,
+  `subscribe_time` int(10) NOT NULL,
+  `unionid` int(10) NOT NULL,
+  `remark` varchar(100) NOT NULL,
+  `groupid` int(10) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_cgc_group_info` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `rid` int(3) unsigned NOT NULL DEFAULT '0',
+  `keyword` varchar(100) NOT NULL COMMENT '关联关键字',
+  `weid` int(10) unsigned NOT NULL DEFAULT '0',
+  `count` int(10) unsigned NOT NULL,
+  `group_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `name` varchar(50) NOT NULL DEFAULT '',
+  `group_desc` varchar(50) NOT NULL DEFAULT '',
+  `show` int(1) NOT NULL DEFAULT '0' COMMENT '是否显示 0 显示，1不显示',
+  `createtime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '生成时间',
+  `rule_keyword` varchar(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_cgc_group_record` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `weid` int(10) unsigned NOT NULL DEFAULT '0',
+  `type` int(1) NOT NULL COMMENT '0关键字1二维码，2默认关注',
+  `nickname` varchar(50) NOT NULL DEFAULT '',
+  `openid` varchar(50) NOT NULL DEFAULT '',
+  `group_id` int(50) NOT NULL DEFAULT '0',
+  `group_name` varchar(50) NOT NULL DEFAULT '',
+  `createtime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `content` varchar(100) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_cgc_qrcode_info` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `weid` int(10) unsigned NOT NULL DEFAULT '0',
+  `qrcid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '二维码场景ID',
+  `name` varchar(50) NOT NULL DEFAULT '' COMMENT '场景名称',
+  `keyword` varchar(100) NOT NULL COMMENT '关联关键字',
+  `model` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '模式，1临时，2为永久',
+  `ticket` varchar(250) NOT NULL DEFAULT '' COMMENT '标识',
+  `show_url` varchar(550) NOT NULL DEFAULT '' COMMENT '图片地址',
+  `expire` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '过期时间',
+  `subnum` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '关注扫描次数',
+  `createtime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '生成时间',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0为未启用，1为启用',
+  `group_name` varchar(50) NOT NULL COMMENT '分组名称',
+  `group_id` int(3) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_temp_fans` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) unsigned NOT NULL,
+  `nickname` varchar(50) NOT NULL DEFAULT '',
+  `openid` varchar(50) NOT NULL DEFAULT '',
+  `note` varchar(100) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+]]></install>
+	<uninstall><![CDATA[DROP TABLE IF EXISTS `ims_cgc_addr_group`;
+DROP TABLE IF EXISTS `ims_cgc_fans_info`;
+DROP TABLE IF EXISTS `ims_cgc_group_info`;
+DROP TABLE IF EXISTS `ims_cgc_group_record`;
+DROP TABLE IF EXISTS `ims_cgc_qrcode_info`;
+DROP TABLE IF EXISTS `ims_temp_fans`;
+]]></uninstall>
+	<upgrade><![CDATA[upgrade.php]]></upgrade>
+</manifest>

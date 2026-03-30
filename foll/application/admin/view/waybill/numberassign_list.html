@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+    <link rel="stylesheet" href="./static/agents/layui/css/layui.css">
+    </link>
+    <link rel="stylesheet" type="text/css"
+          href="./static/index/admin/css/formSelects-v4.css" />
+    <script src="./static/index/admin/js/formSelects-v4.js" type="text/javascript"
+            charset="utf-8"></script>
+</head>
+
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">{$merch['name']}-运单号列表</div>
+                <div class="layui-card-body">
+                    <table class="layui-table" lay-size="sm">
+                        <thead>
+                        <tr>
+                            <th>运单号</th>
+                            <th>状态</th>
+                            <th>创建时间</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {volist name='data' id='vo'}
+                        <tr>
+                            <td>{$vo.number}</td>
+                            <td>{$status[$vo.status]}</td>
+                            <td>{$vo.createtime|date='Y-m-d H:i:s',###}</td>
+                            <td>
+                                无
+                            </td>
+                        </tr>
+                        {/volist}
+                        </tbody>
+                    </table>
+
+                    <div class="layui-box layui-laypage">{$page}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+
+<script src="./static/hadmin/layui/layui.all.js"></script>
+
+</html>
+
+<script>
+    formSelects.render();
+
+    function check(obj, id, status) {
+        var sel = formSelects.value('rule'+id);
+        var url = "{:url('buss/user/review')}";
+        if (status == 0) {
+            if (sel.length <= 0) {
+                // parent.layer.msg('请选择授权应用！', {
+                //     icon: 5
+                // });
+                alert('请选择授权应用！');
+                return;
+            }
+        }
+        var data = {
+            id: id,
+            status: status,
+            select: sel
+        };
+        requsetServer(url,data);
+        return;
+    }
+
+
+    function update(obj,id){
+        var sel = formSelects.value('rule'+id);
+        var url = "{:url('buss/user/update')}";
+        if (sel.length <= 0) {
+            // parent.layer.msg('请选择授权应用！', {
+            //     icon: 5
+            // });
+            alert('请选择授权应用！');
+            return;
+        }
+        var data = {
+            id: id,
+            select: sel
+        };
+        requsetServer(url,data);
+        return;
+    }
+
+    function requsetServer(url,data) {
+        $.ajax({
+            url: url,
+            type: "POST",
+            dataType: "json",
+            data: data,
+            success: function (res) {
+                if (res.code === 0) {
+                    // layer.msg(res.message, {
+                    //     icon: 6
+                    // });
+                    alert(res.message);
+                    setTimeout(() => {
+                        window.location.reload;
+                    }, 1200);
+                } else {
+                    // layer.msg(res.message, {
+                    //     icon: 5
+                    // });
+                    alert(res.message);
+                }
+            }
+        })
+    }
+</script>

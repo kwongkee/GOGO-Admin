@@ -1,0 +1,161 @@
+{template "parking/_header"}
+<link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.2/style/weui.min.css">
+<link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.0/css/jquery-weui.min.css">
+<style>
+.a{
+    width: 135px;
+    margin-top: 14px;
+}
+.a1{
+    width: 183px;
+    float: right;
+}
+span{
+    float: left;
+}
+</style>
+<div class="weui-cells weui-cells_form">
+    <div class="weui-cell">
+        <div class="weui-cell__bd">
+            <div class="weui-uploader">
+               <div class="weui-uploader__hd" style="font-size: 12px;color:#0099FF;">
+                <p class="weui-uploader__title">请上传清晰行驶证照片,一个用户身份只能绑定一个车牌</p>
+                <div class="weui-uploader__info">0/1</div>
+                </div>
+                <div class="weui-uploader__bd">
+                    <ul class="weui-uploader__files" id="uploaderFiles">
+                    </ul>
+                    <div class="weui-uploader__input-box">
+                        <input id="uploaderInput" class="weui-uploader__input" type="file" accept="image/*">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="overflow:hidden;height:71px;line-height:44px;font-size:14px;background-color:#fff;margin-top:19px;padding:10px;padding-left:75px;color:#999;">
+        <span style="margin-top:-9px;">实名用户<div>{$uname['uname']}</div></span>
+        <span style="padding-left:16px;color:red;margin-top:35px;">关联</span>
+        <span style="padding-left:20px;margin-top:-9px;">车辆号牌<div id="parnum"></div></span>
+</div>
+<div id="adda" style="margin-top:10px;clear:both">
+        <a href="javascript:;" class="weui-btn weui-btn_primary a" id="btns"  style="background-color:#0099FF;">确认关联</a>
+</div>
+<script src="https://cdn.bootcss.com/jquery-weui/1.2.0/js/jquery-weui.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        // 允许上传的图片类型
+        var allowTypes = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'];
+        // 1024KB，也就是 1MB
+        var maxSize = 2048 * 2048;
+        // 图片最大宽度
+        var maxWidth = 10000;
+        // 最大上传图片数量
+        var maxCount = 1;
+        $('#uploaderInput').on('change', function (event) {
+            var files = event.target.files;
+            //console.log(files);return false;
+            // 如果没有选中文件，直接返回
+            if (files.length === 0) {
+                return false;
+            }
+
+            for (var i = 0, len = files.length; i < len; i++) {
+                var file = files[i];
+                var reader = new FileReader();
+
+                // 如果类型不在允许的类型范围内
+                if (allowTypes.indexOf(file.type) === -1) {
+
+                    $.alert("该类型不允许上传！", "警告！");
+                    continue
+                }
+                if ($('.weui-uploader__file').length >= maxCount) {
+                    $.alert({
+                        text: '最多只能上传' + maxCount + '张图片'
+                    });
+                    return false;
+                }
+                reader.readAsDataURL(file);
+                reader.onload = function (e) {
+                    //console.log(e);
+                    var img = new Image();
+                    img.src = e.target.result;
+                    img.onload = function () {
+                        // 不要超出最大宽度
+                        var w = Math.min(maxWidth, img.width);
+                        // 高度按比例计算
+                        var h = img.height * (w / img.width);
+                        var canvas = document.createElement('canvas');
+                        var ctx = canvas.getContext('2d');
+                        // 设置 canvas 的宽度和高度
+                        canvas.width = w;
+                        canvas.height = h;
+                        ctx.drawImage(img, 0, 0, w, h);
+
+                        var base64 = canvas.toDataURL('image/jpeg',0.8);
+                        //console.log(base64);
+                        // 插入到预览区
+                        var $preview = $('<li class="weui-uploader__file weui-uploader__file_status" style="background-image:url(' + img.src + ')"><div class="weui-uploader__file-content">0%</div></li>');
+                        $('#uploaderFiles').append($preview);
+                        var num = $('.weui-uploader__file').length;
+                        $('.weui-uploader__info').text(num + '/' + maxCount);
+                        var formData = new FormData();
+                        formData.append("images", base64);
+                        //console.log(img.src);
+                        $(".weui-uploader__input-box").css('display','none');
+                        $.ajax({
+                            url: "{php echo mobileUrl('parking/verified/verifImage')}&n=3",
+                            type: 'POST',
+                            data: formData,
+                            contentType:false,
+                            processData:false,
+                            success: function(data){
+                                $("a").css('float','left');
+                                $("#adda").append('<a href="javascript:;" class="weui-btn weui-btn_primary a1" onclick="Refresh()"  style="background-color:#0099FF;">重新识别!</a>');
+                                var datas=JSON.parse(data);
+                                if(datas.status==1){
+                                    $("#parnum").html(datas.result.message);
+                                    $preview.removeClass('weui-uploader__file_status');
+                                    $.toast("上传成功",1000);
+                                    setTimeout(function () {
+                                        $('.weui-toast').css('display','none');
+
+                                    },2000);
+                                }else{
+                                    $.toast("上传失败");
+                                    setTimeout(function () {
+                                        location.reload();
+                                    },2000);
+                                }
+                            },
+                            error: function(xhr, type){
+                                $.toast("系统繁忙,请稍后再试.");
+                            }
+                        });
+                    };
+                };
+            }
+        });
+        return false;
+    });
+$("#btns").bind("click",function () {
+    $.get("{php echo mobileUrl('parking/verified/verSave')}",[],function (result) {
+        var data=JSON.parse(result);
+        if(data.status==0){
+            $.toast("操作成功",1000);
+            setTimeout(function () {
+                window.history.back();
+            },3000);
+        }else{
+            $.toast(data.result.message, "cancel");
+        }
+    });
+    return false;
+})
+function Refresh(){
+    location.reload();
+}
+</script>
+
+{template "parking/_footer"}

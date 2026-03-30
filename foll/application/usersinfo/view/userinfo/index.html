@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{$order.title}</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+	<script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+	<style type="text/css">
+		.clear{clear: both;height: 8px;}
+		.money{color: red;font-weight: bold;font-size: 15px;}
+		.laytable-cell-1-0{ width: 80px; }
+		.laytable-cell-1-2{width: 185px;}
+		.laytable-cell-1-amount{width: 165px;}
+		.laytable-cell-1-4{ width: auto; }
+		
+		.laytable-cell-1-province{ width: 115px; }
+		.laytable-cell-1-city{ width: 80px; }
+		.laytable-cell-1-zone{ width: 80px; }
+		.fee{color: red;}
+	</style>
+</head>
+
+<body>
+<div style="margin-top: 10px;"></div>
+<p><h2 style="text-align: center;color: green;">{$order.title}</h2></p>
+
+<div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" style="width:auto;float: left;margin-right: 15px;">
+	<div class="layui-table-box">
+		
+		<div class="layui-table-header">
+			<table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+				<thead>
+					<tr><th data-field="8" colspan="3"><div class="layui-table-cell laytable-cell-group" align="center"><span style="font-size: 14px;font-weight: bold;">{$order.title}</span></div></th></tr>
+					<tr>
+						<th data-field="province"><div class="layui-table-cell laytable-cell-1-2"><span>用户ID</span></div></th>
+						<th data-field="city"><div class="layui-table-cell laytable-cell-1-2"><span>来源于</span></div></th>
+						<th data-field="zone"><div class="layui-table-cell laytable-cell-1-2"><span>注册信息</span></div></th>
+						<th data-field="zone"><div class="layui-table-cell laytable-cell-1-2"><span>实名信息</span></div></th>
+						<th data-field="zone"><div class="layui-table-cell laytable-cell-1-2"><span>交易信息</span></div></th>
+						<th data-field="zone"><div class="layui-table-cell laytable-cell-1-2"><span>备注信息</span></div></th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+		
+		<div class="layui-table-body layui-table-main">
+			<table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+				<tbody>
+					{volist name="$order.lists" id='vo' key='index'}
+					<tr data-index="{$index}">
+						{if isset($vo.openid)}
+							<td data-field="province"><div class="layui-table-cell laytable-cell-1-2">{$vo.openid}</div></td>
+						{else/}
+							<td data-field="province"><div class="layui-table-cell laytable-cell-1-2">{$vo.mobile}</div></td>						
+						{/if}
+						
+						{if $vo.application == 'Cross-border'}
+							<td data-field="city"><div class="layui-table-cell laytable-cell-1-2">跨境电商平台</div></td>
+						{else/}
+							<td data-field="city"><div class="layui-table-cell laytable-cell-1-2">其他平台</div></td>
+						{/if}
+						
+						<td data-field="city"><div class="layui-table-cell laytable-cell-1-2">其他平台</div></td>
+						
+						<td data-field="city"><div class="layui-table-cell laytable-cell-1-2">其他平台</div></td>
+						
+						<td data-field="city"><div class="layui-table-cell laytable-cell-1-2">其他平台</div></td>
+						
+						<td data-field="zone">
+							<div class="layui-table-cell laytable-cell-1-2">
+								<form class="layui-form">
+									<a class="layui-btn-sm layui-btn layui-btn-danger" href="javascript:void(0);" hrs="{$vo.aid}" id="checkOk">对账</a>
+								</form>
+							</div>
+						</td>
+					</tr>
+					{/volist}
+				</tbody>
+			</table>
+		</div>
+		<span style="margin:0px 8px;font-size: 15px;font-weight: bold;">共有:{$order.total} 条</span>
+		<div class="layui-box layui-laypage layui-laypage-default">{$order.pages}</div>
+	</div>
+</div>
+
+
+	<div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" style=" ">
+		<div class="layui-table-box">
+			<div class="layui-table-header">
+				<table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+					<thead>
+						<tr>
+							<th data-field="id"><div class="layui-table-cell laytable-cell-1-id"><span>ID</span><span class="layui-table-sort layui-inline"><i class="layui-edge layui-table-sort-asc"></i><i class="layui-edge layui-table-sort-desc"></i></span></div></th>
+							<th data-field="username"><div class="layui-table-cell laytable-cell-1-username"><span>用户名</span></div></th>
+							<th data-field="sex"><div class="layui-table-cell laytable-cell-1-sex"><span>性别</span><span class="layui-table-sort layui-inline"><i class="layui-edge layui-table-sort-asc"></i><i class="layui-edge layui-table-sort-desc"></i></span></div></th>
+							<th data-field="city"><div class="layui-table-cell laytable-cell-1-city"><span>城市</span></div></th>
+							<th data-field="sign"><div class="layui-table-cell laytable-cell-1-sign"><span>签名</span></div></th>
+							<th data-field="classify"><div class="layui-table-cell laytable-cell-1-classify" align="center"><span>职业</span></div></th>
+							<th data-field="experience"><div class="layui-table-cell laytable-cell-1-experience" align="right"><span>积分</span><span class="layui-table-sort layui-inline"><i class="layui-edge layui-table-sort-asc"></i><i class="layui-edge layui-table-sort-desc"></i></span></div></th>
+							<th data-field="score"><div class="layui-table-cell laytable-cell-1-score" align="right"><span>评分</span><span class="layui-table-sort layui-inline"><i class="layui-edge layui-table-sort-asc"></i><i class="layui-edge layui-table-sort-desc"></i></span></div></th>
+							<th data-field="wealth"><div class="layui-table-cell laytable-cell-1-wealth" align="right"><span>财富</span><span class="layui-table-sort layui-inline"><i class="layui-edge layui-table-sort-asc"></i><i class="layui-edge layui-table-sort-desc"></i></span></div></th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+			
+			<div class="layui-table-body layui-table-main">
+				<table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+					<tbody>
+						<tr data-index="0" class=""><td data-field="id"><div class="layui-table-cell laytable-cell-1-id">10000</div></td><td data-field="username"><div class="layui-table-cell laytable-cell-1-username">user-0</div></td><td data-field="sex"><div class="layui-table-cell laytable-cell-1-sex">女</div></td><td data-field="city"><div class="layui-table-cell laytable-cell-1-city">城市-0</div></td><td data-field="sign"><div class="layui-table-cell laytable-cell-1-sign">签名-0</div></td><td data-field="classify" align="center"><div class="layui-table-cell laytable-cell-1-classify">作家</div></td><td data-field="experience" align="right"><div class="layui-table-cell laytable-cell-1-experience">255</div></td><td data-field="score" align="right"><div class="layui-table-cell laytable-cell-1-score">57</div></td><td data-field="wealth" align="right"><div class="layui-table-cell laytable-cell-1-wealth">82830700</div></td></tr>
+						<tr data-index="1" class=""><td data-field="id"><div class="layui-table-cell laytable-cell-1-id">10001</div></td><td data-field="username"><div class="layui-table-cell laytable-cell-1-username">user-1</div></td><td data-field="sex"><div class="layui-table-cell laytable-cell-1-sex">男</div></td><td data-field="city"><div class="layui-table-cell laytable-cell-1-city">城市-1</div></td><td data-field="sign"><div class="layui-table-cell laytable-cell-1-sign">签名-1</div></td><td data-field="classify" align="center"><div class="layui-table-cell laytable-cell-1-classify">词人</div></td><td data-field="experience" align="right"><div class="layui-table-cell laytable-cell-1-experience">884</div></td><td data-field="score" align="right"><div class="layui-table-cell laytable-cell-1-score">27</div></td><td data-field="wealth" align="right"><div class="layui-table-cell laytable-cell-1-wealth">64928690</div></td></tr>
+						<tr data-index="2" class=""><td data-field="id"><div class="layui-table-cell laytable-cell-1-id">10002</div></td><td data-field="username"><div class="layui-table-cell laytable-cell-1-username">user-2</div></td><td data-field="sex"><div class="layui-table-cell laytable-cell-1-sex">女</div></td><td data-field="city"><div class="layui-table-cell laytable-cell-1-city">城市-2</div></td><td data-field="sign"><div class="layui-table-cell laytable-cell-1-sign">签名-2</div></td><td data-field="classify" align="center"><div class="layui-table-cell laytable-cell-1-classify">酱油</div></td><td data-field="experience" align="right"><div class="layui-table-cell laytable-cell-1-experience">650</div></td><td data-field="score" align="right"><div class="layui-table-cell laytable-cell-1-score">31</div></td><td data-field="wealth" align="right"><div class="layui-table-cell laytable-cell-1-wealth">6298078</div></td></tr>
+						<tr data-index="3" class=""><td data-field="id"><div class="layui-table-cell laytable-cell-1-id">10003</div></td><td data-field="username"><div class="layui-table-cell laytable-cell-1-username">user-3</div></td><td data-field="sex"><div class="layui-table-cell laytable-cell-1-sex">女</div></td><td data-field="city"><div class="layui-table-cell laytable-cell-1-city">城市-3</div></td><td data-field="sign"><div class="layui-table-cell laytable-cell-1-sign">签名-3</div></td><td data-field="classify" align="center"><div class="layui-table-cell laytable-cell-1-classify">诗人</div></td><td data-field="experience" align="right"><div class="layui-table-cell laytable-cell-1-experience">362</div></td><td data-field="score" align="right"><div class="layui-table-cell laytable-cell-1-score">68</div></td><td data-field="wealth" align="right"><div class="layui-table-cell laytable-cell-1-wealth">37117017</div></td></tr>
+						<tr data-index="4" class="layui-table-hover"><td data-field="id"><div class="layui-table-cell laytable-cell-1-id">10004</div></td><td data-field="username"><div class="layui-table-cell laytable-cell-1-username">user-4</div></td><td data-field="sex"><div class="layui-table-cell laytable-cell-1-sex">男</div></td><td data-field="city"><div class="layui-table-cell laytable-cell-1-city">城市-4</div></td><td data-field="sign"><div class="layui-table-cell laytable-cell-1-sign">签名-4</div></td><td data-field="classify" align="center"><div class="layui-table-cell laytable-cell-1-classify">作家</div></td><td data-field="experience" align="right"><div class="layui-table-cell laytable-cell-1-experience">807</div></td><td data-field="score" align="right"><div class="layui-table-cell laytable-cell-1-score">6</div></td><td data-field="wealth" align="right"><div class="layui-table-cell laytable-cell-1-wealth">76263262</div></td></tr>
+						<tr data-index="5" class=""><td data-field="id"><div class="layui-table-cell laytable-cell-1-id">10005</div></td><td data-field="username"><div class="layui-table-cell laytable-cell-1-username">user-5</div></td><td data-field="sex"><div class="layui-table-cell laytable-cell-1-sex">女</div></td><td data-field="city"><div class="layui-table-cell laytable-cell-1-city">城市-5</div></td><td data-field="sign"><div class="layui-table-cell laytable-cell-1-sign">签名-5</div></td><td data-field="classify" align="center"><div class="layui-table-cell laytable-cell-1-classify">作家</div></td><td data-field="experience" align="right"><div class="layui-table-cell laytable-cell-1-experience">173</div></td><td data-field="score" align="right"><div class="layui-table-cell laytable-cell-1-score">87</div></td><td data-field="wealth" align="right"><div class="layui-table-cell laytable-cell-1-wealth">60344147</div></td></tr>
+						<tr data-index="6" class=""><td data-field="id"><div class="layui-table-cell laytable-cell-1-id">10006</div></td><td data-field="username"><div class="layui-table-cell laytable-cell-1-username">user-6</div></td><td data-field="sex"><div class="layui-table-cell laytable-cell-1-sex">女</div></td><td data-field="city"><div class="layui-table-cell laytable-cell-1-city">城市-6</div></td><td data-field="sign"><div class="layui-table-cell laytable-cell-1-sign">签名-6</div></td><td data-field="classify" align="center"><div class="layui-table-cell laytable-cell-1-classify">作家</div></td><td data-field="experience" align="right"><div class="layui-table-cell laytable-cell-1-experience">982</div></td><td data-field="score" align="right"><div class="layui-table-cell laytable-cell-1-score">34</div></td><td data-field="wealth" align="right"><div class="layui-table-cell laytable-cell-1-wealth">57768166</div></td></tr>
+						<tr data-index="7" class=""><td data-field="id"><div class="layui-table-cell laytable-cell-1-id">10007</div></td><td data-field="username"><div class="layui-table-cell laytable-cell-1-username">user-7</div></td><td data-field="sex"><div class="layui-table-cell laytable-cell-1-sex">男</div></td><td data-field="city"><div class="layui-table-cell laytable-cell-1-city">城市-7</div></td><td data-field="sign"><div class="layui-table-cell laytable-cell-1-sign">签名-7</div></td><td data-field="classify" align="center"><div class="layui-table-cell laytable-cell-1-classify">作家</div></td><td data-field="experience" align="right"><div class="layui-table-cell laytable-cell-1-experience">727</div></td><td data-field="score" align="right"><div class="layui-table-cell laytable-cell-1-score">28</div></td><td data-field="wealth" align="right"><div class="layui-table-cell laytable-cell-1-wealth">82030578</div></td></tr>
+						<tr data-index="8" class=""><td data-field="id"><div class="layui-table-cell laytable-cell-1-id">10008</div></td><td data-field="username"><div class="layui-table-cell laytable-cell-1-username">user-8</div></td><td data-field="sex"><div class="layui-table-cell laytable-cell-1-sex">男</div></td><td data-field="city"><div class="layui-table-cell laytable-cell-1-city">城市-8</div></td><td data-field="sign"><div class="layui-table-cell laytable-cell-1-sign">签名-8</div></td><td data-field="classify" align="center"><div class="layui-table-cell laytable-cell-1-classify">词人</div></td><td data-field="experience" align="right"><div class="layui-table-cell laytable-cell-1-experience">951</div></td><td data-field="score" align="right"><div class="layui-table-cell laytable-cell-1-score">14</div></td><td data-field="wealth" align="right"><div class="layui-table-cell laytable-cell-1-wealth">16503371</div></td></tr>
+						<tr data-index="9" class=""><td data-field="id"><div class="layui-table-cell laytable-cell-1-id">10009</div></td><td data-field="username"><div class="layui-table-cell laytable-cell-1-username">user-9</div></td><td data-field="sex"><div class="layui-table-cell laytable-cell-1-sex">女</div></td><td data-field="city"><div class="layui-table-cell laytable-cell-1-city">城市-9</div></td><td data-field="sign"><div class="layui-table-cell laytable-cell-1-sign">签名-9</div></td><td data-field="classify" align="center"><div class="layui-table-cell laytable-cell-1-classify">词人</div></td><td data-field="experience" align="right"><div class="layui-table-cell laytable-cell-1-experience">484</div></td><td data-field="score" align="right"><div class="layui-table-cell laytable-cell-1-score">75</div></td><td data-field="wealth" align="right"><div class="layui-table-cell laytable-cell-1-wealth">86801934</div></td></tr>
+					</tbody>
+				</table>
+			</div>
+		</div>			
+							
+			<style>
+				.laytable-cell-1-id{ width: 85px; }
+				.laytable-cell-1-username{ width: 85px; }
+				.laytable-cell-1-sex{ width: 85px; }
+				.laytable-cell-1-city{ width: 85px; }
+				.laytable-cell-1-sign{ width: 85px; }
+				.laytable-cell-1-classify{ width: 85px; }
+				.laytable-cell-1-experience{ width: 85px; }
+				.laytable-cell-1-score{ width: 85px; }
+				.laytable-cell-1-wealth{ width: 85px; }
+			</style>
+	</div>
+
+
+
+
+<script>
+layui.use(['layer','form','jquery','laypage','table','flow'],function() {
+		var $ = layui.jquery,form=layui.form,layer=layui.layer,laypage=layui.laypage,table=layui.table,element=layui.element,flow=layui.flow;
+		
+		//下一页
+		$(document).on('click','#next',function(vals) {
+				
+		});
+		
+});
+</script>
+</body>
+</html>

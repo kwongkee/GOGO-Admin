@@ -1,0 +1,152 @@
+{template "parking/_header"}
+<div class="x-body">
+
+<form class="layui-form">
+    <div class="layui-form-item">
+      <label class="layui-form-label">下拉选择框</label>
+      <div class="layui-input-block" style="width:190px;">
+        <select name="ChargeClass" lay-filter="aihao" id="ch">
+            <option value="">请选择</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+            <option value="E">E</option>
+            <option value="F">F</option>
+            <option value="G">G</option>
+            <option value="H">H</option>
+            <option value="I">I</option>
+            <option value="J">J</option>
+            <option value="K">K</option>
+            <option value="L">L</option>
+            <option value="M">M</option>
+            <option value="N">N</option>
+            <option value="O">O</option>
+            <option value="P">P</option>
+            <option value="Q">Q</option>
+            <option value="R">R</option>
+            <option value="S">S</option>
+            <option value="T">T</option>
+            <option value="U">U</option>
+            <option value="V">V</option>
+            <option value="W">W</option>
+            <option value="X">X</option>
+            <option value="Y">Y</option>
+            <option value="Z">Z</option>
+        </select>
+      </div>
+    </div>
+    <div id="t">
+
+    </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">开启连续封顶</label>
+        <div class="layui-input-block">
+          <input type="checkbox" name="close" lay-skin="switch" lay-text="ON|OFF" lay-filter="switchTest">
+        </div>
+      </div>
+       <div id="opens">
+
+       </div>
+    <div class="layui-form-item">
+      <label for="L_repass" class="layui-form-label">
+      </label>
+      <button 	class="layui-btn layui-btn-lg" lay-filter="add" lay-submit="">
+                    增加
+      </button>
+      <button 	class="layui-btn layui-btn-lg" lay-filter="addTime" lay-submit="">添加时段</button>
+    </div>
+</form>
+</div>
+  <script>
+        layui.use(['form','layer'], function(){
+            $ = layui.jquery;
+          var form = layui.form
+          ,layer = layui.layer;
+          //自定义验证规则
+          form.verify({
+            nikename: function(value){
+              if(value.length != ''){
+                return '不允许空';
+              }
+            }
+          });
+          //监听提交
+          form.on('submit(add)', function(data){
+              var ChargeClass=$('#ch').val();
+              var allcapped=$("input[name='allcapped']").val();
+              var mo=$("#mms").val();
+            //发异步，把数据提交给php
+            $.ajax({
+              url:"{php echo WebUrl('parking/category/save')}",
+              type:"POST",
+              dataType:"json",
+              data:{'ChargeClass':ChargeClass,'allcapped':allcapped,'modes':mo},
+              cache:false,
+              success:function(info){
+                  console.dir(info);
+                if(info.status=='1'){
+                  layer.alert("增加成功", {icon: 6},function () {
+                      // 获得frame索引
+                      var index = parent.layer.getFrameIndex(window.name);
+                      //关闭当前frame
+                      parent.layer.close(index);
+                  });
+                }else{
+                  layer.alert("增加失败", {icon: 5},function () {
+                      // 获得frame索引
+                      var index = parent.layer.getFrameIndex(window.name);
+                      //关闭当前frame
+                      parent.layer.close(index);
+                  });
+                }
+              },
+              error:function(){alert('服务链接错误')},
+            })
+            return false;
+          });
+          form.on('submit(addTime)',function(){
+            var centext='';
+            centext+='<div class="layui-form-item"><label for="username" class="layui-form-label"><span class="x-red">*</span>时段开始</label><div class="layui-input-inline"><input type="text" id="stime" name="stime" required="" lay-verify="required" autocomplete="off" class="layui-input names" placeholder="00:00"></div></div>';
+            centext+='<div class="layui-form-item"><label for="username" class="layui-form-label"><span class="x-red">*</span>时段结束</label><div class="layui-input-inline"><input type="text" id="etime" name="etime" required="" lay-verify="required" autocomplete="off" class="layui-input names" placeholder="00:59"></div></div>';
+            centext+='<div class="layui-form-item"><label for="username" class="layui-form-label"><span class="x-red">*</span>收费标准</label><div class="layui-input-inline"><input type="text" id="price" name="price" required="" lay-verify="required" autocomplete="off" class="layui-input names"></div></div>';
+            centext+='<div class="layui-form-item"><label for="username" class="layui-form-label"><span class="x-red">*</span>每多少分</label><div class="layui-input-inline"><input type="text" id="minute" name="minute"  required="" lay-verify="required" autocomplete="off" class="layui-input names"></div></div>';
+            centext+='<div class="layui-form-item"><label for="username" class="layui-form-label"><span class="x-red">*</span>免停/按分钟</label><div class="layui-input-inline"><input type="text" id="free" name="free"  required="" lay-verify="required" autocomplete="off" class="layui-input names"></div></div>';
+            centext+='<div class="layui-form-item"><label for="username" class="layui-form-label"><span class="x-red">*</span>该时段封顶</label><div class="layui-input-inline"><input type="text" id="capped" name="capped"  required="" lay-verify="required" autocomplete="off" class="layui-input names"></div></div> ';
+            centext+='<div class="layui-form-item"><label for="username" class="layui-form-label"><span class="x-red">*</span>该时段预付费时间</label><div class="layui-input-inline"><input type="text" id="y_minute" name="y_minute"  required="" lay-verify="required" autocomplete="off" class="layui-input names"></div></div> ';
+            centext+='<div class="layui-form-item"><label for="username" class="layui-form-label"><span class="x-red">*</span>该时段预付费时间金额</label><div class="layui-input-inline"><input type="text" id="y_price" name="y_price"  required="" lay-verify="required" autocomplete="off" class="layui-input names"></div></div> ';
+              centext+=' <div class="layui-form-item"><label for="L_repass" class="layui-form-label">  </label><button 	class="layui-btn layui-btn-lg" lay-filter="adds" lay-submit="">增加</button></div>';
+            // $("#t").append(centext);
+            layer.open({
+                  type: 1,
+                  title:'添加时段',
+                  content: centext, //这里content是一个普通的String
+                  area: ['500px', '400px']
+                });
+            return false;
+        });
+        form.on("submit(adds)",function(){
+            var stime=$("#stime").val();
+            var etime=$("#etime").val();
+            var price=$("#price").val();
+            var minute=$("#minute").val();
+            var free=$("#free").val();
+            var capped=$("#capped").val();
+            var min=$("#y_minute").val();
+            var y_price=$("#y_price").val();
+            $.post("{php echo WebUrl('parking/category/Time')}",{'stime':stime,'etime':etime,'price':price,'minute':minute,'free':free,'capped':capped,'y_minute':min,'y_price':y_price},function(data){
+                 alert(data);
+            });
+        });
+        form.on('switch(switchTest)', function(data){
+            if(this.checked){
+                $("#opens").html('<div class="layui-form-item"><label for="username" class="layui-form-label"><span class="x-red">*</span>全天封顶/元</label><div class="layui-input-inline"><input type="text" id="username" name="allcapped" autocomplete="off" class="layui-input"></div></div>  <div class="layui-form-item"><label class="layui-form-label">全天模式</label><div class="layui-input-block"><select name="modes" id="mms" style="display:block;height:35px;width:194px;" lay-verify="required"><option value=""></option><option value="0">24小时</option><option value="1">全时段</option></select></div></div>');
+            }else{
+                $("#opens").html('');
+            }
+         });
+
+        });
+
+    </script>
+{template "parking/_footer"}

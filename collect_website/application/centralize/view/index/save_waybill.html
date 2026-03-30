@@ -1,0 +1,1737 @@
+{include file="public/header"}
+
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .input40{width:92%;}
+    .add,.del{font-size:30px;}
+    .layui-table th,.layui-colla-title{background:#0e2e68;color:#fff;}
+    .layui-elem-field{border:1px solid #000;}
+    .postal_temp{border:1px solid #000;width: 48px;height: 38px;text-align: center;line-height: 38px;margin-right:2px;}
+    xm-select > .xm-label.auto-row .xm-label-block > span{overflow: hidden;}
+    .hide{display:none;}
+
+    .layui-form-label{font-weight: 800;}
+    .fee_bigbox .input50{width:50%;}
+    .fee_bigbox .input25{width:25%;}
+    .fee_bigbox .input35{width:35%;}
+    .fee_bigbox .input36{width:36%;}
+    .fee_bigbox .white_color{white-space:nowrap;width:45px;text-align:center;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body input40">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">新增方式</div>
+                            <div class="layui-input-block">
+                                <select name="type" id="type" lay-filter="type">
+                                    <option value="1" {if $data['type']==1}select{/if}>手动新增</option>
+                                    <option value="2" {if $data['type']==2}select{/if}>订单关联</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-collapse" lay-accordion>
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">发件人信息</h2>
+                                <div class="layui-colla-content layui-show">
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">名称</div>
+                                        <div class="layui-input-block disf">
+                                            <select name="send_name_type" id="send_name_type" lay-filter="send_name_type">
+                                                <option value="1" {if $data['send_name_type']==1}selected{/if}>中文名称</option>
+                                                <option value="2" {if $data['send_name_type']==2}selected{/if}>英文名称</option>
+                                            </select>
+                                            <input type="text" name="send_name" lay-verify="required" placeholder="名称" autocomplete="off" class="layui-input" value="{$data['send_name']}">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">电话</div>
+                                        <div class="layui-input-block disf">
+                                            <input type="text" name="send_mobile_area" lay-verify="required" placeholder="区号" autocomplete="off" class="layui-input" value="{$data['send_mobile_area']}" style="width:100px;">
+                                            <input type="number" name="send_mobile" lay-verify="required" placeholder="电话" autocomplete="off" class="layui-input" value="{$data['send_mobile']}">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">邮编</div>
+                                        <div class="layui-input-block disf">
+                                            <select name="send_postal_country" id="send_postal_country" lay-search lay-verify="required" lay-filter="postal_country">
+                                                <option value="">请选择国家</option>
+                                                {volist name="postal" id="vo"}
+                                                <option value="{$vo['id']}" data-title="{$vo['id']}" {if $data['send_postal_country']==$vo['id']}selected{/if}>{$vo['param2']}</option>
+                                                {/volist}
+                                            </select>
+                                            <div class="send_postal_div">
+                                                <div class="send_postal_rule disf"></div>
+                                                <div class="input_postal_rule disf" style="width: 200px;">
+                                                    {if $id>0}
+                                                        {volist name="data.send_postal" id="vo"}
+                                                            <input type="text" name="send_postal[]" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" value="{$vo}" style="width:50px;" maxlength="1">
+                                                        {/volist}
+                                                    {/if}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <fieldset class="layui-elem-field">
+                                        <legend>地址</legend>
+                                        <div class="layui-field-box">
+                                            <div class="layui-form-item">
+                                                <div class="layui-form-label">国家</div>
+                                                <div class="layui-input-block">
+                                                    <select name="send_address[country]" lay-verify="required" lay-search>
+                                                        {volist name="country" id="vo"}
+                                                        <option value="{$vo['id']}" {if $data['send_address']['country']==$vo['id']}selected{/if}>{$vo['param2']}</option>
+                                                        {/volist}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="layui-form-item">
+                                                <label class="layui-form-label">省/州</label>
+                                                <div class="layui-input-block">
+                                                    <select name="send_address[province_code]" lay-search lay-filter="province_code">
+                                                        {volist name="area" id="vo"}
+                                                        <option value="{$vo['id']}" {if $vo['id']==$data['send_address']['province_code']}selected{/if}>{$vo['param2']}</option>
+                                                        {/volist}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="layui-form-item">
+                                                <label class="layui-form-label">城市</label>
+                                                <div class="layui-input-block">
+                                                    <select name="send_address[city_code]" lay-search lay-filter="city_code">
+                                                        {volist name="area" id="vo"}
+                                                        <option value="{$vo['id']}" {if $vo['id']==$data['send_address']['city_code']}selected{/if}>{$vo['param2']}</option>
+                                                        {/volist}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="layui-form-item">
+                                                <label class="layui-form-label">地址1</label>
+                                                <div class="layui-input-block">
+                                                    <input type="text" name="send_address[address1]" lay-verify="required" placeholder="请输入地址1" autocomplete="off" class="layui-input" value="{$data['send_address']['address1']}">
+                                                </div>
+                                            </div>
+                                            {if $id>0}
+                                                {volist name="data.send_address.address2" key="key" id="vo"}
+                                                    <div class="layui-form-item">
+                                                        <label class="layui-form-label">地址<?php echo $key+1;?></label>
+                                                        <div class="layui-input-block disf">
+                                                            <input type="text" name="send_address[address2][{$key-1}]" placeholder="请输入地址" autocomplete="off" class="layui-input" value="{$vo}">
+                                                            <div class="layui-btn layui-btn-normal add" onclick="add_sender()">+</div>
+                                                            {if $key!=1}
+                                                                <div class="layui-btn layui-btn-danger del" onclick="del_sender(this)">-</div>
+                                                            {/if}
+                                                        </div>
+                                                    </div>
+                                                {/volist}
+                                                <input type="text" id="send_address_plus_num" value="<?php echo count($data['send_address']['address2'])+1;?>" style="display: none;">
+                                            {else}
+                                                <div class="layui-form-item">
+                                                    <label class="layui-form-label">地址2</label>
+                                                    <div class="layui-input-block disf">
+                                                        <input type="text" name="send_address[address2][]" placeholder="请输入地址2" autocomplete="off" class="layui-input" value="">
+                                                        <div class="layui-btn layui-btn-normal add" onclick="add_sender()">+</div>
+                                                    </div>
+                                                </div>
+                                                <input type="text" id="send_address_plus_num" value="2" style="display: none;">
+                                            {/if}
+                                            <div class="send_address_plus">
+
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">收件人信息</h2>
+                                <div class="layui-colla-content">
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">名称</div>
+                                        <div class="layui-input-block disf">
+                                            <select name="receive_name_type" id="receive_name_type" lay-filter="send_name_type">
+                                                <option value="1" {if $data['receive_name_type']==1}selected{/if}>中文名称</option>
+                                                <option value="2" {if $data['receive_name_type']==2}selected{/if}>英文名称</option>
+                                            </select>
+                                            <input type="text" name="receive_name" lay-verify="required" placeholder="名称" autocomplete="off" class="layui-input" value="{$data['receive_name']}">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">电话</div>
+                                        <div class="layui-input-block disf">
+                                            <input type="text" name="receive_mobile_area" lay-verify="required" placeholder="区号" autocomplete="off" class="layui-input" value="{$data['receive_mobile_area']}" style="width:100px;">
+                                            <input type="number" name="receive_mobile" lay-verify="required" placeholder="电话" autocomplete="off" class="layui-input" value="{$data['receive_mobile']}">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">邮编</div>
+                                        <div class="layui-input-block disf">
+                                            <select name="receive_postal_country" id="receive_postal_country" lay-search lay-verify="required" lay-filter="receive_postal_country">
+                                                <option value="">请选择国家</option>
+                                                {volist name="postal" id="vo"}
+                                                <option value="{$vo['id']}" data-title="{$vo['id']}" {if $data['receive_postal_country']==$vo['id']}selected{/if}>{$vo['param2']}</option>
+                                                {/volist}
+                                            </select>
+                                            <div class="receive_postal_div">
+                                                <div class="receive_postal_rule disf"></div>
+                                                <div class="input_postal_rule2 disf" style="width: 200px;">
+                                                    {if $id>0}
+                                                        {volist name="data.receive_postal" id="vo"}
+                                                        <input type="text" name="receive_postal[]" lay-verify="" placeholder="" autocomplete="off" class="layui-input" value="{$vo}" style="width:50px;" maxlength="1">
+                                                        {/volist}
+                                                    {/if}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <fieldset class="layui-elem-field">
+                                        <legend>地址</legend>
+                                        <div class="layui-field-box">
+                                            <div class="layui-form-item">
+                                                <div class="layui-form-label">国家</div>
+                                                <div class="layui-input-block">
+                                                    <select name="receive_address[country]" lay-verify="required" lay-search>
+                                                        {volist name="country" id="vo"}
+                                                        <option value="{$vo['id']}" {if $data['receive_address']['country']==$vo['id']}selected{/if}>{$vo['param2']}</option>
+                                                        {/volist}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="layui-form-item">
+                                                <label class="layui-form-label">省/州</label>
+                                                <div class="layui-input-block">
+                                                    <select name="receive_address[province_code]" lay-search lay-filter="province_code">
+                                                        {volist name="area" id="vo"}
+                                                        <option value="{$vo['id']}" {if $vo['id']==$data['receive_address']['province_code']}selected{/if}>{$vo['param2']}</option>
+                                                        {/volist}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="layui-form-item">
+                                                <label class="layui-form-label">城市</label>
+                                                <div class="layui-input-block">
+                                                    <select name="receive_address[city_code]" lay-search lay-filter="city_code">
+                                                        {volist name="area" id="vo"}
+                                                        <option value="{$vo['id']}" {if $vo['id']==$data['receive_address']['city_code']}selected{/if}>{$vo['param2']}</option>
+                                                        {/volist}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="layui-form-item">
+                                                <label class="layui-form-label">地址1</label>
+                                                <div class="layui-input-block">
+                                                    <input type="text" name="receive_address[address1]" lay-verify="required" placeholder="请输入地址1" autocomplete="off" class="layui-input" value="{$data['receive_address']['address1']}">
+                                                </div>
+                                            </div>
+                                            {if $id>0}
+                                                {volist name="data.receive_address.address2" key="key" id="vo"}
+                                                    <div class="layui-form-item">
+                                                        <label class="layui-form-label">地址<?php echo $key+1;?></label>
+                                                        <div class="layui-input-block disf">
+                                                            <input type="text" name="receive_address[address2][{$key-1}]" placeholder="请输入地址" autocomplete="off" class="layui-input" value="{$vo}">
+                                                            <div class="layui-btn layui-btn-normal add" onclick="add_receiver()">+</div>
+                                                            {if $key!=1}
+                                                            <div class="layui-btn layui-btn-danger del" onclick="del_receiver(this)">-</div>
+                                                            {/if}
+                                                        </div>
+                                                    </div>
+                                                {/volist}
+                                                <input type="text" id="receive_address_plus_num" value="<?php echo count($data['receive_address']['address2'])+1;?>" style="display: none;">
+                                            {else}
+                                                <div class="layui-form-item">
+                                                    <label class="layui-form-label">地址2</label>
+                                                    <div class="layui-input-block disf">
+                                                        <input type="text" name="receive_address[address2][]" placeholder="请输入地址2" autocomplete="off" class="layui-input" value="{$data['receive_address']['address2']}">
+                                                        <div class="layui-btn layui-btn-normal add" onclick="add_receiver()">+</div>
+                                                    </div>
+                                                </div>
+                                                <input type="text" id="receive_address_plus_num" value="2" style="display: none;">
+                                            {/if}
+                                            <div class="receive_address_plus">
+
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">集运商信息</h2>
+                                <div class="layui-colla-content">
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">商户名称</div>
+                                        <div class="layui-input-block disf">
+                                            <select name="merchant_type" id="merchant_type" lay-filter="merchant_type">
+                                                <option value="1" {if $data['merchant_type']==1}selected{/if}>选择</option>
+                                                <option value="2" {if $data['merchant_type']==2}selected{/if}>新增</option>
+                                            </select>
+                                            <div class="select_merchant">
+                                                <select name="merchant_id" id="merchant_id" lay-search lay-filter="merchant_id">
+                                                    <option value="">请选择集运商</option>
+                                                    {volist name="merchant" id="vo"}
+                                                    <option value="{$vo['id']}" title="{$vo['tel']}" {if $data['merchant_id']==$vo['id']}selected{/if}>{$vo['name']}:{$vo['tel']}</option>
+                                                    {/volist}
+                                                </select>
+                                            </div>
+                                            <div class="input_merchant" style="display: none;">
+                                                <input type="text" name="realname" placeholder="集运商名称" autocomplete="off" class="layui-input" value="">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-form-label">签收手机</div>
+                                        <div class="layui-input-block disf">
+                                            <input type="number" name="phone" lay-verify="required" id="merchant_phone" placeholder="签收手机" autocomplete="off" class="layui-input" value="{$data['phone']}">
+                                        </div>
+                                    </div>
+                                    <fieldset class="layui-elem-field">
+                                        <legend>仓库地址</legend>
+                                        <div class="layui-field-box">
+                                            <div class="layui-form-item">
+                                                <div class="layui-form-label">国家</div>
+                                                <div class="layui-input-block">
+                                                    <select name="merchant_warehouse[country]" lay-verify="required" lay-search>
+                                                        {volist name="country" id="vo"}
+                                                        <option value="{$vo['id']}" {if $data['merchant_warehouse']['country']==$vo['id']}selected{/if}>{$vo['param2']}</option>
+                                                        {/volist}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="layui-form-item">
+                                                <label class="layui-form-label">省/州</label>
+                                                <div class="layui-input-block">
+                                                    <select name="merchant_warehouse[province_code]" lay-search lay-filter="province_code">
+                                                        {volist name="area" id="vo"}
+                                                        <option value="{$vo['id']}" {if $vo['id']==$data['merchant_warehouse']['province_code']}selected{/if}>{$vo['param2']}</option>
+                                                        {/volist}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="layui-form-item">
+                                                <label class="layui-form-label">市</label>
+                                                <div class="layui-input-block">
+                                                    <select name="merchant_warehouse[city_code]" lay-search lay-filter="city_code">
+                                                        {volist name="area" id="vo"}
+                                                        <option value="{$vo['id']}" {if $vo['id']==$data['merchant_warehouse']['city_code']}selected{/if}>{$vo['param2']}</option>
+                                                        {/volist}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="layui-form-item">
+                                                <label class="layui-form-label">地址1</label>
+                                                <div class="layui-input-block">
+                                                    <input type="text" name="merchant_warehouse[address1]" lay-verify="required" placeholder="请输入地址1" autocomplete="off" class="layui-input" value="{$data['merchant_warehouse']['address1']}">
+                                                </div>
+                                            </div>
+                                            {if $id>0}
+                                                {volist name="data.merchant_warehouse.address2" key="key" id="vo"}
+                                                <div class="layui-form-item">
+                                                    <label class="layui-form-label">地址<?php echo $key+1;?></label>
+                                                    <div class="layui-input-block disf">
+                                                        <input type="text" name="merchant_warehouse[address2][{$key-1}]" placeholder="请输入地址" autocomplete="off" class="layui-input" value="{$vo}">
+                                                        <div class="layui-btn layui-btn-normal add" onclick="add_warehouse_address()">+</div>
+                                                        {if $key!=1}
+                                                        <div class="layui-btn layui-btn-danger del" onclick="del_warehouse_address(this)">-</div>
+                                                        {/if}
+                                                    </div>
+                                                </div>
+                                                {/volist}
+                                                <input type="text" id="warehouse_address_plus_num" value="<?php echo count($data['merchant_warehouse']['address2'])+1;?>" style="display: none;">
+                                            {else}
+                                                <div class="layui-form-item">
+                                                    <label class="layui-form-label">地址2</label>
+                                                    <div class="layui-input-block disf">
+                                                        <input type="text" name="merchant_warehouse[address2][]" placeholder="请输入地址2" autocomplete="off" class="layui-input" value="{$data['merchant_warehouse']['address2']}">
+                                                        <div class="layui-btn layui-btn-normal add" onclick="add_warehouse_address()">+</div>
+                                                    </div>
+                                                </div>
+                                                <input type="text" id="warehouse_address_plus_num" value="2" style="display: none;">
+                                            {/if}
+                                            <div class="warehouse_address_plus">
+
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">货物信息</h2>
+                                <div class="layui-colla-content">
+                                    <fieldset class="layui-elem-field">
+                                        <legend>货物清单</legend>
+                                        <div class="layui-field-box">
+                                            {if $id>0}
+                                                <input type="text" id="goods_list_num" value="<?php echo count($data['goods_list']['itemid']);?>" style="display: none;">
+                                            {else}
+                                                <input type="text" id="goods_list_num" value="1" style="display: none;">
+                                            {/if}
+                                            <table class="layui-table">
+                                                <thead>
+                                                <th>序号</th>
+                                                <th>类别</th>
+                                                <th>属性</th>
+                                                <th>描述</th>
+                                                <th>品牌</th>
+                                                <th>数量</th>
+                                                <th>单位</th>
+                                                <th>#</th>
+                                                </thead>
+                                                <tbody class="goods_list_tbody">
+                                                    {if $id>0}
+                                                        {volist name="data.goods_list.itemid" key="key2" id="v"}
+                                                            <tr>
+                                                                <td>{$key2}</td>
+                                                                <td>
+                                                                    <div id="itemid{$key2}" class="xm-select-demo"></div>
+<!--                                                                    <select name="goods_list[itemid][{$key2-1}]" lay-verify="required" lay-search>-->
+<!--                                                                        <option>请选择类别</option>-->
+<!--                                                                        {volist name="category" key="key" id="vo"}-->
+<!--                                                                        <option value="{$vo['id']}" {if $v==$vo['id']}selected{/if}>{$vo['name']}</option>-->
+<!--                                                                        {/volist}-->
+<!--                                                                    </select>-->
+                                                                </td>
+                                                                <td>
+                                                                    <div id="valueid{$key2}" class="xm-select-demo"></div>
+                                                                    <div class="layui-btn layui-btn-normal" onclick="view_value(this)" style="display:none;">选择属性</div>
+                                                                    <div class="value_box" style="display: none;padding:15px 20px 15px 0;box-sizing: border-box;">
+                                                                        <div class="layui-form-item">
+                                                                            <div class="layui-form-label">选择属性</div>
+                                                                            <div class="layui-input-block">
+                                                                                <div id="value{$key2}" class="xm-select-demo"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <hr>
+                                                                        <div class="value_box_box">
+                                                                            {if($id>0 && !empty($data['goods_list']['value_desc']))}
+                                                                                {volist name="data.goods_list.value_desc[$key2-1]" key="key" id="vo"}
+                                                                                    <div class="layui-form-item value_box{$key}">
+                                                                                        <div class="layui-form-label">{$data['goods_list']['value_select'][$key2-1][$key-1]}</div>
+                                                                                        <div class="layui-input-block">
+                                                                                            <input type="text" name="goods_list[value_desc][{$key2-1}][]" class="layui-input" placeholder="该属性描述" value="{$vo}">
+                                                                                        </div>
+                                                                                    </div>
+                                                                                {/volist}
+                                                                            {/if}
+                                                                        </div>
+                                                                        <div class="layui-btn layui-btn-normal sure" style="margin-left:50px;">确定</div>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" name="goods_list[brand_desc][{$key2-1}]" placeholder="描述" autocomplete="off" class="layui-input" value="{$data['goods_list']['brand_desc'][$key2-1]}">
+                                                                </td>
+                                                                <td>
+                                                                    <select name="goods_list[brand_type][{$key2-1}]" lay-filter="brand_type">
+                                                                        <option value="1" {if $data['goods_list']['brand_type'][$key2-1]==1}selected{/if}>无牌（无商标信息）</option>
+                                                                        <option value="2" {if $data['goods_list']['brand_type'][$key2-1]==2}selected{/if}>仿牌（商品无注册）</option>
+                                                                        <option value="3" {if $data['goods_list']['brand_type'][$key2-1]==3}selected{/if}>普通品牌（有注册非知名）</option>
+                                                                        <option value="4" {if $data['goods_list']['brand_type'][$key2-1]==4}selected{/if}>奢侈品牌（有注册且知名）</option>
+                                                                    </select>
+                                                                    
+                                                                    <input type="text" class="layui-input brand_name {if $data['goods_list']['brand_type'][$key2-1]==1}hide{/if} {if $data['goods_list']['brand_type'][$key2-1]==4}hide{/if}" name="goods_list[brand_name][{$key2-1}]" placeholder="品牌名称" style="margin:10px 0;" value="{$data['goods_list']['brand_name'][$key2-1]}">
+                                                                    <div class="select_brand_name" {if $data['goods_list']['brand_type'][$key2-1]!=4}style="display: none;"{/if}>
+                                                                        <select name="goods_list[brand_name2][{$key2-1}]" id="select_brand_name" lay-filter="brand_name" lay-search>
+                                                                            <option value="">请选择品牌名称</option>
+                                                                            {volist name="brand" key="key" id="vo"}
+                                                                            <option value="{$vo['param1']}" {if $data['goods_list']['brand_name2'][$key2-1]==$vo['param1']}selected{/if}>{$vo['param1']}</option>
+                                                                            {/volist}
+                                                                        </select>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" name="goods_list[num][{$key2-1}]" placeholder="数量" autocomplete="off" class="layui-input" value="{$data['goods_list']['num'][$key2-1]}">
+                                                                </td>
+                                                                <td>
+                                                                    <select name="goods_list[unit][{$key2-1}]" lay-search>
+                                                                        <option>请选择单位</option>
+                                                                        {volist name="unit" key="key" id="vo"}
+                                                                        <option value="{$vo['code_value']}" {if $data['goods_list']['unit'][$key2-1]==$vo['code_value']}selected{/if}>{$vo['code_name']}</option>
+                                                                        {/volist}
+                                                                    </select>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="layui-btn layui-btn-normal add" onclick="add_goods_list()">+</div>
+                                                                    {if $key2!=1}
+                                                                        <div class="layui-btn layui-btn-danger del" onclick="del_goods_list(this)">-</div>
+                                                                    {/if}
+                                                                </td>
+                                                            </tr>
+                                                        {/volist}
+                                                    {else}
+                                                        <tr>
+                                                        <td>1</td>
+                                                        <td>
+                                                            <div id="itemid1" class="xm-select-demo"></div>
+<!--                                                            <select name="goods_list[itemid][]" lay-verify="required" lay-search>-->
+<!--                                                                <option>请选择类别</option>-->
+<!--                                                                {volist name="category" id="vo"}-->
+<!--                                                                <option value="{$vo['id']}">{$vo['name']}</option>-->
+<!--                                                                {/volist}-->
+<!--                                                            </select>-->
+                                                        </td>
+                                                        <td>
+                                                            <div class="layui-btn layui-btn-normal" onclick="view_value(this)">选择属性</div>
+                                                            <div class="value_box" style="display: none;padding:15px 20px 15px 0;box-sizing: border-box;">
+                                                                <div class="layui-form-item">
+                                                                    <div class="layui-form-label">选择属性</div>
+                                                                    <div class="layui-input-block">
+                                                                        <div id="value" class="xm-select-demo"></div>
+                                                                    </div>
+                                                                </div>
+                                                                <hr>
+                                                                <div class="value_box_box">
+
+                                                                </div>
+                                                                <div class="layui-btn layui-btn-normal sure" style="margin-left:50px;">确定</div>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" name="goods_list[brand_desc][]" placeholder="描述" autocomplete="off" class="layui-input" value="">
+                                                        </td>
+                                                        <td>
+                                                            <select name="goods_list[brand_type][]" lay-filter="brand_type">
+                                                                <option value="1">无牌（无商标信息）</option>
+                                                                <option value="2">仿牌（商品无注册）</option>
+                                                                <option value="3">普通品牌（有注册非知名）</option>
+                                                                <option value="4">奢侈品牌（有注册且知名）</option>
+                                                            </select>
+
+                                                            <input type="text" class="layui-input brand_name" name="goods_list[brand_name][]" placeholder="品牌名称" style="display:none;margin:10px 0;">
+                                                            <div class="select_brand_name" style="display: none;">
+                                                                <select name="goods_list[brand_name2][]" id="select_brand_name" lay-filter="brand_name" lay-search>
+                                                                    <option value="">请选择品牌名称</option>
+                                                                    {volist name="brand" id="v"}
+                                                                    <option value="{$v['param1']}">{$v['param1']}</option>
+                                                                    {/volist}
+                                                                </select>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" name="goods_list[num][]" placeholder="数量" autocomplete="off" class="layui-input" value="">
+                                                        </td>
+                                                        <td>
+                                                            <select name="goods_list[unit][]" lay-search>
+                                                                <option>请选择单位</option>
+                                                                {volist name="unit" id="vo"}
+                                                                <option value="{$vo['code_value']}">{$vo['code_name']}</option>
+                                                                {/volist}
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <div class="layui-btn layui-btn-normal add" onclick="add_goods_list()">+</div>
+                                                        </td>
+                                                    </tr>
+                                                    {/if}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="layui-elem-field">
+                                        <legend>货物材积</legend>
+                                        <div class="layui-field-box">
+                                            <table class="layui-table">
+                                                <thead>
+                                                    <th>长</th>
+                                                    <th>宽</th>
+                                                    <th>高</th>
+                                                    <th>体积比</th>
+                                                    <th>毛重</th>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="disf">
+                                                            <input type="text" name="goods_volumn[long]" placeholder="长CM" autocomplete="off" class="layui-input" value="{$data['goods_volumn']['long']}">
+                                                            <select name="goods_volumn[unit]" class="unit" lay-filter="unit">
+                                                                <option value="1" {if $data['goods_volumn']['unit']==1}selected{/if}>CM</option>
+                                                                <option value="2" {if $data['goods_volumn']['unit']==2}selected{/if}>M</option>
+                                                            </select>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="disf">
+                                                            <input type="text" name="goods_volumn[width]" placeholder="宽CM" autocomplete="off" class="layui-input" value="{$data['goods_volumn']['width']}">
+                                                            <select name="goods_volumn[unit]" class="unit" lay-filter="unit">
+                                                                <option value="1" {if $data['goods_volumn']['unit']==1}selected{/if}>CM</option>
+                                                                <option value="2" {if $data['goods_volumn']['unit']==2}selected{/if}>M</option>
+                                                            </select>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="disf">
+                                                            <input type="text" name="goods_volumn[height]" placeholder="高CM" autocomplete="off" class="layui-input" value="{$data['goods_volumn']['height']}">
+                                                            <select name="goods_volumn[unit]" class="unit" lay-filter="unit">
+                                                                <option value="1" {if $data['goods_volumn']['unit']==1}selected{/if}>CM</option>
+                                                                <option value="2" {if $data['goods_volumn']['unit']==2}selected{/if}>M</option>
+                                                            </select>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="goods_volumn[volumn]" placeholder="体积比" autocomplete="off" class="layui-input" value="{$data['goods_volumn']['volumn']}">
+                                                    </td>
+                                                    <td>
+                                                        <div class="disf">
+                                                            <input type="text" name="goods_volumn[grosswt]" placeholder="毛重KGS" autocomplete="off" class="layui-input" value="{$data['goods_volumn']['grosswt']}">
+                                                            <select name="goods_volumn[unit2]" class="unit2" lay-filter="unit2">
+                                                                <option value="1" {if $data['goods_volumn']['unit2']==1}selected{/if}>KGS</option>
+                                                                <option value="2" {if $data['goods_volumn']['unit2']==2}selected{/if}>GS</option>
+                                                            </select>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="layui-elem-field">
+                                        <legend>物流渠道</legend>
+                                        <div class="layui-field-box">
+                                            <table class="layui-table">
+                                                <thead>
+                                                <th>集运商</th>
+                                                <th>渠道名称</th>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td><input type="text" name="logistics_channel[name]" placeholder="集运商名称" autocomplete="off" class="layui-input" value="{$data['logistics_channel']['name']}"></td>
+                                                    <td><input type="text" name="logistics_channel[line_name]" placeholder="渠道名称" autocomplete="off" class="layui-input" value="{$data['logistics_channel']['line_name']}">
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="layui-elem-field">
+                                        <legend>物流运单</legend>
+                                        <div class="layui-field-box">
+                                            <table class="layui-table">
+                                                <thead>
+                                                <th>段号</th>
+                                                <th>物流商名称</th>
+                                                <th>物流单号</th>
+                                                <th>#</th>
+                                                </thead>
+                                                {if $id>0}
+                                                    <input type="text" id="waybill_num" value="<?php echo count($data['logistics_waybill']['express']);?>" style="display: none;">
+                                                {else}
+                                                    <input type="text" id="waybill_num" value="1" style="display: none;">
+                                                {/if}
+                                                <tbody class="waybill_tbody">
+                                                    {if $id>0}
+                                                        {volist name="data.logistics_waybill.express" key="key2" id="vo"}
+                                                            <tr>
+                                                                <td>第{$key2}段</td>
+                                                                <td>
+                                                                    <select name="logistics_waybill[express][{$key2-1}]" lay-search>
+                                                                        <option>请选择物流商</option>
+                                                                        {volist name="express" id="vo2"}
+                                                                        <option value="{$vo2['id']}" {if $vo2['id']==$vo}selected{/if}>{$vo2['param3']}</option>
+                                                                        {/volist}
+                                                                    </select>
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" name="logistics_waybill[express_no][{$key2-1}]" placeholder="物流单号" autocomplete="off" class="layui-input" value="{$data['logistics_waybill']['express_no'][$key2-1]}">
+                                                                </td>
+                                                                <td>
+                                                                    <div class="layui-btn layui-btn-normal add" onclick="add_express_list()">+</div>
+                                                                    {if $key2>1}
+                                                                        <div class="layui-btn layui-btn-danger del" onclick="del_express_list(this)">-</div>
+                                                                    {/if}
+                                                                </td>
+                                                            </tr>
+                                                        {/volist}
+                                                    {else}
+                                                        <tr>
+                                                            <td>第1段</td>
+                                                            <td>
+                                                                <select name="logistics_waybill[express][]" lay-search>
+                                                                    <option>请选择物流商</option>
+                                                                    {volist name="express" id="vo"}
+                                                                    <option value="{$vo['id']}">{$vo['param3']}</option>
+                                                                    {/volist}
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" name="logistics_waybill[express_no][]" placeholder="物流单号" autocomplete="off" class="layui-input" value="">
+                                                            </td>
+                                                            <td>
+                                                                <div class="layui-btn layui-btn-normal add" onclick="add_express_list()">+</div>
+                                                            </td>
+                                                        </tr>
+                                                    {/if}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+                            {if $data['status']>=3}
+                                <div class="layui-colla-item fee_bigbox">
+                                    <h2 class="layui-colla-title">费用确认信息</h2>
+                                    <div class="layui-colla-content">
+                                        <div class="layui-form-item">
+                                            <div class="layui-form-label">计费重量</div>
+                                            <div class="layui-input-block disf">
+                                                <input type="number" class="layui-input" value="{$data['sure_fee_list']['true_weight']}" lay-verify="required" name="true_weight" id="true_weight" placeholder="计费重量">
+                                            </div>
+                                        </div>
+                                        <div class="layui-form-item">
+                                            <div class="layui-form-label">首重单价</div>
+                                            <div class="layui-input-block disf">
+                                                <input type="number" class="layui-input input50" value="{$data['sure_fee_list']['first_weight']}" lay-verify="required" name="first_weight" id="first_weight" placeholder="首重">
+                                                <div class="input50">
+                                                    <select name="unit" class="unit" lay-filter="unit">
+                                                        <option value="1" {if $data['sure_fee_list']['unit']==1}selected{/if}>KGS</option>
+                                                        <option value="2" {if $data['sure_fee_list']['unit']==2}selected{/if}>GS</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="layui-input-block disf">
+                                                <input type="number" class="layui-input input50" value="{$data['sure_fee_list']['first_price']}" lay-verify="required" name="first_price" id="first_price" placeholder="金额">
+                                                <div class="input50">
+                                                    <select name="currency" class="currency" lay-filter="currency">
+                                                        {volist name="currency" id="vo"}
+                                                        <option value="{$vo['code_value']}" {if $vo['code_value']==$data['sure_fee_list']['currency']}selected{/if}>{$vo['code_name']}</option>
+                                                        {/volist}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="layui-form-item">
+                                            <div class="layui-form-label">续重单价</div>
+                                            <div class="layui-input-block disf">
+                                                <input type="number" class="layui-input input50" value="{$data['sure_fee_list']['second_weight']}" lay-verify="required" name="second_weight" id="second_weight" placeholder="续重">
+                                                <div class="input50">
+                                                    <select name="unit" class="unit" lay-filter="unit">
+                                                        <option value="1" {if $data['sure_fee_list']['unit']==1}selected{/if}>KGS</option>
+                                                        <option value="2" {if $data['sure_fee_list']['unit']==2}selected{/if}>GS</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="layui-input-block disf">
+                                                <input type="number" class="layui-input input50" value="{$data['sure_fee_list']['second_price']}" lay-verify="required" name="second_price" id="second_price" placeholder="金额" onchange="monitor_input()">
+                                                <div class="input50">
+                                                    <select name="currency" class="currency" lay-filter="currency">
+                                                        {volist name="currency" id="vo"}
+                                                        <option value="{$vo['code_value']}" {if $vo['code_value']==$data['sure_fee_list']['currency']}selected{/if}>{$vo['code_name']}</option>
+                                                        {/volist}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="layui-form-item">
+                                            <div class="layui-form-label">计重进阶</div>
+                                            <div class="layui-input-block disf">
+                                                <span class="white_color">不足</span>
+                                                <input type="number" class="layui-input input50" value="{$data['sure_fee_list']['insu_weight']}" name="insu_weight" id="insu_weight" placeholder="数量">
+                                                <div class="input50">
+                                                    <select name="unit" class="unit" lay-filter="unit">
+                                                        <option value="1" {if $data['sure_fee_list']['unit']==1}selected{/if}>KGS</option>
+                                                        <option value="2" {if $data['sure_fee_list']['unit']==2}selected{/if}>GS</option>
+                                                    </select>
+                                                </div>
+                                                <span class="white_color"></span>
+                                            </div>
+                                            <div class="layui-input-block disf">
+                                                <span class="white_color">按照</span>
+                                                <input type="number" class="layui-input input50" value="{$data['sure_fee_list']['cont_weight']}" name="cont_weight" id="cont_weight" placeholder="数量" onchange="monitor_input()">
+                                                <div class="input50">
+                                                    <select name="unit" class="unit" lay-filter="unit">
+                                                        <option value="1" {if $data['sure_fee_list']['unit']==1}selected{/if}>KGS</option>
+                                                        <option value="2" {if $data['sure_fee_list']['unit']==2}selected{/if}>GS</option>
+                                                    </select>
+                                                </div>
+                                                <span class="white_color">计费</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="layui-form-item" style="border-bottom: 0;margin-bottom: 0;">
+                                            <div class="layui-form-label">附加费用</div>
+                                            <div class="layui-input-block disf">
+                                            </div>
+                                        </div>
+                                        <div class="fee_box">
+                                            <input type="text" id="fee_num" style="display: none;" value="<?php echo count($data['sure_fee_list']['fee_desc'])?>">
+                                            {volist name="data.sure_fee_list.fee_desc" key="key2" id="vo"}
+                                            <div class="layui-form-item">
+                                                <div class="layui-input-block disf" style="margin-left:0;">
+                                                    <span class="num white_color">{$key2}.</span>
+                                                    <textarea name="fee_desc[]" class="layui-textarea input100" placeholder="描述" style="min-height:38px;line-height: 15px">{$vo}</textarea>
+                                                </div>
+                                                <div class="layui-input-block disf" style="margin-left:0;">
+                                                    <span class="num white_color"></span>
+                                                    <div class="input35">
+                                                        <select name="fee_currency[]" class="fee_currency" lay-filter="fee_currency">
+                                                            {volist name="currency" key="key" id="vo"}
+                                                            <option value="{$vo['code_value']}" title="{$vo['code_name']}" {if $vo['code_value']==$data['sure_fee_list']['fee_currency'][$key2-1]}selected{/if}>{$vo['code_name']}</option>
+                                                            {/volist}
+                                                        </select>
+                                                    </div>
+                                                    <input type="text" class="layui-input input50 fee_money" name="fee_money[]" placeholder="金额" value="{$data['sure_fee_list']['fee_money'][$key2-1]}" onchange="change_fee(this)">
+                                                </div>
+                                            </div>
+                                            {/volist}
+                                        </div>
+                                        <div class="layui-btn layui-btn-primary" onclick="add_fee()">添加费用</div>
+                                        <div class="content" style="padding:10px 10px;box-sizing:border-box;margin-top:20px;border:1px solid #fff;">
+                                            <div class="layui-form-item">
+                                                <div class="layui-form-label">运费总价</div>
+                                                <div class="layui-input-block disf">
+                                                    <div class="input50">
+                                                        <select name="currency" class="currency" lay-filter="currency">
+                                                            {volist name="currency" id="vo"}
+                                                            <option value="{$vo['code_value']}" {if $vo['code_value']==$data['sure_fee_list']['currency']}selected{/if}>{$vo['code_name']}</option>
+                                                            {/volist}
+                                                        </select>
+                                                    </div>
+                                                    <input type="number" class="layui-input input50" value="{$data['sure_fee_list']['total_money']}" lay-verify="required" name="total_money" id="total_money" placeholder="运费总价">
+                                                </div>
+                                            </div>
+                                            {if !empty($data['sure_fee_list']['total_fee_currency'])}
+                                                <div class="layui-form-item">
+                                                    <div class="layui-form-label">附加总价</div>
+                                                    <div class="other_fee_box">
+                                                        {volist name="data.sure_fee_list.total_fee_currency" key="key1" id="v"}
+                                                            <div class="layui-input-block disf">
+                                                                <span class="white_color" style="width:60px;white-space: wrap;">
+                                                                    {volist name="currency" id="vo"}
+                                                                        {if $vo['code_value']==$v}<?php echo explode(')',$vo['code_name'])[1];?>{/if}
+                                                                    {/volist}
+                                                                </span>
+                                                                <input name="total_fee_currency[]" type="hidden" value="{$v}">
+                                                                <input class="layui-input input50 curr_{$v}_price" name="total_fee_price[]" value="{$data['sure_fee_list']['total_fee_price'][$key1-1]}" type="number">
+                                                            </div>
+                                                        {/volist}
+                                                    </div>
+                                                </div>
+                                            {/if}
+                                        </div>
+                                    </div>
+                                </div>
+                            {/if}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {if $data['status']<2}
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">生成运单</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置运单</button>
+                </div>
+            </div>
+            {/if}
+            {if $data['status']==3}
+                <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                    <div>
+                        <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element3">费用确认</button>
+<!--                        <button type="reset" class="layui-btn layui-btn-primary">重置运单</button>-->
+                    </div>
+                </div>
+            {/if}
+        </form>
+    </div>
+</div>
+</body>
+<script src="./static/hadmin/assets/layui/xm-select3.js?v=<?php echo time();?>"></script>
+<script type="text/javascript">
+    var win_index = '';
+    layui.use(['layer','form','laydate','upload','element'],function(){
+        var laydate = layui.laydate
+            ,layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery
+            ,element = layui.element
+            ,upload = layui.upload;
+
+        form.render(null,'component-form-element');
+        
+        {if $id>0}
+            {volist name="data.goods_list.valueid" key="key" id="v"}
+                xmSelect.render({
+                    el: '#itemid{$key}',
+                    autoRow: true, //自动换行
+                    filterable: true, //可搜索
+                    searchTips: '请搜索',
+                    radio: true,
+                    name: "goods_list[itemid][{$key-1}]",
+                    model: {
+                        icon: 'hidden',//是否展示复选框或者单选框图标 show, hidden:变换背景色  ！！这句话是重点，不然会变成父节点也有单选框！！
+                    },
+                    prop:{
+                        name: 'name',
+                        value: 'id',
+                    },
+                    tree: {
+                        show: true, //用树显示
+                        showFolderIcon: true, //是否显示节点前的三角图标
+                        expandedKeys: false, //默认全部展开
+                        showLine: true, //显示渐近线
+                        indent: 20, //间距
+                        strict: false, //重点！！设置成非严格父子模式，这样父节点被禁用，子节点依然可以点击
+                        clickCheck: true,
+                        vaguaSearch:0,//关闭模糊搜索
+                    },
+                    toolbar: {
+                        show: false, //显示工具条
+                        list: ['ALL', 'REVERSE', 'CLEAR']
+                    },
+                    height: '300px', //最大下拉框高度
+                    data: {$goods_item},
+                    initValue:[{$data['goods_list']['itemid'][$key-1]}],
+                });
+                //货物属性
+                valueid = xmSelect.render({
+                    el: '#valueid{$key}',
+                    autoRow: true, //自动换行
+                    filterable: true, //可搜索
+                    searchTips: '请搜索',
+                    radio: false,
+                    name: "goods_list[valueid][]",
+                    model: {
+                        icon: 'hidden',//是否展示复选框或者单选框图标 show, hidden:变换背景色  ！！这句话是重点，不然会变成父节点也有单选框！！
+                    },
+                    tree: {
+                        show: true, //用树显示
+                        showFolderIcon: true, //是否显示节点前的三角图标
+                        expandedKeys: true, //默认全部展开
+                        showLine: true, //显示渐近线
+                        indent: 20, //间距
+                        strict: false, //重点！！设置成非严格父子模式，这样父节点被禁用，子节点依然可以点击
+                        clickCheck: true,
+                        vaguaSearch: 1,//开启模糊搜索
+                        nowElement: 'valueid{$key}'
+                    },
+                    toolbar: {
+                        show: false, //显示工具条
+                        list: ['ALL', 'REVERSE', 'CLEAR']
+                    },
+                    height: '300px', //最大下拉框高度
+                    data: {$value},
+                    initValue: [{$v}],
+                    layVerify: 'required',
+                });
+                // xmSelect.render({
+                //     el: '#value{$key}',
+                //     paging: true,
+                //     pageSize: 5,
+                //     height:300,
+                //     filterable: true,
+                //     prop: {
+                //         name: 'name',
+                //         value: 'id',
+                //     },
+                //     autoRow: true,
+                //     data: {$value},
+                //     name: "goods_list[valueid][{$key-1}]",
+                //     layVerify: 'required',
+                //     layVerType: 'msg',
+                //     initValue:[{$v}],
+                //     on:function(data){
+                //         let name = data.change[0]['name'];
+                //         let id = data.change[0]['id'];
+                //         if(data.isAdd==true){
+                //             let html = '<div class="layui-form-item value_box'+id+'">\n' +
+                //                 '                                        <div class="layui-form-label">'+name+'</div>\n' +
+                //                 '                                        <div class="layui-input-block">\n' +
+                //                 '                                            <input type="text" name="goods_list[value_desc][0][]" class="layui-input" placeholder="该属性描述" value="">\n'+
+                //                 '                                        </div>\n' +
+                //                 '                                    </div>';
+                //
+                //             $('.value_box_box').append(html);
+                //         }else{
+                //             $('.value_box'+id).remove();
+                //         }
+                //         form.render(null,'component-form-element');
+                //     }
+                // });
+            {/volist}
+        {else}
+            xmSelect.render({
+                el: '#itemid1',
+                autoRow: true, //自动换行
+                filterable: true, //可搜索
+                searchTips: '请搜索',
+                radio: true,
+                name: "goods_list[itemid][0]",
+                model: {
+                    icon: 'hidden',//是否展示复选框或者单选框图标 show, hidden:变换背景色  ！！这句话是重点，不然会变成父节点也有单选框！！
+                },
+                prop:{
+                    name: 'name',
+                    value: 'id',
+                },
+                tree: {
+                    show: true, //用树显示
+                    showFolderIcon: true, //是否显示节点前的三角图标
+                    expandedKeys: false, //默认全部展开
+                    showLine: true, //显示渐近线
+                    indent: 20, //间距
+                    strict: false, //重点！！设置成非严格父子模式，这样父节点被禁用，子节点依然可以点击
+                    clickCheck: true,
+                    vaguaSearch:0,//关闭模糊搜索
+                },
+                toolbar: {
+                    show: false, //显示工具条
+                    list: ['ALL', 'REVERSE', 'CLEAR']
+                },
+                height: '300px', //最大下拉框高度
+                data: {$goods_item},
+            });
+            //货物属性
+            valueid = xmSelect.render({
+                el: '#valueid1',
+                autoRow: true, //自动换行
+                filterable: true, //可搜索
+                searchTips: '请搜索',
+                radio: false,
+                name: "goods_list[valueid][]",
+                model: {
+                    icon: 'hidden',//是否展示复选框或者单选框图标 show, hidden:变换背景色  ！！这句话是重点，不然会变成父节点也有单选框！！
+                },
+                tree: {
+                    show: true, //用树显示
+                    showFolderIcon: true, //是否显示节点前的三角图标
+                    expandedKeys: true, //默认全部展开
+                    showLine: true, //显示渐近线
+                    indent: 20, //间距
+                    strict: false, //重点！！设置成非严格父子模式，这样父节点被禁用，子节点依然可以点击
+                    clickCheck: true,
+                    vaguaSearch: 1,//开启模糊搜索
+                    nowElement: 'valueid1'
+                },
+                toolbar: {
+                    show: false, //显示工具条
+                    list: ['ALL', 'REVERSE', 'CLEAR']
+                },
+                height: '300px', //最大下拉框高度
+                data: {$value},
+                layVerify: 'required',
+            });
+            // xmSelect.render({
+            //     el: '#value',
+            //     autoRow: true, //自动换行
+            //     filterable: true, //可搜索
+            //     searchTips: '请搜索',
+            //     radio:false,
+            //     name:"goods_list[valueid][0]",
+            //     model: {
+            //         icon: 'hidden',//是否展示复选框或者单选框图标 show, hidden:变换背景色  ！！这句话是重点，不然会变成父节点也有单选框！！
+            //     },
+            //     tree: {
+            //         show: true, //用树显示
+            //         showFolderIcon: true, //是否显示节点前的三角图标
+            //         expandedKeys: true, //默认全部展开
+            //         showLine: true, //显示渐近线
+            //         indent: 20, //间距
+            //         strict: false, //重点！！设置成非严格父子模式，这样父节点被禁用，子节点依然可以点击
+            //         clickCheck:true,
+            //     },
+            //     toolbar: {
+            //         show: false, //显示工具条
+            //         list: ['ALL', 'REVERSE', 'CLEAR']
+            //     },
+            //     height: '300px', //最大下拉框高度
+            //     data: {$value},
+            //     on:function(data){
+            //         let name = data.change[0]['name'];
+            //         let id = data.change[0]['id'];
+            //         if(data.isAdd==true){
+            //             let html = '<div class="layui-form-item value_box'+id+'">\n' +
+            //                 '                                        <div class="layui-form-label">'+name+'</div>\n' +
+            //                 '                                        <div class="layui-input-block">\n' +
+            //                 '                                            <input type="text" name="goods_list[value_desc][0][]" class="layui-input" placeholder="该属性描述" value="">\n'+
+            //                 '                                        </div>\n' +
+            //                 '                                    </div>';
+            //
+            //             $('.value_box_box').append(html);
+            //         }else{
+            //             $('.value_box'+id).remove();
+            //         }
+            //         form.render(null,'component-form-element');
+            //     }
+            // });
+
+            // xmSelect.render({
+            // el: '#value',
+            // paging: true,
+            // pageSize: 5,
+            // height:300,
+            // filterable: true,
+            // prop: {
+            //     name: 'name',
+            //     value: 'id',
+            // },
+            // autoRow: true,
+            // data: $value,
+            // name: "goods_list[value][0]",
+            // layVerify: 'required',
+            // layVerType: 'msg',
+            // on:function(data){
+            //     let name = data.change[0]['name'];
+            //     let id = data.change[0]['id'];
+            //     if(data.isAdd==true){
+            //         let html = '<div class="layui-form-item value_box'+id+'">\n' +
+            //             '                                        <div class="layui-form-label">'+name+'</div>\n' +
+            //             '                                        <div class="layui-input-block">\n' +
+            //             '                                            <input type="text" name="goods_list[value_desc][0][]" class="layui-input" placeholder="该属性描述" value="">\n'+
+            //             '                                        </div>\n' +
+            //             '                                    </div>';
+            //
+            //         $('.value_box_box').append(html);
+            //     }else{
+            //         $('.value_box'+id).remove();
+            //     }
+            //     form.render(null,'component-form-element');
+            // }
+        // });
+        {/if}
+        
+        //邮政编码格式-start
+        var regNumber = /\d+/;
+        var regString = /[a-zA-Z]+/;
+        form.on('select(postal_country)',function(data){
+            let val = data.value;
+            $.ajax({
+                url: "{:Url('centralize/index/get_postal_rule')}",
+                method: 'post',
+                data: {val:val},
+                dataType: 'JSON',
+                success: function (res) {
+                    let html = '';
+                    let html2 = '';
+                    for(let i=0;i<res.data.rule.length;i++){
+                        if(regNumber.test(res.data.rule[i]) || regString.test(res.data.rule[i])) {
+                            html += '<div class="postal_temp">'+res.data.rule[i]+'</div>';
+                            html2 += '<input type="text" name="send_postal[]" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" value="" style="width:50px;" maxlength="1">';
+                        }else{
+                            html += '<div class="postal_temp" style="font-size:18px;font-weight:800;">'+res.data.rule[i]+'</div>';
+                            html2 += '<input type="text" name="send_postal[]" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" value="'+res.data.rule[i]+'" style="width:50px;" maxlength="1">';
+                        }
+                    }
+                    $('.send_postal_rule').html(html);
+                    $('.input_postal_rule').html(html2);
+                }
+            });
+        });
+        form.on('select(receive_postal_country)',function(data){
+            let val = data.value;
+            $.ajax({
+                url: "{:Url('centralize/index/get_postal_rule')}",
+                method: 'post',
+                data: {val:val},
+                dataType: 'JSON',
+                success: function (res) {
+                    let html = '';
+                    let html2 = '';
+                    for(let i=0;i<res.data.rule.length;i++){
+                        if(regNumber.test(res.data.rule[i]) || regString.test(res.data.rule[i])) {
+                            html += '<div class="postal_temp">'+res.data.rule[i]+'</div>';
+                            html2 += '<input type="text" name="receive_postal[]" lay-verify="" placeholder="" autocomplete="off" class="layui-input" value="" style="width:50px;" maxlength="1">';
+                        }else{
+                            html += '<div class="postal_temp" style="font-size:18px;font-weight:800;">'+res.data.rule[i]+'</div>';
+                            html2 += '<input type="text" name="receive_postal[]" lay-verify="" placeholder="" autocomplete="off" class="layui-input" value="'+res.data.rule[i]+'" style="width:50px;" maxlength="1">';
+                        }
+
+                    }
+                    $('.receive_postal_rule').html(html);
+                    $('.input_postal_rule2').html(html2);
+                }
+            });
+        });
+        //邮政编码格式-end
+
+        //货物清单-start
+        form.on('select(brand_type)',function(data){
+            let val = data.value;
+            if(val==3 || val==2){
+                $(this).parent().parent().siblings('.brand_name').show();
+                $(this).parent().parent().siblings('.select_brand_name').hide();
+            }else if(val==4){
+                $(this).parent().parent().siblings('.brand_name').hide();
+                $(this).parent().parent().siblings('.select_brand_name').show();
+            }else{
+                $(this).parent().parent().siblings('.brand_name').hide();
+                $(this).parent().parent().siblings('.select_brand_name').hide();
+            }
+        });
+        form.on('select(unit)',function(data){
+            let val = data.value;
+            let unit = document.getElementsByClassName('unit');
+            for(let i=0;i<unit.length;i++){
+                document.getElementsByClassName('unit')[i].value=val;
+            }
+            form.render(null,'component-form-element');
+        });
+        //货物清单-end
+
+        //集运商-start
+        form.on('select(merchant_type)',function(data){
+            let val = data.value;
+            if(val==1){
+                $('.select_merchant').show();
+                $('.input_merchant').hide();
+            }else if(val==2){
+                $('.select_merchant').hide();
+                $('.input_merchant').show();
+            }
+        });
+        form.on('select(merchant_id)',function(data){
+            let val = data.value;
+            let phone = data.elem[data.elem.selectedIndex].title;
+            $('#merchant_phone').val(phone);
+            form.render(null,'component-form-element');
+        });
+        //集运商-end
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+
+            $.ajax({
+                url:"{:Url('centralize/index/save_waybill')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+        form.on('submit(component-form-element3)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            data.field['sure_fee']=1;
+            $.ajax({
+                url:"{:Url('centralize/index/save_waybill')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+        $('.sure').click(function(){
+            layer.close(win_index);
+        });
+    });
+
+    //自定义多选框--start20230915
+    function select_option(name,id){
+        var layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery;
+
+        //查看是否有相同值
+        let val = $('xm-select .xm-select-default').val();
+        if (val.includes(id) == false) {
+            let html = '<div class="xm-label-block" style="background-color: rgb(0, 150, 136);"><span style="width: calc(100% - 20px);">'+name+'</span><i class="xm-iconfont xm-icon-close" data-id="'+id+'"></i></div>';
+            $('xm-select .xm-label .label-content').append(html);
+            if(val.length==0){
+                $('xm-select .xm-select-default').val(id);
+            }else{
+                $('xm-select .xm-select-default').val(val+','+id);
+            }
+        }
+
+        $('.xm-icon-close').click(function(){
+            let val = $('xm-select .xm-select-default').val();
+            let iid = $(this).attr('data-id');
+            val = val.replace(new RegExp(iid+","),"");
+            val = val.replace(new RegExp(iid),"");
+            $('xm-select .xm-select-default').val(val);
+            $(this).parent().remove();
+        });
+        form.render(null,'component-form-element');
+    }
+    function openValue(id,type){
+        var layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery;
+        if(type==1){
+            //打开属性描述
+            layer.open({
+                type: 2,
+                title: '查看详情',
+                area:['50%','50%'],
+                content: "{:Url('admin/basic/view_info')}&id="+id+"&type="+type
+            });
+        }
+    }
+    //自定义多选框--end20230915
+
+    //费用确认管理-start
+    function add_fee(){
+        var layer = layui.layer
+            ,form = layui.form
+            ,$ = layui.jquery;
+        let fee_num = parseInt($('#fee_num').val());
+        fee_num += 1;
+        $('#fee_num').val(fee_num);
+        let html = '<div class="layui-form-item">\n' +
+            '                                                <div class="layui-input-block disf" style="margin-left:0;">\n' +
+            '                                                    <span class="num white_color">'+fee_num+'.</span>\n' +
+            '                                                    <textarea name="fee_desc[]" class="layui-textarea input100" placeholder="描述" style="min-height:38px;line-height: 15px"></textarea>\n' +
+            '                                                </div>\n' +
+            '                                                <div class="layui-input-block disf" style="margin-left:0;">\n' +
+            '                                                    <span class="num white_color"></span>\n' +
+            '                                                    <div class="input35">\n' +
+            '                                                        <select name="fee_currency[]" class="fee_currency" lay-filter="fee_currency">\n';
+                                                                        {volist name="currency" key="key" id="vo"}
+            html+='                                                            <option value="{$vo[\'code_value\']}" title="{$vo[\'code_name\']}" {if $vo["code_value"]==142}selected{/if}>{$vo[\'code_name\']}</option>\n';
+                                                                        {/volist}
+            html+='                                                  </select>\n' +
+            '                                                    </div>\n' +
+            '                                                    <input type="text" class="layui-input input50 fee_money" name="fee_money[]" placeholder="金额" value="" onchange="change_fee(this)">\n' +
+            // '                                                    <div class="layui-btn layui-btn-danger" onclick="del_fee(this)">删除</div>\n'+
+            '                                                </div>\n' +
+            '                                            </div>';
+        $('.fee_box').append(html);
+        form.render(null,'component-form-element');
+    }
+
+    function del_fee(t){
+        var $ = layui.$
+            , form = layui.form
+            , layer = layui.layer;
+    }
+
+    function change_fee(t){
+            var $ = layui.$
+                , form = layui.form
+                , layer = layui.layer;
+            let fee_currency = document.getElementsByClassName('fee_currency');
+
+            let t_currency = $(t).parent().find('.fee_currency option:selected').text();//当前行币种
+            t_currency = t_currency.split(')')[1];
+            let t_currency_code = $(t).parent().find('.fee_currency option:selected').val();//当前行币种
+            let html = '';
+            if(fee_currency.length>1){
+                let now_price = 0;
+                let is_have = 0;
+                for(let i=0;i<fee_currency.length;i++){
+                    if(document.getElementsByClassName('fee_currency')[i].value == t_currency_code){
+                        is_have = 1;
+                        now_price += parseFloat($('.fee_money').eq(i).val());
+                        $('.curr_'+t_currency_code+'_price').val(now_price.toFixed(2));
+                        if($('.curr_'+t_currency_code+'_price').length==0){
+                            is_have = 0;
+                        }
+                    }else{
+                        is_have = 0;
+                        continue;
+                    }
+                }
+                if(is_have==0){
+                    let now_price = parseFloat($(t).val());
+                    now_price = now_price.toFixed(2);
+                    html = '<div class="layui-input-block disf">\n' +
+                        '       <span class="white_color" style="width:60px;white-space: wrap;">'+t_currency+'</span>\n'+
+                        '       <input name="total_fee_currency[]" type="hidden" value="'+t_currency_code+'">\n'+
+                        '       <input class="layui-input input50 curr_'+t_currency_code+'_price" name="total_fee_price[]" value="'+now_price+'" type="number">\n'+
+                        '    </div>';
+                    $('.other_fee_box').append(html);
+                }
+            }else{
+                let now_price = parseFloat($(t).val());
+                now_price = now_price.toFixed(2);
+                html = '<div class="layui-input-block disf">\n' +
+                    '       <span class="white_color" style="width:60px;white-space: wrap;">'+t_currency+'</span>\n'+
+                    '       <input name="total_fee_currency[]" type="hidden" value="'+t_currency_code+'">\n'+
+                    '       <input class="layui-input input50 curr_'+t_currency_code+'_price" name="total_fee_price[]" value="'+now_price+'" type="number">\n'+
+                    '    </div>';
+                $('.other_fee_box').append(html);
+            }
+            form.render(null,'component-form-element');
+        }
+    //费用确认管理-end
+
+    //发件人-start
+    function add_sender(){
+        var layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery;
+            
+        let now_num = parseInt($('#send_address_plus_num').val())-1;
+        let num = parseInt($('#send_address_plus_num').val()) + 1;
+        $('#send_address_plus_num').val(num);
+        
+        let html = '<div class="layui-form-item">\n' +
+            '                                                <label class="layui-form-label">地址'+num+'</label>\n' +
+            '                                                <div class="layui-input-block disf">\n' +
+            '                                                    <input type="text" name="send_address[address2]['+now_num+']" placeholder="请输入地址'+num+'" autocomplete="off" class="layui-input" value="">\n' +
+            '                                                    <div class="layui-btn layui-btn-normal add" onclick="add_sender()">+</div>\n' +
+            '                                                    <div class="layui-btn layui-btn-danger del" onclick="del_sender(this)">-</div>\n' +
+            '                                                </div>\n' +
+            '                                            </div>';
+
+        $('.send_address_plus').append(html);
+        form.render(null,'component-form-element');
+    }
+    function del_sender(t){
+        var layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery;
+        layer.confirm('确认要删除吗？', {
+            btn: ['删除','取消']
+        }, function() {
+            let num = parseInt($('#send_address_plus_num').val()) - 1;
+            $('#send_address_plus_num').val(num);
+
+            $(t).parent().parent().remove();
+            form.render(null, 'component-form-element');
+            layer.closeAll();
+        });
+    }
+    //发件人-end
+
+    //收件人-start
+    function add_receiver(){
+        var layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery;
+        let now_num = parseInt($('#receive_address_plus_num').val()) - 1;
+        let num = parseInt($('#receive_address_plus_num').val()) + 1;
+        $('#receive_address_plus_num').val(num);
+        let html = '<div class="layui-form-item">\n' +
+            '                                                <label class="layui-form-label">地址'+num+'</label>\n' +
+            '                                                <div class="layui-input-block disf">\n' +
+            '                                                    <input type="text" name="receive_address[address2]['+now_num+']" placeholder="请输入地址'+num+'" autocomplete="off" class="layui-input" value="">\n' +
+            '                                                    <div class="layui-btn layui-btn-normal add" onclick="add_receiver()">+</div>\n' +
+            '                                                    <div class="layui-btn layui-btn-danger del" onclick="del_receiver(this)">-</div>\n' +
+            '                                                </div>\n' +
+            '                                            </div>';
+
+        $('.receive_address_plus').append(html);
+        form.render(null,'component-form-element');
+    }
+    function del_receiver(t){
+        var layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery;
+        layer.confirm('确认要删除吗？', {
+            btn: ['删除','取消']
+        }, function() {
+            let num = parseInt($('#receive_address_plus_num').val()) - 1;
+            $('#receive_address_plus_num').val(num);
+
+            $(t).parent().parent().remove();
+            form.render(null, 'component-form-element');
+            layer.closeAll();
+        });
+    }
+    //收件人-end
+
+    //集运商-start
+    function add_warehouse_address(){
+        var layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery;
+        let now_num = parseInt($('#warehouse_address_plus_num').val()) - 1;
+        let num = parseInt($('#warehouse_address_plus_num').val()) + 1;
+        $('#warehouse_address_plus_num').val(num);
+        let html = '<div class="layui-form-item">\n' +
+            '                                                <label class="layui-form-label">地址'+num+'</label>\n' +
+            '                                                <div class="layui-input-block disf">\n' +
+            '                                                    <input type="text" name="warehouse_address[address2]['+now_num+']" placeholder="请输入地址'+num+'" autocomplete="off" class="layui-input" value="">\n' +
+            '                                                    <div class="layui-btn layui-btn-normal add" onclick="add_warehouse_address()">+</div>\n' +
+            '                                                    <div class="layui-btn layui-btn-danger del" onclick="del_warehouse_address(this)">-</div>\n' +
+            '                                                </div>\n' +
+            '                                            </div>';
+
+        $('.warehouse_address_plus').append(html);
+        form.render(null,'component-form-element');
+    }
+    function del_warehouse_address(t){
+        var layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery;
+        layer.confirm('确认要删除吗？', {
+            btn: ['删除','取消']
+        }, function() {
+            let num = parseInt($('#warehouse_address_plus_num').val()) - 1;
+            $('#warehouse_address_plus_num').val(num);
+
+            $(t).parent().parent().remove();
+            form.render(null, 'component-form-element');
+            layer.closeAll();
+        },function(){
+            layer.closeAll();
+        });
+    }
+    //集运商-end
+
+    //物流运单-start
+    function add_express_list(){
+        var layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery;
+        let now_num = parseInt($('#waybill_num').val());    
+        let waybill_num = parseInt($('#waybill_num').val()) + 1;
+        $('#waybill_num').val(waybill_num);
+        let html = '<tr>\n' +
+            '                                                        <td>第'+waybill_num+'段</td>\n' +
+            '                                                        <td>\n' +
+            '                                                            <select name="logistics_waybill[express]['+now_num+']" lay-search>\n' +
+            '                                                                <option>请选择物流商</option>\n';
+                                                                            {volist name="express" id="vo"}
+            html += '                                                                <option value="{$vo[\'id\']}">{$vo[\'param3\']}</option>\n';
+                                                                            {/volist}
+            html += '                                                    </select>\n' +
+            '                                                        </td>\n' +
+            '                                                        <td>\n' +
+            '                                                            <input type="text" name="logistics_waybill[express_no]['+now_num+']" placeholder="物流单号" autocomplete="off" class="layui-input" value="">\n' +
+            '                                                        </td>\n' +
+            '                                                        <td>\n' +
+            '                                                            <div class="layui-btn layui-btn-normal add" onclick="add_express_list()">+</div>\n' +
+            '                                                            <div class="layui-btn layui-btn-danger del" onclick="del_express_list(this)">-</div>\n' +
+            '                                                        </td>\n' +
+            '                                                    </tr>';
+        $('.waybill_tbody').append(html);
+        form.render(null,'component-form-element');
+    }
+    function del_express_list(t){
+        var layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery;
+        layer.confirm('确认要删除吗？', {
+            btn: ['删除','取消']
+        }, function() {
+            let waybill_num = parseInt($('#waybill_num').val()) - 1;
+            $('#waybill_num').val(waybill_num);
+            $(t).parent().parent().remove();
+            form.render(null, 'component-form-element');
+            layer.closeAll();
+        },function(){
+            layer.closeAll();
+        });
+    }
+    //物流运单-end
+
+    //货物清单-start
+    function view_value(t){
+        var layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery;
+        win_index = layer.open({
+            type: 1,
+            title: '查看属性',
+            area:['50%','50%'],
+            content: $(t).siblings('.value_box')
+        });
+    }
+    function del_goods_list(t){
+        var layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery;
+        layer.confirm('确认要删除吗？', {
+            btn: ['删除','取消']
+        }, function() {
+            let goods_list_num = parseInt($('#goods_list_num').val()) - 1;
+            $('#goods_list_num').val(goods_list_num);
+            $(t).parent().parent().remove();
+            form.render(null, 'component-form-element');
+            layer.closeAll();
+        }, function(){
+            layer.closeAll();
+        });
+    }
+    function add_goods_list(){
+        var layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery;
+        let now_num = parseInt($('#goods_list_num').val());
+        let goods_list_num = parseInt($('#goods_list_num').val()) + 1;
+        $('#goods_list_num').val(goods_list_num);
+        let html = '<tr>\n' +
+            '                                                        <td>'+goods_list_num+'</td>\n' +
+            '                                                        <td>\n' +
+            '                                                              <div id="itemid'+goods_list_num+'" class="xm-select-demo"></div>\n'+
+            // '                                                            <select name="goods_list[cate]['+now_num+']" lay-verify="required" lay-search>\n' +
+            // '                                                                <option>请选择类别</option>\n';
+            //                                                                 volist name="category" id="vo"
+            // html += '                                                            <option value="$vo[\'id\']">$vo[\'name\']</option>\n';
+            //                                                                 /volist
+            // html += '                                                     </select>\n' +
+            '                                                        </td>\n' +
+            '                                                        <td>\n' +
+            '                                                            <div id="valueid'+goods_list_num+'" class="xm-select-demo"></div>\n'+
+            // '                                                            <div class="layui-btn layui-btn-normal" onclick="view_value(this)">选择属性</div>\n' +
+            // '                                                            <div class="value_box" style="display: none;padding:15px 20px 15px 0;box-sizing: border-box;">\n' +
+            // '                                                                <div class="layui-form-item">\n' +
+            // '                                                                    <div class="layui-form-label">选择属性</div>\n' +
+            // '                                                                    <div class="layui-input-block">\n' +
+            // '                                                                        <div id="value'+goods_list_num+'" class="xm-select-demo"></div>\n' +
+            // '                                                                    </div>\n' +
+            // '                                                                </div>\n' +
+            // '                                                                <hr>\n' +
+            // '                                                                <div class="value_box_box'+goods_list_num+'">\n' +
+            // '                                                                </div>\n' +
+            // '                                                                <div class="layui-btn layui-btn-normal sure" style="margin-left:50px;">确定</div>\n' +
+            // '                                                            </div>\n' +
+            '                                                        </td>\n' +
+            '                                                        <td>\n' +
+            '                                                            <input type="text" name="goods_list[desc]['+now_num+']" placeholder="描述" autocomplete="off" class="layui-input" value="">\n' +
+            '                                                        </td>\n' +
+            '                                                        <td>\n' +
+            '                                                            <select name="goods_list[brand_type]['+now_num+']" lay-filter="brand_type">\n' +
+            '                                                                <option value="1">无牌（无商标信息）</option>\n' +
+            '                                                                <option value="2">仿牌（商品无注册）</option>\n' +
+            '                                                                <option value="3">普通品牌（有注册非知名）</option>\n' +
+            '                                                                <option value="4">奢侈品牌（有注册且知名）</option>\n' +
+            '                                                            </select>\n' +
+            '                                                            <input type="text" class="layui-input brand_name" name="goods_list[brand_name]['+now_num+']" placeholder="品牌名称" style="display:none;margin:10px 0;">\n' +
+            '                                                            <div class="select_brand_name" style="display: none;">\n' +
+            '                                                                <select name="goods_list[brand_name2]['+now_num+']" id="select_brand_name" lay-filter="brand_name" lay-search>\n' +
+            '                                                                    <option value="">请选择品牌名称</option>\n';
+                                                                                {volist name="brand" id="v"}
+            html += '                                                                 <option value="{$v[\'param1\']}">{$v[\'param1\']}</option>\n';
+                                                                                {/volist}
+            html += '                                                        </select>\n' +
+            '                                                            </div>\n' +
+            '                                                        </td>\n' +
+            '                                                        <td>\n' +
+            '                                                            <input type="text" name="goods_list[num]['+now_num+']" placeholder="数量" autocomplete="off" class="layui-input" value="">\n' +
+            '                                                        </td>\n' +
+            '                                                        <td>\n' +
+            '                                                            <select name="goods_list[unit]['+now_num+']" lay-search>\n' +
+            '                                                                <option>请选择单位</option>\n';
+                                                                            {volist name="unit" id="vo"}
+            html += '                                                             <option value="{$vo[\'code_value\']}">{$vo[\'code_name\']}</option>\n';
+                                                                            {/volist}
+            html += '                                                     </select>\n' +
+            '                                                        </td>\n' +
+            '                                                        <td class="disf">\n' +
+            '                                                            <div class="layui-btn layui-btn-normal add" onclick="add_goods_list()">+</div>\n' +
+            '                                                            <div class="layui-btn layui-btn-danger del" onclick="del_goods_list(this)">-</div>\n' +
+            '                                                        </td>\n' +
+            '                                                    </tr>';
+
+        $('.goods_list_tbody').append(html);
+        let value_num = parseInt(goods_list_num) - 1;
+        xmSelect.render({
+            el: '#itemid'+goods_list_num,
+            autoRow: true, //自动换行
+            filterable: true, //可搜索
+            searchTips: '请搜索',
+            radio: true,
+            name: "goods_list[itemid]["+value_num+"]",
+            model: {
+                icon: 'hidden',//是否展示复选框或者单选框图标 show, hidden:变换背景色  ！！这句话是重点，不然会变成父节点也有单选框！！
+            },
+            prop:{
+                name: 'name',
+                value: 'id',
+            },
+            tree: {
+                show: true, //用树显示
+                showFolderIcon: true, //是否显示节点前的三角图标
+                expandedKeys: false, //默认全部展开
+                showLine: true, //显示渐近线
+                indent: 20, //间距
+                strict: false, //重点！！设置成非严格父子模式，这样父节点被禁用，子节点依然可以点击
+                clickCheck: true,
+                vaguaSearch:0,//关闭模糊搜索
+            },
+            toolbar: {
+                show: false, //显示工具条
+                list: ['ALL', 'REVERSE', 'CLEAR']
+            },
+            height: '300px', //最大下拉框高度
+            data: {$goods_item},
+        });
+        //货物属性
+        valueid = xmSelect.render({
+            el: '#valueid'+goods_list_num,
+            autoRow: true, //自动换行
+            filterable: true, //可搜索
+            searchTips: '请搜索',
+            radio: false,
+            name: "goods_list[valueid]["+value_num+"]",
+            model: {
+                icon: 'hidden',//是否展示复选框或者单选框图标 show, hidden:变换背景色  ！！这句话是重点，不然会变成父节点也有单选框！！
+            },
+            tree: {
+                show: true, //用树显示
+                showFolderIcon: true, //是否显示节点前的三角图标
+                expandedKeys: true, //默认全部展开
+                showLine: true, //显示渐近线
+                indent: 20, //间距
+                strict: false, //重点！！设置成非严格父子模式，这样父节点被禁用，子节点依然可以点击
+                clickCheck: true,
+                vaguaSearch: 1,//开启模糊搜索
+                nowElement: 'valueid'+goods_list_num
+            },
+            toolbar: {
+                show: false, //显示工具条
+                list: ['ALL', 'REVERSE', 'CLEAR']
+            },
+            height: '300px', //最大下拉框高度
+            data: {$value},
+            layVerify: 'required',
+        });
+        // xmSelect.render({
+        //     el: '#valueid'+goods_list_num,
+        //     paging: true,
+        //     pageSize: 5,
+        //     height:300,
+        //     filterable: true,
+        //     prop: {
+        //         name: 'name',
+        //         value: 'id',
+        //     },
+        //     autoRow: true,
+        //     data: {$value},
+        //     name: "goods_list[valueid]["+value_num+"]",
+        //     layVerify: 'required',
+        //     layVerType: 'msg',
+        //     on:function(data){
+        //         let name = data.change[0]['name'];
+        //         let id = data.change[0]['id'];
+        //         if(data.isAdd==true){
+        //             let html = '<div class="layui-form-item value_box'+id+'">\n' +
+        //                 '                                        <div class="layui-form-label">'+name+'</div>\n' +
+        //                 '                                        <div class="layui-input-block">\n' +
+        //                 '                                            <input type="text" name="goods_list[value_desc]['+value_num+'][]" class="layui-input" placeholder="该属性描述" value="">\n'+
+        //                 '                                        </div>\n' +
+        //                 '                                    </div>';
+        //
+        //             $('.value_box_box'+goods_list_num).append(html);
+        //         }else{
+        //             $('.value_box'+id).remove();
+        //         }
+        //         form.render(null,'component-form-element');
+        //     }
+        // });
+        $('.sure').click(function(){
+            layer.close(win_index);
+        });
+        form.render(null,'component-form-element');
+    }
+    //货物清单-end
+
+
+</script>
+</body>
+</html>

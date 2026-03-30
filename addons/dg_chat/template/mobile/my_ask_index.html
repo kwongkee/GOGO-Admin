@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>{if $is_myindex==true}我的分答{else}向{$db_user['nickname']}提问{/if}</title>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<meta name="format-detection" content="address=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<script src="//cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+<link rel="stylesheet" href="{TEMPLATE_PATH}/wtCommon.css?v={php echo time();}">
+<link rel="stylesheet" href="{TEMPLATE_PATH}/live.css?v={php echo time();}">
+<link rel="stylesheet" href="{TEMPLATE_PATH}/whisper.css?v={php echo time();}">
+<script src="//cdn.bootcss.com/json2/20150503/json2.min.js"></script>
+<script src="{TEMPLATE_PATH}/js/template.js"></script>
+{php echo register_jssdk();}
+<script type="text/javascript">
+var globalObj=new Object();
+var pindex=1;
+var hasQuestion={$total};
+var is_myindex={$is_myindex};
+var answer_url="{php echo $this->createMobileUrl('ask_answer')}";
+var ask_detailurl="{php echo $this->createMobileUrl('ask_detail')}";
+var head_imgurl='{$head_imgurl}';
+var send_url="{php echo $this->createMobileUrl('my_ask_sendnotice')}";
+function QuestionBind(){
+	$(".whisper_question").unbind();
+	$(".whisper_question").click(function(){
+		var url=$(this).attr('attr-href');
+		location.href=url;
+	});
+}
+
+/*声音播放完毕事件*/
+function voicePlayOver(){
+	if(globalObj.voicePlaying){
+		globalObj.voicePlaying.removeClass("isWhisperPlay");
+		globalObj.isPlaying=false;
+	}
+}
+/*声音播放事件*/
+function voicePlay(){
+	$(".audio_box").click(function(){
+		$(".audio_box ").removeClass("isWhisperPlay");
+		var recordVoice=$(this).children("i");
+		var recordMsg=$(this);
+		var voice_str=recordVoice.attr('attr-src');
+		if(voice_str=='pay'){
+		   var ask_id=recordMsg.attr('attr-id');
+		   //设置当前支付的问答信息
+		   globalObj.recordPay=recordMsg;
+		   $.getJSON(location.href, {submit: true,ask_type:'public',ask_id:ask_id,pay_type:'listen'}, function(json){
+				  callpay(json,'listen');
+		   });
+		   return;
+		}
+		
+		if(voice_str.indexOf('http')==0){
+ 		  	var media = $('#dgAudioPlayer')[0];
+ 		  	if($("#dgAudioPlayer").attr('src')!=voice_str)
+ 		  	   $("#dgAudioPlayer").attr('src',voice_str);
+ 		  	if(media.paused) { 
+ 		  		media.play();
+ 		  		recordMsg.addClass("isWhisperPlay");
+ 		  		globalObj.isPlaying=true;
+ 		    } else {  
+ 		    	media.pause(); 
+ 		    	recordMsg.removeClass('isWhisperPlay')
+ 		    }
+ 		  	globalObj.voicePlaying=recordMsg;
+
+ 		  	media.removeEventListener("ended",voicePlayOver,false);
+		  	media.addEventListener("ended",voicePlayOver,false);
+		  	return;
+		}
+		
+		if(recordVoice.attr("localid")){
+		    var localId=recordVoice.attr("localid");
+		    if($(this).hasClass('isWhisperPlay')){
+		    	wx.pauseVoice({
+		    	    localId: localId // 需要暂停的音频的本地ID，由stopRecord接口获得
+		    	});
+		    	$(this).removeClass('isWhisperPlay')
+		    }else{
+		    	wx.playVoice({
+		    	    localId: localId // 需要播放的音频的本地ID，由stopRecord接口获得
+		    	});
+		    	$(this).addClass("isWhisperPlay");
+		    	wx.onVoicePlayEnd({
+		    	    success: function (res) {
+		    	    	recordMsg.removeClass("isWhisperPlay");
+		    	    }
+		    	});
+		    }
+		    return;	 
+		 }
+		
+		  wx.downloadVoice({
+			    serverId: recordVoice.attr('attr-src'), // 需要下载的音频的服务器端ID，由uploadVoice接口获得
+			    isShowProgressTips: 0, // 默认为1，显示进度提示
+			    success: function (res) {
+			        var localId = res.localId; // 返回音频的本地ID
+			        recordMsg.addClass("isWhisperPlay");
+			        recordVoice.attr('localid',localId);
+			        wx.playVoice({
+			            localId: localId // 需要播放的音频的本地ID，由stopRecord接口获得
+			        });
+			        wx.onVoicePlayEnd({
+			    	    success: function (res) {
+			    	    	recordMsg.removeClass("isWhisperPlay");
+			    	    }
+			    	});
+			    }
+			});  
+	  });
+}
+
+/*微信支付开始*/
+function jsApiCall(parameters,pay_type){
+	var jsdata=JSON.parse(parameters.jsdata);
+		WeixinJSBridge.invoke(
+		    'getBrandWCPayRequest',
+			jsdata,
+			function(res){
+				WeixinJSBridge.log(res.err_msg);
+				if(res.err_msg == "get_brand_wcpay_request:ok") {
+					if(pay_type=='ask'){
+					  $(".qlws_as_text").val('');
+					  $.post(send_url,{ask_id:parameters.ask_id,notice_type:'ask'},function(result){
+						  location.href=location.href+"&a=1";//刷新页面
+					  });
+					 					  
+					}else{
+						var ask_id=globalObj.recordPay.attr('attr-id');
+						$.post(location.href,{'mdo':"getanswer",ask_id:ask_id,pindex:1},function(result){
+							var html=getHtml(result);
+							var obj=globalObj.recordPay.parents("dd");
+							obj.replaceWith(html);
+							voicePlay();
+						});
+					}
+               } else if(res.err_msg == "get_brand_wcpay_request:cancel"){
+                   //alert("已取消赞赏!");
+               }else{
+               	  alert(res.err_msg);
+               }
+			}
+		);
+}
+
+function callpay(parameters,pay_type){
+	if (typeof WeixinJSBridge == "undefined"){
+		    if( document.addEventListener ){
+		        document.addEventListener('WeixinJSBridgeReady', jsApiCall, false);
+		    }else if (document.attachEvent){
+		        document.attachEvent('WeixinJSBridgeReady', jsApiCall); 
+		        document.attachEvent('onWeixinJSBridgeReady', jsApiCall);
+		    }
+		}else{
+		    jsApiCall(parameters,pay_type);
+	}
+}	
+/*微信支付结束*/
+
+function pageLoadCommon(a, b) {
+	a.scroll(function() {
+		distanceScrollCount = a[0].scrollHeight;
+		distanceScroll = a[0].scrollTop;
+		topicPageHight = a.height();
+		1 > distanceScrollCount - distanceScroll - topicPageHight && b()
+	})
+}
+
+/*当前分答状态*/
+var is_openask={$db_user['is_openask']};
+$(function(){
+	voicePlay();
+	$(".ask_qlbgb").click(function(){
+		if(is_openask==-1){
+			alert('您的分答已经被系统禁用!');
+			return;
+		}
+		var url=$(this).attr('attr-href');
+		location.href=url;
+	});
+	if(hasQuestion==0){
+		$(".no_ws_question").show();
+	}
+	pageLoadCommon($("#whisperIndex_ask"), function() {
+		$(".page_loading_box").show();
+		$("#loadNone_None").hide();
+		pindex++;
+		$.post(location.href, {pindex: pindex}, function(result){
+			$(".page_loading_box").hide();
+			result.head_imgurl=head_imgurl;
+			if(result.pages<pindex){
+				$("#loadNone_None").show();
+				return false;
+			}
+			pindex=result.pindex;
+			
+			var html=getHtml(result);
+			$(".allWhisperList_ask").append(html);
+			$(".no_ws_question").hide();
+			voicePlay();
+			QuestionBind();
+		});		
+    });
+    
+    $(".btn_qlcheckbox").click(function(){
+		 $(this).toggleClass('on');
+	});
+	 
+      /*付费页面*/
+	  $(".qlbtnb_submit_ask").unbind();
+	  $(".qlbtnb_submit_ask").click(function(){
+         var ask_type=$(".btn_qlcheckbox").hasClass('on')?"public":"private";
+         var ask_content=$('.qlws_as_text').val();
+         if(ask_content==''){
+       	   alert('请输入需要提问 的问题!');
+       	   return false;
+         }
+         
+		 $.getJSON(location.href, { submit: true,ask_type:ask_type,ask_content:ask_content,pay_type:'ask'}, function(json){
+			  callpay(json,'ask');
+		 });
+		  
+	  });
+	  
+	  QuestionBind();
+	  
+	  $(".menu_expland").click(function(){
+		  $(".popBox").show();
+	  });
+	  $(".btn_cancel").click(function(){
+		  $(".popBox").hide();
+	  });
+});
+
+
+function getHtml(result){
+	var last_html="";
+	for(var qindex in result.list){
+		var html='<dd class="wl_msg_item">';
+		html+='<div class="wl_top_wkBox">';
+			html+='<span class="wl_top_boxFl">';
+			html+='<i class="uesr_head">';
+			html+='<img src="'+result.list[qindex].pay_avatar+'">';
+			html+='</i>';
+			html+='<b>'+result.list[qindex].pay_nickname+'</b>';
+			html+='</span>';
+			html+='<span class="wl_price">¥<var>'+result.list[qindex].pay_money+'</var></span>';
+			html+='</div>';
+			html+='<div class="whisper_question" attr-href="'+ask_detailurl+'&ask_id='+result.list[qindex].id+'">';
+			html+=result.list[qindex].ask_content;
+			html+='</div>';
+
+			if(result.list[qindex].answer){
+				html+='<div class="whisper_answer" attr-id="'+result.list[qindex].id+'">';
+				var temp_index=1;
+				for(var aindex in result.list[qindex].answer){
+					html+='<ul class="whisper_answer_wkBox">';
+					html+='<li class="uesr_head">';
+					html+='<img src="'+head_imgurl+'">';
+					html+='</li>';
+					html+='<li class="wl_answer_boxFl">';
+					html+='<div class="audio_box">';
+					if(result.list[qindex].show==true)
+					  html+='<i attr-src="'+result.list[qindex].answer[aindex].answer_content+'" class="ico_audio"></i><p>点击播放</p>';
+					else
+					  html+='<i attr-src="pay" class="ico_audio"></i><p>1元旁听</p>';
+						
+					html+='<b class="second">'+result.list[qindex].answer[aindex].time_last+'"</b><a class="audio_box_play" href="javascript:;"></a>';
+					html+='</div>';
+					html+='</li>';
+					if(temp_index==result.list[qindex].answer.length)
+					   html+='<li class="listened_total">0人旁听</li>';
+					html+='</ul>';
+					temp_index++;
+				}
+				html+='</div>';	
+			}
+				else{
+					html+='<div class="answer_box">';
+					if(is_myindex){
+					html+='<a class="wt_btn_answer" href="'+answer_url+'&ask_id='+result.list[qindex].id+'">回答</a>';
+					html+='<b class="whisper_tips_1">48小时没有回答，付款将自动退回</b>';
+					}else{
+					   html+='<b class="whisper_tips_1">暂无回答~</b>';
+					}
+					html+='</div>';
+				}
+			html+='</dd>';
+			last_html=html+last_html;
+	}
+	return last_html;
+}
+</script>
+</head>
+
+<body class="bind">
+
+<div class="main_box_4" id="whisperIndex_ask" style="bottom:6rem;">
+	<audio id="dgAudioPlayer" >Your browser does not support the audio element.您的浏览器不支持 audio 标签。</audio>
+	<div class="qlws_answer shareAskPage">
+		<ul class="ul_1">
+			<li class="li_1 AskPage_img"><img class="shareAskPage_img" src="{$head_imgurl}" alt="picture">
+			</li>
+			<li class="li_2 askToHim">{$db_user['real_name']}</li>
+			<li class="li_3">{$db_user['user_title']}</li>
+			<li class="li_5">向我提问需要支付 <span>{$db_user['pay_money']}元</span></li>
+			<li class="li_4">{$db_user['user_desc']}</li>
+		</ul>
+		{if $is_myindex}
+		  <a class="ask_a ask_qlbgb" href="javascript:"  attr-href="{php echo $this->createMobileUrl('my_ask_info')}">编辑</a>
+	    {/if}
+	    {if $is_myindex==false && $db_user['is_openask']==1}
+	    <span class="qlws_as_text_box"><textarea class="qlws_as_text" placeholder="向{$db_user['real_name']}提问，等Ta语音回答"></textarea></span>
+		<span class="set_ask_private"><i class="btn_qlcheckbox"> 公开提问，答案被其他人旁听后，你从中分成¥0.5</i></span>
+		<span class="ask_price">￥<var>{$db_user['pay_money']}</var></span>
+		<a class="qlbtnb_submit_ask" href="javascript:;">写好了</a>
+		{/if}
+	</div>
+	
+	{if !$records}
+	  <div class="no_ws_question">
+			<div class="whisper_tips_2">暂无提问内容</div>
+	  </div>
+	{/if}
+	
+	<dl class="whisper_list allWhisperList_ask">
+	
+    {loop $records $record}
+		<dd class="wl_msg_item">
+			<div class="wl_top_wkBox">
+				<span class="wl_top_boxFl">
+					<i class="uesr_head">
+						<img src="{$record['pay_avatar']}">
+					</i>
+					<b>{$record['pay_nickname']}</b>
+				</span>
+				<span class="wl_price">¥<var>{$record['pay_money']}</var></span>
+			</div>
+			<div class="whisper_question" attr-href="{php echo $this->createMobileUrl('ask_detail',array('ask_id'=>$record['id']))}">
+				{$record['ask_content']}
+			</div>
+			{if !$record['answer']}
+			   {if $is_myindex==true}
+				<div class="answer_box">
+							<a class="wt_btn_answer" href="{php echo $this->createMobileUrl('ask_answer',array('ask_id'=>$record['id']))}">回答</a>
+							<b class="whisper_tips_1">48小时没有回答，付款将自动退回</b>
+				</div>
+				{else}
+				<div class="answer_box">
+						<b class="whisper_tips_1">暂无回答~</b>
+				</div>
+			 {/if}
+			{else}
+			 
+			 <div class="whisper_answer">
+				{loop $record['answer'] $index $answer}
+				<ul class="whisper_answer_wkBox">
+					<li class="uesr_head">
+						<img src="{$head_imgurl}">
+					</li>
+					<li class="wl_answer_boxFl">
+						<div class="audio_box" attr-id="{$record['id']}">
+						{if $record['show']==true}
+							<i attr-src="{$answer['answer_content']}" class="ico_audio"></i>
+							<p>点击播放</p>
+						{else}
+						     <i attr-src="pay" class="ico_audio"></i>
+							 <p>1元旁听</p>
+						{/if}	
+							<b class="second">{$answer['time_last']}"</b><a class="audio_box_play" href="javascript:;"></a>
+						</div>
+					</li>
+					{if count($record['answer'])==$index+1}
+					 <li class="listened_total">{$record['paycount']}人旁听</li>
+					{/if}
+				</ul>
+				{/loop}	
+				</div>
+			{/if}	
+		</dd>
+	{/loop}	
+
+</dl>
+
+	<ul class="loadStBox">
+		<li class="box_nothing" id="loadNone_None">
+			<span class="tips_1">没有更多内容了</span>
+		</li>
+		<li id="pageLoadBox_Box"></li>
+		<li class="page_loading_box" style="display: none;">正在加载中...</li>
+	</ul>
+
+</div>
+
+<div class="menu_wkBox">
+	<a href="{php echo $this->createMobileUrl('my_chat')}" class="menu_boxFl menu_back">返回我的主页</a>
+	<a href="javascript:;" class="menu_boxFl menu_expland">推广本页面</a>
+</div>
+
+<div class="popBox" style="display: none;"><b class="pop_bg"></b><div class="main"><div class="pop_content"><span><ul class="menu_expland_ul"><li>1.微信客户端打开 点击页面右上角 <i class="menu_expland_i4"></i>，选择<b>“转发给好友”</b></li><li>2.用浏览器端打开<b> “复制链接”</b>发送给朋友</li></ul></span></div><div class="pop_bottom"><span><a href="javascript:;" class="pop_btn btn_cancel">关闭</a></span></div></div></div>
+<script type="text/javascript">
+wx.ready(function () {
+    sharedata = {
+        title: "{$sharedata['title']}",
+        desc: "{$sharedata['desc']}",
+        link: "{$sharedata['link']}",
+        imgUrl: "{$sharedata['imgUrl']}",
+        success:function(){
+        	//ajax
+        }
+    };
+    wx.onMenuShareAppMessage(sharedata);
+    wx.onMenuShareTimeline(sharedata);
+});
+</script>
+</body></html>

@@ -1,0 +1,388 @@
+{template 'header'}
+<style type="text/css">
+	.ui-list-thumb-s {
+		width: 40px;
+		height:40px;
+		margin: 0px;
+	}
+	.ui-row-flex {
+		padding-top: 5px;
+	}
+	body {
+		background-color:rgb(230,230,230);
+	}
+
+	.ui-whitespace {
+		padding-bottom: 10px;
+	}
+</style>
+<div class="ui-container">
+	<div id="chat_window" style="font-size:14px;">
+
+	</div>
+	<div style="height:60px;" id='bottom_sign'>
+	</div>
+</div>
+<!-- 聊天框 -->
+<div class="ui-input-wrap ui-border-t"  style="position:fixed;bottom:0px;width:100%">
+	<div style="width:45px;height:50px;line-height:55px;text-align:center" id="chat_tools_btn">
+		<div class="fa fa-plus" style="font-size:18px;" ></div>
+	</div>
+    <div class="ui-input ui-border-radius">
+        <input type="text" id='chat_message' value="" placeholder="按这里输入文字">
+    </div>
+    <button class="ui-btn ui-btn-chat" onclick="Chat.sendText()">发送</button>
+</div>
+<div id="chat_tools_layer" style="height:200px;background-color:rgb(249, 249, 247);position:fixed;bottom:0px;width:100%;display:none;">
+<ul style="width:100%;list-style:none;">
+	<li style="float:left;height:75px;width:75px;border:1px solid #c1c1c3;margin:10px;border-radius:5px;text-align:center;line-height:80px;" onclick="Chat.sendAlbum()">
+		<span class="fa fa-camera" style="color:#c1c1c3;font-size:30px;"></span>
+	</li>
+</ul>
+</div>
+
+<script type="text/javascript">
+
+	// 聊天实现
+	var Chat = (function() {
+		var history_lock = false;
+		var chat_openid = '{php echo $chat_openid}';
+		var isCanSend = true;
+		var logid = 0;
+		var images = {
+			localId: [],
+			serverId: [],
+			count:3
+		};
+		var albumslist = [];
+
+		// 文本
+		var sendText = function() {
+
+			if(!isCanSend) {
+				return false;
+			}
+			handleText();
+		}
+
+		// 图片
+		var sendAlbum =  function() {
+
+			$("#chat_message").blur();
+			if($("#chat_tools_layer").css("display") == 'none') {
+				$("#chat_tools_layer").show();
+				$("#chat_message_wrap").css('bottom','200px');
+			}else {
+				$("#chat_message_wrap").css('bottom','0px');
+				$("#chat_tools_layer").hide();
+			}
+
+			wx.chooseImage({
+				count: images.count, // 默认1
+				sizeType: ['compressed'], // 可以指定是原图还是压缩图，默认二者都有
+				sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+				success: function (res) {
+					images.localId = res.localIds;
+					
+					for(var i in res.localIds) {
+						albumslist.push(res.localIds[i]);
+						handleAlbum(res.localIds[i]);
+					}
+					if(images.localId.length == 0) {
+						alert("请上传图片");
+						return;
+					}
+					var i = 0, length = images.localId.length;
+					images.serverId = [];
+					function upload() {
+						wx.uploadImage({
+							localId: images.localId[i],
+							success: function (res) {
+								i++;
+								images.serverId.push(res.serverId);
+								if (i < length) {
+									upload();
+								}
+								else
+								{
+									var media_ids = images.serverId.join(',')
+									sendAjax('album',media_ids);
+								}
+							},
+							fail: function (res) {
+								alert(JSON.stringify(res));
+							}
+						});
+					}
+					upload();
+				}
+			});
+			
+		};
+
+		var sendAjax = function(type,message) {
+			$.ajax({
+				type:'post',
+				url:'{php echo $this->createMobileUrl('chatsend')}',
+				data:{chat_openid:chat_openid,chat_message:message,type:type},
+				success:function(d) {
+					if(d.res == '100') {
+						
+					}else if(d.res == '101') {
+						var html = '<div class="ui-tips ui-tips-warn">';
+						html += '<i></i><span>'+d.msg+'</span>';
+						html += '</div>';
+						isCanSend = false;
+						$(".ui-container").prepend(html);
+					}else{
+						// $('#chat_message').val(message);
+						alert(d.msg);
+					}
+				}
+			})
+			// 滚动到底部
+			scrollbottom();
+		}
+
+		var handleText = function() {
+			var message = $('#chat_message').val();
+			$("#chat_message").val('');
+			if(!message) {
+				alert('消息不能为空');
+			}
+			//  将内容直接进行写入到html
+			var html = '';
+			html += '<div class="ui-row-flex ui-whitespace">';
+			html += '<div class="ui-col  ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-end" style="width:70%;">';
+			html += '<div style="color:grey"> </div>';
+			html += '<div style="border-radius:3px;background-color:#a0e75a;line-height:20px;padding:10px;word-break:break-all;">';
+			html += message.replace(/<\/?[^>]*>/g,''); //去除HTML tag
+			html += '</div>';
+			html += '</div>';
+			html += '<div class="ui-col ui-col ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-end">';
+			html += '<div class="ui-list-thumb-s" onclick="jumpToSelf()">';
+			html += '<span style="background-image:url({php echo $userinfo['headimgurl']});border-radius:3px;"></span>';
+			html += '</div>';
+			html += '</div>';
+			html += '</div>';
+			$('#chat_window').append(html);
+			scrollbottom();
+
+			sendAjax('text',message);
+		}
+
+		var handleAlbum = function(url) {
+			//  将内容直接进行写入到html
+			var html = '';
+			html += '<div class="ui-row-flex ui-whitespace">';
+			html += '<div class="ui-col  ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-end" style="width:70%;">';
+			html += '<div style="color:grey"> </div>';
+			html += '<div style="border-radius:3px;background-color:#a0e75a;line-height:20px;padding:10px;word-break:break-all;">';
+			html += '<img src="'+url+'" style="height:100px;width:80px;border-radius:3px;"  onclick="Chat.previewAlbum(\''+url+'\')">'; //图片
+			html += '</div>';
+			html += '</div>';
+			html += '<div class="ui-col ui-col ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-end">';
+			html += '<div class="ui-list-thumb-s" onclick="jumpToSelf()">';
+			html += '<span style="background-image:url({php echo $userinfo['headimgurl']});border-radius:3px;"></span>';
+			html += '</div>';
+			html += '</div>';
+			html += '</div>';
+			$('#chat_window').append(html);
+			scrollbottom();
+		}
+		// 获取消息
+		var get = function () {
+
+			$.ajax({
+				type:'post',
+				url:'{php echo $this->createMobileUrl('chatget')}',
+				data:{chat_openid:chat_openid},
+				success:function(d) {
+					if(d.res == '100') {
+						var html = '';
+						for(var i in d.list) {
+							if(d.list[i].send_type=='self') {
+								// 跳过输出
+								continue;
+								html += '<div class="ui-row-flex ui-whitespace">';
+								html += '<div class="ui-col  ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-end" style="width:70%;">';
+								html += '<div style="color:grey"> </div>';
+								html += '<div style="border-radius:3px;background-color:#a0e75a;line-height:20px;padding:10px;word-break:break-all;">';
+								if(d.list[i].type == 'text') {
+									html += d.list[i].chat_message;	
+								}else if(d.list[i].type == 'album') {
+									html += '<img src="'+d.list[i].chat_message+'" style="height:100px;width:80px;border-radius:3px;"  onclick="Chat.previewAlbum(\''+d.list[i].chat_message+'\')">'; //图片
+									albumslist.push(d.list[i].chat_message);
+								}
+								
+								html += '</div>';
+								html += '</div>';
+								html += '<div class="ui-col ui-col ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-end">';
+								html += '<div class="ui-list-thumb-s" onclick="jumpToSelf()">';
+								html += '<span style="background-image:url('+d.list[i].userinfo.headimgurl+');border-radius:3px;"></span>';
+								html += '</div>';
+								html += '</div>';
+								html += '</div>';
+							} else {
+								html += '<div style="color:grey;font-size:10px;padding-left:12px;">'+d.list[i].userinfo.nickname+'&nbsp;&nbsp;'+d.list[i].add_time+'</div>';
+								html += '<div class="ui-row-flex ui-whitespace">';
+								html += '<div class="ui-col ui-col ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-start">';
+								html += '<div class="ui-list-thumb-s" onclick="jumpToDetail(\''+d.list[i].openid+'\')">';
+								html += '<span style="background-image:url({php echo $to_user_info['headimgurl']});border-radius:3px;"></span>';
+								html += '</div>';
+								html += '</div>';
+								html += '<div class="ui-col  ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-start" style="width:70%;">';
+								
+								html += '<div style="border-radius:3px;background-color:white;line-height:20px;padding:10px;word-break:break-all;">';
+								if(d.list[i].type == 'text') {
+									html += d.list[i].chat_message;	
+								}else if(d.list[i].type == 'album') {
+									html += '<img src="'+d.list[i].chat_message+'" style="height:100px;width:80px;border-radius:3px;" onclick="Chat.previewAlbum(\''+d.list[i].chat_message+'\')">'; //图片
+									albumslist.push(d.list[i].chat_message);
+								}
+								html += '</div>';
+								html += '</div>';
+								html += '</div>';
+							}
+						}
+						$('#chat_window').append(html);
+						scrollbottom();
+						logid = d.logid;
+					}
+					else
+					{
+						// alert(d.msg);
+					}
+
+					setTimeout('Chat.get()', 2000);
+				}
+			})
+		}
+
+		// 获取消息
+		var get_history = (function () {
+			$.ajax({
+				type:'post',
+				url:'{php echo $this->createMobileUrl('chathistory')}',
+				data:{chat_openid:chat_openid},
+				success:function(d) {
+					if(d.res == '100') {
+						var html = '';
+						for(var i in d.list) {
+							if(d.list[i].send_type=='self') {
+								html += '<div class="ui-row-flex ui-whitespace">';
+								html += '<div class="ui-col  ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-end" style="width:70%;">';
+								html += '<div style="color:grey"> </div>';
+								html += '<div style="border-radius:3px;background-color:#a0e75a;border-color:#83d45a;line-height:20px;padding:10px;word-break:break-all;">';
+								// html += message.replace(/<\/?[^>]*>/g,''); //去除HTML tag
+								if(d.list[i].type == 'text') {
+									html += d.list[i].chat_message;	
+								}else if(d.list[i].type == 'album') {
+									html += '<img src="'+d.list[i].chat_message+'" style="height:100px;width:80px;border-radius:3px;"  onclick="Chat.previewAlbum(\''+d.list[i].chat_message+'\')">'; //图片
+									albumslist.push(d.list[i].chat_message);
+								}
+								html += '</div>';
+								html += '</div>';
+								html += '<div class="ui-col ui-col ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-end">';
+								html += '<div class="ui-list-thumb-s" onclick="jumpToSelf()">';
+								html += '<span style="background-image:url({$user_info['headimgurl']});border-radius:3px;"></span>';
+								html += '</div>';
+								html += '</div>';
+								html += '</div>';
+							} else {
+								html += '<div style="color:grey;font-size:10px;padding-left:12px;">'+d.list[i].userinfo.nickname+'&nbsp;&nbsp;'+d.list[i].add_time+'</div>';
+								html += '<div class="ui-row-flex ui-whitespace">';
+								html += '<div class="ui-col ui-col ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-start">';
+								html += '<div class="ui-list-thumb-s" onclick="jumpToDetail(\''+d.list[i].openid+'\')">';
+								html += '<span style="background-image:url({php echo $to_user_info['headimgurl']});border-radius:3px;"></span>';
+								html += '</div>';
+								html += '</div>';
+								html += '<div class="ui-col  ui-flex ui-flex-ver ui-flex-pack-start ui-flex-align-start" style="width:70%;">';
+								// html += '<div style="color:grey">'+d.list[i].add_time+'</div>';
+								html += '<div style="border-radius:3px;background-color:white;line-height:20px;padding:10px;word-break:break-all;">';
+								if(d.list[i].type == 'text') {
+									html += d.list[i].chat_message;	
+								}else if(d.list[i].type == 'album') {
+									html += '<img src="'+d.list[i].chat_message+'" style="height:100px;width:80px;border-radius:3px;"  onclick="Chat.previewAlbum(\''+d.list[i].chat_message+'\')">'; //图片
+									albumslist.push(d.list[i].chat_message);
+								}
+								html += '</div>';
+								html += '</div>';
+								html += '</div>';
+							}
+						}
+						$('#chat_window').append(html);
+					}
+					else
+					{
+						// alert(d.msg);
+					}
+					// 赋值logid
+					logid = d.logid;
+					scrollbottom();
+
+					get();
+					history_lock = true;
+				}
+			})
+		}())
+
+		// 页面重定位
+		var scrollbottom = function() {
+			var bot = document.getElementById('bottom_sign');
+			bot.scrollIntoView();
+		}
+
+		var  previewAlbum = function(url) {
+			wx.previewImage({
+				current:url,
+				 urls:albumslist
+			})
+		}
+
+		return {
+			sendText:sendText,
+			sendAlbum:sendAlbum,
+			get:get,
+			previewAlbum:previewAlbum
+		}
+
+
+	}())
+
+	// 文本框焦点事件
+	$("#chat_message").focus(function() {
+		$("#chat_tools_layer").hide();
+		$("#chat_message_wrap").css('bottom','0px');
+		window.scrollTo(0,document.body.scrollHeight);
+	})
+	// 右侧功能按钮
+	$("#chat_tools_btn").click(function() {
+		$("#chat_message").blur();
+		if($("#chat_tools_layer").css("display") == 'none') {
+			$("#chat_tools_layer").show();
+			$("#chat_message_wrap").css('bottom','200px');
+		}else {
+			$("#chat_message_wrap").css('bottom','0px');
+			$("#chat_tools_layer").hide();
+		}
+	})
+	// 页面回车换行符键盘事件监听
+	window.onkeydown = function(e) {
+		if(e.keyCode== 13) {
+			Chat.sendText();
+			 // <button class="ui-btn" onclick="Chat.sendText();">发送</button>
+		}
+	}
+	function jumpToDetail(openid)
+	{
+		window.location.href="{php echo $this->createMobileUrl('detail')}&detail_openid="+openid;
+	}
+	function jumpToSelf()
+	{
+		window.location.href="{php echo $this->createMobileUrl('usercenter')}";	
+	}
+
+</script>
+</body>
+</html>

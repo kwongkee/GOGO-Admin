@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>合同生成</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="Content-Language" content="zh-CN" />
+        <link rel="stylesheet" href="./static/doc/invoice2.css" />
+        <link rel="stylesheet" href="./static/doc/contract2.css" />
+        <style>
+            .btn{width:300px;line-height:40px}
+            .buyseal{width: 150px;top: -38mm;left: 123mm;}
+            body{overflow-y: auto;}
+            .page{width: 595.32pt;margin: 0 auto;}
+            .content>div{width: 100%;height: 890pt;padding-top: 5px;}
+            #printId{width: 100%;background: white;font-size: 18px;}
+            .diyform input{border:1px solid #333 !important;padding:5px 5px;box-sizing:border-box;}
+            .layui-form-label{width:100px;}
+            .goodsinfo input{
+                font-size: 12pt;
+                color: #000;
+                font-family: "arial, helvetica, sans-serif";
+                text-align: center;
+                background:none;
+                width:100px;
+            }
+            .layui-upload-file{display:none;}
+            .layui-btn{
+                background-color: #009688;
+                color: #fff;
+                white-space: nowrap;
+                text-align: center;
+                font-size: 14px;
+                border: none;
+                border-radius: 2px;
+                cursor: pointer;
+                padding:4px 6px;
+                box-sizing:border-box;
+            }
+        </style>
+    </head>
+    <body>
+		<div class="page root">
+			<div class="page_box">
+				<div id="printId">
+					<div class="content">
+						<div>
+                        <div class="contract-bg">
+                            <div class="contract-top">
+                                <div class="contract-logo"><img src="./static/doc/images/contract-logo.png" alt="" /></div>
+                                <div class="contract-title">跨境购销合同CONTRACT</div>
+                            </div>
+                                <div class="contract-mid" style="height: 247mm;">
+                                    <table class="contract-table">
+                                        <tr>
+                                            <td style="padding-left: 1mm;">日期Date</td>
+                                            <td style="padding-left: 1mm;" class="create_at">{php} echo date('d / m / Y',$doc_data['create_at']);{/php}</td>
+                                            <td style="padding-left: 1mm;">编号Contract No</td>
+                                            <td class="border-right pdf_sn">{$doc_data['pdf_sn']}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="text-align: center;">买方The Buyers</td>
+                                            <td colspan="2" class="border-right" style="text-align: center;">卖方The Sellers</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" class="border-bottom buyer_company_name" style="text-align: center;">{$default_buyer['company_name']} {$default_buyer['company_ename']}</td>
+                                            <td colspan="2" class="border-bottom border-right seller_company_name" style="text-align: center;">佛山市钜铭商务资讯服务有限公司</td>
+                                        </tr>
+                                    </table>
+                                    <div class="contract-con">
+                                        <div class="tiaokuan">
+                                            <div class="connum">1.</div>
+                                            <div class="concon">
+                                                <p>兹经买卖双方同意按照以下条款由买方购进，卖方售出以下商品：</p>
+                                                <p>This contract is made by and between the Buyers and the Sellers; whereby the Buyers agree to buy and the Sellers agree to sell the under-mentioned goods subject to the terms and conditions as stipulated hereinafter: </p>
+                                            </div>
+                                        </div>
+                                        
+                                        <table class="commodity">
+                                            <tr>
+                                                <th colspan="2" class="commodity-w4"><p>商品名称</p><p class="commodity-en">Name of Commodity</p></th>
+                                                <th class="commodity-w2"><p>单位</p><p class="commodity-en">Unit</p></th>
+                                                <th class="commodity-w1"><p>数量</p><p class="commodity-en">Quantity</p></th>
+                                                <th class="commodity-w2"><p>单价</p><p class="commodity-en">Unit price</p></th>
+                                                <th class="commodity-w3"><p>生产国别</p><p class="commodity-en">Country of Origin</p></th>
+                                            </tr>
+                                            {foreach name="order_goods" item="v" key="k"}
+                                            <tr class="goodsinfo">
+                                                <td colspan="2" class="gname{$v['id']}" onclick="changeGName('gname{$v['id']}')">{$v['item_describe']}</td>
+                                                <td><input type="text" name="" id="" value="{$v['unit_name']}" /></td>
+                                                <td><input type="text" name="" id="" value="{$v['goods_qty']}" /></td>
+                                                <td>
+                                                    CNY: <input type="text" name="" id="" value="{$v['goods_price_cny']}" />
+                                                </td>
+                                                <td><input type="text" name="" id="" value="中国" /></td>
+                                            </tr>
+                                            {/foreach}
+                                            <tr>
+                                                <td class="commodity-w1"><p>成交方式</p><p class="commodity-en"><strong>Mode of <br/>transaction</strong></p></td>
+                                                <td class="commodity-w5 transaction_mode">工厂交付</td>
+                                                <td class="commodity-w2"><p>总值</p><p class="commodity-en"><strong>Total Value</strong></p></td>
+                                                <td class="commodity-w1">
+                                                    CNY: <span class="amount">{$order['order_amount_cny']}</span>
+                                                </td>
+                                                <td class="commodity-w2"><p>包装</p><p class="commodity-en"><strong>Packing</strong></p></td>
+                                                <td class="commodity-w3 pack">木箱</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="commodity-w1"><p>保 险</p><p class="commodity-en"><strong>Insurance</strong></p></td>
+                                                <td colspan="5" class="commodity-w7" style="text-align: left; padding-left: 1mm;">由卖方按合同价的110%投保一切险。To be covered by the Seller for 110% (one hundred and ten percent) of total contract value against ALL Risks.</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="commodity-w1"><p>起运港</p><p class="commodity-en"><strong>Port of Lading</strong></p></td>
+                                                <td colspan="2" class="commodity-w6 lading">肇庆大旺 5107</td>
+                                                <td class="commodity-w1"><p>目的港</p><p class="commodity-en"><strong>Port of Destination</strong></p></td>
+                                                <td colspan="2" class="commodity-w6 destination">深圳皇岗 5301</td>
+                                            </tr>
+                                        </table>
+                                        
+                                        <div class="tiaokuan">
+                                            <div class="connum">2.</div>
+                                            <div class="concon">
+                                                <p>索赔：在货到目的口岸45天内如发现货物品质，规格和数量与合同不附，除属保险公司或船方责任外，买方有权凭中国商检出具的检验证书或有关文件向卖方索赔换货或赔款。</p>
+                                                <p>Claims: Within 45 days after the arrival of the goods at the destination, should the quality, Specifications or quantity be found not in conformity with the stipulations of the contract except those claims for which the insurance company or the owners of the vessel are liable, the Buyers shall, have the right on the strength of the inspection certificate issued by the C.C.I.C and the relative documents to claim for compensation to the Sellers.</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="tiaokuan">
+                                            <div class="connum">3.</div>
+                                            <div class="concon">
+                                                <p>不可抗力：由于人力不可抗力的原由发生在制造，装载或运输的过程中导致卖方延期交货或不能交货者，卖方可免除责任,在不可抗力发生后，卖方须立即电告买方及在14天内以空邮方式向买方提供事故发生的证明文件，在上述情况下，卖方仍须负责采取措施尽快发货。</p>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                                <div class="contract-bottom">第1页 共2页</div>
+                            </div>
+                        </div>
+                        <div>
+                        <div class="contract-bg">
+                            <div class="contract-top">
+                                <div class="contract-logo"><img src="./static/doc/images/contract-logo.png" alt="" /></div>
+                                
+                            </div>
+                            <div class="contract-mid" style="height: 257mm;">
+                                
+                                <div class="contract-con">
+                                    <div class="tiaokuan">
+                                        <div class="connum"></div>
+                                        <div class="concon">
+                                            <p>Force Majeure :The sellers shall not be held responsible for the delay in shipment or non-deli-very of the goods due to Force Majeure, which might occur during the process of manufacturing or in the course of loading or transit. The sellers shall advise the Buyers immediately of the occurrence mentioned above the within fourteen days there after . the Sellers shall send by airmail to the Buyers for their acceptancea certificate of the accident. Under such circumstances the Sellers, however, are still under the obligation to take all necessary measures to hasten the deliveryof the goods.</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tiaokuan">
+                                        <div class="connum">4.</div>
+                                        <div class="concon">
+                                            <p>仲裁：凡有关执行合同所发生的一切争议应通过友好协商解决，如协商不能解决，则将分歧提交中国国际贸易促进委员会按有关仲裁程序进行仲裁，仲裁将是终局的，双方均受其约束，仲裁费用由败诉方承担。</p>
+                                            <p>Arbitration : All disputes in connection with the execution of this Contract shall be settled friendly through negotiation. in case no settlement can be reached, the case then may be submitted for arbitration to the Arbitration Commission of the China Council for the Promotion of International Trade in accordance with the Provisional Rules of Procedure promulgated by the said Arbitration Commission . the Arbitration committee shall be final and binding upon both parties. and the Arbitration fee shall be borne by the losing parties.</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tiaokuan">
+                                        <div class="connum">5.</div>
+                                        <div class="concon">
+                                            <p>合同的生效：本合同在双方代表签字后及双方有关当局批准后立即生效。</p>
+                                            <p>Effectiveness of the contract:This Contract shall come into force immediately after signature by representative of both parties and upon approval by the relevant authority of both parties.</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tiaokuan">
+                                        <div class="connum">6.</div>
+                                        <div class="concon">
+                                            <p>特别条款:本合同采用中文、英文书写，具有同等法律效力。合同正本两份，签字后双方各持一份。</p>
+                                            <p>Special provisions:This contract is made out in English and Chinese, both version being equally authentic. The original Contracts are in two copies; each part keeps one of two original copies after signature.</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tiaokuan">
+                                        <div class="connum">7.</div>
+                                        <div class="concon">
+                                            <p>合同签署The contract is signed</p>
+                                        </div>
+                                    </div>
+
+                                    <table class="contract-table">
+                                    <tr>
+                                        <td colspan="2" style="text-align: center;"><strong>买方For the Buyer</strong></td>
+                                        <td colspan="2" class="border-right" style="text-align: center;"><strong>卖方For the Seller</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" style="text-align: center;" class="buyer_company_name">{$default_buyer['company_name']} {$default_buyer['company_ename']}</td>     
+                                        <td colspan="2" class="border-right seller_company_name" style="text-align: center;">佛山市钜铭商务资讯服务有限公司</td>
+                                    </tr>
+                                    <tr style="height: 30mm;">
+                                        <td colspan="2" style="text-align: center;">&nbsp;</td>
+                                        <td colspan="2" class="border-right" style="text-align: center;">&nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" class="border-bottom" style="text-align: center;"><strong>Authorized Signature</strong></td>
+                                        <td colspan="2" class="border-bottom border-right" style="text-align: center;"><strong>Authorized Signature</strong></td>
+                                    </tr>
+                                </table>
+                                <div class="buyseal sellseal-real" style="width: 175px;"><img style="width: 100%;" class="sellerSeal" src="./static/doc/images/seal2.png" alt="" /></div>
+                                <div class="buyseal buyseal-real" style="top: -69mm;left: 30mm;width: 95px;"><img style="width: 100%;" class="buyerSeal" src="./static/doc/images/kuajing.png" alt="" /></div>
+                                </div>
+                            </div>
+                            <div class="contract-bottom">第2页 共2页</div>
+                        </div>
+                        </div>
+                        
+					</div>
+				</div>
+			</div>
+			<div class="diyform" style='background: #fff;margin-bottom: 10px;padding: 10px;width: 300px;position: fixed;top: 150px;right: 50px;'>
+                <div class="layui-form-item" style="width: auto;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">日期Date</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="03/08/2021" name="create_at" id="create_at" value="" />
+                        </div>
+                    </div>
+                </div> 
+                <div class="layui-form-item" style="width: auto;margin-top:10px;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">合同编号</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请输入合同编号" name="pdf_sn" id="pdf_sn" value="" />
+                        </div>
+                    </div>
+                </div> 
+                <div class="layui-form-item" style="width: auto;margin-top:10px;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">买方</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请输入买方" name="buyer_company_name" id="buyer_company_name" value="" />
+                        </div>
+                    </div>
+                </div> 
+                <div class="layui-form-item" style="width: auto;margin-top:10px;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">卖方</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请输入卖方" name="seller_company_name" id="seller_company_name" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">成交方式</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请输入成交方式" name="transaction_mode" id="transaction_mode" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">总价格</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请输入总价格" name="amount" id="amount" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">包装</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请输入包装" name="pack" id="pack" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">起运港</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请输入起运港" name="lading" id="lading" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size: 15px;">目的港</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" placeholder="请输入目的港" name="destination" id="destination" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item gnameInput" style="width: auto;margin-top:10px;display:none;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;">商品名</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <input type="text" name="gname" id="gname" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size:15px;">买方章</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <button type="button" class="layui-btn" id="buyer_file-upload">上传专用章</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width: auto;margin-top:10px;">
+                    <div class="layui-inline layui-select-fs">
+                        <label class="layui-form-label" style="display: inline-block;font-size:15px;">卖方章</label>
+                        <div class="layui-input-block layui-select-fscon" style="display: inline-block;">
+                            <button type="button" class="layui-btn" id="seller_file-upload">上传专用章</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+			<div style="padding: 30px 0;text-align: center;">
+				<button type="button"  class="btn" onclick="createPDF()">生成</button>	
+			</div>
+		</div>
+		
+		
+		<script src="./static/doc/jquery.min.js"></script>
+		<script src="./static/doc/html2canvas.min.js"></script>
+        <script src="./static/doc/jspdf.min.js"></script>
+        <script src="./static/hadmin/assets/layui/layui.js"></script>
+        <script type="text/javascript" charset="utf-8">
+            function changeGName(classname){
+                $('.gnameInput').show();
+                $('.gnameInput #gname').val($('.'+classname).text()).attr('data-classname',classname);
+            }
+            // 随机数
+            function randomNum(minNum,maxNum){
+                switch(arguments.length){
+                    case 1:
+                        return parseInt(Math.random()*minNum+1,10);
+                        break;
+                    case 2:
+                        return parseInt(Math.random()*(maxNum-minNum+1)+minNum,10);
+                        break;
+                    default:
+                        return 0;
+                        break;
+                }
+            }
+            $(function(){
+                $('.buyseal-real').css('left',randomNum(2,68)+'mm');
+                $('.sellseal-real').css('left',randomNum(100,140)+'mm');
+                // 日期Date
+                $('#create_at').bind('input propertychange',function() {
+                    $('.create_at').text($(this).val());
+                });
+                // 合同编号
+                $('#pdf_sn').bind('input propertychange',function() {
+                    $('.pdf_sn').text($(this).val());
+                });
+                // 买方
+                $('#buyer_company_name').bind('input propertychange',function() {
+                    $('.buyer_company_name').text($(this).val());
+                });
+                // 卖方
+                $('#seller_company_name').bind('input propertychange',function() {
+                    $('.seller_company_name').text($(this).val());
+                });
+                // 成交方式
+                $('#transaction_mode').bind('input propertychange',function() {
+                    $('.transaction_mode').text($(this).val());
+                });
+                // 总价格
+                $('#amount').bind('input propertychange',function() {
+                    $('.amount').text($(this).val());
+                });
+                // 包装
+                $('#pack').bind('input propertychange',function() {
+                    $('.pack').text($(this).val());
+                });
+                // 起运港
+                $('#lading').bind('input propertychange',function() {
+                    $('.lading').text($(this).val());
+                });
+                // 目的港
+                $('#destination').bind('input propertychange',function() {
+                    $('.destination').text($(this).val());
+                });
+                //更换商品名
+                $('#gname').bind('input propertychange',function() {
+                    let classname = $(this).attr('data-classname');
+                    $('.'+classname).text($(this).val());
+                });
+            })
+        </script>
+        <script>
+            layui.use(['form','upload','laydate'], function(){
+                var upload = layui.upload;
+                // 买方章
+                upload.render({
+                    elem: '#buyer_file-upload'
+                    ,url: '{:Url("admin/entrymanage/upload_seal_file")}'
+                    ,accept: 'image'
+                    ,data: { folder: 'po_buyer', type: 'seal_file'}
+                    ,multiple: false
+                    ,before: function(obj){
+                        layer.load(); //上传loading
+                    }
+                    ,done: function(res){
+                        layer.closeAll('loading'); //关闭loading
+                        if(res.code == 1)
+                        {
+                            $('.buyerSeal').attr('src','/'+res.file_path);
+                        // .css('width','175px').css('height','118px')
+                        }
+                    }
+                });
+                // 卖方章
+                upload.render({
+                    elem: '#seller_file-upload'
+                    ,url: '{:Url("admin/entrymanage/upload_seal_file")}'
+                    ,accept: 'image'
+                    ,data: { folder: 'po_seller', type: 'seal_file'}
+                    ,multiple: false
+                    ,before: function(obj){
+                        layer.load(); //上传loading
+                    }
+                    ,done: function(res){
+                        layer.closeAll('loading'); //关闭loading
+                        if(res.code == 1)
+                        {
+                            $('.sellerSeal').attr('src','/'+res.file_path);
+                        // .css('width','175px').css('height','118px')
+                        }
+                    }
+                });
+            });
+            // 生成pdf
+            function createPDF() {
+                var layer = layui.layer;
+                html2canvas(document.querySelector("#printId"), {
+                    allowTaint: !0,
+                    scale: 2
+                }).then((function(canvas) {
+
+                    var contentWidth = canvas.width;
+                    var contentHeight = canvas.height;
+
+                    //一页pdf显示html页面生成的canvas高度;
+                    var pageHeight = contentWidth / 595.28 * 841.89;
+                    //未生成pdf的html页面高度
+                    var leftHeight = contentHeight;
+                    //pdf页面偏移
+                    var position = 0;
+                    //a4纸的尺寸[595.28,841.89]，html页面生成的canvas在pdf中图片的宽高
+                    var imgWidth = 555.28;
+                    var imgHeight = 555.28/contentWidth * contentHeight;
+
+                    var pageData = canvas.toDataURL('image/jpeg', 1.0);
+
+                    var pdf = new jsPDF('', 'pt', 'a4');
+                    //有两个高度需要区分，一个是html页面的实际高度，和生成pdf的页面高度(841.89)
+                    //当内容未超过pdf一页显示的范围，无需分页
+                    if (leftHeight < pageHeight) {
+                        pdf.addImage(pageData, 'JPEG', 30, 0, imgWidth, imgHeight );
+                    } else {
+                        while(leftHeight > 0) {
+                            pdf.addImage(pageData, 'JPEG', 30, position, imgWidth, imgHeight)
+                            leftHeight -= pageHeight;
+                            position -= 821.89;
+                            //避免添加空白页
+                            if(leftHeight > 0) {
+                                pdf.addPage();
+                            }
+                        }
+                    }
+
+                    var pdfName = "{$doc_data['pdf_sn']}.pdf";
+                    // 将pdf输入为base格式的字符串
+                    var buffer = pdf.output("datauristring");
+                    // 将base64格式的字符串转换为file文件
+                    var myfile = dataURLtoFile(buffer, pdfName);
+                    var formdata = new FormData();
+                    formdata.append('file', myfile);
+                    formdata.append('folder', 'payer_pay');
+                    formdata.append('type', 'pi_invoice');
+                    // 之后ajax传递数据
+                    // 判断是否已经生成
+
+                    $.ajax({   
+                        url:'{:Url("admin/entryManage/check_pdf")}',       
+                        method:'get',       
+                        data:{ trade_id: "{$doc_data['trade_id']}", 'trade_type': 1, type: 'po_contract' }, 
+                        dataType:'JSON',         
+                        success:function(res){       
+                            if(res.code == 1)
+                            {
+                                layer.msg(res.msg);
+                            }else{
+                                $.ajax({   
+                                    url:'{:Url("admin/entryManage/upload_file")}',       
+                                    method:'post',       
+                                    data:formdata,
+                                    processData: false,
+                                    contentType : false,    
+                                    dataType:'JSON',         
+                                    success:function(res){       
+                                        if(res.code == 1)
+                                        {
+                                            $.ajax({   
+                                                url:'{:Url("admin/entryManage/save_pdf")}',       
+                                                method:'post',       
+                                                data:{ trade_id: "{$doc_data['trade_id']}", 'trade_type': 1, type: 'po_contract', pdf_sn: "{$doc_data['pdf_sn']}", file_path: res.file_path}, 
+                                                dataType:'JSON',         
+                                                success:function(res){ 
+                                                    if(res.code == 1)
+                                                    {
+                                                        layer.msg('变更成功');
+                                                        pdf.save('PO_Contract_'+pdfName);
+                                                        setTimeout(function(){
+                                                            parent.window.location.reload();
+                                                            var index = parent.layer.getFrameIndex(window.name);
+                                                            parent.layer.close(index);
+                                                        }, 1000);
+                                                    }else{
+                                                        layer.msg(res.msg);
+                                                    }
+                                                },              
+                                                error:function (data) {
+                                                    layer.msg('系统错误');
+                                                }
+                                            });
+                                            
+                                        } 
+                                    },              
+                                    error:function (data) {
+                                        layer.msg('系统错误');
+                                    }           
+                                });
+                            }
+                        },              
+                        error:function (data) {
+                            layer.msg('系统错误');
+                        }           
+                    });
+
+                }))
+            }
+
+            //将base64转换为文件对象
+            function dataURLtoFile(dataurl, filename) {
+                var arr = dataurl.split(',');
+                var mime = arr[0].match(/:(.*?);/)[1];
+                var bstr = atob(arr[1]);
+                var n = bstr.length; 
+                var u8arr = new Uint8Array(n);
+                while(n--){
+                    u8arr[n] = bstr.charCodeAt(n);
+                }
+                //转换成file对象
+                return new File([u8arr], filename, {type:mime});
+                //转换成成blob对象
+                //return new Blob([u8arr],{type:mime});
+            }
+        </script>
+
+        
+    </body>
+</html>

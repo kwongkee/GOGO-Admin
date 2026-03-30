@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<div class="header">
+    <span>清算费用修改</span>
+    <!--<button class="layui-btn layui-btn-sm" onclick="add();">添加</button>-->
+    <div></div>
+</div>
+<form class="layui-form" action="post">
+
+    <div class="layui-form-item"></div>
+
+    <div class="layui-form-item">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">商户名称:</label>
+            <div class="layui-input-block">
+                <input type="text" value="{$data['uname']}" readonly class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">订单总票数:</label>
+            <div class="layui-input-block">
+                <input type="number" name="votesd" value="{$data['votesd']}" required  lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">申报成功票数:</label>
+            <div class="layui-input-block">
+                <input type="number" name="declVotesd" value="{$data['declVotesd']}" required  lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">申报失败票数:</label>
+            <div class="layui-input-block">
+                <input type="number" name="declFaild" value="{$data['declFaild']}" required  lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">申报费用:</label>
+            <div class="layui-input-block">
+                <input type="text" name="declMoneyd" value="{$data['declMoneyd']}" required  lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">验真成功票数:</label>
+            <div class="layui-input-block">
+                <input type="number" name="valVotesd" value="{$data['valVotesd']}" required  lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">验真失败票数:</label>
+            <div class="layui-input-block">
+                <input type="number" name="valFaild" value="{$data['valFaild']}" required  lay-verify="required"  autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">验真费用:</label>
+            <div class="layui-input-block">
+                <input type="text" name="valMoneyd" value="{$data['valMoneyd']}" required  lay-verify="required"  autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">支付成功货值:</label>
+            <div class="layui-input-block">
+                <input type="text" name="paySuccvaluedsb" value="{$data['paySuccvaluedsb']}" required  lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">支付失败货值:</label>
+            <div class="layui-input-block">
+                <input type="text" name="payFailvaluedsb" value="{$data['payFailvaluedsb']}" required  lay-verify="required"  autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">支付费用:</label>
+            <div class="layui-input-block">
+                <input type="text" name="payMoneydsb" value="{$data['payMoneydsb']}" required  lay-verify="required"  autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">应付金额:</label>
+            <div class="layui-input-block">
+                <input type="text" name="valTotaldsb" value="{$data['valTotaldsb']}" required  lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <input type="hidden" name="id" value="{$data['id']}">
+        <input type="hidden" name="email" value="{$email}">
+
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" id="sub" lay-submit lay-filter="formDemo">确认设置</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置信息</button>
+        </div>
+    </div>
+</form>
+
+<script>
+
+    var flag = false;
+    //Demo
+    layui.use(['layer','jquery','form'],function(){
+        layer = layui.layer;
+        var form = layui.form
+        $ = layui.jquery;
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+
+            if(flag) {
+                return false;
+            }
+
+            //layer.msg(JSON.stringify(data.field));
+
+            $('#sub').attr('disabled',true);
+            flag = true;
+
+            $.ajax({
+                url:"{:Url('Financed/setMedits')}",
+                type:'post',
+                dataType:'json',
+                data:data.field,
+                success:function(data) {
+                    var d = JSON.parse(data);
+                    if(d.code == 1 ) {
+                        layer.msg(d.msg,{icon:1});
+                    } else {
+                        layer.msg(d.msg,{icon:2});
+                    }
+
+                    setTimeout(function() {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        // 关闭父级窗口
+                        parent.layer.close(index);
+                        window.location.reload();
+                    },1000);
+
+                },
+                error:function(er) {
+                    //console.log(er)
+                }
+            })
+
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

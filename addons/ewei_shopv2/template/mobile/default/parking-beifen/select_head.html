@@ -1,0 +1,214 @@
+{template "parking/_header"}
+<link rel="stylesheet" href="../addons/ewei_shopv2/static/css/frozenui/css/frozen.css">
+<link rel="stylesheet" href="../addons/ewei_shopv2/static/ydui/ydui.css">
+<style type="text/css">
+	/*lable{display: inline-block;width: 99px;height: 30px;text-align: center;line-height: 30px;}*/
+	.content{height: 35px;width: 100%;border-bottom: 1px solid lightskyblue;text-align: center;line-height: 35px;}
+	#content{height: 35px;width: 100%;text-align: center;line-height: 35px;
+		font-family: "微软雅黑";
+	}
+	.errors{color: red;}
+	#show_head{display: none;}
+	#itdemo>li{
+		display:inline-block;
+		height:35px;
+		line-height: 28px;
+	}
+	.borderb{
+		width:100%;
+		border-bottom: 1px solid darkgray;
+	}
+	.col{color: orange;}
+	.cols{color: DarkGray;}
+	#bottem{width: 100%;bottom: 0px;}
+	
+	.pagination{
+		margin: 10px 0px;display: inline-block;
+		padding-left: 0px;
+		border-radius: 4px;
+	}
+	/*.active{background-color: green;}
+	a:hover{background-color: skyblue;}*/
+	
+	.pagination>li:first-child>a,.pagination>li:first-child>span
+	{
+		margin-left: 0px;border-top-left-radius: 4px;border-bottom-left-radius: 4px;
+	}
+	.pagination>li>a,.pagination>li>span
+	{
+		background-color: #FFF;border: 1px solid #DDD;color: inherit;float: left;line-height: 1.42857;
+		margin-left: 1px;padding: 4px 10px;position: relative;text-decoration: none;
+	}
+	.pagination>.active>a,.pagination>.active>span,.pagination>.active>a:hover,.pagination>.active>span:hover,.pagination>.active>a:focus,.pagination>.active>span:focus
+	{
+		background-color: #1ab394;border-color: #1ab394;color: #fff;cursor: default;z-index: 2;
+	}
+	.pagination>li{display: inherit;text-align: -webkit-match-parent;float: left;width: auto;text-align: center;font-size: 14px;}
+	
+	
+
+	.pga{margin-top:11px;display:block;width:18%;height:25px;line-height:25px;font-size:14px;background:darkgray;float:left;margin-left:6px;border-radius:3px}
+	
+	.pg{display:block;width:19%;height:25px;line-height:25px;font-size:14px;background:#18b4ed;float:left;margin-left:8px;border-radius:3px}
+	
+	.btn-primary {
+		background-color: #0997F7;
+		color: #FFF;
+	}
+	.btn{    
+		text-align: center;
+		position: relative;
+		border: none;
+		pointer-events: auto;
+		height: 0.4rem;
+		line-height: 0.4rem;
+		font-size: 0.2rem;
+		display: inline-block;
+		padding: 0 .2rem;
+		border-radius: 3px;
+		margin-left:6px;
+	}
+	
+	body{background:#E5E4E7}
+	.body{background:#E5E4E7}
+</style>
+<!-- 引入jQuery 2.0+ -->
+<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<!-- 引入YDUI脚本 -->
+<script src="../addons/ewei_shopv2/static/ydui/ydui.js"></script>
+<!--<script src="http://frozenui.github.io/js/frozen.js" type="text/javascript" charset="utf-8"></script>-->
+<body>
+
+
+<header class="ui-header ui-header-stable ui-border-b">
+    <i class="ui-icon-return" onclick="history.back()"></i><h1>{$title}</h1>
+</header>
+<div style="margin-top:50px;"></div>
+
+
+<style>
+	.hd{width:96%;height:auto;padding:5px;border:1px solid #CCCCCC;border-radius:8px;margin:5px auto;background:white;}
+	.ht{width:100%;height:60px;text-align:center;}
+	.ht div{width:100%;height:25px;line-height:25px;font-size:16px;font-weight:both;}
+	
+	.hf{width:100%;height:40px;border-top:1px solid #C4C4C4;padding:3px auto;text-align:center;}
+	.hf div{float:left;width:30%;height:25px;line-height:25px;font-size:16px;margin-top:8px;}
+</style>
+		
+<div class="ui-form ui-border-t body">
+
+	{loop $head $index $item}
+	<div class="hd">
+		<div class="ht">
+			<div>{$item['head_name']}</div>
+			<div>{$item['nsrsbh']}</div>
+		</div>
+		
+		<div class="hf">
+			{if $item['status'] == 1}
+				<div class="ui-checkbox" style="width:112px;color:#08D6AC">
+					<input type="radio" name="checks" checked class="ckid" value="{$item['id']}"/>
+					设为默认
+				</div>
+				<input type="hidden" id="oid" value="{$item['id']}">
+			{else}
+				<div class="ui-checkbox" style="width:112px;color:#08D6AC">
+					<input type="radio" name="checks" class="ckid" value="{$item['id']}"/>
+					设为默认
+				</div>
+			{/if}
+			
+				<div class="edit" style="color:#1D9FC0" hid="{$item['id']}" hd="{$item['Type_head']}">修改</div>
+			{if $item['Type_head'] == '01'}
+				<div class="del" style="color:red;" hids="{$item['id']}">删除</div>
+			{/if}
+			
+		</div>
+	</div>
+	{/loop}
+	
+	<input type="hidden" id="changeUrl" value="{$changeUrl}">
+	<input type="hidden" id="undate_head" value="{$updateUrl}">
+	
+	<script type='text/javascript'>
+	$(function(){
+		
+		$(":radio").click(function(){
+		
+			var urls = $('#changeUrl').val();
+			
+			if($(this).val() != null) {
+				
+				$.ajax({
+					url:urls,
+					type:'post',
+					data:{'hid':$(this).val(),oid:$('#oid').val(),method:'up'},
+					dataType:'json',
+					success:function(data) {
+						if(data.msg == 'success') {
+							alert('设置成功');
+							window.location.reload();
+						}else{
+							alert('设置失败');
+							window.location.reload()
+						}
+					}
+				});
+			}
+		});
+		
+		
+		$('.del').click(function(){
+			var urls = $('#changeUrl').val();
+			var hid = $(this).attr('hids');
+			if(!confirm('您确定要删除吗？')){
+				//alert('取消');
+			} else {
+				$.ajax({
+					url:urls,
+					type:'post',
+					data:{'hid':hid,method:'del'},
+					dataType:'json',
+					success:function(data) {
+						if(data.msg == 'success') {
+							alert('删除成功');
+							window.location.reload();
+						} else{
+							alert('删除失败');
+							indow.location.reload();
+						}
+					}
+				});
+			}
+		});
+		
+		
+		// 修改抬头
+		$('.edit').click(function() {
+			var urls = $('#undate_head').val();
+			var hid  = $(this).attr('hid');
+			var hd   = $(this).attr('hd');// 抬头类型
+			
+			if(confirm('您确定要修改吗')){
+				window.location.href = urls+'&hid='+hid+'&hd='+hd;
+			} else {
+				window.location.reload();
+			}
+		});
+		
+	});
+</script>
+	
+    <form action="#" method="post" id="parkOrd">
+        <div id="bottem" style="text-align: left;margin-top: 3px;font-size: 16px;">			
+        	<div class="ui-btn-wrap">
+				<a href="{$goUrl}" class="ui-btn-lg ui-btn-primary" style="font-size: 25px;">前往开票</a>
+			</div>
+        </div>
+    </form>
+	
+</div>
+
+</body>
+</html>
+{template "parking/_footer"}

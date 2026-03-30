@@ -1,0 +1,174 @@
+{template "common/header"}
+<body style="background: white;">
+
+<div id="mescroll" class="mescroll">
+    <div class="discount-list">
+        <a href="#" onClick="javascript :history.back(-1);"><img src="../addons/go_coupon/static/images/disrow.png" alt=""></a>优惠券大厅
+    </div>
+    <div>
+        <div class="discount" id="discount" style="margin: 5% auto 0;">
+
+        </div>
+    </div>
+</div>
+
+</body>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mescroll.js@1.4.1/mescroll.min.css">
+<link rel="stylesheet" type="text/css" href="/Public/css/mobile/mdialog.css">
+<script src="https://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mescroll.js@1.4.1/mescroll.min.js" charset="utf-8"></script>
+<script type="text/javascript" src="/Public/js/zepto.min.js"></script>
+<script type="text/javascript" src="/Public/js/mdialog.js"></script>
+<script>
+    var mescroll = new MeScroll("mescroll", {
+        down: {
+            callback: downCallback, //下拉刷新的回调,别写成downCallback(),多了括号就自动执行方法了
+            auto:false,
+        },
+        up: {
+            callback: upCallback, //上拉加载的回调
+            clearId:'discount',
+            //以下是一些常用的配置,当然不写也可以的.
+            page: {
+                num: 0, //当前页 默认0,回调之前会加1; 即callback(page)会从1开始
+                size: 5 //每页数据条数,默认10
+            },
+            htmlNodata: '<p class="upwarp-nodata">-- END --</p>',
+            noMoreSize: 5, //如果列表已无数据,可设置列表的总数量要大于5才显示无更多数据;
+            empty: {
+                //列表第一页无任何数据时,显示的空提示布局; 需配置warpId才显示
+                warpId:	"discount", //父布局的id (1.3.5版本支持传入dom元素)
+                icon: "../addons/go_coupon/static/images/暂无相关数据.png", //图标,默认null,支持网络图
+                tip: "暂无相关数据~" //提示
+            },
+            lazyLoad: {
+                use: true, // 是否开启懒加载,默认false
+                attr: 'imgurl' // 标签中网络图的属性名 : <img imgurl='网络图  src='占位图''/>
+            }
+        }
+    });
+    //下拉刷新的回调
+    function downCallback(page) {
+        // console.dir(page);
+        // page = page.options.up.page;
+        var url = "{$url}";
+        url+='&pageNum=1&pageSize=5';
+        $.ajax({
+            url: url,
+            success: function(data) {
+                data=JSON.parse(data);
+                setListData(data.curPageData,false);
+                mescroll.endSuccess();
+                //联网成功的回调,隐藏下拉刷新的状态;
+                //无参. 注意结束下拉刷新是无参的
+                //设置数据
+
+            },
+            error: function(data) {
+                //联网失败的回调,隐藏下拉刷新的状态
+                mescroll.endErr();
+            }
+        });
+    }
+
+    //上拉加载的回调 page = {num:1, size:10}; num:当前页 默认从1开始, size:每页数据条数,默认10
+    function upCallback(page) {
+        var pageNum = page.num; // 页码, 默认从1开始 如何修改从0开始 ?
+        var pageSize = page.size; // 页长, 默认每页10条
+        var url = "{$url}";
+        url+='&pageNum='+pageNum+'&pageSize='+pageSize;
+        $.ajax({
+            url: url,
+            success: function(data) {
+                data=JSON.parse(data);
+                var curPageData = data.curPageData; // 接口返回的当前页数据列表
+                // var totalPage = data.totalPage; // 接口返回的总页数 (比如列表有26个数据,每页10条,共3页; 则totalPage值为3)
+                var totalSize = data.totalSize; // 接口返回的总数据量(比如列表有26个数据,每页10条,共3页; 则totalSize值为26)
+                // var hasNext = data.hasNext; // 接口返回的是否有下一页 (true/false)
+                mescroll.endBySize(curPageData==null?0:curPageData.length, totalSize);
+                mescroll.endSuccess(curPageData==null?0:curPageData.length);
+                setListData(curPageData);
+                // console.dir(curPageData);
+                // $('#discount').append(curPageData);
+            },
+            error: function(e) {
+                //联网失败的回调,隐藏下拉刷新和上拉加载的状态
+                mescroll.endErr();
+            }
+        });
+    }
+
+    function setListData(data,isAp) {
+        var n = data==null?0:data.length;
+        var h ='';
+        for (var i=0;i<n;i++){
+            if (data[i].isRev){
+                h+='<div class="countbgg"><div class="countleft"><p class="lefttextg">¥<span>'+data[i].coupon_money+'</span></p><p class="lefttextg">';
+                if (data[i].coupon_use_term===0){
+                    h+='满'+data[i].enough+'元使用';
+                }else if (data[i].coupon_use_term===1){
+                    h+='每'+enough+'元使用';
+                }else{
+                    h+='无条件使用';
+                }
+                h+='</p></div><div class="countline"></div><div class="countmid"><p class="lefttextg">'+data[i].coupon_title+'</p>'+
+                    '<p style="font-size: 11px;margin-top: 13px;" class="lefttextg">有效日期:'+getLocalTime(data[i].coupon_stime)+'-'+getLocalTime(data[i].coupon_etime)+'</p></div><div class="countright"><p class="righttext">已领取</p></div></div>';
+            }else{
+                h+='<div class="countbgw"><div class="countleft"><p class="lefttext">¥<span>'+data[i].coupon_money+'</span></p><p class="lefttext">';
+                if (data[i].coupon_use_term===0){
+                    h+='满'+data[i].enough+'元使用';
+                }else if (data[i].coupon_use_term===1){
+                    h+='每'+enough+'元使用';
+                }else{
+                    h+='无条件使用';
+                }
+                h+='</p></div><input type="hidden" name="cid" id="cid" value="'+data[i].id+'"><div class="countline"></div><div class="countmid"><p>'+data[i].coupon_title+'</p>'+
+                    '<p style="font-size: 11px;margin-top: 13px;">有效日期:'+getLocalTime(data[i].coupon_stime)+'-'+getLocalTime(data[i].coupon_etime)+'</p></div><div class="countright" onclick="recve(this,'+data[i].id+');"><p class="righttext" style="padding-top:13px;">领取</p></div></div>';
+            }
+        }
+        if (isAp){
+            $('#discount').append(h);
+        }else{
+            $('#discount').html(h);
+        }
+
+
+    }
+    function getLocalTime(timestamp) {
+        var unixTimestamp = new Date(timestamp * 1000);
+        var commonTime = unixTimestamp.toLocaleString();
+        commonTime=commonTime.split(" ");
+        commonTime[0] = commonTime[0].split('/');
+        return commonTime[0][0]+commonTime[0][1]+commonTime[0][2];
+    }
+    var isRev = false;
+    function recve(obj,cid) {
+        if (isRev){
+            return;
+        }
+        $.ajax({
+            url:"{$url}&p=receive",
+            type:"POST",
+            dataType:"json",
+            data:{cid:cid},
+            success:function (data) {
+                if (data.status==1){
+                    new TipBox({type:'error',str:data.message,hasBtn:true});
+                    return false;
+                }
+                isRev = false;
+                $(obj).removeAttr('onclick');
+                $(obj).parent().removeAttr('class');
+                $(obj).parent().attr('class','countbgg');
+                $(obj).parent().find('p').removeAttr('class');
+                $(obj).parent().find('p').attr('class','lefttextg');
+                $(obj).children().html('已领取');
+                $(obj).children().css('padding-top',0);
+            },error:function () {
+                isRev=false;
+                new TipBox({type:'error',str:'对不起,出错了!',hasBtn:true});
+            }
+        });
+    }
+</script>
+</html>

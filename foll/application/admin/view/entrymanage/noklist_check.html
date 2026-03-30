@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>入账审核</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/admin.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <style>
+        .layui-form-item .layui-inline{
+            margin-bottom: 5px;
+        }
+        .word {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+            color: #aaa;
+            font-size: 12px;
+        }
+        .layui-table[lay-size=sm] td, .layui-table[lay-size=sm] th{word-break: break-all;}
+        .disitem{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .x-btn{
+            padding: 5px 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+            cursor:pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-body">
+
+                    <!--原先form放在这里-->
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">订单号</label>
+                            <div class="layui-input-inline">
+                                <div class="layui-form-mid layui-word-aux">{$entry_data['ordersn']}</div>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">订单类型</label>
+                            <div class="layui-input-inline">
+                                <div class="layui-form-mid layui-word-aux">{$entry_data['order_type']}</div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">款项用途</label>
+                            <div class="layui-input-inline">
+                                <div class="layui-form-mid layui-word-aux">{$entry_data['money_use']}</div>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">成交方式</label>
+                            <div class="layui-input-inline">
+                                <div class="layui-form-mid layui-word-aux">{$entry_data['trans_mode']}</div>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">买家类型</label>
+                            <div class="layui-input-inline">
+                                <div class="layui-form-mid layui-word-aux">{$entry_data['payer']}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">买家信息</label>
+                            <div class="layui-form-mid layui-word-aux" style="padding:0 !important;">
+                                <form class="layui-form" action="">
+                                    <div class="" style="display:flex;align-items:center;">
+                                        <select name="buyer" lay-verify="" lay-search>
+                                            <option value="">买家名称：{$result['buyer']} 买家国籍：{$result['buyer_country']}</option>
+                                            {foreach $common_buyer as $item}
+                                            <option value="{$item['id']},{$item['platform']},{$item['type']}" data-seller_platform="{$item['platform']}" data-types="{$item['type']}">{$item['name']} - {$item['email']} - {$item['tel']}</option>
+                                            {/foreach}
+                                        </select>
+                                        <button class="layui-btn" lay-submit lay-filter="change_buyer">立即保存</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">卖家信息</label>
+                            <div class="layui-form-mid layui-word-aux" style="padding:0 !important;">
+                                <form class="layui-form" action="">
+                                    <div class="" style="display:flex;align-items:center;">
+                                        <select name="seller" lay-verify="" lay-search>
+                                            {foreach $common_seller as $item}
+                                            <option value="{$item['id']},{$item['platform']},{$item['type']}" data-seller_platform="{$item['platform']}" data-types="{$item['type']}">{$item['name']} - {$item['email']} - {$item['tel']}</option>
+                                            {/foreach}
+                                        </select>
+                                        <button class="layui-btn" lay-submit lay-filter="change_seller">立即保存</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                <form class="layui-form" action="">
+                    <input type="hidden" name="id" value="{$entry_data['id']}">
+                    {if $shop_good}
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">商城商品上架信息</label>
+                        <div class="layui-input-block">
+                            <table class="layui-table" lay-size="sm">
+                                <colgroup>
+                                    <col width="150">
+                                    <col width="150">
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>上架名称</th>
+                                        <th>上架地址</th>
+                                        <th>订单详情</th>
+                                    </tr> 
+                                </thead>
+                                <tbody>
+                                    {foreach $shop_good as $vo} 
+                                    <tr>
+                                        <td>{$vo['title']}</td>
+                                        <td> <a href="https://shop.gogo198.cn/app/index.php?i=18&c=entry&p=detail&id={$vo['id']}&do=shop&m=sz_yi" target="_blank">https://shop.gogo198.cn/app/index.php?i=18&c=entry&p=detail&id={$vo['id']}&do=shop&m=sz_yi</a> </td>
+                                        <td> <a href="{if $shop_order['id'] } https://shop.gogo198.cn/web/index.php?c=site&a=entry&op=details&id={$shop_order['id']}&do=order&m=sz_yi&ckeck_form_manage=1 {else /} # {/if}" target="_blank">后台订单</a> <a href="{if $shop_order['id'] } https://shop.gogo198.cn/app/index.php?i=18&c=entry&do=order&m=sz_yi&p=detail&id={$shop_order['id']}&op=form_manage&account={$buyer_e} {else /} # {/if}" target="_blank">手机端订单(请复制链接到手机端打开)</a></td>
+                                    </tr>
+                                    {/foreach}	
+                                    							
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {/if}
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">操作</label>
+
+                        <div class="layui-bg-green layui-inline x-btn" onclick="open2(1)">下载</div>
+
+                        <div class="layui-bg-black layui-inline x-btn" onclick="open2(2)">变更</div>
+                    </div>
+
+                    <!--单证-->
+                    <div class="layui-form-item" style="display:none;">
+                        <label class="layui-form-label">贸易、物流单证</label>
+                        <div class="layui-input-block">
+                            <table class="layui-table" lay-size="sm">
+                                <colgroup>
+                
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <div class="disitem">
+                                                <span>商业发票CI</span>
+                                                <a href="{if $trade_pdf['ci'] } http://declare.gogo198.cn/{$trade_pdf['ci']} {else /} # {/if}" target="_blank">商业发票CI下载</a>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div class="disitem">
+                                                <span>形式发票PI</span>
+                                                <a href="{if $trade_pdf['pi'] } http://declare.gogo198.cn/{$trade_pdf['pi']} {else /} # {/if}" target="_blank">形式发票PI下载</a>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div class="disitem">
+                                                <span>购销合同PO</span>
+                                                <a href="{if $trade_pdf['po'] } http://declare.gogo198.cn/{$trade_pdf['po']} {else /} # {/if}" target="_blank">购销合同PO下载</a>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="disitem">
+                                                <span>申报清单</span>
+                                                <a href="http://declare.gogo198.cn/{$trade['inventory_file']}" target="_blank">申报清单下载</a>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="disitem">
+                                                <span>物流舱单</span>
+                                                <a href="#" target="_blank">物流舱单下载</a>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="disitem">
+                                                <span>快递面单</span>
+                                                <a href="#" target="_blank">快递面单下载</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!--买家变更-->
+                    <div class="layui-form-item" style="display:none;">
+                        <label class="layui-form-label">买家变更</label>
+                        <div class="layui-input-block">
+                            <button class="layui-btn" type="button" onclick="changeBuyer('pi')">变更PI发票</button>
+                            <button class="layui-btn" type="button" onclick="changeBuyer('ci')">变更CI发票</button>
+                            <button class="layui-btn" type="button" onclick="changeBuyer('po')">变更PO合同</button>
+                
+                            <table class="layui-table" lay-size="sm">
+                                <colgroup>
+                
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <div class="disitem">
+                                                <span>变更后商业发票CI</span>
+                                                <a href="{if $trade_pdf_c['ci'] } http://shop.gogo198.cn/foll{$trade_pdf_c['ci']} {else /} # {/if}" target="_blank">{if $trade_pdf_c['ci'] } 商业发票CI下载 {else /} 未变更 {/if}</a>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div class="disitem">
+                                                <span>变更后形式发票PI</span>
+                                                <a href="{if $trade_pdf_c['pi'] } http://shop.gogo198.cn/foll{$trade_pdf_c['pi']} {else /} # {/if}" target="_blank">{if $trade_pdf_c['pi'] } 形式发票PI下载 {else /} 未变更 {/if}</a>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div class="disitem">
+                                                <span>变更后购销合同PO</span>
+                                                <a href="{if $trade_pdf_c['po'] } http://shop.gogo198.cn/foll{$trade_pdf_c['po']} {else /} # {/if}" target="_blank">{if $trade_pdf_c['po'] } 购销合同PO下载 {else /} 未变更 {/if}</a>
+                                            </div>
+                                        </th>
+                                    </tr> 
+                                </thead>
+                                <!--<tbody>-->
+                                    <!--<tr>-->
+                                        <!--<td>  </td>-->
+                                        <!--<td>  </td>-->
+                                        <!--<td>  </td>-->
+                                    <!--</tr>-->
+                                <!--</tbody>-->
+                            </table>
+                        </div>
+                    </div>
+                
+                    <!-- {if $entry_data['payer'] == '非买家' }
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">付款流水</label>
+                        <div class="layui-input-block">
+                            {foreach $payer_pay_file = explode(",",$entry_data['payer_pay_file']) as $vo} 
+                                <img width="90px;" src="http://declare.gogo198.cn/{$vo}" alt="">
+                            {/foreach}
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">付款人与买家关系</label>
+                        <div class="layui-form-mid layui-word-aux">{$entry_data['payer_relation']}</div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">买家委托付款文件</label>
+                        <div class="layui-input-block">
+                            {foreach $payer_entrust_file = explode(",",$entry_data['payer_entrust_file']) as $vo} 
+                                <img width="90px;" src="http://declare.gogo198.cn/{$vo}" alt="">
+                            {/foreach}
+                        </div>
+                    </div>
+                    {/if}
+                
+                    {if $entry_data['payer'] == '非收货人' }
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">付款附言</label>
+                        <div class="layui-form-mid layui-word-aux">{$entry_data['is_pay_ps']}</div>
+                    </div>
+                
+                        {if $entry_data['is_pay_ps'] == '方便附言' }
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">买家姓名</label>
+                                <div class="layui-form-mid layui-word-aux">{$entry_data['buyer_name']}</div>
+                            </div>
+                            {if $entry_data['buyer_name'] == '可写买家姓名' }
+                
+                            {else/}
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">电邮往来</label>
+                                    <div class="layui-input-block">
+                                        {foreach $email_log_file = explode(",",$entry_data['email_log_file']) as $vo} 
+                                            <img width="90px;" src="http://declare.gogo198.cn/{$vo}" alt="">
+                                        {/foreach}
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">聊天记录</label>
+                                    <div class="layui-input-block">
+                                        {foreach $chat_log_file = explode(",",$entry_data['chat_log_file']) as $vo} 
+                                            <img width="90px;" src="http://declare.gogo198.cn/{$vo}" alt="">
+                                        {/foreach}
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">代付委托</label>
+                                    <div class="layui-input-block">
+                                        {foreach $pay_entrust_file = explode(",",$entry_data['pay_entrust_file']) as $vo} 
+                                            <img width="90px;" src="http://declare.gogo198.cn/{$vo}" alt="">
+                                        {/foreach}
+                                    </div>
+                                </div>
+                            {/if}
+                        {else/}
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">提供付款人出具的替买家汇款的证明文件（买家与付款人双方盖章）</label>
+                            <div class="layui-input-block">
+                                {foreach $pay_prove_file = explode(",",$entry_data['pay_prove_file']) as $vo} 
+                                    <img width="90px;" src="http://declare.gogo198.cn/{$vo}" alt="">
+                                {/foreach}
+                            </div>
+                        </div>
+                        {/if}
+                    {/if} -->
+                
+                    <!-- 付款信息 -->
+                
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">付款信息</label>
+                        <div class="layui-input-block">
+                            {if $entry_data['pay_user_name'] != ''}
+                            <table class="layui-table" lay-size="sm">
+                                <colgroup>
+                
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>付款人名称</th>
+                                        <th>付款银行</th>
+                                        <th>付款人金额</th>
+                                        <th>付款日期</th>
+                                        <th>付款凭证</th>
+                                    </tr> 
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td> {$entry_data['pay_user_name']} </td>
+                                        <td> {$entry_data['pay_bank']} </td>
+                                        <td> {$entry_data['pay_money']} </td>
+                                        <td> {$entry_data['pay_date']} </td>
+                                        <td>
+                                            {foreach $pay_file = explode(",",$entry_data['pay_file']) as $vo} 
+                                                <img onclick="seePic(this);" width="90px;" src="http://declare.gogo198.cn/{$vo}" alt="">
+                                            {/foreach}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            {else/}
+                            <div class="layui-form-mid layui-word-aux">未填写</div>
+                            {/if}
+                        </div>
+                    </div>
+                
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">金额(币种)</label>
+                            <div class="layui-input-inline">
+                                <div class="layui-form-mid layui-word-aux">{$entry_data['entry_money']}（{$entry_data['currency']}）</div>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">入账账户</label>
+                            <div class="layui-input-inline">
+                                <div class="layui-form-mid layui-word-aux">
+                                    {if $entry_data['is_merchant_account']==0}
+                                        {$entry_data['money_type']}账户
+                                    {else}
+                                        账号名称：{$entry_data['merchant_account']['account_name']}<br />银行名称：{$entry_data['merchant_account']['bank_name']}<br />账号：{$entry_data['merchant_account']['account']}
+                                    {/if}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">手续费</label>
+                            <div class="layui-input-inline">
+                                <div class="layui-form-mid layui-word-aux">
+                                    {if $offshore_entry_info['entry_type']==1}
+                                        金额：{$offshore_entry_info['money']} ，币种：{$offshore_entry_info['currency']}
+                                    {else}
+                                        费率：{$offshore_entry_info['trade_rate']} ，最低收取：{$offshore_entry_info['trade_low_money']}
+                                    {/if}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">红包使用</label>
+                            <div class="layui-input-inline">
+                                {if $entry_data['red_pack_id']}
+                                <div class="layui-form-mid layui-word-aux">
+                                    <p>红包类型：{$entry_data['red_pack_type']}</p>
+                                    <p>应付金额：{$entry_data['yingfu_money']}</p>
+                                    <p>抵扣金额：{$entry_data['red_pack_money']}</p>
+                                    <p>实付金额：{$entry_data['shifu_money']}</p>
+                                </div>
+                                {else}
+                                <div class="layui-form-mid layui-word-aux">未使用</div>
+                                {/if}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--入款凭证-->
+                    {if $entry_data['payment_voucher_file']}
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">入款凭证文件</label>
+                        <div class="layui-input-block">
+                            {foreach $payment_voucher_file = explode(",",$entry_data['payment_voucher_file']) as $ke=> $vo}
+                            <a href="https://decl.gogo198.cn/{$vo}" target="_blank">
+                                文件{$ke+1}
+                                <!--<img width="90px;" src="" alt="">-->
+                            </a>
+                            {/foreach}
+                        </div>
+                    </div>
+                    {/if}
+
+                    {if !empty($entry_data['pay_user_name'])}
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">付款账户信息</label>
+                        <div class="layui-input-block">
+                            <table  class="layui-table" lay-size="sm">
+                                <thead>
+                                    <tr>
+                                        <th>账户名称</th>
+                                        <th>银行名称</th>
+                                        <th>银行账号</th>
+                                        <th>金额</th>
+                                        <th>日期</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{$entry_data['pay_user_name']}</td>
+                                        <td>{$entry_data['pay_bank']}</td>
+                                        <td>{$entry_data['pay_account_name']}</td>
+                                        <td>{$entry_data['pay_money']}</td>
+                                        <td>{$entry_data['pay_date']}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {/if}
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">审核结果</label>
+                        <div class="layui-input-block">
+                            <select name="status" lay-verify="required" lay-search="" lay-filter="check_status">
+                                <option value="">请选择</option>
+                                <option value="1" {if ($entry_data['status']==0 || $entry_data['status']==2 || $entry_data['status']==3)}disabled{/if}>审核已通过，款项已入账</option>
+                                <option value="2" {if $entry_data['status']==1}disabled{/if}>审核不通过，敬请再提交</option>
+                                <option value="3" {if ($entry_data['status']==2 || $entry_data['status']==4 || $entry_data['status']==1 || $entry_data['status']==3)}disabled{/if}>审核初通过，正待收款中</option>
+                                <option value="4" {if ($entry_data['status']==0 || $entry_data['status']==2 || $entry_data['status']==1|| $entry_data['status']==4)}disabled{/if}>款项已到账，正在审查中</option>
+                            </select>
+                            <input type="hidden" name="status_text" id="status_text">
+                        </div>
+                    </div>
+                
+                    <input type="hidden" name="real_entry_money" value="{$entry_data['real_entry_money']}">
+                    <!-- 到账审查 -->
+                    <div id="shencha" style="display: none;">    
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">到账日期</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="receipt_date" id="receipt_date" placeholder="" autocomplete="off" class="layui-input" value="{$entry_data['receipt_date']}">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">到账金额</label>
+                                <div class="layui-input-inline">
+                                    <input type="number" name="entryed_money" placeholder="请输入实际到账金额" autocomplete="off" class="layui-input" value="{$entry_data['entryed_money']}">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">手续费</label>
+                                <div class="layui-input-inline">
+                                    <input type="number" name="entry_cost" placeholder="请输入入账手续费" autocomplete="off" class="layui-input" value="{$entry_data['entry_cost']}">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">是否异常</label>
+                                <div class="layui-input-inline">
+                                    <select name="abnormal" lay-filter="check_abnormal">
+                                        <option value="正常" {if $entry_data['abnormal'] == '正常'}selected{/if}>正常</option>
+                                        <option value="异常" {if $entry_data['abnormal'] == '异常'}selected{/if}>异常</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <div class="layui-form-item layui-form-text" id="abnormal_remark_div" style="display: none;">
+                            <label class="layui-form-label">异常原因</label>
+                            <div class="layui-input-block">
+                                <textarea placeholder="请输入异常原因" name="abnormal_remark" class="layui-textarea">{$entry_data['abnormal_remark']}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- 附言管理 -->
+                    <div class="layui-form-item layui-form-text" id="pay_postscript_div" style="display: none;">
+                        <label class="layui-form-label">付款附言</label>
+                        <div class="layui-input-block">
+                            <textarea placeholder="请输入转账附言" oninput="wordLeg(this);" maxlength="300" onpropertychange="if(value.length>300) value=value.substr(0,300)" name="pay_postscript" class="layui-textarea">{$pay_postscript}</textarea>
+                            <div class="word"><span class="text_count">0</span>&nbsp;/&nbsp;<span class="num_count" id="numCount">300</span></div>
+                        </div>
+                    </div>
+                
+                    <!-- 审核不通过原因 -->
+                    <div class="layui-form-item layui-form-text" id="remark_div" style="display: none;">
+                        <label class="layui-form-label">原因</label>
+                        <div class="layui-input-block">
+                          <textarea name="remark" placeholder="请输入拒绝原因" class="layui-textarea"></textarea>
+                        </div>
+                    </div>    
+                
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn" lay-submit lay-filter="formDemo">立即保存</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>        
+
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+
+<script>
+    layui.use(['form','upload','laydate'], function(){
+        var form = layui.form,upload = layui.upload, laydate = layui.laydate;
+
+        laydate.render({
+            elem: '#receipt_date'
+            ,trigger: 'click'
+        });
+
+        
+        form.on('select(check_abnormal)', function (data) {
+            if( data.value == '正常' )
+            {
+                $("#abnormal_remark_div").hide();
+            }else{
+                $("#abnormal_remark_div").show();
+            }
+        });
+
+        form.on('select(check_status)', function (data) {
+            
+            $("#status_text").val($(this).text());
+            switch (data.value) {
+                case "1" :
+                    $("#remark_div").hide();
+                    $("#pay_postscript_div").hide();
+                    $("#shencha").hide();
+                break;
+                case "2" :
+                    $("#remark_div").show();
+                    $("#pay_postscript_div").hide();
+                    $("#shencha").hide();
+                break;
+                case "3" :
+                    $("#remark_div").hide();
+                    $("#pay_postscript_div").show();
+                    $("#shencha").hide();
+                break;
+                case "4" :
+                    $("#remark_div").hide();
+                    $("#pay_postscript_div").hide();
+                    $("#shencha").show();
+                break;
+            }
+        });
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            if(data.field['status'] == 2 && data.field['remark'] == '')
+            {
+                layer.msg('拒绝原因不能为空！');
+                return false;
+            }
+            
+            if(data.field['status'] == 3 && data.field['pay_postscript'] == '')
+            {
+                layer.msg('付款附言不能为空！');
+                return false;
+            }
+
+            if( data.field['status'] == 4 && data.field['entryed_money'] == 0 ) {
+                layer.msg('请填写正确的到账金额！');
+                return false;
+            }
+
+                $.ajax({
+                    url:'{:Url("admin/entryManage/noklist_check")}',
+                    type:"POST",
+                    dataType:"json",
+                    data:data.field,
+                    success:function (res) {
+                        layer.msg(res.message, {
+                                icon: res.code == 1 ? 1 : 2,
+                                time: 2000
+                            }, function(){
+                                if(res.code == 1)
+                                {
+                                    parent.window.location.reload();
+                                    var index = parent.layer.getFrameIndex(window.name);
+                                    parent.layer.close(index);
+                                }
+                        });
+                    },
+                    error:function (xhr) {
+                        layer.msg('链接服务错误..');
+                    }
+                });
+            return false;
+        });
+
+        //买家信息提交
+        form.on('submit(change_buyer)', function(data){
+            // console.log(data);return false;
+            if(data.field.buyer==''){
+                layer.msg('请选择更换的买家！');
+                return false;
+            }
+            data.field.orderid="{$shop_order['id']}";
+            $.ajax({
+                url:'{:Url("admin/entryManage/change_buyer_info")}',
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (res) {
+                    layer.msg(res.message, {
+                        icon: res.code == 1 ? 1 : 2,
+                        time: 2000
+                    }, function(){
+                        if(res.code == 1)
+                        {
+                            parent.window.location.reload();
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }
+                    });
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            return false;
+        });
+
+        //卖家信息提交
+        form.on('submit(change_seller)', function(data){
+            // console.log(data);return false;
+            if(data.field.buyer==''){
+                layer.msg('请选择更换的买家！');
+                return false;
+            }
+            data.field.orderid="{$shop_order['id']}";
+            $.ajax({
+                url:'{:Url("admin/entryManage/change_seller_info")}',
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (res) {
+                    layer.msg(res.message, {
+                        icon: res.code == 1 ? 1 : 2,
+                        time: 2000
+                    }, function(){
+                        if(res.code == 1)
+                        {
+                            parent.window.location.reload();
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }
+                    });
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            return false;
+        });
+
+        window.wordLeg = function (obj) {
+            var currleg = $(obj).val().length;
+            var length = $(obj).attr('maxlength');
+            if (currleg > length) {
+                layer.msg('字数请在' + length + '字以内');
+            } else {
+                $('.text_count').text(currleg);
+            }
+        }
+
+        window.seePic = function (obj) {
+            layer.open({
+                type: 1,
+                title: false,
+                closeBtn: 1,
+                area: ['auto'],
+                skin: 'layui-layer-nobg',
+                shadeClose: true,
+                content: '<img width="100%" src="' + $(obj)[0].src + '" />'
+            });
+        }
+
+        window.changeBuyer = function (type) {
+            switch (type) {
+                case 'pi' :
+                    var url = "{:Url('admin/entryManage/change_buyer')}&type=pi&entry_id={$entry_data['id']}";
+                break;
+                case 'ci' :
+                var url = "{:Url('admin/entryManage/change_buyer')}&type=ci&entry_id={$entry_data['id']}";
+                break;
+                case 'po' :
+                var url = "{:Url('admin/entryManage/change_buyer')}&type=po&entry_id={$entry_data['id']}";
+                break;
+            }
+            var index = layer.open({
+                type: 2,
+                title: '买家变更',
+                content: url,
+                area: ['100%','100%'], 
+            });
+            
+            //layer.full(index);
+        }
+    });
+
+    function open2(type){
+        if(type==1){
+            let index = layer.open({
+                type:2,
+                title:'单证下载',
+                area: ['100%','100%'],
+                content:"{:Url('admin/entryManage/document_download')}&entry_data={$entry_data['id']}"
+            });
+            // layer.full(index);
+        }else{
+            layer.open({
+                type:2,
+                title:'买家变更',
+                area: ['100%','100%'],
+                content:"{:Url('admin/entryManage/buyer_change')}&entry_data={$entry_data['id']}"
+            });
+        }
+
+    }
+
+
+</script>
+</html>

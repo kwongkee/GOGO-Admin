@@ -1,0 +1,83 @@
+{template 'header'}
+	<div class="container-fluid">
+		<h4><span class='glyphicon glyphicon-circle-arrow-right'></span>&nbsp;&nbsp;签到开关</h4>
+		<div class="row">
+			<div class="col-md-6">
+				<label>签到开关</label>
+				{if $this->settings['signin_key'] == 'open'}
+				<button class="form-control btn btn-sm btn-success" onclick="doSave('signin_key','close')">已开启签到</button>
+				{else}
+				<button class="form-control btn btn-sm btn-danger" onclick="doSave('signin_key','open')">已关闭签到</button>
+				{/if}
+				<p class="help-block">控制是否开启签到功能</p>
+			</div>
+		</div>
+		<br>
+		<h4><span class='glyphicon glyphicon-circle-arrow-right'></span>&nbsp;&nbsp;签到积分设置</h4>
+		<div class="row">
+			<div class="col-md-6">
+				<label>首次签到积分底数</label>
+				<input type="text" class="form-control" value="{php echo $this->settings['signin_credit']}" id='signin_credit' placeholder=''>
+				<p class="help-block">第一次签到所获得的底数，连续签到可以设置连续递增积分值</p>
+				<p class="help-block">系统已限制每天只能签到一次（防止刷积分）</p>
+				<label>递增积分数</label>
+				<input type="text" class="form-control" value="{php echo $this->settings['signin_credit_grow']}" id='signin_credit_grow' placeholder='0'>
+				<p class="help-block">设置连续签到递增积分值,如果不填写默认为0</p>
+				<p class="help-block">为0则，连续签到均为首次签到积分底数</p>
+				<button class="btn btn-sm btn-info" onclick="doSave('signin_credit_save')">保存</button>
+			</div>
+		</div>
+		<br>
+		<br>
+	</div>
+	<script type="text/javascript">
+	function doSave(type,val) {
+
+		if(!type) {
+			return false;
+		}
+
+		// 客服信息
+		if(type == 'signin_credit_save') {
+			var signin_credit = $("#signin_credit").val();
+			var signin_credit_grow = $("#signin_credit_grow").val();
+
+			if(!signin_credit_grow){
+				if(confirm('确认不添加递增积分数？')) {
+					return ;
+				}
+			}
+
+			if(signin_credit <= 0 || !signin_credit) {
+				alert('积分数量不能小于等于0，如果不需要添加积分，请关闭开关');
+				return;
+			}
+		}
+
+		if(type == 'signin_key') {
+
+		}
+		
+		$.ajax({
+			type:'post',
+			data:{
+				dataType:type, // 数据类型区分
+				signin_credit:signin_credit,
+				signin_credit_grow:signin_credit_grow,
+				setval:val
+			},
+
+			url:"{php echo $this->createWebUrl('settingform')}",
+			success:function(d) {
+				if(d.res == '100') {
+					alert('保存成功');
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+
+	}
+	</script>
+{template 'footer'}

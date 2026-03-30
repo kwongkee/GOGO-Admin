@@ -1,0 +1,96 @@
+{template 'common/header'}
+<script>
+    require(['jquery', 'util', 'datetimepicker'], function ($, u) {
+        //停车场设置
+        $(".park_pay_type").change(function () {
+            var park_pay_type = $(this).val();
+            switch (park_pay_type) {
+                case '1':
+                    //按次
+                    $('.park_pay_type_count_credit_group').show();
+                    $(".park_pay_type_time_credit_group").hide();
+                    $(".park_pay_type_discount_group").hide();
+                    break;
+                case '2':
+                    //按时
+                    $(".park_pay_type_count_credit_group").hide();
+                    $(".park_pay_type_time_credit_group").show();
+                    $(".park_pay_type_discount_group").hide();
+                    break;
+                case '3':
+                    //微信支付
+                    $(".park_pay_type_count_credit_group").hide();
+                    $(".park_pay_type_time_credit_group").hide();
+                    $(".park_pay_type_discount_group").show();
+                    break;
+            }
+        });
+    });
+</script>
+<div class="clearfix">
+    <form id="theform" class="form form-horizontal" action="" method="post">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                停车场收费规则
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            <label for="park_pay_type1">收费链接：</label>
+                            {$_W['siteroot']}app/index.php?i={$_W['uniacid']}&c=entry&do=park_pay&m=wxz_shoppingmall
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            <label for="park_pay_type1">按次扣积分:</label>
+                            <input type="radio" value="1" id="park_pay_type1" name="park_pay_type" class="park_pay_type" {if $settings['park_pay_type']==1}checked="checked"{/if}/>
+                                   <label for="park_pay_type2">  按时长扣积分:</label>
+                            <input type="radio" value="2" id="park_pay_type2" name="park_pay_type" class="park_pay_type" {if $settings['park_pay_type']==2}checked="checked"{/if}/>
+                                   <label for="park_pay_type3">微信现金:</label>
+                            <input type="radio" value="3" id="park_pay_type3" name="park_pay_type" class="park_pay_type" {if $settings['park_pay_type']==3}checked="checked"{/if}/>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group park_pay_type_count_credit_group"  {if $settings['park_pay_type']!=1}style="display:none"{/if}>
+                     <label class="col-xs-12 col-sm-3 col-md-2 control-label" for="park_pay_type_count_credit">每次停车收费积分</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            <input type="text" id="park_pay_type_count_credit" class="form-control span7" placeholder="" name="park_pay_type_count_credit" value="{$settings['park_pay_type_count_credit']}">
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group park_pay_type_time_credit_group"  {if $settings['park_pay_type']!=2}style="display:none"{/if}>
+                     <label class="col-xs-12 col-sm-3 col-md-2 control-label">一元停车费消耗积分</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            <input type="text" id="scan_title" class="form-control span7" placeholder="" name="park_pay_type_time_credit" value="{$settings['park_pay_type_time_credit']}">
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group park_pay_type_discount_group"  {if $settings['park_pay_type']!=3}style="display:none"{/if}>
+                     <label class="col-xs-12 col-sm-3 col-md-2 control-label">微信现金折扣 (最大100)</label>
+                    <div class="col-sm-9 col-xs-12">
+                        <span class="help-block">
+                            <input type="text" id="scan_title" class="form-control span7" placeholder="" name="park_pay_type_discount" value="{$settings['park_pay_type_discount']}">
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
+                    <div class="col-md-2 col-lg-1">
+                        <input name="submit" type="submit" value="保存" class="btn btn-primary btn-block" />
+                        <input type="hidden" name="token" value="{$_W['token']}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{template 'common/footer'}

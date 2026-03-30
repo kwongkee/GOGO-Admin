@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.baidu.com" versionCode="0.6">
+	<application setting="true">
+		<name><![CDATA[微直播]]></name>
+		<identifie><![CDATA[jer_live]]></identifie>
+		<version><![CDATA[6.0.6]]></version>
+		<type><![CDATA[biz]]></type>
+		<ability><![CDATA[现场图文直播，可用于现场活动、线下体验的直播报道。内容直观丰富的展现给粉丝了解。]]></ability>
+		<description><![CDATA[现场图文直播，可用于现场活动、线下体验的直播报道。内容直观丰富的展现给粉丝了解。]]></description>
+		<author><![CDATA[微赞]]></author>
+		<url><![CDATA[http://www.baidu.com]]></url>
+	</application>
+	<platform>
+		<subscribes>
+		</subscribes>
+		<handles>
+			<message type="text" />
+		</handles>
+		<rule embed="true" />
+		<card embed="false" />
+	</platform>
+	<bindings>
+		<cover>
+			<entry title="入口设置" do="index" state="" direct="false" />
+		</cover>
+		<menu>
+			<entry title="直播管理" do="live" state="" direct="false" />
+		</menu>
+	</bindings>
+	<install><![CDATA[CREATE TABLE IF NOT EXISTS `ims_jer_live` (
+  `id` mediumint(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` mediumint(10) DEFAULT NULL,
+  `rid` mediumint(10) DEFAULT '0',
+  `name` varchar(255) DEFAULT NULL,
+  `thumb` varchar(255) DEFAULT NULL,
+  `description` varchar(400) DEFAULT NULL,
+  `view` int(10) DEFAULT '0',
+  `message_add_status` tinyint(2) DEFAULT '0',
+  `comment_add_status` tinyint(2) DEFAULT '0',
+  `sort` int(10) DEFAULT '0',
+  `live_share_title` varchar(255) DEFAULT NULL,
+  `live_share_desc` varchar(255) DEFAULT NULL,
+  `live_share_img` varchar(255) DEFAULT NULL,
+  `live_type` tinyint(2) DEFAULT NULL,
+  `live_charge` tinyint(2) DEFAULT NULL,
+  `live_charge_price` varchar(20) DEFAULT NULL,
+  `live_video` text,
+  `live_tab` text,
+  `live_marquee_status` tinyint(2) DEFAULT NULL,
+  `live_marquee_content` text,
+  `live_top_ad_img` varchar(255) DEFAULT NULL,
+  `live_top_ad_img_link` varchar(255) DEFAULT NULL,
+  `createtime` int(10) DEFAULT NULL,
+  `starttime` int(10) DEFAULT NULL,
+  `status` tinyint(2) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_jer_live_attachment` (
+  `id` mediumint(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` mediumint(10) DEFAULT NULL,
+  `mid` mediumint(10) DEFAULT NULL,
+  `type` tinyint(2) DEFAULT '0' COMMENT '0:image;1:video',
+  `url` varchar(255) DEFAULT NULL,
+  `createtime` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_jer_live_ban` (
+  `id` mediumint(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` mediumint(10) DEFAULT NULL,
+  `lid` mediumint(10) DEFAULT NULL,
+  `uid` mediumint(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_jer_live_charge_log` (
+  `id` mediumint(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` mediumint(10) DEFAULT NULL,
+  `out_trade_no` varchar(100) DEFAULT NULL,
+  `lid` mediumint(10) DEFAULT NULL,
+  `uid` mediumint(10) DEFAULT NULL,
+  `fee` decimal(10,2) DEFAULT NULL,
+  `status` tinyint(2) DEFAULT NULL,
+  `createtime` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_jer_live_comment` (
+  `id` mediumint(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` mediumint(10) DEFAULT NULL,
+  `lid` mediumint(10) DEFAULT NULL,
+  `mid` mediumint(10) DEFAULT NULL,
+  `uid` mediumint(10) DEFAULT NULL,
+  `reuid` mediumint(10) DEFAULT '0',
+  `content` varchar(255) DEFAULT NULL,
+  `status` tinyint(2) DEFAULT NULL,
+  `createtime` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_jer_live_message` (
+  `id` mediumint(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` mediumint(10) DEFAULT NULL,
+  `lid` mediumint(10) DEFAULT NULL,
+  `uid` mediumint(10) DEFAULT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `zan_count` smallint(10) unsigned DEFAULT '0',
+  `comment_count` smallint(10) unsigned DEFAULT '0',
+  `status` tinyint(2) DEFAULT NULL,
+  `createtime` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_jer_live_presenter` (
+  `id` mediumint(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` mediumint(10) DEFAULT NULL,
+  `lid` mediumint(10) DEFAULT NULL,
+  `uid` mediumint(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_jer_live_reward_log` (
+  `id` mediumint(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` mediumint(10) DEFAULT NULL,
+  `out_trade_no` varchar(100) DEFAULT NULL,
+  `lid` mediumint(10) DEFAULT NULL,
+  `uid` mediumint(10) DEFAULT NULL,
+  `fee` decimal(10,2) DEFAULT NULL,
+  `status` tinyint(2) DEFAULT NULL,
+  `createtime` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_jer_live_zan` (
+  `id` mediumint(10) NOT NULL AUTO_INCREMENT,
+  `uniacid` mediumint(10) DEFAULT NULL,
+  `lid` mediumint(10) DEFAULT NULL,
+  `mid` mediumint(10) DEFAULT NULL,
+  `uid` mediumint(10) DEFAULT NULL,
+  `createtime` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+]]></install>
+	<uninstall><![CDATA[DROP TABLE IF EXISTS `ims_jer_live`;
+DROP TABLE IF EXISTS `ims_jer_live_attachment`;
+DROP TABLE IF EXISTS `ims_jer_live_ban`;
+DROP TABLE IF EXISTS `ims_jer_live_charge_log`;
+DROP TABLE IF EXISTS `ims_jer_live_comment`;
+DROP TABLE IF EXISTS `ims_jer_live_message`;
+DROP TABLE IF EXISTS `ims_jer_live_presenter`;
+DROP TABLE IF EXISTS `ims_jer_live_reward_log`;
+DROP TABLE IF EXISTS `ims_jer_live_zan`;
+]]></uninstall>
+	<upgrade><![CDATA[upgrade.php]]></upgrade>
+</manifest>

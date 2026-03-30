@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <link href="../addons/ewei_shopv2/static/css/verified/base.css" rel="stylesheet" type="text/css"/>
+    <link href="../addons/ewei_shopv2/static/css/verified/iconfont.css" rel="stylesheet" type="text/css"/>
+    <link href="../addons/ewei_shopv2/static/css/verified/layout.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="../addons/ewei_shopv2/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../addons/ewei_shopv2/static/js/rem.js"></script>
+    <title>购买月卡</title>
+</head>
+<body class="" style="background: #eee;">
+<!--<header class="header">购买月卡</header>-->
+<div class="card_main">
+    <div class="cardBox">
+        <h2>选择月卡</h2>
+        <div class="card">
+            <p class="text-center" style="text-align: left;">{$card_detail['month_name']}</p>
+            <div class="card_fee">￥ {$card_detail['month_money']}元</div>
+            <div class="clearfix">
+                <span class="left">备注：</span>
+                <span class="right">有效期：{php echo ceil(($card_detail['expir_end']-$card_detail['expir_start'])/86400)}天</span>
+            </div>
+        </div>
+        <ul class="card_list">
+            {if $card_detail['fit_type'] == 0}
+            <li class="clearfix">
+                <span class="left">区域</span>
+                <span class="right">
+					{$card_detail['addr']}
+				</span>
+            </li>
+            {else if $card_detail['fit_type'] == 1}
+            <li class="clearfix">
+                <span class="left">路段</span>
+                <span class="right">
+					{$card_detail['road_rand']}
+				</span>
+            </li>
+            {else if $card_detail['fit_type'] == 2}
+            <li class="clearfix">
+                <span class="left">泊位</span>
+                <span class="right">
+					{$card_detail['park']}
+				</span>
+            </li>
+            {else if $card_detail['fit_type'] == 3}
+            <li class="clearfix">
+                <span class="left">时段</span>
+                <span class="right">
+					{$card_detail['period']}
+				</span>
+            </li>
+            {/if}
+
+            <li class="clearfix">
+                <span class="left">购买费用</span>
+                <span class="right cred">
+                    {if !empty($apl)&&$apl['is_up']=='Y'}
+                    {$apl['up_money']}
+                    {else}
+                    ￥ {$card_detail['month_money']}
+                    {/if}
+
+				</span>
+            </li>
+        </ul>
+    </div>
+
+</div>
+<a href="{php echo mobileUrl('parking/cards')}&type_id={$card_detail['id']}" style="border: 1px solid #00A5FF;width: 90%;height: 39px;line-height: 32px;text-align: center;margin-left: 20px;background-color: #00A5FF;color: white;">前往申请</a>
+</body>
+</html>

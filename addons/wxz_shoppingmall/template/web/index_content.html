@@ -1,0 +1,98 @@
+{template 'common/header'}
+<script>
+    require(['jquery', 'util', 'datetimepicker'], function ($, u) {
+        $(".type").change(function () {
+            var type = $(this).val();
+            var page_type_url = $(".page_type_url").val();
+            location.href = page_type_url + '&type=' + type;
+        })
+    });
+</script>
+<div class="clearfix">
+    <form id="theform" class="form form-horizontal" action="" method="post">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <span class='page_type'>{$pageTypes[$type]}</span><span>管理</span>
+            </div>
+            <div class="panel-body">
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">选择页面</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <select class="type form-control" name='type'>
+                                {php foreach($pageTypes as $k=>$pageType) {}
+                                <option value="{$k}" {if $type==$k}selected="selected"{/if}>{$pageType}</option>
+                                {php } }
+                            </select>
+                        </div>
+                        <input type="hidden" value='{php echo $this->createWebUrl("index_content")}' class="page_type_url"/>
+                    </div>
+
+                    {php for($i=1;$i<=$banner_num;$i++){ }
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">Banner{$i}图片</label>
+                        <div class="col-sm-9 col-xs-12">
+                            {php echo tpl_form_field_image("banner".$i,$index_info["banner".$i."_arr"][0])}
+                            <span>推荐尺寸(750x360)</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">Banner{$i}链接</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <input type="text" id="scan_title" class="form-control span7" placeholder="" name="banner{$i}_url" value='{php echo $index_info["banner".$i."_arr"][1];}'>
+                        </div>
+                    </div>
+                    {php } }
+                    {if $type==1}
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">广告1</label>
+                        <div class="col-sm-9 col-xs-12">
+                            {php echo tpl_form_field_image("adv1",$index_info["adv1_arr"][0])}
+                            <span>推荐尺寸(750x360)</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">广告1链接</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <input type="text" id="scan_title" class="form-control span7" placeholder="" name="adv1_url" value='{php echo $index_info["adv1_arr"][1];}'>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">广告2</label>
+                        <div class="col-sm-9 col-xs-12">
+                            {php echo tpl_form_field_image("adv2",$index_info["adv2_arr"][0])}
+                            <span>推荐尺寸(750x360)</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">广告2链接</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <input type="text" id="scan_title" class="form-control span7" placeholder="" name="adv2_url" value='{php echo $index_info["adv2_arr"][1];}'>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">推荐商铺id(逗号隔开)</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <input type="text" id="scan_title" class="form-control span7" placeholder="" name="shop_ids" value="{$index_info['shop_ids']}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">推荐活动id(逗号隔开)</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <input type="text" id="scan_title" class="form-control span7" placeholder="" name="shop_activity_ids" value="{$index_info['shop_activity_ids']}">
+                        </div>
+                    </div>
+                    {/if}
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
+                    <div class="col-md-2 col-lg-1">
+                        <input name="submit" type="submit" value="保存" class="btn btn-primary btn-block" />
+                        <input type="hidden" name="token" value="{$_W['token']}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{template 'common/footer'}

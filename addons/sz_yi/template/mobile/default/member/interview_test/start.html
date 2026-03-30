@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>个人信息</title>
+	<!--手机端需要添加-->
+	<!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+	<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+
+	<!--手机端需要添加---->
+    <link rel="stylesheet" type="text/css" href="../addons/sz_yi/static/interview_test/css/test_rx.css" />
+    <link rel="stylesheet" type="text/css" href="../addons/sz_yi/static/interview_test/css/home.css" />
+	<script src="../addons/sz_yi/static/interview_test/js/jquery-1.8.3.min.js"></script>
+	<script src="../addons/sz_yi/static/interview_test/js/jQuery.fontFlex.js"></script>
+	<script>
+	$(document).ready(function(e) {
+		//320宽度的时候html字体大小是20px;、640宽度的时候html字体大小是40px;
+		$('html').fontFlex(20, 40, 16); 
+		//
+	     $(".dxt_box li").click(function(){
+			$(this).addClass("on").siblings().removeClass("on");
+			$(this).parent(".dxt_box").parent(".kcks_title_ts").attr("date-title",1);
+			$(this).parent(".dxt_box").parent(".last").attr("date-title",0); 	
+			});
+	});
+	</script>
+	<style>
+		body{overflow-x: hidden;}
+		@media screen and (max-width: 450px) and (min-width: 321px){
+			.choose{
+				min-height: 350px;
+				margin-bottom: 0;
+			}
+			.home-but{
+				margin: 40% 0 0 24%;
+			}
+		}
+		@media screen and (max-width: 320px){
+			.choose{
+				min-height: 310px;
+				margin-bottom: 20px;
+			}
+			.home-but{
+				margin: 37% 0 0 18%;
+			}
+        }
+        /* toast */
+        #hui-toast{width:100%; position:fixed; z-index:21; left:0; bottom:50px; text-align:center;}
+        #hui-toast-msg{margin:0 auto; line-height:22px; background:rgba(0,0,0,0.7); padding:10px; color:#FFFFFF; font-size:14px; text-align:center; max-width:200px; border-radius:6px; display:inline-block;}
+	</style>	
+</head>
+<body>
+<div class="position">
+	<div class="home-logo">
+		<img src="../addons/sz_yi/static/interview_test/images/logo.png" alt="">
+	</div>	
+	<div class="position-con">
+		<form id="form1" class="hui-form">
+			<h2 class="position-title">请输入姓名和手机</h2>
+			<div class="choose">
+				<ul>
+					<li><span>姓名</span><input type="text" id="realname" placeholder="请输入姓名" name="realname" class="info-input" checkType="string" checkData="2,10" checkMsg="姓名应为2-10个字符"></li>
+					<li><span>手机</span><input type="text" id='mobile' placeholder="请输入手机" name="mobile" class="info-input" checkType="phone" checkMsg="手机格式错误" maxlength="11"></li>
+					<li><span></span><input type="text" id="code" placeholder="请输入验证码" name="code" class="info-input" style="width: 30%; margin-left: 47px;" checkType="reg" checkData="^\d{4,4}$" checkMsg="验证码应该为4个数字" maxlength="4"><button type="button" id="btnSendCode" class="code">获取验证码</button></li>
+				</ul>
+				<button class="home-but" type="button" id="startTest">开始测评</button>
+			</div>
+		</form>
+	</div>
+</div>	
+<script src="../addons/sz_yi/static/travel_express/js/hui.js" type="text/javascript" charset="utf-8"></script>
+<script src="../addons/sz_yi/static/travel_express/js/hui-form.js" type="text/javascript" charset="utf-8"></script>
+<script>
+
+    hui.formInit();
+    var InterValObj; //timer变量，控制时间
+    var count = 60; //间隔函数，1秒执行
+    var curCount;//当前剩余秒数
+
+    hui('#startTest').click(function(){
+        var res = huiFormCheck('#form1');
+        if(res){
+            var data = hui.getFormData('#form1');
+            var urls = '{php echo $this->createMobileUrl("member/interview_test")}&op=choose';
+            hui.ajax({
+                url  : '{php echo $this->createMobileUrl("member/interview_test")}&op=verify',
+                type : 'POST',
+                data : data,
+                success : function(json){
+                    if(json.status==1){
+                        window.location.href = urls;
+                    }else{
+                        hui.toast(json.result.msg);
+                    }
+                },
+                error : function(e){
+                    console.log(JSON.stringify(e));
+                    hui.toast('系统错误');
+                },
+                'backType' : "JSON"
+            });
+        }
+
+    });    
+	$('#btnSendCode').click(function(){
+        if ($.trim($("#mobile").val()).length == 0) {
+            hui.toast('手机号不能为空！');
+            return false;
+        } else {
+            if (isPhoneNo($.trim($("#mobile").val())) == false) {
+                hui.toast('请输入正确的手机号！');
+                return false;
+            }
+        }
+
+        curCount = count;
+
+        hui.ajax({
+            url  : '{php echo $this->createMobileUrl("member/sendcode")}',
+            type : 'POST',
+            data : {mobile: $("#mobile").val()},
+            success : function(json){
+                if(json.status==1){
+                    //设置button效果，开始计时
+                    $("#btnSendCode").attr("disabled", "true");
+                    $("#btnSendCode").text(curCount + "秒后重新获取验证码");
+                    InterValObj = window.setInterval(SetRemainTime, 1000); //启动计时器，1秒执行一次
+                }else{
+                    hui.toast(json.result);
+                }
+            },
+            error : function(e){
+                console.log(JSON.stringify(e));
+                hui.toast('系统错误');
+            },
+            'backType' : "JSON"
+        });
+
+    });
+
+    //timer处理函数
+    function SetRemainTime() {
+        if (curCount == 0) {                
+            window.clearInterval(InterValObj);//停止计时器
+            $("#btnSendCode").removeAttr("disabled");//启用按钮
+            $("#btnSendCode").text("重新发送验证码");
+        }
+        else {
+            curCount--;
+            $("#btnSendCode").text(curCount + "秒后重新验证码");
+        }
+    }
+
+    // 手机号码验证
+    function isPhoneNo(phone) {
+        var pattern = /^1[34578]\d{9}$/;
+        return pattern.test(phone);
+    }
+</script>
+</body>
+</html>

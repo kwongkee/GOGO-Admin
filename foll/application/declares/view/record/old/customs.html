@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+	<script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+	<style>
+		.header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+		.header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+		.header button{float: right;margin-top: -5px;}
+		#formli {width: 100%;float: left;}
+		#formli li{float: left;}
+		
+		#formli2 {width: 100%;float: left;}
+		#formli2 li{float: left;margin-right: 10px;}
+	</style>
+</head>
+<body style="padding: 10px;">
+	
+	<div class="header">
+		<span>物流企业信息</span>
+		<!--<button class="layui-btn layui-btn-xs" style="float: right;" onclick="add();">添加</button>-->
+		<div></div>
+	</div>
+	
+	<div style="margin: 15px 0px;"></div>
+	
+	<form class="layui-form layui-form-pane" id="form1">
+		
+		<!--<input type="hidden" name="id" value="1">-->
+
+		<div class="layui-form-item">
+	  		<label class="layui-form-label">电子口岸代码:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="domain[eportCode]" id="" value="<?php if(isset($info['eportCode'])){echo $info['eportCode'];}?>" placeholder="请输入电子口岸代码"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">01：杭州， 02：宁波， 03：郑州，
+04：上海， 05：重庆， 06：广州，
+07：深圳， 08：西安， 09：平潭，
+10：青岛， 11：平潭（地方版），
+12：广州-黄埔， 13：福州， 14：珠海 15:天津</div>
+	  	</div>
+	  	
+	  	<div class="layui-form-item">
+	  		<label class="layui-form-label">电商平台备案号:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="domain[eCompanyCode]" value="<?php if(isset($info['eCompanyCode'])){echo $info['eCompanyCode'];}?>" placeholder="请输入电商平台备案号"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">电商平台在电子口岸的备案号</div>
+	  	</div>
+	  	
+	  	<div class="layui-form-item">
+	  		<label class="layui-form-label">电商平台备案名称:</label>
+	  		<div class="layui-input-block">
+	  			<input type="text" class="layui-input" name="domain[eCompanyName]" value="<?php if(isset($info['eCompanyName'])){echo $info['eCompanyName'];}?>" placeholder="请输入电商平台备案名称"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">电商平台备案名称</div>
+	  	</div>
+		
+		<div class="layui-form-item">
+	  		<label class="layui-form-label">进口类型:</label>
+	  		<div class="layui-input-block">
+	  			<input type="number" maxlength="2" class="layui-input" name="domain[intype]" value="<?php if(isset($info['intype'])){echo $info['intype'];}?>" placeholder="请输入进口类型"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">1：保税进口 2:直邮进口</div>
+	  	</div>
+	  	
+	  	<div class="layui-form-item">
+	  		<label class="layui-form-label">出口类型:</label>
+	  		<div class="layui-input-block">
+	  			<input type="number" maxlength="2" class="layui-input" name="domain[outtype]" value="<?php if(isset($info['outtype'])){echo $info['outtype'];}?>" placeholder="请输入出口类型"/>
+	  		</div>
+	  		<div class="layui-form-mid layui-word-aux">1:一般出口 2：保税出口</div>
+	  	</div>
+	</form>
+	
+	<div class="layui-form-item">
+		<div class="layui-input-block">
+			<button class="layui-btn layui-btn-lx" onclick="save()">保 存</button>
+			<input type="reset" class="layui-btn layui-btn-danger layui-btn-lx" value="重 置" />
+		</div>
+	</div>
+	
+	<script type="text/javascript">
+		layui.use(['layer','form','jquery'],function(){
+			form = layui.form;
+			layer = layui.layer;
+			$ = layui.jquery;
+		});
+
+		// 保存管理员
+		function save() {
+//			var id = parseInt($('input[name="id"]').val());
+			var eportCode = $.trim($('input[name="domain[eportCode]"]').val());//电子口岸代码
+			var eCompanyCode = $.trim($('input[name="domain[eCompanyCode]"]').val());//电商平台备案号
+			var eCompanyName = $.trim($('input[name="domain[eCompanyName]"]').val());//电商平台备案名称
+			var intype = $.trim($('input[name="domain[intype]"]').val());//进口类型
+			var outtype = $.trim($('input[name="domain[outtype]"]').val());//出口类型
+
+			if(eportCode == ''){
+				layer.alert('请输入电子口岸代码',{icon:2});
+				return false;
+			}
+			
+			if(eCompanyCode == ''){
+				layer.alert('请输入电商平台备案号',{icon:2});
+				return false;
+			}
+			
+			if(eCompanyName == ''){
+				layer.alert('请输入电商平台备案名称',{icon:2});
+				return false;
+			}
+			
+			if(intype == ''){
+				layer.alert('请输入进口类型',{icon:2});
+				return false;
+			}
+			
+			if(outtype == ''){
+				layer.alert('请输入出口类型',{icon:2});
+				return false;
+			}
+
+			$.post("{:Url('Record/customsSave')}",$('#form1').serialize(),function(res){
+				console.dir(res);
+				
+				if(res.code > 0){
+					layer.alert(res.msg,{icon:2});
+				} else {
+					layer.alert(res.msg,{icon:1});
+					setTimeout(function(){
+						window.location.reload();
+					},1000);
+				}
+			});
+		}
+
+	</script>
+</body>
+</html>

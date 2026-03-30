@@ -1,0 +1,143 @@
+{template 'common/header'}
+<style>
+    .l_tableWrap .l_table_tit .l_formBar {
+        border: 0;
+        float: left;
+        font-size: 0;
+    }
+    .y_sele {
+        display: inline-block;
+        padding: 5px 0 12px 12px;
+    }
+    .y_sele_tit {
+        font-size: 14px;
+        padding: 0 0 0 10px;
+    }
+    .l_table_search{
+        margin-left: 10px;
+        margin-bottom: 5px;
+    }
+</style>
+<div class="clearfix">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            用户列表
+        </div>
+        <div class="table-responsive panel-body" style="overflow:visible;">
+            <!--            <div class="l_table_tit clearfix">
+            
+                            <form method="get" action="" name="frm" class="l_formBar" id="frm1">
+                                <input type="hidden" name="site" value="gongzhong">
+                                <input type="hidden" name="ctl" value="account">
+                                <input type="hidden" name="act" value="change_weixin_house">
+                                <input type="hidden" name="refer" value="">
+            
+            
+                                <span class="y_sele_tit">公众号ID:</span>
+                                <div class="y_sele y_size02">
+                                    <input type="text" class="form-control" name="weixin_house_id" value="">
+                                </div>
+                                <span class="y_sele_tit">楼盘小区ID:</span>
+                                <div class="y_sele y_size02">
+                                    <input type="text" class="form-control" name="hid" value="">
+            
+                                </div>
+                                <span class="y_sele_tit">楼盘名称:</span>
+                                <div class="y_sele y_size01">
+                                    <input type="text" class="form-control" name="house_title" value="">
+                                </div>
+                                <span class="y_sele_tit">城市代码:</span>
+                                <div class="y_sele y_size02">
+                                    <input type="text" class="form-control" name="city_code" value="">
+                                </div>
+                                <span class="y_sele_tit">类型:</span>
+                                <div class="y_sele y_size02">
+                                    <select class="form-control" name="housetype">
+                                        <option value="">不限</option>
+                                        <option label="新房" value="xf">新房</option>
+                                        <option label="二手房" value="esf">二手房</option>
+                                        <option label="本地房产" value="bdfc">本地房产</option>
+                                        <option label="家居" value="jiaju">家居</option>
+                                        <option label="其他" value="other">其他</option>
+                                        <option label="集团号" value="jth">集团号</option>
+                                    </select>
+                                </div>
+                                <div class="btn-group l_table_search">
+                                    <button type="submit" class="btn btn-success">搜 索</button>
+                                </div>
+                            </form>
+                        </div>-->
+            <table class="table table-hover">
+                <tr>
+                    <th>ID</th>
+                    <th>昵称</th>
+                    <th>用户名</th>
+                    <th>手机</th>
+                    <th>身份证</th>
+                    <th>操作</th>
+                </tr>
+                {loop $list $row}
+                <tr>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['uid']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['nickname']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['username']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['mobile']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            {$row['idcard']}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="form-control-static">
+                            <button type="button" class="btn btn-danger" onclick="check_fans({$row['uid']}, 2)" >审核不通过</button>
+                            <button type="button" class="btn btn-success" onclick="check_fans({$row['uid']}, 1)" >审核通过</button>
+                        </p>
+                    </td>
+                </tr>
+                {/loop}
+            </table>
+        </div>
+        <div class="panel-body text-right">
+            {$pager}
+        </div>
+    </div>
+</div>
+<script>
+            function check_fans(fans_id, is_check) {
+            var pars = {};
+                    pars.fans_id = fans_id;
+                    pars.is_check = is_check;
+                    $.ajax({
+                    url: "{php echo $this->createWebUrl('ajax',array('sdo'=>'check_fans'))}",
+                            type: "post",
+                            dataType: "html",
+                            data: pars,
+                            success: function (res) {
+                            $(".submit").attr("disabled", false);
+                                    if (res == "ok") {
+                            alert("操作成功");
+                                    window.location.reload(true);
+                            } else {
+                            alert(res);
+                            }
+                            }
+                    })
+            }
+</script>
+{template 'common/footer'}

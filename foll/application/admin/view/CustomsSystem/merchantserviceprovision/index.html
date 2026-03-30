@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="common/meta"}
+    <link rel="stylesheet" href="./static/hadmin/layui/css/layui.css"></link>
+    <!-- 全局js -->
+    <script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+    <script src="./static/hadmin/layui/layui.all.js"></script>
+</head>
+<body class="gray-bg">
+
+<div class="col-sm-12">
+    <button class="layui-btn" onclick="app.create({$id});">新增</button>
+    <button class="layui-btn" onclick="window.location.reload();">刷新</button>
+
+    <div class="ibox float-e-margins">
+        <div class="ibox-content" style="display:block;" id="list1">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+
+                    <th>商户</th>
+                    <th>名称</th>
+                    <th>计费类型</th>
+                    <th>计费标准</th>
+                    <td>时间</td>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name='data' id='item'}
+                <tr>
+                    <td>{$item['company_name']}</td>
+                    <td><input type="text" name="serviceName"  id="serviceName" value="{$item['service_name']}"></td>
+                    <td>
+                        <select name="billingType" id="billingType">
+                            <option value="110" {$item["billing_type"]=="110"?"selected":""} >按票定额</option>
+                            <option value="120"  {$item["billing_type"]=="120"?"selected":""}>按重计收</option>
+                            <option value="130"  {$item["billing_type"]=="130"?"selected":""}>按额比例</option>
+                        </select>
+                    </td>
+                    <td><input type="text" name="billingStandard" id="billingStandard" value="{$item['billing_standard']}"></td>
+                    <td>{$item['create_time']}</td>
+                    <td>
+                        <a class="layui-btn layui-btn-sm layui-btn" onclick="app.post_btn_update({$item['id']});return false;">更新</a>
+                        <a class="layui-btn layui-btn-sm layui-btn-danger" onclick="app.get_btn_delete(this,{$item['id']});return false;">删除</a>
+                    </td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+</body>
+<script>
+    layui.use(['layer','form'], function(){
+        var layer = layui.layer;
+         form = layui.form;
+    });
+    const app={
+        create:function (id) {
+            layer.open({
+                type: 1,
+                area:['535px','320px'],
+                content: '<form class="layui-form" action="">\n' +
+                    '    <input type="hidden" name="mid" value="'+parseInt(id)+'">\n' +
+                    '  <div class="layui-form-item">\n' +
+                    '    <label class="layui-form-label">服务名称</label>\n' +
+                    '    <div class="layui-input-block">\n' +
+                    '      <input type="text" name="serviceName" value="" required  lay-verify="required" placeholder=""  class="layui-input">\n' +
+                    '    </div>\n' +
+                    '  </div>\n' +
+                    '  <div class="layui-form-item">\n' +
+                    '    <label class="layui-form-label">计费类型</label>\n' +
+                    '    <div class="layui-input-block">\n' +
+                    '      <select name="billingType" lay-verify="required">\n' +
+                    '        <option value=""></option>\n' +
+                    '        <option value="110">按票定额</option>\n' +
+                    '        <option value="120">按重计收</option>\n' +
+                    '        <option value="130">按额比例</option>\n' +
+                    '      </select>\n' +
+                    '    </div>\n' +
+                    '  </div>\n' +
+                    '  <div class="layui-form-item">\n' +
+                    '    <label class="layui-form-label">计费标准</label>\n' +
+                    '    <div class="layui-input-block">\n' +
+                    '      <input type="text" name="billingStandard" value="" required  lay-verify="required" placeholder=""  class="layui-input">\n' +
+                    '    </div>\n' +
+                    '  </div>\n' +
+                    '  <div class="layui-form-item">\n' +
+                    '    <div class="layui-input-block">\n' +
+                    '      <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>\n' +
+                    '      <button type="reset" class="layui-btn layui-btn-primary">重置</button>\n' +
+                    '    </div>\n' +
+                    '  </div>\n' +
+                    '</form>'
+            });
+            form.render();
+            //监听提交
+            form.on('submit(formDemo)', function(data){
+                // layer.msg(JSON.stringify(data.field));
+                app.post_btn_create(data.field);
+                return false;
+            });
+        },
+        post_btn_create:function (data) {
+            $.ajax({
+                url:"{:Url('admin/MerchantServiceProvision/create')}",
+                type:"POST",
+                dataType:"json",
+                data:data,
+                success:function (ret) {
+                    layer.msg(ret.message);
+                }
+            });
+        },
+        post_btn_update:function (id) {
+            $.ajax({
+                url:"{:Url('admin/MerchantServiceProvision/update')}",
+                type:"POST",
+                dataType: "json",
+                data:{
+                    id:id,
+                    serviceName:$('#serviceName').val(),
+                    billingType:$('#billingType').val(),
+                    billingStandard:$('#billingStandard').val()
+                },
+                success:function (ret) {
+                    layer.msg(ret.message);
+                }
+            });
+            return false;
+        },
+        get_btn_delete:function (obj,id) {
+            $.ajax({
+                url:"{:Url('admin/MerchantServiceProvision/delete')}",
+                type:"GET",
+                dataType: "json",
+                data:{
+                    id:id
+                },
+                success:function (ret) {
+                    if (ret.code===0){
+                        $(obj).parent().parent().remove();
+                    }else{
+                        layer.msg(ret.message);
+                    }
+                }
+            });
+            return false;
+        }
+    }
+
+</script>

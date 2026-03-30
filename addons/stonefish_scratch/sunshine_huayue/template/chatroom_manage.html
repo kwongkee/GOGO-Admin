@@ -1,0 +1,159 @@
+{template 'header'}
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-sm-6">
+			<label>添加聊天室</label>
+			<div class="input-group">
+				<span class="input-group-addon">聊天室名称</span>
+				<input type="text" class="form-control" id="room_name"></div>
+			<br>
+			<div class="input-group">
+				<span class="input-group-addon">聊天室描述</span>
+				<input type="text" class="form-control" id="room_desc"></div>
+			<br>
+			<button class="btn btn-info form-control" onclick="save()">保存</button>
+			<p class="help-block">后台只能添加公开无口令的聊天室</p>
+		</div>
+		<div class="col-sm-6">
+			<label>聊天室LOGO</label>
+			<script type="text/javascript">
+			function showImageDialog(elm, opts, options) {
+				require(["util"], function(util){
+					var btn = $(elm);
+					var ipt = btn.parent().prev();
+					var val = ipt.val();
+					var img = ipt.parent().next().children();
+					options = {'width':400,'extras':{'text':'ng-model=\'entry.thumb\''},'global':false,'class_extra':'','direct':true,'multiple':false};
+					util.image(val, function(url){
+						if(url.url){
+							if(img.length > 0){
+								img.get(0).src = url.url;
+							}
+							ipt.val(url.attachment);
+							ipt.attr("filename",url.filename);
+							ipt.attr("url",url.url);
+						}
+						if(url.media_id){
+							if(img.length > 0){
+								img.get(0).src = "";
+							}
+							ipt.val(url.media_id);
+						}
+					}, null, options);
+				});
+			}
+			function deleteImage(elm){
+				require(["jquery"], function($){
+					$(elm).prev().attr("src", "./resource/images/nopic.jpg");
+					$(elm).parent().prev().find("input").val("");
+				});
+			}
+			</script>
+			<div class="input-group ">
+				<input type="text" name="thumb" value="" id='room_logo' class="form-control ng-pristine ng-untouched ng-valid" autocomplete="off" disabled="disabled">
+				<span class="input-group-btn">
+					<button class="btn btn-default" type="button" onclick="showImageDialog(this);">选择图片</button>
+				</span>
+			</div>
+			<div class="input-group " style="margin-top:.5em;">
+				<img src="" onerror="this.src='./resource/images/nopic.jpg'; this.title='图片未找到.'" class="img-responsive img-thumbnail" width="150"> <em class="close" style="position:absolute; top: 0px; right: -14px;" title="删除这张图片" onclick="deleteImage(this)">×</em>
+			</div>
+			<p class="help-block">图片最佳尺寸200*136，其他尺寸可能导致图片变形</p>
+		</div>
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-sm-12">
+			<label>聊天室列表</label>
+			<table class="table">
+			<tr>
+				<th style="width:50px;">#</th>
+				<th style="width:50px;">排序</th>
+				<th></th>
+				<th>名称</th>
+				<th>类型</th>
+				<th>属性</th>
+				<th>描述</th>
+			</tr>
+			{loop $list $key $item}
+			<tr  onclick="showDetail('{$item['id']}',this);" id="item_{$item['id']}">
+				<td>{php echo $key +1}</td>
+				<td>{php echo $item['sort_id']}</td>
+				<td>
+					<img style="width:100px;height:70px;" src="{php echo $item['room_logo']}"></div>
+					<input type="hidden" id="room_logo_{$item['id']}" value="{$item['room_logo']}">
+				</td>
+				<td>{$item['room_name']}</td>
+				{if $item['room_type'] == 'normal'}<td>普通房间</td>{/if}
+				{if $item['room_type'] == 'lvb'}<td>腾讯云直播房间</td>{/if}
+				{if $item['room_type'] == 'letv'}<td>乐视云直播房间</td>{/if}
+				<td>
+					{if $item['is_public'] == 'y'}公开{else}个人{/if}|{if $item['in_type'] == 'secret'}加密：{$item['room_secret']}{else}未加密{/if}|{if $item['in_type'] == 'money'}付费{$item['room_money']}元:{$item['room_money_day']}{/if}
+				</td>
+				<td>{$item['room_desc']}</td>
+			</tr>
+			{/loop}
+			</table>
+	</div>
+</div>
+<script type="text/javascript">
+function save() {
+
+	var room_name = $('#room_name').val();
+	var room_desc = $('#room_desc').val();
+	var room_logo = $('#room_logo').val();
+
+	if(!room_name || !room_desc || !room_logo) {
+		alert('不能为空');
+		return;
+	}
+
+	$.ajax({
+		type:'post',
+		data:{'room_name':room_name,'room_desc':room_desc,'sort_id':'sort_id','room_logo':room_logo},
+		url:"{php echo $this->createWebUrl('addchatroom')}",
+		success:function(d,s) {
+			if(d.res == '100') {
+				window.location.href='';
+			}else {
+				alert(d.msg);
+			}
+
+		}
+
+	})
+}
+
+/*下拉展开*/
+function showDetail(id,obj) {
+	var _self = $(obj);
+
+	var layer = $("#detail_layer");
+	var next_layer = _self.next("#detail_layer");
+	var room_logo = $("#room_logo_"+id).val();
+	// 是否已开启
+	if(next_layer.size()) {
+		next_layer.slideUp('fast',function() {
+			this.remove();
+		});
+		return;
+	}else if(layer.size()) {
+		layer.slideUp('fast');
+		layer.remove();
+	}
+	var html = '';
+	html += "<tr style='background-color:rgb(220,220,220);display:none;border-top:1px solid grey' id='detail_layer'>";
+	html += "<td colspan='6'>";
+	html += "<button class='form-control btn btn-success btn-sm' onclick='doJumpSet("+id+")' title='关闭'>";
+	html += "<span class='glyphicon glyphicon-picture'></span>&nbsp;&nbsp;房间管理";
+	html += "</button>&nbsp;&nbsp;";
+	html += "</td></tr>";
+	_self.after(html);
+	$("#detail_layer").slideDown('fast');
+}
+
+function doJumpSet(id) {
+	window.location.href="{php echo $this->createWebUrl('chatroomset')}&room_id="+id;
+}
+</script>
+{template 'footer'}

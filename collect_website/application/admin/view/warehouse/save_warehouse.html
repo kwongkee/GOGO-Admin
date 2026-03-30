@@ -1,0 +1,872 @@
+{include file="public/header"}
+
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .info_div{display: grid;grid-template-columns: repeat(2,1fr);-moz-column-gap: 0px;column-gap: 0px;row-gap: 0px;}
+    @media screen and (max-width: 450px){
+        .info_div{display: grid;grid-template-columns: repeat(1,1fr);-moz-column-gap: 0px;column-gap: 0px;row-gap: 0px;}
+    }
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="info_div">
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">选择商家</div>
+                                <div class="layui-input-block">
+                                    <select name="uid" lay-search>
+                                        {volist name="merchant" id="vo"}
+                                            <option value="{$vo['id']}" {if $data['uid']==$vo['id']}selected{/if}>{$vo['company']}</option>
+                                        {/volist}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">仓库类型</div>
+                                <div class="layui-input-block">
+                                    <select name="warehouse_form" id="warehouse_form">
+                                        <option value="1" {if $data['warehouse_form']==1}selected{/if}>发货仓库</option>
+                                        <option value="2" {if $data['warehouse_form']==2}selected{/if}>代发仓库</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">仓库名称</div>
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input" lay-verify="required" name="warehouse_name" id="warehouse_name" value="{$data['warehouse_name']}">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">仓库简称</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="warehouse_code" placeholder="请输入仓库简称" class="layui-input" value="{$data['warehouse_code']}">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">仓库描述</label>
+                                <div class="layui-input-block">
+                                    <textarea name="desc" id="desc" class="layui-textarea">{$data['desc']}</textarea>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">仓库图片</label>
+                                <div class="layui-input-block">
+                                    <div class="layui-upload" style="margin-top: 10px;">
+                                        <button type="button" class="layui-btn" id="img_file-upload">上传图片</button>
+                                        <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                                            预览图：
+                                            <div class="layui-upload-list" id="img_file-upload-list">
+                                                {if !empty($data['pic'])}
+                                                    {volist name="data['pic']" id="vo"}
+                                                        <div style="display: inline-block;">
+                                                            <img onclick="seePic(this);" src="/{$vo}" class="layui-upload-img" style="width:80px;height:80px;">
+                                                            <button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button>
+                                                            <input type="hidden" name="pic[]" value="{$vo}">
+                                                        </div>
+                                                    {/volist}
+                                                {/if}
+                                            </div>
+                                        </blockquote>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">仓储类别</label>
+                                <div class="layui-input-block">
+                                    <select name="warehouse_type" lay-verify="required" lay-search>
+                                        <option value="0">请选择</option>
+                                        <option value="1" {if $data['warehouse_type']==1}selected{/if}>普通仓库</option>
+                                        <option value="2" {if $data['warehouse_type']==2}selected{/if}>保温仓库</option>
+                                        <option value="3" {if $data['warehouse_type']==3}selected{/if}>危化仓库</option>
+                                        <option value="4" {if $data['warehouse_type']==4}selected{/if}>气调仓库</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">仓储结构</label>
+                                <div class="layui-input-block">
+                                    <select name="warehouse_structure" lay-verify="required" lay-search>
+                                        <option value="0">请选择</option>
+                                        <option value="1" {if $data['warehouse_structure']==1}selected{/if}>单层仓库</option>
+                                        <option value="2" {if $data['warehouse_structure']==2}selected{/if}>多层仓库</option>
+                                        <option value="3" {if $data['warehouse_structure']==3}selected{/if}>立体仓库</option>
+                                        <option value="4" {if $data['warehouse_structure']==4}selected{/if}>简易仓库</option>
+                                        <option value="5" {if $data['warehouse_structure']==5}selected{/if}>露天堆场</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">运营模式</label>
+                                <div class="layui-input-block">
+                                    <select name="warehouse_mode" lay-verify="required" lay-search>
+                                        <option value="0">请选择</option>
+                                        <option value="1" {if $data['warehouse_mode']==1}selected{/if}>自用仓库</option>
+                                        <option value="2" {if $data['warehouse_mode']==2}selected{/if}>公用仓库（第三方物流仓库）</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">仓储温度</label>
+                                <div class="layui-input-block">
+                                    <select name="warehouse_temperature" lay-verify="required" lay-search>
+                                        <option value="0">请选择</option>
+                                        <option value="1" {if $data['warehouse_temperature']==1}selected{/if}>常温仓15°C至30°C</option>
+                                        <option value="2" {if $data['warehouse_temperature']==2}selected{/if}>恒温仓维持在15-25°C左右</option>
+                                        <option value="3" {if $data['warehouse_temperature']==3}selected{/if}>冷藏仓0℃至10°C</option>
+                                        <option value="4" {if $data['warehouse_temperature']==4}selected{/if}>冷冻仓-18℃至-25°C</option>
+                                        <option value="5" {if $data['warehouse_temperature']==5}selected{/if}>深冷库/速冻库-30℃至-40°C</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">仓库设备</label>
+                                <div class="layui-input-block">
+                                    <select name="warehouse_equipment" lay-verify="required" lay-search>
+                                        <option value="0">请选择</option>
+                                        <option value="1" {if $data['warehouse_equipment']==1}selected{/if}>人手工仓库</option>
+                                        <option value="2" {if $data['warehouse_equipment']==2}selected{/if}>机械化仓库</option>
+                                        <option value="3" {if $data['warehouse_equipment']==3}selected{/if}>自动化仓库</option>
+                                        <option value="4" {if $data['warehouse_equipment']==4}selected{/if}>无人化仓库</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">邮政编码</label>
+                                <div class="layui-input-block">
+                                    <div class="disf">
+                                        <div class="select_box">
+                                            <select name="country_code" id="country_id" lay-filter="country_id" lay-search lay-verify="required">
+                                                <option value="">请选择国家地区</option>
+                                                {volist name="country" id="vo"}
+                                                <option value="{$vo['id']}" {if $data['country_code']==$vo['id']}selected{/if} data-pre_tel="{$vo['param8']}">{$vo['param2']}</option>
+                                                {/volist}
+                                            </select>
+                                        </div>
+                                        <div class="select_box have_postal_code_div" style="display:{if $data['country_code']!=162}none{else}block{/if};">
+                                            <select name="have_postal_code" id="have_postal_code" lay-verify="required" lay-filter="have_postal_code">
+                                                <option value="1" {if $data['have_postal_code']==1}selected{/if}>有邮政编码</option>
+                                                <option value="2" {if $data['have_postal_code']==2}selected{/if}>无邮政编码</option>
+                                            </select>
+                                        </div>
+                                        <input type="text" class="layui-input" name="postal_code" id="postal_code" value="{$data['postal_code']}" placeholder="请输入邮政编码" style="display:{if $data['have_postal_code']==1}block{else}none{/if};">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item select_pcd" style="display:{if $data['have_postal_code']==1}none{else}block{/if};">
+                                <div class="layui-form-label">选择区域</div>
+                                <div class="layui-input-block">
+                                    <div class="disf">
+                                        {if $data['have_postal_code']==2}
+                                            {if !empty($data['province_list'])}
+                                                <select name="province_code" lay-search lay-filter="province_code">
+                                                    <option value="">请选择</option>
+                                                    {volist name="data['province_list']" id="vo"}
+                                                        <option value="{$vo['id']}" {if $vo['id']==$data['province_code']}selected{/if}>{$vo['name']}</option>
+                                                    {/volist}
+                                                </select>
+                                            {/if}
+
+                                            {if !empty($data['city_list'])}
+                                                <select name="city_code" lay-search lay-filter="city_code">
+                                                    <option value="">请选择</option>
+                                                    {volist name="data['city_list']" id="vo"}
+                                                    <option value="{$vo['id']}" {if $vo['id']==$data['city_code']}selected{/if}>{$vo['name']}</option>
+                                                    {/volist}
+                                                </select>
+                                            {/if}
+
+                                            {if !empty($data['district_list'])}
+                                                <select name="district_code" lay-search lay-filter="district_code">
+                                                    <option value="">请选择</option>
+                                                    {volist name="data['district_list']" id="vo"}
+                                                    <option value="{$vo['id']}" {if $vo['id']==$data['district_code']}selected{/if}>{$vo['name']}</option>
+                                                    {/volist}
+                                                </select>
+                                            {/if}
+
+                                            {if !empty($data['town_list'])}
+                                                <select name="town_code" lay-search lay-filter="town_code">
+                                                    <option value="">请选择</option>
+                                                    {volist name="data['town_list']" id="vo"}
+                                                    <option value="{$vo['id']}" {if $vo['id']==$data['town_code']}selected{/if}>{$vo['name']}</option>
+                                                    {/volist}
+                                                </select>
+                                            {/if}
+
+                                            {if !empty($data['village_list'])}
+                                                <select name="village_code" lay-search lay-filter="village_code">
+                                                    <option value="">请选择</option>
+                                                    {volist name="data['village_list']" id="vo"}
+                                                    <option value="{$vo['id']}" {if $vo['id']==$data['village_code']}selected{/if}>{$vo['name']}</option>
+                                                    {/volist}
+                                                </select>
+                                            {/if}
+                                        {/if}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">详细地址</div>
+                                <div class="layui-input-block">
+                                    <div class="disf">
+                                        <input type="text" class="layui-input address_pcq pre_box" name="pre_address" style="margin-right:5px;display:{if $data['have_postal_code']==1}block{else}none{/if};" value="{$data['pre_address']}">
+                                        <input type="text" class="layui-input" name="address1" value="{$data['address1']}" placeholder="请输入详细地址" lay-verify="required">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">收件人名称</div>
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input" lay-verify="" name="name" id="name" value="{$data['name']}">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">联系电话</div>
+                                <div class="layui-input-block">
+                                    <div class="disf">
+                                        <div class="selectBox">
+                                            <input type="text" name="area_code" id="area_code" value="{$data['area_code']}" class="layui-input" lay-verify="required">
+                                        </div>
+                                        <input type="number" name="mobile" lay-verify="required" placeholder="收件人电话" autocomplete="off" class="layui-input" value="{$data['mobile']}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-form-label">联系邮箱</div>
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input" lay-verify="required" name="email" id="email" value="{$data['email']}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--截单时间-->
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">仓库发货处理时间</label>
+                            <div class="layui-input-block">
+                                <select name="process_time_type" lay-filter="process_time_type" lay-verify="required">
+                                    <option value="0">请选择</option>
+                                    <option value="1" {if isset($data['process_time_type']) && $data['process_time_type']==1}selected{/if}>每X天</option>
+                                    <option value="2" {if isset($data['process_time_type']) && $data['process_time_type']==2}selected{/if}>每周Y</option>
+                                    <option value="3" {if isset($data['process_time_type']) && $data['process_time_type']==3}selected{/if}>每月Z日</option>
+                                    <option value="4" {if isset($data['process_time_type']) && $data['process_time_type']==4}selected{/if}>每隔HH小时</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item process_time_config" style="display: {if isset($data['process_time_type']) && $data['process_time_type']>0}block{else}none{/if};">
+                            <label class="layui-form-label">时间配置</label>
+                            <div class="layui-input-block">
+                                <!-- 每X天 -->
+                                <div class="config-type config-type-1" style="display: {if isset($data['process_time_type']) && $data['process_time_type']==1}block{else}none{/if};">
+                                    <div class="disf">
+                                        <input type="number" name="process_days_x" class="layui-input" min="1" max="31" placeholder="天数X" value="{$data['process_time_config']['days_x']|default='1'}" style="width: 100px; margin-right: 10px;">
+                                        <div class="time-selector">
+                                            <select name="process_days_hours_start" lay-search style="width: 300px;">
+                                                <?php for($i=0; $i<=23; $i++): ?>
+                                                <option value="<?php echo $i; ?>" <?php if(isset($data['process_time_config']['hours_start']) && $i == $data['process_time_config']['hours_start']): ?>selected<?php endif; ?>><?php echo $i; ?>:00</option>
+                                                <?php endfor; ?>
+                                            </select>
+                                        </div>
+                                        <div>—</div>
+                                        <div class="time-selector">
+                                            <select name="process_days_hours" lay-search style="width: 300px;">
+                                                <?php for($i=0; $i<=23; $i++): ?>
+                                                <option value="<?php echo $i; ?>" <?php if(isset($data['process_time_config']['hours']) && $i == $data['process_time_config']['hours']): ?>selected<?php endif; ?>><?php echo $i; ?>:00</option>
+                                                <?php endfor; ?>
+                                            </select>
+<!--                                            <div class="layui-form-mid layui-word-aux">可多选，按住Ctrl键选择多个时间</div>-->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 每周Y -->
+                                <div class="config-type config-type-2" style="display: {if isset($data['process_time_type']) && $data['process_time_type']==2}block{else}none{/if};">
+                                    <div class="disf">
+                                        <div class="week-selector" style="margin-right: 10px;">
+                                            <select name="process_weeks_y" lay-search style="width: 150px;">
+                                                <option value="1" <?php if(isset($data['process_time_config']['weeks']) && in_array(1, $data['process_time_config']['weeks'])): ?>selected<?php endif; ?>>周一</option>
+                                                <option value="2" <?php if(isset($data['process_time_config']['weeks']) && in_array(2, $data['process_time_config']['weeks'])): ?>selected<?php endif; ?>>周二</option>
+                                                <option value="3" <?php if(isset($data['process_time_config']['weeks']) && in_array(3, $data['process_time_config']['weeks'])): ?>selected<?php endif; ?>>周三</option>
+                                                <option value="4" <?php if(isset($data['process_time_config']['weeks']) && in_array(4, $data['process_time_config']['weeks'])): ?>selected<?php endif; ?>>周四</option>
+                                                <option value="5" <?php if(isset($data['process_time_config']['weeks']) && in_array(5, $data['process_time_config']['weeks'])): ?>selected<?php endif; ?>>周五</option>
+                                                <option value="6" <?php if(isset($data['process_time_config']['weeks']) && in_array(6, $data['process_time_config']['weeks'])): ?>selected<?php endif; ?>>周六</option>
+                                                <option value="0" <?php if(isset($data['process_time_config']['weeks']) && in_array(0, $data['process_time_config']['weeks'])): ?>selected<?php endif; ?>>周日</option>
+                                            </select>
+                                        </div>
+                                        <div class="time-selector">
+                                            <select name="process_week_hours_start" lay-search style="width: 300px;">
+                                                <?php for($i=0; $i<=23; $i++): ?>
+                                                <option value="<?php echo $i; ?>" <?php if(isset($data['process_time_config']['hours_start']) && $i == $data['process_time_config']['hours_start']): ?>selected<?php endif; ?>><?php echo $i; ?>:00</option>
+                                                <?php endfor; ?>
+                                            </select>
+                                        </div>
+                                        <div>—</div>
+                                        <div class="time-selector">
+                                            <select name="process_weeks_hours" lay-search style="width: 300px;">
+                                                <?php for($i=0; $i<=23; $i++): ?>
+                                                <option value="<?php echo $i; ?>" <?php if(isset($data['process_time_config']['hours']) && $i == $data['process_time_config']['hours']): ?>selected<?php endif; ?>><?php echo $i; ?>:00</option>
+                                                <?php endfor; ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 每月Z日 -->
+                                <div class="config-type config-type-3" style="display: {if isset($data['process_time_type']) && $data['process_time_type']==3}block{else}none{/if};">
+                                    <div class="disf">
+                                        <div class="day-selector" style="margin-right: 10px;">
+                                            <select name="process_months_z" lay-search style="width: 150px;">
+                                                <?php for($i=1; $i<=31; $i++): ?>
+                                                <option value="<?php echo $i; ?>" <?php if(isset($data['process_time_config']['days']) && in_array($i, $data['process_time_config']['days'])): ?>selected<?php endif; ?>><?php echo $i; ?>日</option>
+                                                <?php endfor; ?>
+                                            </select>
+                                        </div>
+                                        <div class="time-selector">
+                                            <select name="process_month_hours_start" lay-search style="width: 300px;">
+                                                <?php for($i=0; $i<=23; $i++): ?>
+                                                <option value="<?php echo $i; ?>" <?php if(isset($data['process_time_config']['hours_start']) && $i == $data['process_time_config']['hours_start']): ?>selected<?php endif; ?>><?php echo $i; ?>:00</option>
+                                                <?php endfor; ?>
+                                            </select>
+                                        </div>
+                                        <div>—</div>
+                                        <div class="time-selector">
+                                            <select name="process_months_hours" lay-search style="width: 300px;">
+                                                <?php for($i=0; $i<=23; $i++): ?>
+                                                <option value="<?php echo $i; ?>" <?php if(isset($data['process_time_config']['hours']) && $i == $data['process_time_config']['hours']): ?>selected<?php endif; ?>><?php echo $i; ?>:00</option>
+                                                <?php endfor; ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 每隔HH小时 -->
+                                <div class="config-type config-type-4" style="display: {if isset($data['process_time_type']) && $data['process_time_type']==4}block{else}none{/if};">
+                                    <div class="disf">
+                                        <input type="number" name="process_interval_hours" class="layui-input" min="1" max="24" placeholder="间隔小时数" value="{$data['process_time_config']['interval_hours']|default='1'}" style="width: 200px;">
+                                        <div class="layui-form-mid layui-word-aux" style="margin-left: 10px;">每隔X小时处理一次</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">平台发货清单时间</label>
+                            <div class="layui-input-block">
+                                <select name="platform_time_type" lay-filter="platform_time_type" lay-verify="required">
+                                    <option value="0">请选择</option>
+                                    <option value="1" {if isset($data['platform_time_type']) && $data['platform_time_type']==1}selected{/if}>每X天</option>
+                                    <option value="2" {if isset($data['platform_time_type']) && $data['platform_time_type']==2}selected{/if}>每周Y</option>
+                                    <option value="3" {if isset($data['platform_time_type']) && $data['platform_time_type']==3}selected{/if}>每月Z日</option>
+                                    <option value="4" {if isset($data['platform_time_type']) && $data['platform_time_type']==4}selected{/if}>每隔HH小时</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item platform_time_config" style="display: {if isset($data['platform_time_type']) && $data['platform_time_type']>0}block{else}none{/if};">
+                            <label class="layui-form-label">时间配置</label>
+                            <div class="layui-input-block">
+                                <!-- 每X天 -->
+                                <div class="config-type config-type-1" style="display: {if isset($data['platform_time_type']) && $data['platform_time_type']==1}block{else}none{/if};">
+                                    <div class="disf">
+                                        <input type="number" name="platform_days_x" class="layui-input" min="1" max="31" placeholder="天数X" value="{$data['platform_time_config']['days_x']|default='1'}" style="width: 100px; margin-right: 10px;">
+                                        <div class="time-selector">
+                                            <select name="platform_days_hours_start" lay-search style="width: 300px;">
+                                                <?php for($i=0; $i<=23; $i++): ?>
+                                                <option value="<?php echo $i; ?>" <?php if(isset($data['process_time_config']['hours_start']) && $i == $data['process_time_config']['hours_start']): ?>selected<?php endif; ?>><?php echo $i; ?>:00</option>
+                                                <?php endfor; ?>
+                                            </select>
+                                        </div>
+                                        <div>—</div>
+                                        <div class="time-selector">
+                                            <select name="platform_days_hours" lay-search style="width: 300px;">
+                                                <?php for($i=0; $i<=23; $i++): ?>
+                                                <option value="<?php echo $i; ?>" <?php if(isset($data['platform_time_config']['hours']) && $i == $data['platform_time_config']['hours']): ?>selected<?php endif; ?>><?php echo $i; ?>:00</option>
+                                                <?php endfor; ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 每周Y -->
+                                <div class="config-type config-type-2" style="display: {if isset($data['platform_time_type']) && $data['platform_time_type']==2}block{else}none{/if};">
+                                    <div class="disf">
+                                        <div class="week-selector" style="margin-right: 10px;">
+                                            <select name="platform_weeks_y" lay-search style="width: 150px;">
+                                                <option value="1" <?php if(isset($data['platform_time_config']['weeks']) && 1 == $data['platform_time_config']['weeks']): ?>selected<?php endif; ?>>周一</option>
+                                                <option value="2" <?php if(isset($data['platform_time_config']['weeks']) && 2 == $data['platform_time_config']['weeks']): ?>selected<?php endif; ?>>周二</option>
+                                                <option value="3" <?php if(isset($data['platform_time_config']['weeks']) && 3 == $data['platform_time_config']['weeks']): ?>selected<?php endif; ?>>周三</option>
+                                                <option value="4" <?php if(isset($data['platform_time_config']['weeks']) && 4 == $data['platform_time_config']['weeks']): ?>selected<?php endif; ?>>周四</option>
+                                                <option value="5" <?php if(isset($data['platform_time_config']['weeks']) && 5 == $data['platform_time_config']['weeks']): ?>selected<?php endif; ?>>周五</option>
+                                                <option value="6" <?php if(isset($data['platform_time_config']['weeks']) && 6 == $data['platform_time_config']['weeks']): ?>selected<?php endif; ?>>周六</option>
+                                                <option value="0" <?php if(isset($data['platform_time_config']['weeks']) && 0 == $data['platform_time_config']['weeks']): ?>selected<?php endif; ?>>周日</option>
+                                            </select>
+                                        </div>
+                                        <div class="time-selector">
+                                            <select name="platform_week_hours_start" lay-search style="width: 300px;">
+                                                <?php for($i=0; $i<=23; $i++): ?>
+                                                <option value="<?php echo $i; ?>" <?php if(isset($data['process_time_config']['hours_start']) && $i == $data['process_time_config']['hours_start']): ?>selected<?php endif; ?>><?php echo $i; ?>:00</option>
+                                                <?php endfor; ?>
+                                            </select>
+                                        </div>
+                                        <div>—</div>
+                                        <div class="time-selector">
+                                            <select name="platform_weeks_hours" lay-search style="width: 300px;">
+                                                <?php for($i=0; $i<=23; $i++): ?>
+                                                <option value="<?php echo $i; ?>" <?php if(isset($data['platform_time_config']['hours']) && $i == $data['platform_time_config']['hours']): ?>selected<?php endif; ?>><?php echo $i; ?>:00</option>
+                                                <?php endfor; ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 每月Z日 -->
+                                <div class="config-type config-type-3" style="display: {if isset($data['platform_time_type']) && $data['platform_time_type']==3}block{else}none{/if};">
+                                    <div class="disf">
+                                        <div class="day-selector" style="margin-right: 10px;">
+                                            <select name="platform_months_z" lay-search style="width: 150px;">
+                                                <?php for($i=1; $i<=31; $i++): ?>
+                                                <option value="<?php echo $i; ?>" <?php if(isset($data['platform_time_config']['days']) && $i == $data['platform_time_config']['days']): ?>selected<?php endif; ?>><?php echo $i; ?>日</option>
+                                                <?php endfor; ?>
+                                            </select>
+                                        </div>
+                                        <div class="time-selector">
+                                            <select name="platform_months_hours_start" lay-search style="width: 300px;">
+                                                <?php for($i=0; $i<=23; $i++): ?>
+                                                <option value="<?php echo $i; ?>" <?php if(isset($data['process_time_config']['hours_start']) && $i == $data['process_time_config']['hours_start']): ?>selected<?php endif; ?>><?php echo $i; ?>:00</option>
+                                                <?php endfor; ?>
+                                            </select>
+                                        </div>
+                                        <div>—</div>
+                                        <div class="time-selector">
+                                            <select name="platform_months_hours" lay-search style="width: 300px;">
+                                                <?php for($i=0; $i<=23; $i++): ?>
+                                                <option value="<?php echo $i; ?>" <?php if(isset($data['platform_time_config']['hours']) && $i == $data['platform_time_config']['hours']): ?>selected<?php endif; ?>><?php echo $i; ?>:00</option>
+                                                <?php endfor; ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 每隔HH小时 -->
+                                <div class="config-type config-type-4" style="display: {if isset($data['platform_time_type']) && $data['platform_time_type']==4}block{else}none{/if};">
+                                    <div class="disf">
+                                        <input type="number" name="platform_interval_hours" class="layui-input" min="1" max="24" placeholder="间隔小时数" value="{$data['platform_time_config']['interval_hours']|default='1'}" style="width: 200px;">
+                                        <div class="layui-form-mid layui-word-aux" style="margin-left: 10px;">每隔X小时生成清单</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload'],function(){
+        var laydate = layui.laydate
+            ,layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery
+            ,upload = layui.upload;
+
+        // 监听仓库发货处理时间类型变化
+        form.on('select(process_time_type)', function(data){
+            let val = data.value;
+            $('.process_time_config').show();
+            $('.process_time_config .config-type').hide();
+            $('.process_time_config .config-type-' + val).show();
+            form.render('select');
+        });
+
+        // 监听平台发货清单时间类型变化
+        form.on('select(platform_time_type)', function(data){
+            let val = data.value;
+            $('.platform_time_config').show();
+            $('.platform_time_config .config-type').hide();
+            $('.platform_time_config .config-type-' + val).show();
+            form.render('select');
+        });
+
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            // 处理仓库发货处理时间配置
+            let processTimeType = data.field.process_time_type;
+            let processTimeConfig = {};
+
+            if (processTimeType == 1) {
+                // 每X天
+                processTimeConfig = {
+                    type: 1,
+                    days_x: data.field.process_days_x,
+                    hours_start: data.field['process_days_hours_start'] || [],
+                    hours: data.field['process_days_hours'] || []
+                };
+            } else if (processTimeType == 2) {
+                // 每周Y
+                processTimeConfig = {
+                    type: 2,
+                    weeks: data.field['process_weeks_y'] || [],
+                    hours_start: data.field['process_weeks_hours_start'] || [],
+                    hours: data.field['process_weeks_hours'] || []
+                };
+            } else if (processTimeType == 3) {
+                // 每月Z日
+                processTimeConfig = {
+                    type: 3,
+                    days: data.field['process_months_z'] || [],
+                    hours_start: data.field['process_months_hours_start'] || [],
+                    hours: data.field['process_months_hours'] || []
+                };
+            } else if (processTimeType == 4) {
+                // 每隔HH小时
+                processTimeConfig = {
+                    type: 4,
+                    interval_hours: data.field.process_interval_hours
+                };
+            }
+
+            // 处理平台发货清单时间配置
+            let platformTimeType = data.field.platform_time_type;
+            let platformTimeConfig = {};
+
+            if (platformTimeType == 1) {
+                // 每X天
+                platformTimeConfig = {
+                    type: 1,
+                    days_x: data.field.platform_days_x,
+                    hours_start: data.field['platform_days_hours_start'] || [],
+                    hours: data.field['platform_days_hours'] || []
+                };
+            } else if (platformTimeType == 2) {
+                // 每周Y
+                platformTimeConfig = {
+                    type: 2,
+                    weeks: data.field['platform_weeks_y'] || [],
+                    hours_start: data.field['platform_weeks_hours_start'] || [],
+                    hours: data.field['platform_weeks_hours'] || []
+                };
+            } else if (platformTimeType == 3) {
+                // 每月Z日
+                platformTimeConfig = {
+                    type: 3,
+                    days: data.field['platform_months_z'] || [],
+                    hours_start: data.field['platform_months_hours_start'] || [],
+                    hours: data.field['platform_months_hours'] || []
+                };
+            } else if (platformTimeType == 4) {
+                // 每隔HH小时
+                platformTimeConfig = {
+                    type: 4,
+                    interval_hours: data.field.platform_interval_hours
+                };
+            }
+
+            // 将配置添加到提交数据中
+            data.field.process_time_config = JSON.stringify(processTimeConfig);
+            data.field.platform_time_config = JSON.stringify(platformTimeConfig);
+
+            $.ajax({
+                url:"{:Url('admin/warehouse/save_warehouse')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+        //选择国地
+        form.on('select(country_id)',function(data){
+            let val = data.value;
+            let pretel = $(data.elem).find('option:selected').data('pre_tel');
+
+            $("#area_code").val(pretel+" ");
+            if(val!=162){
+                //中国以外都是通过邮政编码获取行政区域
+                $('.have_postal_code_div').hide();
+                $('#postal_code').show();
+                $('.address_pcq').show();
+                $('.select_pcd').hide();
+            }else{
+                //中国地址
+                $('.have_postal_code_div').show();
+            }
+        });
+
+        //选择“有”/“无”邮政编码
+        form.on('select(have_postal_code)',function(data){
+            let val = data.value;
+
+            if(val==1){
+                //无
+                $('#postal_code,.address_pcq').show();
+                $('.select_pcd').hide();
+            }
+            else if(val==2){
+                //有
+                $('#postal_code,.address_pcq').hide();
+                $('.select_pcd').show();
+
+                layer.load();
+                //获取省
+                let country_id = $('#country_id').val();
+                $.ajax({
+                    url: "https://shop.gogo198.cn/collect_website/public/?s=api/func/get_province",
+                    method: 'post',
+                    data: {'pid': 0, 'country_id': country_id},
+                    dataType: 'JSON',
+                    timeout: 10000,
+                    success: function (res) {
+                        layer.closeAll('loading');
+                        if(res.code==0){
+                            $('.select_pcd .disf').html("");
+                            let html = '<div class="select_box province_box">\n'+
+                                '<select name="province_code" lay-search lay-filter="province_select">\n'+
+                                '    <option value="">请选择省份</option>\n';
+                            for(let i=0;i<res.data.length;i++){
+                                html += '<option value="'+res.data[i].id+'">'+res.data[i].name+'</option>\n';
+                            }
+                            html += '</select>\n'+
+                                    '</div>';
+                            $('.select_pcd .disf').append(html);
+                            form.render(null,'component-form-element');
+                        }
+                    }
+                });
+            }
+        });
+
+        //选择省
+        form.on('select(province_select)',function(data){
+            let val = data.value;
+
+            layer.load();
+            //获取城市
+            let country_id = $('#country_id').val();
+            $.ajax({
+                url: "https://shop.gogo198.cn/collect_website/public/?s=api/func/get_province",
+                method: 'post',
+                data: {'pid': val, 'country_id': country_id},
+                dataType: 'JSON',
+                timeout: 10000,
+                success: function (res) {
+                    layer.closeAll('loading');
+                    if(res.code==0){
+                        $('.select_pcd .disf').find('.city_box,.district_box,.town_box,.village_box').html("");
+                        let html = '<div class="select_box city_box">\n'+
+                            '<select name="city_code" lay-search lay-filter="city_select">\n'+
+                            '    <option value="">请选择城市</option>\n';
+                        for(let i=0;i<res.data.length;i++){
+                            html += '<option value="'+res.data[i].id+'">'+res.data[i].name+'</option>\n';
+                        }
+                        html += '</select>\n'+
+                            '</div>';
+                        $('.select_pcd .disf').append(html);
+                        form.render(null,'component-form-element');
+                    }
+                }
+            });
+        });
+
+        //选择城市
+        form.on('select(city_select)',function(data){
+            let val = data.value;
+
+            layer.load();
+            //获取区县
+            let country_id = $('#country_id').val();
+            $.ajax({
+                url: "https://shop.gogo198.cn/collect_website/public/?s=api/func/get_province",
+                method: 'post',
+                data: {'pid': val, 'country_id': country_id},
+                dataType: 'JSON',
+                timeout: 10000,
+                success: function (res) {
+                    layer.closeAll('loading');
+                    if(res.code==0){
+                        $('.select_pcd .disf').find('.district_box,.town_box,.village_box').html("");
+                        let html = '<div class="select_box district_box">\n'+
+                            '<select name="district_code" lay-search lay-filter="district_select">\n'+
+                            '    <option value="">请选择区县</option>\n';
+                        for(let i=0;i<res.data.length;i++){
+                            html += '<option value="'+res.data[i].id+'">'+res.data[i].name+'</option>\n';
+                        }
+                        html += '</select>\n'+
+                            '</div>';
+                        $('.select_pcd .disf').append(html);
+                        form.render(null,'component-form-element');
+                    }
+                }
+            });
+        });
+
+        //选择区县
+        form.on('select(district_select)',function(data){
+            let val = data.value;
+
+            layer.load();
+            //获取乡镇
+            let country_id = $('#country_id').val();
+            $.ajax({
+                url: "https://shop.gogo198.cn/collect_website/public/?s=api/func/get_province",
+                method: 'post',
+                data: {'pid': val, 'country_id': country_id},
+                dataType: 'JSON',
+                timeout: 10000,
+                success: function (res) {
+                    layer.closeAll('loading');
+                    if(res.code==0){
+                        $('.select_pcd .disf').find('.town_box,.village_box').html("");
+                        let html = '<div class="select_box town_box">\n'+
+                            '<select name="town_code" lay-search lay-filter="town_select">\n'+
+                            '    <option value="">请选择乡镇</option>\n';
+                        for(let i=0;i<res.data.length;i++){
+                            html += '<option value="'+res.data[i].id+'">'+res.data[i].name+'</option>\n';
+                        }
+                        html += '</select>\n'+
+                            '</div>';
+                        $('.select_pcd .disf').append(html);
+                        form.render(null,'component-form-element');
+                    }
+                }
+            });
+        });
+
+        //选择乡镇
+        form.on('select(town_select)',function(data){
+            let val = data.value;
+
+            layer.load();
+            //获取居委
+            let country_id = $('#country_id').val();
+            $.ajax({
+                url: "https://shop.gogo198.cn/collect_website/public/?s=api/func/get_province",
+                method: 'post',
+                data: {'pid': val, 'country_id': country_id},
+                dataType: 'JSON',
+                timeout: 10000,
+                success: function (res) {
+                    layer.closeAll('loading');
+                    if(res.code==0){
+                        $('.select_pcd .disf').find('.village_box').html("");
+                        let html = '<div class="select_box village_box">\n'+
+                            '<select name="village_code" lay-search lay-filter="village_select">\n'+
+                            '    <option value="">请选择居委</option>\n';
+                        for(let i=0;i<res.data.length;i++){
+                            html += '<option value="'+res.data[i].id+'">'+res.data[i].name+'</option>\n';
+                        }
+                        html += '</select>\n'+
+                            '</div>';
+                        $('.select_pcd .disf').append(html);
+                        form.render(null,'component-form-element');
+                    }
+                }
+            });
+        });
+
+        //监听邮政编码输入+防抖事件
+        let requestSeq = 0;
+        let timer = null;
+        $('#postal_code').on('input', function(){
+            clearTimeout(timer);
+
+            let val = $(this).val();
+            let country_id = $('#country_id').val();
+            if(country_id=='' || country_id==0){
+                layer.msg('请先选择国地');
+                return false;
+            }
+
+            // 显示加载状态
+            $('.address_pcq').val('查询中...').addClass('loading');
+
+            // 300ms防抖 + 500ms超时提醒
+            timer = setTimeout(() => {
+                const currentSeq = ++requestSeq;
+                $.ajax({
+                    url: "https://shop.gogo198.cn/collect_website/public/?s=api/func/get_area",
+                    method: 'post',
+                    data: {'val': val, 'country_id': country_id},
+                    dataType: 'JSON',
+                    timeout: 10000,
+                    success: function (res) {
+                        // 只处理最新请求
+                        if(currentSeq !== requestSeq) return;
+
+                        if (res.code == 0) {
+                            $('.address_pcq').val(res.msg);
+                        } else {
+                            $('.address_pcq').val('');
+                        }
+                    },
+                    error: function (data) {
+                        layer.msg('系统错误', {time: 2000});
+                    }
+                });
+            },300);
+        });
+
+        // 轮播图文件
+        upload.render({
+            elem: '#img_file-upload'
+            ,url: '{:Url("admin/basic/upload_file")}'
+            ,accept: 'image'
+            ,data: { folder: 'warehouse', type: 'warehouse_pic'}
+            ,multiple: true
+            ,number:9
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+
+                    $('#img_file-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="pic[]" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+</script>
+</body>
+</html>

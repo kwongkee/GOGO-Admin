@@ -1,0 +1,95 @@
+{template "parking/base/header"}
+<body>
+	<style type="text/css">
+		.order_tab_button{
+			margin: 0.21rem 0.55rem;
+			width: 2.5rem;
+		}
+	</style>
+<div class="wx_box">
+	
+    <div class="license_Fee">
+        <h3 class="title_h3"><span>微信免密解约流程</span></h3>
+        <dl>
+            <dd style="text-align: center;">
+            	<p style="font-size:16px;">第一步</p>
+            	<img type="image/svg+xml" width="230px" src="../addons/ewei_shopv2/static/images/img/fee01.png">
+            	<p style="font-size:16px;">第二步</p>
+            	<img type="image/svg+xml" width="230px" src="../addons/ewei_shopv2/static/images/img/fee02.png">
+            	<p style="font-size:16px;">第三步</p>
+            	<img type="image/svg+xml" width="230px" src="../addons/ewei_shopv2/static/images/img/fee03.png">
+            	<p style="font-size:16px;">第四步</p>
+            	<img type="image/svg+xml" width="230px" src="../addons/ewei_shopv2/static/images/img/fee04.png">
+            	<p style="font-size:16px;">第五步</p>
+            	<img type="image/svg+xml" width="230px" src="../addons/ewei_shopv2/static/images/img/fee05.png">
+            	<p style="font-size:16px;"></p>
+            </dd>
+        </dl>
+        
+    </div>
+    
+    <a href="javascript:void(0);" onclick="return Surrent();" ><p class="order_tab_button">前往解约</p></a>
+    <a href="javascript:void(0);" onclick="window.history.go(-1)"><p class="order_tab_button">返回上一页</p></a>
+    <div class="footer">Technology by </div>
+    <div class="footer_placeholder"> </div>
+    
+</div>
+</body>
+<script type="text/javascript">
+	
+	function Surrent() {
+		
+		var c = confirm('您确定要解约吗?');
+		if(c) {
+			window.location.href = "<?php echo mobileUrl('parking/auth/wechatSurr');?>";
+		} else {
+			return false;
+		}
+	}
+	
+    var height = $(window).height();
+    $(".wx_box").css({"min-height":height});
+    $(function(){
+        new Swipe(document.getElementById('focus'), {
+            speed:500,
+            auto:3000,
+            callback: function(){
+                var lis = $(this.element).next("ol").children();
+                lis.removeClass("on").eq(this.index).addClass("on");
+            }
+        });
+    });
+    
+    
+    function timer(opj){
+        $(opj).find('ul').animate({
+            marginTop : "-0.4rem"
+        },500,function(){
+            $(this).css({marginTop : "0rem"}).find("li:first").appendTo(this);
+        })
+    }
+    var num = $('.notice').find('li').length;
+    if(num > 1){
+        var time=setInterval('timer(".notice")',3500);
+        $('.notice ul li a').hover(function(){
+            clearInterval(time);
+        }).mouseout(function(){
+            time = setInterval('timer(".notice")',3500);
+        });
+    };
+    $(".license_Fee_arrow").click(function(){
+        $(this).toggleClass("license_Fee_arrow02");
+        $(this).parents("dl").find("dd").toggle();
+    });
+    $(".showPopup").click(function(){
+        $(".black_bg,.popup").show();
+    });
+
+    $(".license_Fee_arrow").parents("dl").find("a").bind("click",function (e) {
+        if($(this).is('.showPopup')){
+            $(this).attr("href","#");
+           return false;
+        }
+    })
+</script>
+{template "parking/base/footer"}

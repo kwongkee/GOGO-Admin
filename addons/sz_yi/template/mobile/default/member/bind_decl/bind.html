@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<title>我的</title>
+	<link rel="stylesheet" type="text/css" href="../addons/sz_yi/static/travel_express/css/hui.css" />
+	<link rel="stylesheet" type="text/css" href="../addons/sz_yi/static/travel_express/css/style.css" />
+	<style>
+        .hui-header h1{
+            padding: 0px 38px 0px 0;
+        }
+        .hui-list-text{
+            border-bottom: 1px solid #969696;
+            padding: 0 10px;
+            margin-left: 0px;
+        }
+        .hui-form-items-title {
+            width: 30%;
+        }
+        .hui-wrap{
+			margin-bottom: 60px;
+		}
+        
+    </style>
+</head>
+<body>
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1>我的</h1>
+</header>
+
+<div class="hui-wrap">
+    <div class="hui-list" style="margin:10px 10px 0; background: #e4f6fe;">
+        <a href="javascript:;" style="height:auto; height:80px; padding-bottom:8px;">
+            <div class="hui-list-icons" style="width:110px; height:80px;">
+                <img src="{$_W['fans']['headimgurl']}" style="width:66px; margin:0px; border-radius:50%;" />
+            </div>
+            <div class="hui-list-text" style="height:79px; line-height:79px; color: #1b7ab6;">
+                会员名称：{$_W['fans']['nickname']}
+                <!-- <div class="hui-list-info">
+                    <span class="hui-icons hui-icons-right"></span>
+                </div> -->
+            </div>
+        </a>
+    </div>
+    <form style="padding:0px 10px;" class="hui-form" id="form1">
+        <div class="hui-form-items">
+            <div class="hui-form-items-title"><p>姓名</p><p class="sizes">Name</p></div>
+            <input type="text" class="hui-input" name="realname" value="{$member['realname']}" placeholder="如：张三" />
+        </div>
+        <div class="hui-form-items">
+            <div class="hui-form-items-title"><p>手机号码</p><p class="sizes">Phone</p></div>
+            <input type="number" class="hui-input" placeholder="如：1889088..." name="mobile" checktype="phone" value="{$member['mobile']}" checkmsg="手机号码格式错误" />
+        </div>
+        <div class="hui-form-items">
+            <div class="hui-form-items-title"><p>电子邮箱</p><p class="sizes">E-mail</p></div>
+            <input type="text" class="hui-input" placeholder="如：188...@qq.com" name="email" checktype="email" value="{$member['email']}" checkmsg="电子邮箱格式错误" />
+        </div>
+        <div class="hui-form-items">
+            <div class="hui-form-items-title"><p>性别</p><p class="sizes">Gender</p></div>
+            <div class="hui-form-radios" style="line-height:38px;margin-left: 10px;">
+                <input type="radio" value="1" name="gender" id="g1" {if $member['gender'] == 1}checked="checked"{/if} /><label for="g1">男生</label><br />
+                <input type="radio" value="2" name="gender" id="g2" {if $member['gender'] == 2}checked="checked"{/if} /><label for="g2">女生</label>
+            </div>
+        </div>
+        <!-- <div class="hui-form-items">
+            <div class="hui-form-items-title"><p>所在省市</p><p class="sizes">Province City</p></div>
+            <div class="hui-form-select">
+                <select name="year">
+                    <option value="2010">北京市</option>
+                    <option value="2011">上海市</option>
+                    <option value="2012">安徽省</option>
+                    <option value="2013">广东省</option>
+                    <option value="2014">浙江省</option>
+                    <option value="2015">重庆市</option>
+                </select>
+                <select name="year">
+                    <option value="2010">广州市</option>
+                    <option value="2011">深圳市</option>
+                    <option value="2012">汕头市</option>
+                    <option value="2013">珠海市</option>
+                    <option value="2014">佛山市</option>
+                    <option value="2015">中山市</option>
+                </select>
+            </div>
+        </div>
+        <div class="hui-form-items">
+            <div class="hui-form-items-title"><p>详细地址</p><p class="sizes">Address</p></div>
+            <input type="text" class="hui-input" placeholder="如：xx街道xx路x号" name="address" />
+        </div> -->
+        <div style="padding: 15px 8px;width: 30%;margin: 20px auto 24px;">
+            <button type="button" class="hui-button hui-primary hui-fr" id="submitBtn" style="background: #1b7ab6 !important;">保存</button>
+        </div>
+    </form>
+</div>
+</div>
+
+{template 'common/travel_express_footer'}
+
+<script src="../addons/sz_yi/static/travel_express/js/hui.js" type="text/javascript" charset="utf-8"></script>
+<script src="../addons/sz_yi/static/travel_express/js/hui-form.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+hui.formInit();
+//表单元素数据收集演示
+hui('#submitBtn').click(function(){
+
+    var res = huiFormCheck('#form1');
+    //提交
+    if(res){
+    	
+    	var data = hui.getFormData('#form1');
+    	hui.ajax({
+                url  : '{php echo $this->createMobileUrl("member/travel_express_user")}&op=submit',
+                type : 'POST',
+                data : {realname: data.realname, mobile: data.mobile, email: data.email, gender: data.gender },
+                beforeSend : function(){hui.loading();},
+                complete   : function(){hui.closeLoading();},
+                success : function(res){
+                    hui.toast(res.result.msg);
+                    if(res.status == 1)
+                    {
+                        setTimeout(function(){
+                            window.location.reload();
+                        }, 2000);
+                    }
+                    
+                },
+                error : function(e){
+                    console.log(JSON.stringify(e));
+                    hui.iconToast('系统错误', 'warn');
+                },
+                'backType' : "JSON"
+        });
+    }
+
+});
+
+</script>
+</body>
+</html>

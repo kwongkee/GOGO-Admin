@@ -1,0 +1,80 @@
+{template 'header'}
+<div class="container-fluid">
+	<table class="table">
+		<tr>
+			<th width="40">#</th>
+			<th width="70">头像</th>
+			<th width="150">用户</th>
+			<th width="70">类型</th>
+			<th>内容</th>
+			<th>时间</th>
+			<th>操作</th>
+		</tr>
+		{loop $list $key $item}
+		<tr id="item_{$item['id']}">
+			<td>{php echo $key +1+($page-1)*$pagesize}</td>
+			<td>
+				<img style="width:48px;height:48px;" src="{php echo $item['uinfo']['headimgurl']}">
+			</td>
+			<td>{php echo $item['uinfo']['nickname']}</td>
+			<td>{php echo $item['type']}</td>
+			<td>
+			{loop $item['albums'] $k $v}
+				<img id="image_{$item['id']}_{$k}" style="width:48px;height:48px;" src="{php echo $v['img_url']}">
+			{/loop}
+			<span id="remark_{$item['id']}">{$item['remark']}</span>
+			</td>
+			<td>
+			{$item['add_time']}
+			</td>
+			<td>
+				<button class="btn btn-s btn-info" onclick="showDetail('{$item['id']}')">详情</button>
+				<button class="btn btn-s btn-danger" onclick="doDelete('{$item['id']}')">删除</button>
+			</td>
+		</tr>
+		{/loop}
+	</table>
+	{php echo pagination($count,$page,$pagesize)}
+</div>
+<!-- 模态框 -->
+<div class="modal fade bs-example-modal-sm"  tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" id="moment_detail_layer">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+			</div>
+			<div class="modal-body"></div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	function showDetail(id) {
+		var remark = $("span#remark_"+id).html();
+		var images = $("img[id^=image_"+id+"]");
+		var html = "";
+		html += "<p>"+remark+"</p>";
+		images.each(function(i,elem) {
+			html += "<img style='width:100%' src='"+$(elem).attr('src')+"'>";
+		})
+		$("#moment_detail_layer .modal-body").html(html);
+		$("#moment_detail_layer").modal('show');
+	}
+	function doDelete(mid) {
+		if(!confirm('确认删除该条动态？')) {
+			return ;
+		}
+		$.ajax({
+				type:'post',
+				url:"{php echo $this->createWebUrl('momentdeleteajax')}",
+				data:{mid:mid},
+				success:function(d) {
+					if(d.res == '100') {
+						alert("删除成功");
+						window.location.href='';
+					}else{
+						alert(d.msg);
+					}
+				}
+			})
+	}
+</script>
+{template 'footer'}

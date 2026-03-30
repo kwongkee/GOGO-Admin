@@ -1,0 +1,438 @@
+{include file='home_header'}
+<body>
+<style>
+    .unit .left{
+        width:125px !important;
+    }
+</style>
+<!--内容区域-->
+<div class="list-content">
+    <!--块元素-->
+    <div class="block">
+        <!--banner用来修饰块元素的名称-->
+        <!--<div class="banner">-->
+            <!--<p class="tab fixed">添加</p>-->
+        <!--</div>-->
+        <!--正文内容-->
+        <div class="main">
+            <form id="form" action="{:Url('coupon/coupon/save')}" method="post">
+                <!--文本框-->
+                <div class="unit">
+                    <div class="left"><span class="required">*</span>
+                        <p class="subtitle">卡卷名称</p></div>
+                    <div class="right">
+                        <input type="text" class="text" name="coupon_name" id="coupon_name" data-type="必填" error-msg="请填写必填项" placeholder="请输入"/>
+                    </div>
+                    <!--清浮动-->
+                    <span class="clearfix"></span>
+                </div>
+
+                <div class="unit">
+                    <div class="left"><span class="required">*</span>
+                        <p class="subtitle">标题</p></div>
+                    <div class="right">
+                        <input type="text" class="text" name="coupon_title" id="coupon_title" data-type="必填" error-msg="请填写必填项" placeholder="请输入标题"/>
+                    </div>
+                    <!--清浮动-->
+                    <span class="clearfix"></span>
+                </div>
+                <div class="unit">
+                    <div class="left"><p class="subtitle">副标题</p></div>
+                    <div class="right">
+                        <input type="text" name="coupon_vice_title"  id="coupon_vice_title" value="" class="text" placeholder="请输入标题"/>
+                    </div>
+                    <!--清浮动-->
+                    <span class="clearfix"></span>
+                </div>
+
+
+                <!--业务-->
+                <div class="unit">
+                    <div class="left"><span class="required">*</span><p class="subtitle">适用业务</p></div>
+                    <div class="right" style="width: 327px;">
+                        <input type="text" class="text" placeholder="必选" name="coupon_app" value="" id="coupon_app" data-type="必填"/>
+                    </div>
+                    <div class="right" style="width: 327px;">
+                        <select id="select" onchange="profession_change(this);">
+                            <option value="" selected>请选择</option>
+                            <option value="parking">停车</option>
+                            <option value="shop">商城</option>
+                            <option value="directmail">直邮易</option>
+                        </select>
+                    </div>
+
+                    <!--清浮动-->
+                    <span class="clearfix"></span>
+                </div>
+
+                <div class="unit unit1" style="display: none;">
+                    <div class="left"><span class="required">*</span><p class="subtitle">适用功能服务</p></div>
+                    <div class="right" style="width: 327px;">
+                        <input type="text" class="text"  name="service_id" value="" id="service_input" data-type="必填"/>
+                    </div>
+                    <div class="right" style="width: 327px;">
+                        <select id="service">
+                            <option value="" selected>请选择</option>
+                            {volist name='serList' id='item'}
+                            <option value="{$item['id']}">{$item['service_name']}</option>
+                            {/volist}
+                        </select>
+                    </div>
+
+                    <!--清浮动-->
+                    <span class="clearfix"></span>
+                </div>
+
+
+
+                <!--商户-->
+                <div class="unit">
+                    <div class="left"><p class="subtitle">适用商户</p></div>
+                    <div class="right" style="width: 327px;">
+                        <input type="text" class="text" placeholder="不选代表所有" name="coupon_buisin" value=""
+                               id="coupon_buisin"/>
+                    </div>
+                    <div class="right" style="width: 327px;">
+                        <select id="select2">
+                            <option value="" selected>请选择</option>
+                            {volist name='publicAccoount' id='item'}
+                            <option value="{$item['uniacid']}">{$item['name']}</option>
+                            {/volist}
+                        </select>
+                    </div>
+                    <!--清浮动-->
+                    <span class="clearfix"></span>
+                </div>
+
+
+                <!--领用限制-->
+                <div class="unit">
+                    <div class="left"><span class="required">*</span>
+                        <p class="subtitle">领用限制</p></div>
+                    <div class="right">
+                        <input type="text" class="text" name="max_limit" id="max_limit" value="" data-type="整数"
+                               error-msg="请填写必填项" placeholder="请输入整数" error-pos="2"/>
+                    </div>
+                    <!--清浮动-->
+                    <span class="clearfix"></span>
+                </div>
+
+
+                <!--有效时间起-->
+                <div class="unit">
+                    <div class="left"><p class="subtitle">有效时间起</p></div>
+                    <div class="right">
+                        <input type="text" id="coupon_stime" name="coupon_stime" class="date" style="width: 200px;" value="" readonly/>
+                    </div>
+                    <span class="clearfix"></span>
+                </div>
+
+                <!--有效时间止-->
+                <div class="unit">
+                    <div class="left"><p class="subtitle">有效时间止</p></div>
+                    <div class="right">
+                        <input type="text" id="coupon_etime" class="date" name="coupon_etime" style="width: 200px;" value="" readonly/>
+                    </div>
+                    <span class="clearfix"></span>
+                </div>
+
+
+                <!--领用时间起-->
+                <div class="unit">
+                    <div class="left"><p class="subtitle">领取时间起</p></div>
+                    <div class="right">
+                        <input type="text" id="coupon_get_stime" name="coupon_get_stime" class="date" style="width: 200px;" value="" readonly/>
+                    </div>
+                    <span class="clearfix"></span>
+                </div>
+
+                <!--领用时间止-->
+                <div class="unit">
+                    <div class="left"><p class="subtitle">领取时间止</p></div>
+                    <div class="right">
+                        <input type="text" id="coupon_get_etime" name="coupon_get_etime" class="date" style="width: 200px;" value="" readonly/>
+                    </div>
+                    <span class="clearfix"></span>
+                </div>
+
+                <!--使用条件-->
+                <div class="unit">
+                    <div class="left"><p class="subtitle">适用条件</p></div>
+                    <div class="right">
+                        <ul class="equal-6">
+                            <li><input type="radio" class="fill" name="coupon_use_term" value="0" checked/>满X元使用</li>
+                            <li><input type="radio" class="fill" name="coupon_use_term" value="1"/>每X元使用</li>
+                            <li><input type="radio" class="fill" name="coupon_use_term" value="2"/>无条件使用</li>
+                            <!--清浮动-->
+                            <span class="clearfix"></span>
+                        </ul>
+                    </div>
+                    <!--清浮动-->
+                    <span class="clearfix"></span>
+                </div>
+
+                <!--条件金额-->
+                <div class="unit">
+                    <div class="left"><span class="required">*</span>
+                        <p class="subtitle">条件金额</p></div>
+                    <div class="right">
+                        <input type="text" class="text" name="enough" id="enough" value="" data-type="金额"
+                               error-msg="请填写必填项" placeholder="请输入整数，无条件填0" error-pos="2"/>
+                    </div>
+                    <!--清浮动-->
+                    <span class="clearfix"></span>
+                </div>
+
+                <!--优惠金额-->
+                <div class="unit">
+                    <div class="left"><span class="required">*</span>
+                        <p class="subtitle">卡卷金额</p></div>
+                    <div class="right">
+                        <input type="text" class="text" name="coupon_money" id="coupon_money" value="" data-type="金额"
+                               error-msg="请填写必填项" placeholder="请输入整数" error-pos="2"/>
+                    </div>
+                    <!--清浮动-->
+                    <span class="clearfix"></span>
+                </div>
+
+                <!--发放数量-->
+                <div class="unit">
+                    <div class="left"><span class="required">*</span>
+                        <p class="subtitle">发放数量</p></div>
+                    <div class="right">
+                        <input type="text" class="text" name="total" id="total" value="" data-type="整数"
+                               error-msg="请填写必填项" placeholder="请输入整数" error-pos="2"/>
+                    </div>
+                    <!--清浮动-->
+                    <span class="clearfix"></span>
+                </div>
+
+
+                <!--使用方式-->
+                <div class="unit">
+                    <div class="left"><p class="subtitle">适用条件</p></div>
+                    <div class="right">
+                        <ul class="equal-6">
+                            <li><input type="radio" class="fill" name="use_type" value="1" checked/>主动使用</li>
+                            <li><input type="radio" class="fill" name="use_type" value="2"/>被动使用</li>
+                            <!--清浮动-->
+                            <span class="clearfix"></span>
+                        </ul>
+                    </div>
+                    <!--清浮动-->
+                    <span class="clearfix"></span>
+                </div>
+                <!--文本域-->
+                <div class="unit">
+                    <div class="left"><p class="subtitle">描述</p></div>
+                    <div class="right">
+                        <textarea class="desc" placeholder="请填写描述" name="coupon_desc" id="coupon_desc"></textarea>
+                        <!--提示说明-->
+                        <p class="hint">填写卡卷说明。</p>
+                    </div>
+                    <!--清浮动-->
+                    <span class="clearfix"></span>
+                </div>
+
+                <div style="margin-left: 99px;">
+                    <!--图片承载容器-->
+                    <div id="container" class="file-container" style="width:132px;height:74px;">
+                        <img src="./static/coupon/javaex/images/default2.png" width="100%" height="100%"/>
+                        <input type="file"  class="file" id="upload" accept="image/jpg"/>
+                    </div>
+                    <!--图片承载容器-->
+                    <div id="container2" class="file-container" style="width:132px;height:74px;">
+                        <img src="./static/coupon/javaex/images/default3.png" width="100%" height="100%"/>
+                        <input type="file" class="file" id="upload2" accept="image/png"/>
+                    </div>
+                </div>
+
+
+                <!--提交按钮-->
+                <div class="unit" style="width: 800px;">
+                    <div style="text-align: center;">
+                        <!--表单提交时，必须是input元素，并指定type类型为button，否则ajax提交时，会返回error回调函数-->
+                        <!--<input type="button" id="return" class="button no" value="返回" />-->
+                        <input type="button" id="save" class="button yes" value="保存"/>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    javaex.select({
+        id: "select",
+        isSearch: false,
+        callback: function (rtn) {
+            var val = $('#coupon_app').val();
+            if (val == '') {
+                $('#coupon_app').val(rtn.selectValue);
+            } else {
+                $('#coupon_app').val(val + ',' + rtn.selectValue);
+            }
+        }
+    });
+    javaex.select({
+        id: "select2",
+        isSearch: false,
+        callback: function (rtn) {
+            var val = $('#coupon_buisin').val();
+            if (val == '') {
+                $('#coupon_buisin').val(rtn.selectValue);
+            } else {
+                $('#coupon_buisin').val(val + ',' + rtn.selectValue);
+            }
+
+        }
+    });
+    javaex.select({
+        id: "service",
+        isSearch: false,
+        callback: function (rtn) {
+            var val = $('#service_input').val();
+            console.dir(val);
+            if (val == '') {
+                $('#service_input').val(rtn.selectValue);
+            } else {
+                $('#service_input').val(val + ',' + rtn.selectValue);
+            }
+
+        }
+    });
+
+    javaex.date({
+        id: "coupon_stime",	// 承载日期组件的id
+        isTime: true,
+        date: "2018-01-01",	// 选择的日期
+        // 重新选择日期之后返回一个时间对象
+        callback: function (rtn) {
+            // alert(rtn.date);
+        }
+    });
+    javaex.date({
+        id: "coupon_etime",	// 承载日期组件的id
+        isTime: true,
+        date: "2018-01-01",	// 选择的日期
+        // 重新选择日期之后返回一个时间对象
+        callback: function (rtn) {
+            // alert(rtn.date);
+        }
+    });
+
+    javaex.date({
+        id: "coupon_get_stime",	// 承载日期组件的id
+        isTime: true,
+        date: "2018-01-01",	// 选择的日期
+        // 重新选择日期之后返回一个时间对象
+        callback: function (rtn) {
+            // alert(rtn.date);
+        }
+    });
+    javaex.date({
+        id: "coupon_get_etime",	// 承载日期组件的id
+        isTime: true,
+        date: "2018-01-01",	// 选择的日期
+        // 重新选择日期之后返回一个时间对象
+        callback: function (rtn) {
+            // alert(rtn.date);
+        }
+    });
+
+    javaex.upload({
+        type: "image",
+        id: "upload",	// <input type="file" />的id
+        dataType: "base64",	// 返回的数据类型：base64 或 url
+        callback: function (rtn) {
+            javaex.optTip({
+                content: "数据提交中，请稍候...",
+                type: "submit"
+            });
+            $.ajax({
+                url: '{:Url("coupon/coupon/upload_image")}',
+                type: 'POST',
+                data: {'img': rtn, 'fix': 'jpg'},
+                success: function (res) {
+                    if (res.code == 0) {
+                        $("#container img").attr("src", rtn);
+                        javaex.optTip({
+                            content: "操作成功",
+                            type: "success"
+                        });
+                    } else {
+                        javaex.optTip({
+                            content: res.msg,
+                            type: "error"
+                        });
+                    }
+                }
+            });
+        }
+    });
+    javaex.upload({
+        type: "image",
+        id: "upload2",	// <input type="file" />的id
+        dataType: "base64",	// 返回的数据类型：base64 或 url,
+        isShowOptTip:true,
+        callback: function (rtn) {
+            javaex.optTip({
+                content : "数据提交中，请稍候...",
+                type : "submit"
+            });
+			$.ajax({
+               url:'{:Url("coupon/coupon/upload_image")}',
+               type:'POST',
+               data:{'img':rtn,'fix':'png'},
+               success:function (res) {
+                   if (res.code==0){
+                       $("#container2 img").attr("src", rtn);
+                       javaex.optTip({
+                           content : "操作成功",
+                           type : "success"
+                       });
+                   } else{
+                       javaex.optTip({
+                           content : res.msg,
+                           type : "error"
+                       });
+                   }
+
+               } ,
+                error:function (xhr,error) {
+                    javaex.optTip({
+                        content : '服务器异常',
+                        type : "error"
+                    });
+                }
+            });
+        }
+    });
+
+    const profession_change =(obj)=>{
+        if ($(obj).val()==='directmail'){
+            $('.unit1').css('display','block');
+        }else{
+            $('.unit1').css('display','none');
+        }
+    }
+    // 监听点击保存按钮事件
+    $("#save").click(function () {
+        if (javaexVerify()) {
+
+            // 返回错误信息时，可以添加自定义异常提示。参数为元素id和提示
+            // addErrorMsg("username", "用户名不存在");
+            // 提交
+            $("#form").submit();
+            // var form = new FormData();
+
+        }
+        return false;
+    });
+
+    // 监听点击返回按钮事件
+    // $("#return").click(function() {
+    //     window.location.href = document.referrer;
+    // });
+</script>
+</html>

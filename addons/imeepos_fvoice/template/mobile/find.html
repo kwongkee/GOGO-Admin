@@ -1,0 +1,229 @@
+{template 'common/header'}
+<link rel="stylesheet" href="{MODULE_URL}public/css/find.css"/>
+<div id="search"></div>
+<div class="main">
+    <style>
+        .followed {
+            line-height: 4.4rem;
+            padding-top: 2.2em;
+        }
+    </style>
+    <div>
+        <ul class="category-nav">
+            {php $category = M('category')->getList(1," AND fid != 0",array(),7)}
+            {loop $category['list'] $c}
+            <a href="{php echo $this->createMobileUrl('category',array('category_id'=>$c['id']))}">
+                <li style="background-image:url({php echo $c['image']});">{$c['title']}</li>
+            </a>
+            {/loop}
+            <a href="{php echo $this->createMobileUrl('category_all')}">
+                <li style="background-image:url({MODULE_URL}public/img/008.png);">全部</li>
+            </a>
+        </ul>
+    </div>
+    <style>
+        .weui_grid {
+            position: relative;
+            float: left;
+            padding: 5px;
+            width: 20%;
+            box-sizing: border-box;
+        }
+        .weui_grids:before{
+            border:none;
+            border-right:none;
+            border-left:none;
+        }
+        .weui_grid:after{
+            border:none;
+            border-right:none;
+            border-left:none;
+        }
+        .vux-masker {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            border-radius: inherit;
+            background-color: rgba(97, 97, 97, 0.42);
+            border-radius: 50%;
+            color: #fff;
+            text-align: center;
+            line-height: 5em;
+            margin: 5px;
+        }
+    </style>
+    <div class="weui_grids" style="padding: 5px;">
+        {php $members = M('member')->getList(1," AND ishot = 1  AND credit > 0",array(),10)}
+        {if !empty($members['list'])}
+        {loop $members['list'] $member}
+        <div class="weui_grid" onclick="window.location.href='{php echo $this->createMobileUrl('tutor',array('openid'=>$member['openid']))}'">
+            <img src="{php echo $member['avatar']}" style="width: 100%;border-radius:50%;" class="avatar">
+            <div class="vux-masker">{$member['nickname']}</div>
+        </div>
+        {/loop}
+        {/if}
+    </div>
+    <div id="albums">
+        {php $themes = M('themes')->getList(1,"",array(),3)}
+        {if !empty($themes['list'])}
+        <div>
+            <ul class="album">
+                <li class="title">精彩合辑</li>
+                {loop $themes['list'] $theme}
+                <li style="background-image:url({php echo tomedia($theme['image'])});">
+                    <a href="{php echo $this->createMobileUrl('themes_detail',array('id'=>$theme['id']))}">
+                        <p>{$theme['title']}</p>
+                        <p class="description">
+                            <span>{$theme['desc']}</span>
+                            <span>{php echo M('themes_answer')->getTotal($theme['id'])}</span>
+                            <span>人</span>
+                        </p>
+                    </a>
+                </li>
+                {/loop}
+                <li class="more">
+                    <a href="{php echo $this->createMobileUrl('themes')}">查看更多精彩合辑</a>
+                </li>
+            </ul>
+        </div>
+        {/if}
+    </div>
+    {if $this->template['find_item_1'] == 1}
+    <div id="leaders">
+        {php $members = M('member')->getList(1," AND ishot = 1   AND credit > 0",array(),3)}
+        {if !empty($members['list'])}
+        <div>
+            <ul class="album album-leader">
+                <li class="title">{php echo $this->template['find_item_title_1']}</li>
+                {loop $members['list'] $member}
+                <li>
+                    <a href="{php echo $this->createMobileUrl('tutor',array('openid'=>$member['openid']))}">
+                        <img src="{php echo $member['avatar']}" class="avatar">
+                        <p>{$member['nickname']}</p>
+                        <p class="description">{$member['tags']}</p>
+                        <p class="description">
+                            <span>{php echo M('answer')->getTotal($member['openid'])}</span>
+                            <span>个回答，</span>
+                            <span>{php echo M('follow')->getTotal($member['openid'])}</span>
+                            <span>人收听</span>
+                        </p>
+                    </a>
+                    {php $check = M('follow')->check($member['openid'])}
+                    <div class="{if !empty($check)}followed{else}follow{/if}" data-openid="{$member['openid']}">
+                        {if !empty($check)}
+                        <button class="weui_btn weui_btn_mini weui_btn_default" style="float: right;">已收听</button>
+                        {else}
+                        <button class="weui_btn weui_btn_mini weui_btn_primary" style="float: right;">立即收听</button>
+                        {/if}
+                    </div>
+                </li>
+                {/loop}
+                <li class="more">
+                    <a href="{php echo $this->createMobileUrl('members',array('tab'=>'ishot'))}">查看更多热推{php echo $this->template['find_item_title_1']}</a>
+                </li>
+            </ul>
+        </div>
+        {/if}
+    </div>
+    {/if}
+    {if $this->template['find_item_2'] == 1}
+    <div id="newstar">
+        {php $members = M('member')->getList(1," AND credit > 0",array(),3)}
+        {if !empty($members['list'])}
+        <div>
+            <ul class="album album-leader">
+                <li class="title">{php echo $this->template['find_item_title_2']}</li>
+
+                {loop $members['list'] $member}
+                <li>
+                    <a href="{php echo $this->createMobileUrl('tutor',array('openid'=>$member['openid']))}">
+                        <img src="{php echo $member['avatar']}" class="avatar">
+                        <p>{$member['nickname']}</p>
+                        <p class="description">{$member['tags']}</p>
+                        <p class="description">
+                            <span>{php echo M('answer')->getTotal($member['openid'])}</span>
+                            <span>个回答，</span>
+                            <span>{php echo M('follow')->getTotal($member['openid'])}</span>
+                            <span>人收听</span>
+                        </p>
+                    </a>
+                    {php $check = M('follow')->check($member['openid'])}
+                    <div class="{if !empty($check)}followed{else}follow{/if}" data-openid="{$member['openid']}">
+                        {if !empty($check)}
+                        <button class="weui_btn weui_btn_mini weui_btn_default" style="float: right;">已收听</button>
+                        {else}
+                        <button class="weui_btn weui_btn_mini weui_btn_primary" style="float: right;">立即收听</button>
+                        {/if}
+                    </div>
+                </li>
+                {/loop}
+                <li class="more">
+                    <a href="{php echo $this->createMobileUrl('members',array('tab'=>'isnew'))}">查看更多{php echo $this->template['find_item_title_2']}</a>
+                </li>
+            </ul>
+        </div>
+        {/if}
+    </div>
+    {/if}
+    {if $this->template['find_item_3'] == 1}
+    <div id="leaderboard">
+        {php $members = M('member')->getList(1," AND isrecommend = 1  AND credit > 0",array(),3)}
+        {if !empty($members['list'])}
+        <div>
+            <ul class="album album-leader">
+                <li class="title">{php echo $this->template['find_item_title_3']}</li>
+                {loop $members['list'] $member}
+                <li>
+                    <a href="{php echo $this->createMobileUrl('tutor',array('openid'=>$member['openid']))}">
+                        <img src="{php echo $member['avatar']}" class="avatar">
+                        <p>{$member['nickname']}</p>
+                        <p class="description">{$member['tags']}</p>
+                        <p class="description">
+                            <span>{php echo M('answer')->getTotal($member['openid'])}</span>
+                            <span>个回答，</span>
+                            <span>{php echo M('follow')->getTotal($member['openid'])}</span>
+                            <span>人收听</span>
+                        </p>
+                    </a>
+                    {php $check = M('follow')->check($member['openid'])}
+                    <div class="{if !empty($check)}followed{else}follow{/if}" data-openid="{$member['openid']}">
+                        {if !empty($check)}
+                        <button class="weui_btn weui_btn_mini weui_btn_default" style="float: right;">已收听</button>
+                        {else}
+                        <button class="weui_btn weui_btn_mini weui_btn_primary" style="float: right;">立即收听</button>
+                        {/if}
+                    </div>
+                </li>
+                {/loop}
+                <li class="more">
+                    <a href="{php echo $this->createMobileUrl('members',array('tab'=>'isrecommend'))}">查看更多{php echo $this->template['find_item_title_3']}</a>
+                </li>
+            </ul>
+        </div>
+        {/if}
+    </div>
+    {/if}
+</div>
+{template 'common/footerbar'}
+<script type="text/javascript" src="{$_W['siteroot']}app/resource/js/lib/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="{MODULE_URL}public/libs/jquery_weui/jquery-weui.js"></script>
+    <script>
+        $(document.body).on('click','.follow',function(){
+            var openid = $(this).data('openid');
+            var _that = $(this);
+            $.post("{php echo $this->createMobileUrl('members')}",{act:'follow',openid:openid},function(data){
+                if(data.status == 1){
+                    _that.parent().addClass('followed').remove('follow');
+                    var btn = _that.find('.weui_btn_primary');
+                    btn.removeClass('weui_btn_primary');
+                    btn.addClass('weui_btn_default');
+                    btn.html('已收听');
+                }else{
+                    $.toast(data.message,2000);
+                }
+            },'json');
+        });
+    </script>
+{template 'common/footer'}

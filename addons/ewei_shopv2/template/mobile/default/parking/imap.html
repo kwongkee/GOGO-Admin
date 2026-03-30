@@ -1,0 +1,231 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>泊位查询</title>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
+    <script type="text/javascript" src="../addons/ewei_shopv2/static/js/new-js/jquery-2.2.1.min.js"></script>
+    <style type="text/css">
+        html,body,#container{
+            height:100%;
+        }
+        .info {
+            border: solid 1px silver;
+        }
+        div.info-top {
+            position: relative;
+            background: none repeat scroll 0 0 #F9F9F9;
+            border-bottom: 1px solid #CCC;
+            border-radius: 5px 5px 0 0;
+        }
+        div.info-top div {
+            display: inline-block;
+            color: #333333;
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 31px;
+            padding: 0 10px;
+        }
+        div.info-top img {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            transition-duration: 0.25s;
+        }
+        div.info-top img:hover {
+            box-shadow: 0px 0px 5px #000;
+        }
+        div.info-middle {
+            font-size: 12px;
+            padding: 6px;
+            line-height: 20px;
+        }
+        div.info-bottom {
+            height: 0px;
+            width: 100%;
+            clear: both;
+            text-align: center;
+        }
+        div.info-bottom img {
+            position: relative;
+            z-index: 104;
+        }
+        span {
+            margin-left: 5px;
+            font-size: 11px;
+        }
+        .info-middle img {
+            float: left;
+            margin-right: 6px;
+        }
+        .main{
+            border:1px solid #000;
+            width: 160px;
+            height: 120px;
+            background-color: aliceblue;
+        }
+        .main li{
+            list-style-type:none;
+            margin-left: -12px;
+        }
+    </style>
+</head>
+<body>
+<div id="container"></div>
+<!--<div class="info">-->
+    <!--<h4 id='status'></h4><hr>-->
+    <!--<p id='result'></p><hr>-->
+    <!--<p >由于众多浏览器已不再支持非安全域的定位请求，为保位成功率和精度，请升级您的站点到HTTPS。</p>-->
+<!--</div>-->
+<div class="input-card" style="margin-right: 38px;">
+    <h4>查询</h4>
+    <div class="input-item">
+        <div class="input-item-prepend"><span class="input-item-text" >省市区</span></div>
+        <select id='province' style="width:100px" onchange='search(this)'>
+            <option>广东</option>
+        </select>
+    </div>
+    <div class="input-item">
+        <div class="input-item-prepend"><span class="input-item-text" >地级市</span></div>
+        <select id='city' style="width:100px" onchange='search(this)'></select>
+    </div>
+    <div class="input-item">
+        <div class="input-item-prepend"><span class="input-item-text" >区县</span></div>
+        <select id='district' style="width:100px" onchange='search(this)'></select>
+    </div>
+    <div class="input-item">
+        <div class="input-item-prepend"><span class="input-item-text" >街道</span></div>
+        <select id='street' style="width:100px" onchange='setCenter(this)'></select>
+    </div>
+</div>
+<script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.10&key=b3542a0a7dacb8ab759e65d0621db859"></script>
+<!--<script src="http://wechatfe.github.io/vconsole/lib/vconsole.min.js?v=3.2.0"></script>-->
+<!--<script>-->
+<!--var vsConsole = new VConsole();-->
+<!--</script>-->
+<script type="text/javascript">
+    var map = new AMap.Map('container', {
+        resizeEnable: true, //是否监控地图容器尺寸变化
+        zoom:5, //初始化地图层级
+        // center: [116.397428, 39.90923] //初始化地图中心点
+    });
+
+
+    // var citySelect = document.getElementById('city');
+    // var districtSelect = document.getElementById('district');
+    // var areaSelect = document.getElementById('street');
+
+    map.clearMap();
+    var markers = [];
+    var infoWindow;
+
+    $.ajax({
+        url : "{php echo mobileUrl('parking/imap/addrberth_list')}",
+        type : "get",
+        dataType : "json",
+        success : function(e) {
+            console.log(e);
+            // return false;
+            infoWindow = new AMap.InfoWindow({
+                isCustom:	true,
+                draggable: true,  //是否可拖动
+                offset: new AMap.Pixel(0, -31),
+                content:""
+            });
+            var data=[{"fLong":'112.00003','orderON':'1232','tranOFID':'1232','fLati':'38.2345'},{"fLong":'115.00003','orderON':'1232','tranOFID':'1232','fLati':'38.2345'}];
+            e.data = data;
+            var marker;
+            for(var i=0 ; i< e.data.length;i++){
+                var jfong=[ e.data[i].fLong,e.data[i].fLati];
+                marker = new AMap.Marker({
+                    position: jfong,
+                    zIndex: 101,
+                    map:map
+                });
+                console.log(e.data[1]);
+                marker.setMap(map);
+                marker.orderON=e.data[i].orderON;
+                marker.tranOFID=e.data[i].tranOFID;
+                // marker.fhadd=e.data[i].fhadd;
+                // marker.sAdd=e.data[i].sAdd;
+                // marker.status=e.data[i].status;
+                marker.on('click', function(e){
+                    infoWindow.setContent("<ul class='main'><li> 地址： <span style='color:blue'>"+e.target.orderON+"</span></li>"
+                        + "<li>  可用车位数: <span style='color:blue'>"+e.target.tranOFID+"  </span></li>"
+                        +"<li>点击导航:<span style='color:blue'><a>导航</a></span></li>");
+                    infoWindow.open(map, e.lnglat);
+                });
+
+            }	// for-end
+
+        }
+
+
+    }); //	Ajax结束
+    function closeInfoWindow() {
+        map.clearInfoWindow();
+    }
+
+
+    // AMap.plugin('AMap.Geolocation', function () {
+    //     var geolocation = new AMap.Geolocation({
+    //         enableHighAccuracy: true,//是否使用高精度定位，默认:true
+    //         timeout: 10000,          //超过10秒后停止定位，默认：5s
+    //         buttonPosition: 'RB',    //定位按钮的停靠位置
+    //         buttonOffset: new AMap.Pixel(10, 20),//定位按钮与设置的停靠位置的偏移量，默认：Pixel(10, 20)
+    //         zoomToAccuracy: true,   //定位成功后是否自动调整地图视野到定位点
+    //
+    //     });
+    //     map.addControl(geolocation);
+    //     geolocation.getCurrentPosition(function (status, result) {
+    //         if (status == 'complete') {
+    //             onComplete(result)
+    //         } else {
+    //             onError(result)
+    //         }
+    //     });
+    // });
+    //
+    // //解析定位结果
+    // function onComplete(data) {
+    //     // document.getElementById('status').innerHTML='定位成功'
+    //     var str = [];
+    //     str.push('定位结果：' + data.position);
+    //     str.push('定位类别：' + data.location_type);
+    //     if (data.accuracy) {
+    //         str.push('精度：' + data.accuracy + ' 米');
+    //     }//如为IP精确定位结果则没有精度信息
+    //     str.push('是否经过偏移：' + (data.isConverted ? '是' : '否'));
+    //     document.getElementById('result').innerHTML = str.join('<br>');
+    // }
+    //
+    // //解析定位错误信息
+    // function onError(data) {
+    //     alert('定位失败');
+    //     // document.getElementById('status').innerHTML='定位失败'
+    //     // document.getElementById('result').innerHTML = '失败原因排查信息:'+data.message;
+    // }
+
+
+    // var marker = new AMap.Marker({
+    //     position: new AMap.LngLat(116.39,39.9),
+    //     content: content,  // 自定义点标记覆盖物内容
+    //     animation:'AMAP_ANIMATION_DROP',
+    //     title:'广东'
+    //     // icon: '//vdata.amap.com/icons/b18/1/2.png', // 添加 Icon 图标 URL
+    // });
+    // var marker2 = new AMap.Marker({
+    //     position: new AMap.LngLat(116.405467,39.907761),
+    //     animation:'AMAP_ANIMATION_DROP',
+    //     title:'广东'
+    //     // icon: '//vdata.amap.com/icons/b18/1/2.png', // 添加 Icon 图标 URL
+    // });
+    // var markerList = [marker, marker2];
+    // map.add(markerList);
+</script>
+<script type="text/javascript" src="https://webapi.amap.com/demos/js/liteToolbar.js"></script>
+
+</body>
+</html>

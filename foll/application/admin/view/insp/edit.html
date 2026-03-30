@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>编辑查验风控</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+
+
+<form class="layui-form">
+    <input type="hidden" name="id" value="{$data['id']}">
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">HS编码</label>
+            <div class="layui-input-block">
+                <input type="text" name="hscode" required value="{$data['hscode']}"  lay-verify="required" placeholder="请输入HS编码" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">品牌名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="brand" required value="{$data['brand']}"  lay-verify="required" placeholder="请输入品牌名称" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">商品名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="goodname" required value="{$data['goodname']}"  lay-verify="required" placeholder="请输入商品名称" autocomplete="off" class="layui-input">
+
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">关键词</label>
+            <div class="layui-input-block">
+                <input type="text" required value="{$data['keyword']}"  lay-verify="required" placeholder="请输入风险描述" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">所属分类</label>
+            <div class="layui-input-block">
+                <select name="cate" lay-verify="required">
+                    <option value="">请选择分类</option>
+                    {volist name="cate" id='vo'}
+                    <option value="{$vo.id}" {if condition="$data['cate'] == $vo.id"} selected {/if} >{$vo.cateName}</option>
+                    {/volist}
+                </select>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">风险描述</label>
+            <div class="layui-input-block">
+                <input type="text" name="desc" required value="{$data['desc']}"  lay-verify="required" placeholder="请输入风险描述" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <a class="layui-btn" href="javascript:void(0);" onclick="addPost();">立即提交</a>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+
+
+<script>
+    layui.use(['form','layer'], function() {
+        $ = layui.jquery;
+        var form = layui.form,layer = layui.layer;
+    });
+
+
+    // 添加操作
+    function addPost() {
+        var id   = $('input[name="id"]').val();
+        var hscode   = $('input[name="hscode"]').val();
+        var brand    = $('input[name="brand"]').val();
+        var goodname = $('input[name="goodname"]').val();
+        var desc     = $('input[name="desc"]').val();
+        var cate     = $('select option:selected').val();
+
+        if(hscode == '' && brand == '' && goodname == '') {
+            layer.msg('至少有一项不能为空');
+            return false;
+        }
+
+        if(cate == '') {
+            layer.msg('风险分类不能为空');
+            return false;
+        }
+        
+        if(desc == '') {
+            layer.msg('风险描述不能为空');
+            return false;
+        }
+
+        $.post("{:url('insp/doedit')}",{
+            hscode:hscode,brand:brand,goodname:goodname,desc:desc,id:id,cate:cate,
+        },function(res) {
+            var das = JSON.parse(res);
+            if(das.status) {
+                layer.msg(das.msg);
+            } else {
+                layer.msg(das.msg);
+            }
+
+            setTimeout(function(){
+                window.parent.document.location.reload();
+            },800);
+        });
+    }
+</script>
+
+</body>
+</html>
+

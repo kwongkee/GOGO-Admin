@@ -1,0 +1,481 @@
+{include file="common/header_inner_new"}
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+
+<style>
+    .disf{display:flex;align-items:center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .edui-editor{z-index: unset !important;}
+    .edui1_iframeholder{z-index: unset !important;}
+
+    .layui-colla-item{border:1px solid #000;}
+    .layui-colla-title{background:#0e2e68;color:#fff;margin-top:0;}
+    .declare_value{width: 80px;}
+    .layui-form-label{width:60px;}
+    .layui-input-block{margin-left:90px;}
+    .tax_text{white-space: nowrap;padding:0 5px;font-size:15px;font-weight:bold;}
+    .equal_div{width:80px;}
+    .taxes_div{border:0;width: 100%;}
+    .layui-colla-title{margin-top:0;background:#2f5cad;justify-content: space-between;}
+    .tips_operation,.taxes_h2{background:#5389e9;}
+    .taxes_catename{width:100px;}
+    .common_div{align-items: baseline;}
+    .expend_div{width: 150px;text-align: right;border-left: 1px solid;}
+    .layui-colla-item:first-child{border-top:1px solid #000;}
+    .system_urls{width:280px;}
+    .tips_operation_div{border:0;width: 100%;}
+    .tips_div .tips_operation{background: #b27be1;}
+
+    /*.common_div{display: grid;grid-template-columns: repeat(6,1fr);-moz-column-gap: 0px;column-gap: 0px;row-gap: 40px;}*/
+    /*.big_div{grid-column-start: 3;grid-column-end: 7;}*/
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="hidden" name="id" value="{$id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="common_div disf">
+                            <div class="equal_div">
+                                <select name="declare_value_equal" id="declare_value_equal" lay-verify="required">
+                                    <option value="≥" {if $data['declare_value_equal']=='≥'}selected{/if}>≥</option>
+                                    <option value="≤" {if $data['declare_value_equal']=='≤'}selected{/if}>≤</option>
+                                    <option value=">" {if $data['declare_value_equal']=='>'}selected{/if}>></option>
+                                    <option value="<" {if $data['declare_value_equal']=='<'}selected{/if}><</option>
+                                </select>
+                            </div>
+                            <div class="disf" style="align-items: baseline;">
+                                <input type="number" class="layui-input declare_value" name="declare_value" lay-verify="required" value="{$data['declare_value']}" placeholder="包裹体积">
+                                <div class="tax_text">CBM</div>
+                            </div>
+                            <div class="layui-collapse tips_div" lay-accordion style="width: 100%;">
+                                {if(!empty($data['tips']))}
+                                <?php $xm_num=1;?>
+                                {volist name="data.tips" key="key2" id="vo"}
+                                <div class="layui-colla-item tips_div2">
+                                    <h2 class="layui-colla-title tips_title disf" style="margin-top:0;background:#8d39d7;justify-content: space-between;">
+                                        <span>提示内容{$key2}</span>
+                                        <div class="expend_div">
+                                            <div class="layui-btn layui-btn-success add_operation" onclick="add_tips(this)">+</div>
+                                        </div>
+                                    </h2>
+                                    <div class="layui-colla-content {if $key2==1}layui-show{/if}">
+                                        <div class="disf" style="align-items: baseline;">
+                                            <textarea name="text_tips[{$key2-1}]" class="layui-textarea" placeholder="请输入提示内容">{$data['tips'][$key2-1]['text_tips']}</textarea>
+                                            <div class="layui-collapse tips_operation_div" lay-accordion>
+                                                {volist name="vo['operation_name']" key="key" id="vo2"}
+                                                <div class="layui-colla-item">
+                                                    <h2 class="layui-colla-title tips_operation disf">
+                                                        <span>操作{$key}</span>
+                                                        <div class="expend_div">
+                                                            {if $key!=1}<div class="layui-btn layui-btn-danger del_operation" onclick="del_operation(this)">-</div>{/if}
+                                                            <div class="layui-btn layui-btn-success add_operation" onclick="add_operation({$key2-1},this)">+</div>
+                                                        </div>
+                                                    </h2>
+                                                    <div class="layui-colla-content  {if $key==1}layui-show{/if}">
+                                                        <div class="disf">
+                                                            <input type="text" class="layui-input" name="operation_name[{$key2-1}][]" lay-verify="required" value="{$vo2}" placeholder="请输入操作文本">
+                                                            <div style="width: 250px;">
+                                                                <select name="operation_select[{$key2-1}][]" lay-filter="operation_select">
+                                                                    <option value="">无需跳转</option>
+                                                                    <option value="1" {if $data['tips'][$key2-1]['operation_select'][$key-1]==1}selected{/if}>URL</option>
+                                                                    <option value="2" {if $data['tips'][$key2-1]['operation_select'][$key-1]==2}selected{/if}>系统菜单</option>
+                                                                </select>
+                                                            </div>
+                                                            <input type="text" class="layui-input operation_url" style="display: {if $data['tips'][$key2-1]['operation_select'][$key-1]==1}block{else}none{/if};" name="operation_url[{$key2-1}][]" value="{$data['tips'][$key2-1]['operation_url'][$key-1]}" placeholder="请输入操作跳转的URL">
+                                                            <div class="system_urls" style="display: {if $data['tips'][$key2-1]['operation_select'][$key-1]==2}block{else}none{/if};">
+                                                                <div id="system_urls{$xm_num}" class="xm-select-demo"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <?php $xm_num+=1;?>
+                                                {/volist}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {/volist}
+                                {else}
+                                <div class="layui-colla-item tips_div2">
+                                    <h2 class="layui-colla-title tips_title disf" style="margin-top:0;background:#8d39d7;justify-content: space-between;">
+                                        <span>提示内容1</span>
+                                        <div class="expend_div">
+                                            <div class="layui-btn layui-btn-success add_operation" onclick="add_tips(this)">+</div>
+                                        </div>
+                                    </h2>
+                                    <div class="layui-colla-content layui-show">
+                                        <div class="disf" style="align-items: baseline;">
+                                            <textarea name="text_tips[]" class="layui-textarea" placeholder="请输入提示内容"></textarea>
+                                            <div class="layui-collapse tips_operation_div" lay-accordion>
+                                                <div class="layui-colla-item">
+                                                    <h2 class="layui-colla-title tips_operation disf">
+                                                        <span>操作1</span>
+                                                        <div class="expend_div">
+                                                            <div class="layui-btn layui-btn-success add_operation" onclick="add_operation(0,this)">+</div>
+                                                        </div>
+                                                    </h2>
+                                                    <div class="layui-colla-content layui-show">
+                                                        <div class="disf">
+                                                            <input type="text" class="layui-input" name="operation_name[0][]" lay-verify="required" placeholder="请输入操作文本">
+                                                            <div style="width: 250px;">
+                                                                <select name="operation_select[0][]" lay-filter="operation_select">
+                                                                    <option value="">无需跳转</option>
+                                                                    <option value="1">URL</option>
+                                                                    <option value="2">系统菜单</option>
+                                                                </select>
+                                                            </div>
+                                                            <input type="text" class="layui-input operation_url" style="display: none;" name="operation_url[0][]" placeholder="请输入操作跳转的URL">
+                                                            <div class="system_urls" style="display: none;">
+                                                                <div id="system_urls0" class="xm-select-demo"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {/if}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+<script src="./static/hadmin/assets/layui/xm-select.js"></script>
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload','element'],function(){
+        var laydate = layui.laydate
+            ,layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery
+            ,element = layui.element
+            ,upload = layui.upload;
+
+        {if(!empty($data['tips']))}
+    <?php $xm_num=1;?>
+        {volist name="data.tips" key="key2" id="vo"}
+        {volist name="vo['operation_name']" key="key" id="vo2"}
+        xmSelect.render({
+            el: '#system_urls{$xm_num}',
+            name:'system_urls_value[{$key2-1}][]',
+            autoRow: true, //自动换行
+            filterable: true, //可搜索
+            searchTips: '请选择',
+            radio:true,
+            model: {
+                icon: 'hidden',//是否展示复选框或者单选框图标 show, hidden:变换背景色  ！！这句话是重点，不然会变成父节点也有单选框！！
+            },
+            tree: {
+                show: true, //用树显示
+                showFolderIcon: true, //是否显示节点前的三角图标
+                expandedKeys: true, //默认全部展开
+                showLine: true, //显示渐近线
+                indent: 20, //间距
+                strict: false, //重点！！设置成非严格父子模式，这样父节点被禁用，子节点依然可以点击
+                clickCheck:true,
+            },
+            toolbar: {
+                show: false, //显示工具条
+                list: ['ALL', 'REVERSE', 'CLEAR']
+            },
+            height: '300px', //最大下拉框高度
+            data: {$list},
+            initValue:[{$vo['system_urls_value'][$key-1]}]
+        });
+    <?php $xm_num+=1;?>
+        {/volist}
+            {/volist}
+                {else}
+                xmSelect.render({
+                    el: '#system_urls0',
+                    name:'system_urls_value[0][]',
+                    autoRow: true, //自动换行
+                    filterable: true, //可搜索
+                    searchTips: '请选择',
+                    radio:true,
+                    model: {
+                        icon: 'hidden',//是否展示复选框或者单选框图标 show, hidden:变换背景色  ！！这句话是重点，不然会变成父节点也有单选框！！
+                    },
+                    tree: {
+                        show: true, //用树显示
+                        showFolderIcon: true, //是否显示节点前的三角图标
+                        expandedKeys: true, //默认全部展开
+                        showLine: true, //显示渐近线
+                        indent: 20, //间距
+                        strict: false, //重点！！设置成非严格父子模式，这样父节点被禁用，子节点依然可以点击
+                        clickCheck:true,
+                    },
+                    toolbar: {
+                        show: false, //显示工具条
+                        list: ['ALL', 'REVERSE', 'CLEAR']
+                    },
+                    height: '300px', //最大下拉框高度
+                    data: {$list},
+                    initValue:[]
+                });
+                {/if}
+                    // UE.getEditor('cont1', {
+                    //     initialFrameHeight: 200,
+                    //     serverUrl: 'static/cklein/plugins/ueditor/php/controller.php'
+                    // });
+
+                    form.on('select(country_id)',function(data){
+                        let val = data.value;
+                        if(val!=''){
+                            $.ajax({
+                                url:"{:Url('admin/basic/get_currency')}",
+                                method:'post',
+                                data:{'val':val},
+                                dataType:'JSON',
+                                success:function(res){
+                                    layer.msg(res.msg,{time:2000}, function () {
+                                        if(res.code == 0)
+                                        {
+                                            $('#legal_currency').val(res.data);
+                                            $('.currency').text(res.data);
+                                        }
+                                    });
+                                },
+                                error:function (data) {
+                                    layer.msg('系统错误',{time:2000});
+                                }
+                            });
+                        }
+                    });
+
+                    form.on('select(operation_select)',function(data){
+                        let val = data.value;
+                        if(val==1){
+                            $(this).parent().parent().parent().parent().find('.operation_url').show();
+                            $(this).parent().parent().parent().parent().find('.system_urls').hide();
+                        }else if(val==2){
+                            $(this).parent().parent().parent().parent().find('.operation_url').hide();
+                            $(this).parent().parent().parent().parent().find('.system_urls').show();
+                        }else{
+                            $(this).parent().parent().parent().parent().find('.system_urls').hide();
+                            $(this).parent().parent().parent().parent().find('.operation_url').hide();
+                        }
+                    });
+
+                    form.on('submit(component-form-element2)', function(data){
+                        // JSON.stringify()
+                        // console.log(data.field);return false;
+                        $.ajax({
+                            url:"{:Url('admin/basic/declare_volumn_list')}",
+                            method:'post',
+                            data:data.field,
+                            dataType:'JSON',
+                            success:function(res){
+                                layer.msg(res.msg,{time:2000}, function () {
+                                    if(res.code == 0)
+                                    {
+                                        window.location.reload();
+                                    }
+                                });
+                            },
+                            error:function (data) {
+                                layer.msg('系统错误',{time:2000});
+                            }
+                        });
+                        return false;
+                    });
+                });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+
+    //匹配提示
+    function add_tips(t){
+        var layer = layui.layer,$ = layui.$,form = layui.form,element = layui.element;
+        let idx = parseInt($('.tips_div2').length);
+        let num = idx + 1;
+        let xm_num = parseInt($('.system_urls').length) + 1;
+        let html = '<div class="layui-colla-item tips_div2">\n' +
+            '                                        <h2 class="layui-colla-title tips_title disf" style="margin-top:0;background:#8d39d7;justify-content: space-between;">\n' +
+            '                                            <span>提示内容'+num+'</span>\n' +
+            '                                            <div class="expend_div">\n' +
+            '                                                <div class="layui-btn layui-btn-danger del_operation" onclick="del_tips(this)">-</div>\n' +
+            '                                                <div class="layui-btn layui-btn-success add_operation" onclick="add_tips(this)">+</div>\n' +
+            '                                            </div>\n' +
+            '                                        </h2>\n' +
+            '                                        <div class="layui-colla-content layui-show">\n' +
+            '                                            <div class="disf" style="align-items: baseline;">\n' +
+            '                                                <textarea name="text_tips[]" class="layui-textarea" placeholder="请输入提示内容"></textarea>\n' +
+            '                                                <div class="layui-collapse tips_operation_div" lay-accordion>\n' +
+            '                                                    <div class="layui-colla-item">\n' +
+            '                                                        <h2 class="layui-colla-title tips_operation disf">\n' +
+            '                                                            <span>操作1</span>\n' +
+            '                                                            <div class="expend_div">\n' +
+            '                                                                <div class="layui-btn layui-btn-success add_operation" onclick="add_operation('+idx+',this)">+</div>\n' +
+            '                                                            </div>\n' +
+            '                                                        </h2>\n' +
+            '                                                        <div class="layui-colla-content layui-show">\n' +
+            '                                                            <div class="disf">\n' +
+            '                                                                <input type="text" class="layui-input" name="operation_name['+idx+'][]" lay-verify="required" placeholder="请输入操作文本">\n' +
+            '                                                                <div style="width: 250px;">\n' +
+            '                                                                    <select name="operation_select['+idx+'][]" lay-filter="operation_select">\n' +
+            '                                                                        <option value="">无需跳转</option>\n' +
+            '                                                                        <option value="1">URL</option>\n' +
+            '                                                                        <option value="2">系统菜单</option>\n' +
+            '                                                                    </select>\n' +
+            '                                                                </div>\n' +
+            '                                                                <input type="text" class="layui-input operation_url" style="display: none;" name="operation_url['+idx+'][]" placeholder="请输入操作跳转的URL">\n' +
+            '                                                                <div class="system_urls" style="display: none;">\n' +
+            '                                                                    <div id="system_urls'+xm_num+'" class="xm-select-demo"></div>\n' +
+            '                                                                </div>\n' +
+            '                                                            </div>\n' +
+            '                                                        </div>\n' +
+            '                                                    </div>\n' +
+            '                                                </div>\n' +
+            '                                            </div>\n' +
+            '                                        </div>\n' +
+            '                                    </div>';
+
+        $('.tips_div').append(html);
+        element.render('collapse');
+        form.render(null,'component-form-element');
+        xmSelect.render({
+            el: '#system_urls'+xm_num,
+            name:'system_urls_value['+idx+'][]',
+            autoRow: true, //自动换行
+            filterable: true, //可搜索
+            searchTips: '请选择',
+            radio:true,
+            model: {
+                icon: 'hidden',//是否展示复选框或者单选框图标 show, hidden:变换背景色  ！！这句话是重点，不然会变成父节点也有单选框！！
+            },
+            tree: {
+                show: true, //用树显示
+                showFolderIcon: true, //是否显示节点前的三角图标
+                expandedKeys: true, //默认全部展开
+                showLine: true, //显示渐近线
+                indent: 20, //间距
+                strict: false, //重点！！设置成非严格父子模式，这样父节点被禁用，子节点依然可以点击
+                clickCheck:true,
+            },
+            toolbar: {
+                show: false, //显示工具条
+                list: ['ALL', 'REVERSE', 'CLEAR']
+            },
+            height: '300px', //最大下拉框高度
+            data: {$list},
+            initValue:[]
+        });
+    }
+
+    function del_tips(t){
+        var layer = layui.layer,$ = layui.$,form = layui.form,element = layui.element;
+
+        let idx = layer.confirm('确认要删除该提示内容？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(t).parent().parent().parent().remove();
+            layer.close(idx);
+        }, function(){
+
+        });
+    }
+
+    function add_operation(idx,t){
+        var layer = layui.layer,$ = layui.$,form = layui.form,element = layui.element;
+        let num = parseInt($(t).parent().parent().parent().parent().find('.tips_operation').length) + 1;
+        let xm_num = parseInt($('.system_urls').length) + 1;
+        let html = '<div class="layui-colla-item">\n' +
+            '                                                        <h2 class="layui-colla-title tips_operation disf">\n' +
+            '                                                            <span>操作'+num+'</span>\n' +
+            '                                                            <div class="expend_div">\n' +
+            '                                                                <div class="layui-btn layui-btn-danger del_operation" onclick="del_operation(this)">-</div>\n' +
+            '                                                                <div class="layui-btn layui-btn-success add_operation" onclick="add_operation('+idx+',this)">+</div>\n' +
+            '                                                            </div>\n' +
+            '                                                        </h2>\n' +
+            '                                                        <div class="layui-colla-content layui-show">\n' +
+            '                                                            <div class="disf">\n' +
+            '                                                                <input type="text" class="layui-input" name="operation_name['+idx+'][]" lay-verify="required" placeholder="请输入操作文本">\n' +
+            '                                                                <div style="width: 250px;">\n' +
+            '                                                                    <select name="operation_select['+idx+'][]" lay-filter="operation_select">\n' +
+            '                                                                        <option value="">无需跳转</option>\n' +
+            '                                                                        <option value="1">URL</option>\n' +
+            '                                                                        <option value="2">系统菜单</option>\n' +
+            '                                                                    </select>\n' +
+            '                                                                </div>\n' +
+            '                                                                <input type="text" class="layui-input operation_url" style="display: none;" name="operation_url['+idx+'][]" placeholder="请输入操作跳转的URL">\n' +
+            '                                                                <div class="system_urls" style="display: none;">\n' +
+            '                                                                    <div id="system_urls'+xm_num+'" class="xm-select-demo"></div>\n' +
+            '                                                                </div>\n' +
+            '                                                            </div>\n' +
+            '                                                        </div>\n' +
+            '                                                    </div>';
+
+        $(t).parent().parent().parent().parent().append(html);
+        element.render('collapse');
+        form.render(null,'component-form-element');
+
+        xmSelect.render({
+            el: '#system_urls'+xm_num,
+            name:'system_urls_value['+idx+'][]',
+            autoRow: true, //自动换行
+            filterable: true, //可搜索
+            searchTips: '请选择',
+            radio:true,
+            model: {
+                icon: 'hidden',//是否展示复选框或者单选框图标 show, hidden:变换背景色  ！！这句话是重点，不然会变成父节点也有单选框！！
+            },
+            tree: {
+                show: true, //用树显示
+                showFolderIcon: true, //是否显示节点前的三角图标
+                expandedKeys: true, //默认全部展开
+                showLine: true, //显示渐近线
+                indent: 20, //间距
+                strict: false, //重点！！设置成非严格父子模式，这样父节点被禁用，子节点依然可以点击
+                clickCheck:true,
+            },
+            toolbar: {
+                show: false, //显示工具条
+                list: ['ALL', 'REVERSE', 'CLEAR']
+            },
+            height: '300px', //最大下拉框高度
+            data: {$list},
+            initValue:[]
+        });
+    }
+
+    function del_operation(t){
+        var layer = layui.layer,$ = layui.$,form = layui.form,element = layui.element;
+
+        let idx = layer.confirm('确认要删除该操作？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(t).parent().parent().parent().remove();
+            layer.close(idx);
+        }, function(){
+
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.baidu.com" versionCode="0.6,0.7,0.8,0.9">
+	<application setting="true">
+		<name><![CDATA[返利宝]]></name>
+		<identifie><![CDATA[amouse_rebate]]></identifie>
+		<version><![CDATA[2.4]]></version>
+		<type><![CDATA[activity]]></type>
+		<ability><![CDATA[单品三级分销+免费加粉互粉第一平台，没有任何门槛，关注即可使用所有功能]]></ability>
+		<description><![CDATA[单品三级分销+免费加粉互粉第一平台，没有任何门槛，关注即可使用所有功能]]></description>
+		<author><![CDATA[微赞]]></author>
+		<url><![CDATA[http://www.baidu.com]]></url>
+	</application>
+	<platform>
+		<subscribes>
+			<message type="text" />
+		</subscribes>
+		<handles>
+			<message type="text" />
+		</handles>
+		<rule embed="true" />
+		<card embed="false" />
+	</platform>
+	<bindings>
+		<cover>
+          <entry title="购买商品" do="goods" state="" direct="false" />
+		  <entry title="客源中心" do="board" state="" direct="false" />
+          <entry title="个人中心" do="me" state="" direct="false" />
+		  <entry title="发布名片" do="release" state="" direct="false" />	
+          <entry title="分享链接" do="link" state="" direct="false" />
+		  <entry title="充值中心" do="vip" state="" direct="false" />		  
+		</cover>
+		<menu>
+          <entry title="参数设置" do="sysset" state="" direct="false" />
+		  <entry title="个人名片管理" do="card" state="" direct="false" />
+          <entry title="商品管理" do="goods" state="" direct="false" />
+		  <entry title="套餐管理" do="meal" state="" direct="false" />	
+          <entry title="订单管理" do="orders" state="" direct="false" />
+		  <entry title="积分管理" do="credits" state="" direct="false" />			  
+		</menu>
+	</bindings>
+	<install><![CDATA[
+CREATE TABLE IF NOT EXISTS `ims_amouse_rebate_member` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `weid` int(11) NOT NULL,
+  `openid` varchar(100) NOT NULL,
+  `from_user` varchar(100) NOT NULL,
+  `unionid` varchar(100) NOT NULL,
+  `nickname` varchar(100) NOT NULL,
+  `wechatno` varchar(200) NOT NULL COMMENT '微信号',
+  `qrcode` varchar(250) DEFAULT '' COMMENT '二维码',
+  `intro` varchar(500) DEFAULT '' COMMENT '个人介绍',
+  `hot` int(10) unsigned NOT NULL,
+  `mobile` varchar(13) NOT NULL COMMENT '手机号',
+  `sex` tinyint(1) NOT NULL DEFAULT '0',
+  `headimgurl` varchar(255) NOT NULL,
+  `location_p` varchar(100) NOT NULL DEFAULT '' COMMENT '省',
+  `location_c` varchar(100) NOT NULL DEFAULT '' COMMENT '市',
+  `location_d` varchar(100) NOT NULL DEFAULT '' COMMENT '区',
+  `address` varchar(500) NOT NULL DEFAULT '' COMMENT '地址',
+  `friend` int(11) NOT NULL DEFAULT '0',
+  `shuaxin` tinyint(2) DEFAULT '0',
+  `times` int(11) DEFAULT '0',
+  `createtime` int(10) unsigned NOT NULL DEFAULT '0',
+  `updatetime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  `credit1` decimal(10,2) unsigned NOT NULL,
+  `credit2` decimal(10,2) unsigned NOT NULL,
+  `uid` int(11) DEFAULT '0',
+  `level_first_id` int(11) DEFAULT '0',
+  `child_first_cnt` int(11) DEFAULT '0',
+  `level_second_id` int(11) DEFAULT '0',
+  `child_second_cnt` int(11) DEFAULT '0',
+  `level_three_id` int(11) DEFAULT '0',
+  `child_three_cnt` int(11) DEFAULT '0',
+  `ipcilent` varchar(20) DEFAULT '',
+  `listorder` int(10) NOT NULL DEFAULT '0' COMMENT '排序',
+  `uptime` int(11) DEFAULT '0',
+  `mealid` int(10) unsigned NOT NULL COMMENT '套餐ID',
+  `isauto` tinyint(2) DEFAULT '0' COMMENT '自动爆机',
+  `autotime` int(11) DEFAULT '0' COMMENT '自动爆机时间',
+  `sviptime` int(11) NOT NULL DEFAULT '0' COMMENT '超级VIP开始时间',
+  `vipstatus` tinyint(1) NOT NULL DEFAULT '0',
+  `forever` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0为未购买过VIP',
+  `money` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '获得的总金额',
+  `tx_money` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '提现金额',
+  `wtx_money` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '未提现金额',
+  `status` int(1) NOT NULL DEFAULT '1' COMMENT '是否显示',
+  `user_status` int(1) NOT NULL DEFAULT '1' COMMENT '用户状态 1 正常，0拉黑',
+  `parent_openid` varchar(100) NOT NULL COMMENT '上级_openid',
+  PRIMARY KEY (`id`),
+  KEY `weid` (`weid`),
+  KEY `openid` (`openid`),
+  KEY `user_status` (`user_status`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `ims_amouse_rebate_order` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) unsigned NOT NULL COMMENT '公众账号',
+  `openid` varchar(50) NOT NULL COMMENT '微信会员openID',
+  `nickname` varchar(20) NOT NULL COMMENT '用户昵称',
+  `username` varchar(20) NOT NULL COMMENT '用户真实姓名',
+  `mobile` varchar(20) NOT NULL COMMENT '手机',
+  `address` varchar(50) NOT NULL COMMENT '地址',
+  `province` varchar(50) NOT NULL COMMENT '省份',
+  `city` varchar(50) NOT NULL COMMENT '城市',
+  `dist` varchar(50) NOT NULL COMMENT '区',
+  `uid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
+  `mealid` int(10) unsigned NOT NULL COMMENT '套餐ID',
+  `num` int(10) unsigned NOT NULL COMMENT '数量',
+  `mgid` int(10) unsigned DEFAULT '0' COMMENT '群ID',
+  `memberid` int(10) unsigned DEFAULT '0' COMMENT '会员ID',
+  `ordersn` varchar(20) NOT NULL COMMENT '订单编号',
+  `expresscom` varchar(30) NOT NULL DEFAULT '',
+  `expresssn` varchar(50) NOT NULL DEFAULT '',
+  `express` varchar(255) DEFAULT '',
+  `sendtime` int(11) DEFAULT '0',
+  `status` smallint(4) NOT NULL DEFAULT '0' COMMENT '0已提交,1为已付款,2为已发货，3为成功',
+  `paytype` tinyint(1) unsigned NOT NULL COMMENT '1为余额支付,2为支付宝,3为微信支付,4为定价返还',
+  `transid` varchar(100) NOT NULL COMMENT '微信订单号',
+  `price` decimal(10,2) DEFAULT NULL,
+  `wxnotify` varchar(200) DEFAULT NULL,
+  `notifytime` int(10) DEFAULT '0',
+  `createtime` int(10) unsigned NOT NULL COMMENT '充值时间',
+  PRIMARY KEY (`id`),
+  KEY `uniacid` (`uniacid`),
+  KEY `openid` (`openid`),
+  KEY `status` (`status`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=121 ;
+
+CREATE TABLE IF NOT EXISTS `ims_amouse_rebate_poster_sysset` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) DEFAULT '0',
+  `bg` varchar(255) DEFAULT '',
+  `data` text,
+  `keyword` varchar(255) DEFAULT '',
+  `createtime` int(11) DEFAULT '0',
+  `waittext` varchar(255) DEFAULT '',
+  `oktext` varchar(255) DEFAULT '',
+  `subtext` varchar(255) DEFAULT '',
+  `templateid` varchar(255) DEFAULT '',
+  `entrytext` varchar(255) DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `idx_uniacid` (`uniacid`),
+  KEY `idx_createtime` (`createtime`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+
+CREATE TABLE IF NOT EXISTS `ims_amouse_rebate_promote_qr` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uniacid` int(3) NOT NULL,
+  `acid` int(3) NOT NULL,
+  `memberid` int(3) NOT NULL COMMENT '会员id',
+  `openid` varchar(100) NOT NULL COMMENT 'openid',
+  `sceneid` varchar(100) NOT NULL COMMENT 'sceneid',
+  `ticket` varchar(1000) NOT NULL COMMENT 'ticket',
+  `qr_img` varchar(200) NOT NULL COMMENT 'qrimg',
+  `url` varchar(1000) NOT NULL COMMENT 'url',
+  `status` int(1) NOT NULL COMMENT '默认状态',
+  `createtime` int(10) DEFAULT '0',
+  `media_id` varchar(220) DEFAULT NULL,
+  `media_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ;
+
+CREATE TABLE IF NOT EXISTS `ims_amouse_rebate_redpacks_sysset` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) DEFAULT '0',
+  `apisec` text,
+  `appid` varchar(500) DEFAULT '',
+  `secret` varchar(500) DEFAULT '',
+  `mchid` varchar(100) DEFAULT '',
+  `createtime` int(11) DEFAULT '0',
+  `password` varchar(255) DEFAULT '',
+  `ip` varchar(20) DEFAULT '',
+  `tx_count` int(11) DEFAULT '0',
+  `sendtype` tinyint(3) DEFAULT '0',
+  `send_name` varchar(255) DEFAULT '',
+  `act_name` varchar(255) DEFAULT '',
+  `remark` varchar(255) DEFAULT '',
+  `tx_money` decimal(10,2) DEFAULT '0.00',
+  `is_open_money` tinyint(1) NOT NULL DEFAULT '0',
+  `tx_type` int(11) DEFAULT '0',
+  `person_max_money` decimal(10,2) DEFAULT '0.00',
+  `debug` tinyint(3) DEFAULT '0',
+  `iscash` tinyint(3) DEFAULT '0',
+  `subtext` varchar(255) DEFAULT '',
+  `min_money` decimal(10,2) DEFAULT '0.00',
+  `max_money` decimal(10,2) DEFAULT '0.00',
+  `total_money` decimal(10,2) DEFAULT '0.00',
+  `tplid` varchar(255) DEFAULT '',
+  `show_money` tinyint(3) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `idx_uniacid` (`uniacid`),
+  KEY `idx_createtime` (`createtime`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `ims_amouse_rebate_sign_record` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `openid` varchar(200) NOT NULL,
+  `sin_time` int(10) DEFAULT '0',
+  `credit` int(10) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_openid` (`openid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `ims_amouse_rebate_sign_user` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) NOT NULL,
+  `start_sign_time` int(10) DEFAULT NULL,
+  `end_sign_time` int(10) DEFAULT NULL,
+  `openid` varchar(200) NOT NULL,
+  `serial_id` int(10) DEFAULT NULL,
+  `credit1` int(10) DEFAULT '0',
+  `sin_count` int(10) DEFAULT '0',
+  `sin_serial` int(10) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `idx_uniacid` (`uniacid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `ims_amouse_rebate_sysset` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `weid` int(11) DEFAULT '0',
+  `acid` int(11) DEFAULT '0',
+  `thumb` varchar(1000) DEFAULT '' COMMENT '底部图片',
+  `banner` varchar(1000) DEFAULT '' COMMENT '底部图片',
+  `bannerLink` varchar(1000) DEFAULT '' COMMENT '底部图片',
+  `needfriend` int(11) DEFAULT '0' COMMENT '需要加几个好友',
+  `followurl` varchar(255) DEFAULT '',
+  `protocol` varchar(255) DEFAULT '',
+  `copyright` varchar(255) DEFAULT '',
+  `useurl` varchar(255) DEFAULT '' COMMENT '如何使用',
+  `cnzz` text,
+  `ischeck` int(1) DEFAULT '1' COMMENT '开启审核0是 1：否',
+  `isopen` int(1) DEFAULT '1' COMMENT '开启审核0是 1：否',
+  `ischeck2` tinyint(1) DEFAULT '1' COMMENT '开启审核0是 1：否',
+  `new_credit` int(11) DEFAULT '0',
+  `success_credit` int(11) DEFAULT '0',
+  `top_credit` int(11) DEFAULT '0',
+  `sms_resgister` tinyint(1) NOT NULL DEFAULT '0',
+  `sms_user` varchar(50) NOT NULL DEFAULT '',
+  `sms_secret` varchar(80) NOT NULL,
+  `sms_type` tinyint(1) NOT NULL DEFAULT '1',
+  `sms_template_code` varchar(50) NOT NULL DEFAULT '',
+  `sms_free_sign_name` varchar(80) NOT NULL,
+  `tpl` varchar(1000) DEFAULT NULL COMMENT '支付提交通知模板id',
+  `att_credit` int(11) DEFAULT '0',
+  `paytpl` varchar(1000) DEFAULT NULL COMMENT '支付成功通知模板id',
+  `admin_tpl` varchar(1000) DEFAULT NULL COMMENT '接收通知模板id',
+  `openid` varchar(1000) DEFAULT NULL COMMENT '客服接收通知微信oPenid',
+  `nickname` varchar(1000) DEFAULT NULL COMMENT '客服接收通知微信昵称',
+  `rec_credit` int(11) DEFAULT '0' COMMENT '推荐积分',
+  `recommend_credit` int(11) DEFAULT '0' COMMENT '首次扫描推荐人的二维码关注公众号送推荐人积分',
+  `templateid` varchar(255) DEFAULT '',
+  `share_title` varchar(300) DEFAULT NULL,
+  `share_desc` varchar(500) DEFAULT NULL,
+  `share_icon` varchar(600) DEFAULT NULL,
+  `follow_text` text,
+  `creditlink` varchar(255) DEFAULT NULL,
+  `zero` tinyint(1) DEFAULT '0',
+  `mtpl` varchar(300) DEFAULT NULL COMMENT '成为会员通知模板id',
+  `mduetpl` varchar(300) DEFAULT NULL COMMENT '会员到期通知模板id',
+  `send` varchar(300) DEFAULT NULL,
+  `add_credit` int(10) DEFAULT '0',
+  `timer` int(2) DEFAULT '5',
+  `new_text` text COMMENT '发布名片送积分通知',
+  `add_friend_text` text COMMENT '添加好友名片送积分通知',
+  `normal_att_credit` decimal(10,2) DEFAULT '0.00',
+  `normal_attention` text,
+  `subtext` text COMMENT '推广者通知',
+  `entrytext` text COMMENT '关注者通知',
+  `subtext2` text COMMENT '推广者通知',
+  `entrytext2` text COMMENT '关注者通知',
+  `top_text` text COMMENT '置顶积分通知',
+  `topnumber` int(10) DEFAULT '2' COMMENT '超级VIP首页置顶个数',
+  `isrand` int(1) DEFAULT '1' COMMENT '超级VIP是否随机',
+  `is_add_friend` tinyint(3) DEFAULT '0' COMMENT '添加好友是积分还是送余额',
+  `sign_credit` decimal(10,2) DEFAULT '0.00' COMMENT '签到积分',
+  `min_credit` decimal(10,2) DEFAULT '0.00',
+  `max_credit` decimal(10,2) DEFAULT '0.00',
+  PRIMARY KEY (`id`),
+  KEY `indx_weid` (`weid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+
+CREATE TABLE IF NOT EXISTS `ims_amouse_rebate_card_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) DEFAULT '0',
+  `openid` varchar(255) DEFAULT '',
+  `cardid` int(11) DEFAULT '0',
+  `mid` int(11) DEFAULT '0',
+  `from_openid` varchar(255) DEFAULT '',
+  `subcredit` int(11) DEFAULT '0',
+  `submoney` decimal(10,2) DEFAULT '0.00',
+  `reccredit` int(11) DEFAULT '0',
+  `recmoney` decimal(10,2) DEFAULT '0.00',
+  `createtime` int(11) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `idx_uniacid` (`uniacid`),
+  KEY `idx_openid` (`openid`),
+  KEY `idx_createtime` (`createtime`),
+  KEY `idx_cardid` (`cardid`),
+  FULLTEXT KEY `idx_from_openid` (`from_openid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=16 ;
+
+CREATE TABLE IF NOT EXISTS `ims_amouse_rebate_commission_sysset` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) DEFAULT '0',
+  `is_level` tinyint(3) DEFAULT '0' COMMENT '超级会员佣金',
+  `become_child` tinyint(3) DEFAULT '0' COMMENT '超级会员佣金',
+  `level_type` tinyint(3) DEFAULT '1' COMMENT '超级会员奖励方式 积分 1/余额 2',
+  `level_type2` tinyint(3) DEFAULT '1' COMMENT '普通会员奖励方式 积分 1/余额 2',
+  `member_type` tinyint(3) DEFAULT '1' COMMENT '普通会员佣金',
+  `first_level_credit` decimal(10,2) DEFAULT '0.00' COMMENT '一级',
+  `second_level_credit` decimal(10,2) DEFAULT '0.00' COMMENT '二级',
+  `three_level_credit` decimal(10,2) DEFAULT '0.00' COMMENT '三级',
+  `first_level_text` varchar(255) DEFAULT '',
+  `second_level_text` varchar(255) DEFAULT '',
+  `three_level_text` varchar(255) DEFAULT '',
+  `vip1_level_credit` decimal(10,2) DEFAULT '0.00' COMMENT '一级',
+  `vip2_level_credit` decimal(10,2) DEFAULT '0.00' COMMENT '二级',
+  `vip3_level_credit` decimal(10,2) DEFAULT '0.00' COMMENT '三级',
+  `vip1_level_text` varchar(255) DEFAULT '',
+  `vip2_level_text` varchar(255) DEFAULT '',
+  `vip3_level_text` varchar(255) DEFAULT '',
+  `withdraw1` decimal(10,2) DEFAULT '0.00' COMMENT '超级会员提现',
+  `withdraw2` decimal(10,2) DEFAULT '0.00' COMMENT '普通会员提现',
+  `settledays1` int(11) DEFAULT '0' COMMENT '超级会员结算天数',
+  `settledays2` int(11) DEFAULT '0' COMMENT '普通会员结算天数',
+  PRIMARY KEY (`id`),
+  KEY `idx_uniacid` (`uniacid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `ims_amouse_rebate_custom_sysset` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) NOT NULL,
+  `toptxt1` varchar(5) DEFAULT NULL COMMENT '头部文字1',
+  `toplink1` varchar(100) DEFAULT NULL COMMENT '头部链接1',
+  `toptxt2` varchar(5) DEFAULT NULL COMMENT '头部文字1',
+  `toplink2` varchar(100) DEFAULT NULL COMMENT '头部链接2',
+  `fanstxt` varchar(3) DEFAULT '' COMMENT '加粉文字',
+  `bgimg` varchar(255) DEFAULT '' COMMENT '背景图片',
+  `bgcolor` varchar(10) DEFAULT '' COMMENT '背景颜色',
+  `footcolor` varchar(10) DEFAULT '' COMMENT '底部背景颜色',
+  `credittxt` varchar(5) DEFAULT '' COMMENT '积分文字',
+  `is_open_notice` tinyint(1) DEFAULT '1' COMMENT '是否开启通知',
+  `is_left_open` tinyint(1) DEFAULT '1' COMMENT '是否开启首页左边',
+  `left_thumb` varchar(255) DEFAULT '' COMMENT '左边图片',
+  `leftlink` varchar(255) DEFAULT '' COMMENT '左边图片',
+  `is_right_open` tinyint(1) DEFAULT '1' COMMENT '是否开启首页右边',
+  `right_thumb` varchar(255) DEFAULT '' COMMENT '右边图片',
+  `rightlink` varchar(255) DEFAULT '' COMMENT '右边图片',
+  `noticetxt` varchar(100) DEFAULT '' COMMENT '通知文字',
+  PRIMARY KEY (`id`),
+  KEY `idx_uniacid` (`uniacid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='自定义文字链接' ;
+
+CREATE TABLE IF NOT EXISTS `ims_amouse_rebate_goods` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(11) DEFAULT '0',
+  `displayorder` int(11) DEFAULT '0',
+  `title` varchar(255) DEFAULT '',
+  `thumb` varchar(255) DEFAULT '',
+  `price` decimal(10,2) DEFAULT '0.00',
+  `credit1` int(11) DEFAULT '0',
+  `credit2` int(11) DEFAULT '0',
+  `money` decimal(10,2) DEFAULT '0.00',
+  `total` int(11) DEFAULT '0',
+  `isdefault` tinyint(1) DEFAULT '0',
+  `detail` text,
+  `thumb_url` text,
+  `status` tinyint(3) DEFAULT '0',
+  `vip` tinyint(3) DEFAULT '0',
+  `istop` tinyint(3) DEFAULT '0',
+  `isrecommand` tinyint(3) DEFAULT '0',
+  `createtime` int(11) DEFAULT '0',
+  `endtime` int(11) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `idx_uniacid` (`uniacid`),
+  KEY `idx_endtime` (`endtime`),
+  KEY `idx_createtime` (`createtime`),
+  KEY `idx_displayorder` (`displayorder`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=12 ;
+
+CREATE TABLE IF NOT EXISTS `ims_amouse_rebate_group` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `weid` int(10) unsigned NOT NULL,
+  `openid` varchar(200) NOT NULL COMMENT '个人名片ID',
+  `title` varchar(100) NOT NULL COMMENT '微信群名称',
+  `qrcode` varchar(250) DEFAULT '' COMMENT '二维码',
+  `mpurl` varchar(500) DEFAULT '' COMMENT '公众号链接',
+  `avater` varchar(250) DEFAULT '' COMMENT '头像',
+  `pcateid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '分类ID',
+  `hot` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '关注人数',
+  `location_p` varchar(100) NOT NULL DEFAULT '' COMMENT '省',
+  `location_c` varchar(100) NOT NULL DEFAULT '' COMMENT '市',
+  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '审核',
+  `desc` varchar(400) DEFAULT '' COMMENT '描述',
+  `createtime` int(10) unsigned NOT NULL DEFAULT '0',
+  `uptime` int(10) unsigned NOT NULL DEFAULT '0',
+  `shuaxin` tinyint(2) NOT NULL DEFAULT '0' COMMENT '刷新',
+  `svip` int(10) DEFAULT '0' COMMENT '超级VIP',
+  `listorder` int(10) DEFAULT '0' COMMENT '排序',
+  `updatetime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_uniacid` (`weid`),
+  KEY `idx_listorder` (`listorder`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='微信群' AUTO_INCREMENT=17 ;
+
+CREATE TABLE IF NOT EXISTS `ims_amouse_rebate_log` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `weid` int(10) unsigned NOT NULL,
+  `type` varchar(200) NOT NULL COMMENT '1个人微信，2群，3公众号',
+  `openid` varchar(200) DEFAULT '' COMMENT '被推广人的openid',
+  `fopenid` varchar(200) DEFAULT '' COMMENT '推广人的openid',
+  `credit` int(11) DEFAULT '0',
+  `pk` int(10) unsigned NOT NULL,
+  `createtime` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `idx_uniacid` (`weid`),
+  KEY `idx_openid` (`openid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='添加好友日志'  ;
+
+CREATE TABLE IF NOT EXISTS `ims_amouse_rebate_meal` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `weid` int(10) unsigned NOT NULL,
+  `title` varchar(100) NOT NULL COMMENT '套餐名称',
+  `img` varchar(250) DEFAULT '' COMMENT '二维码',
+  `day` decimal(10,1) DEFAULT NULL,
+  `auto` tinyint(1) DEFAULT '0' COMMENT '是否自动爆机',
+  `price` decimal(10,1) DEFAULT NULL,
+  `desc` varchar(40) DEFAULT '' COMMENT '描述',
+  `createtime` int(10) unsigned NOT NULL DEFAULT '0',
+  `type` tinyint(1) DEFAULT '1' COMMENT '套餐类型',
+  PRIMARY KEY (`id`),
+  KEY `idx_uniacid` (`weid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='套餐价格'  ;
+	
+	
+	]]></install>
+	<uninstall><![CDATA[
+
+	]]></uninstall>
+	<upgrade><![CDATA[
+
+	
+	]]></upgrade>
+</manifest>

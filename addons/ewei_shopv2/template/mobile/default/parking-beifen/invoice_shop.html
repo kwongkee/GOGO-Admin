@@ -1,0 +1,195 @@
+{template "parking/_header"}
+<link rel="stylesheet" href="../addons/ewei_shopv2/static/css/frozenui/css/frozen.css">
+<link rel="stylesheet" href="../addons/ewei_shopv2/static/ydui/ydui.css">
+<style type="text/css">
+	/*lable{display: inline-block;width: 99px;height: 30px;text-align: center;line-height: 30px;}*/
+	.content{height: 35px;width: 100%;border-bottom: 1px solid lightskyblue;text-align: center;line-height: 35px;}
+	#content{height: 35px;width: 100%;text-align: center;line-height: 35px;
+		font-family: "微软雅黑";
+	}
+	.errors{color: red;}
+	#show_head{display: none;}
+	#itdemo>li{line-height: 28px;}
+	.borderb{border-bottom: 1px solid darkgray;height: 90px;}
+	.col{color: orange;}
+	.cols{color: DarkGray;}
+	#bottem{width: 100%;bottom: 0px;}
+	
+</style>
+<!-- 引入jQuery 2.0+ -->
+<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<!-- 引入YDUI脚本 -->
+<script src="../addons/ewei_shopv2/static/ydui/ydui.js"></script>
+<!--<script src="http://frozenui.github.io/js/frozen.js" type="text/javascript" charset="utf-8"></script>-->
+<body>
+
+<header class="ui-header ui-header-stable ui-border-b">
+    <i class="ui-icon-return" onclick="history.back()"></i><h1>{$title}</h1>
+</header>
+<div style="margin-top:50px;"></div>
+<body>
+		
+<div class="ui-form ui-border-t">
+    <form action="#" method="post" id="parkOrd">
+    	
+    	{loop $shop_order $item}
+        <div class="ui-form-item ui-form-item-checkbox ui-border-b borderb" style="">
+            <label class="ui-checkbox">
+                <input type="checkbox" name="checkbox" class="ckid" value="{$item['id']}"/>
+                <input type="hidden" name="money" value="{$item['price']}" />
+            </label>
+            <div style="width: 80%;height: 100%;text-align: left;margin-left: 10px;">
+            	<ul id="itdemo" style="height: 100%;">
+            		<li class="cols">消费金额：<lable class='col'>￥{$item['price']}</lable>元</li>
+            		<li class="cols">消费项目：<lable style='color: green;'>GOGO商城订单</lable></li>
+            		<li><lable class="cols">消费时间：<?php echo date('Y-m-d H:i',$item['paytime'])?></lable></li>
+            	</ul>
+            </div>
+        </div>
+        {/loop}
+        
+        <div id="bottem" style="text-align: left;margin-top: 3px;font-size: 16px;">
+        	<label class="ui-checkbox" style="padding-left:12px;margin-top: 3px;">
+                <input type="radio" name="btn" id="btn1" value="all"/>全选
+                <input type="hidden" name="url" id="url" value="{php echo mobileUrl('parking/invoicelist/shop_post');}" />
+            </label><br>
+            <div style="padding-left:10px;margin-top: 5px;">
+            	<lable class='col' id='num' >0</lable>个订单 共<lable class='col' id='money'>￥0</lable>元
+            </div>
+        	<div class="ui-btn-wrap">
+			    <button type="button" id="ucheck" class="ui-btn-lg ui-btn-primary" style="font-size: 25px;">确定</button>
+			</div>
+        </div>
+    </form>
+    
+    
+    <!-- 下载提示  -->
+    <div class="ui-dialog" id="show1" style="display: none;">
+	    <div class="ui-dialog-cnt" style="margin: 200px auto;">	    	
+	        <header class="ui-dialog-hd ui-border-b">
+                <h3>电商发票</h3>
+                <i class="ui-dialog-close" data-role="button" id="close"></i>
+	        </header>
+	        <div class="ui-dialog-bd" style="text-align: center;">
+	            <!--<a href="" id="pdf" style="color: cornflowerblue;">点击下载发票</a>-->
+	            <div>您好，您的电商发票已申请，请耐心等待！</div>
+	        </div>	        
+	    </div>
+	</div>
+	
+	
+	<!-- 加载提示 -->
+	 <div class="ui-dialog" id="show2" style="display: none;">
+	    <div class="ui-dialog-cnt" style="margin: 200px auto;">
+	        <div class="ui-dialog-bd">
+	            <div>
+		            <h4>正在努力开发票中请稍后...</h4>
+	            </div>
+	        </div>	       
+	    </div>	    
+	</div>
+</div>
+
+
+
+<script type="text/javascript">
+	
+	$('#close').click(function(){
+		$('#show1').css('display','none')
+	})
+
+	//点击确认按钮
+	$("#ucheck").click(function(){
+      	var str= new Array();
+      	var money = 0 ;
+      	var moy = 0.00;
+      	var urls = $('#url').val();
+	    $(":checkbox:checked").each(function() {
+	    	//获取
+	    	str.push($(this).val());
+//	    	console.log($($(this).siblings()).val());
+	    	//获取选中的兄弟金额
+//	    	money = parseInt(money) + parseFloat($($(this).siblings()).val());
+			moy = Number($($(this).siblings()).val());
+	    	if(!isNaN(parseFloat(moy))){
+	    		money = (money*1) + (moy*1);
+	    	}
+	    })
+	    money = money.toFixed(2);
+	    
+	    if(str.length==0){
+	    	alert('请选择开票的订单');
+	    	return false;
+	    }
+
+	    $('#num').text(str.length);
+	    $('#money').text('￥'+ money);
+	    $('#show2').css('display','block');	    
+ 		$.ajax({
+           url:urls, 
+              //url:'/app/'+"{php echo $this->createMobileUrl('Signup',array('op'=>'sign'))}",
+            type:'post',
+            data:'payMoney='+money+'&parkCheck='+str,            
+            dataType:'json',
+            success:function(data) {
+                if(data.statu=='success'){
+                	
+					$('#show2').css('display','none');
+//					$('#pdf').attr('href',data.pdfurl);
+					$('#show1').css('display','block');
+
+                }else if(data.statu == 'headNodata') {
+                	
+					$('#show2').css('display','none');
+					alert('请填写发票抬头')
+//					window.location.href = data.pdfurl;
+                }else{
+                	alert('请查看开票历史！')
+                }
+            }
+      	});
+     });
+     
+     
+     //全选按钮===========
+     $("#btn1").click(function() {
+     	
+     	if($('input[name="btn"]:checked').val() == 'all') {
+     		
+     		$('.ckid').prop("checked",true);
+     		$(this).prop("checked",true);
+     		$(this).val('');
+     		
+     		var str= new Array();
+	      	var money = 0 ;
+	      	var moy = 0.00;
+		    $(":checkbox:checked").each(function() {
+		    	str.push($(this).val());
+		    	//获取选中的兄弟金额	
+		    	moy = Number($($(this).siblings()).val());
+		    	if(!isNaN(parseFloat(moy))){
+		    		money = (money*1) + (moy*1);
+		    	}
+		    	
+		    })
+			money = money.toFixed(2);
+
+		    $('#num').text(str.length);
+		    $('#money').text('￥'+ money);
+     		
+     	}else {
+     		
+     		$('.ckid').prop("checked",false);
+     		$(this).prop("checked",false);
+     		$(this).val('all');
+     		$('#num').text('0');
+     		$('#money').text('￥0');
+     	}
+     });
+     
+     
+</script>
+</body>
+</html>
+
+{template "parking/_footer"}

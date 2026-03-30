@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head><meta http-equiv="Content-Type" content="text/html;&#32;charset=utf-8" /><title>
+            拍摄小票
+        </title>
+        <script src="{$modulePublic}shop/js/SetSize.js"></script>
+        <meta name="screen-orientation" content="portrait/landscape" />
+        <meta content="yes" name="apple-mobile-web-app-capable" />
+        <meta content="yes" name="apple-touch-fullscreen" />
+        <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+        <meta content="telephone=no" name="format-detection" />
+        <link href="{$modulePublic}shop/css/content.css" rel="stylesheet" type="text/css" />
+        <script src="{$modulePublic}shop/js/baidu.js"></script>
+    </head>
+    <body class="has_bg">
+        <script>
+            document.body.style.fontSize = SetSize.getScreenRatio() * 10 + 'px';
+        </script>
+        <script src="{$modulePublic}shop/js/svgPackage.js"></script>
+        <header id="header">
+            <div class="titleField">
+                <h2>拍摄小票</h2>
+            </div>
+            <div class="btnField">
+                <a href="javascript:history.go(-1);" class="btn back"><i></i></a>
+                <a href="javascript:location.reload();" class="btn"><i><svg><use xlink:href = "#icon_reload_1"/></svg></i></a>
+            </div>
+        </header>
+        <section id="main" class="detailMain">
+            <div class="scanTicketPanel_01">
+
+                <div class="infoField">
+                    <div class="img">
+                        <img src="{$modulePublic}shop//img/pic_scan_01.jpg" alt="">
+                    </div>
+                    <div class="btnField">
+                        <input type="file" class="file" accept="image/*" />
+                        <a href="javascript:;" onClick="upLoadFile();" class="btn">拍摄小票</a>
+                    </div>
+                    <div class="detail">
+                        <h2>传小票注意事项：</h2>
+                        <ul>                    
+
+							<li>每次拍摄请只上传一张小票，且金额≥20元。</li>
+							<li>积分仅限消费小票，刷卡单据无法进行积分。</li>
+							<li>请保证上传的小票为本人消费，且要保证小票图像清晰、完整。</li>
+							<li>每日小票积分上限为2000积分。</li>
+							<li>小票上传截止日期为购买商品后的第二日24:00点前，逾期小票恕无法积分。</li>
+							<li>小票审核通过后，积分将在3-5个工作日内到账，所获积分有效期为次年6月30日。</li>
+							<li>对于有消费异常的会员，我们有权怀疑是虚假消费并冻结帐户。如帐户被冻结，会员可主动致电{$shopingMallTel[2]['title']}出示消费证明以解冻帐号。</li>
+							<li>有任何疑问请洽{$shopingMallTel[2]['title']}客服热线咨询。</li>
+							
+							
+							
+							
+							
+							
+							
+                        </ul>
+                    </div>
+                </div>
+
+            </div>	
+        </section>
+
+        <input type="hidden" name="ticket_img" class="ticket_img" />
+
+        <nav id="nav"  class="mainNav">
+            <div class="linkField" >
+         <ul>
+                    <li>
+                        <a href="{php echo $this->createMobileUrl('index2')}">
+                            <i><svg><use xlink:href = "#icon_index_1"/></svg></i>
+                            <span>逛商场</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="{php echo $this->createMobileUrl('shop_activity_list')}">
+                            <i><svg><use xlink:href = "#icon_star_1"/></svg></i>
+                            <span>活动</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{php echo $this->createMobileUrl('award_list')}">
+                            <i><svg><use xlink:href = "#icon_gift_1"/></svg></i>
+                            <span>换礼品</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{php echo $this->createMobileUrl('index')}">
+                            <i><svg><use xlink:href = "#icon_user_2"/></svg></i>
+                            <span>我</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <script src="{$modulePublic}shop/js/jquery-1.8.3.min.js"></script>
+        <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+        <script>
+            wx.config({
+                debug: false,
+                appId: "{$_W['account']['jssdkconfig']['appId']}",
+                timestamp: "{$_W['account']['jssdkconfig']['timestamp']}",
+                nonceStr: "{$_W['account']['jssdkconfig']['nonceStr']}",
+                signature: "{$_W['account']['jssdkconfig']['signature']}",
+                jsApiList: ["chooseImage", "uploadImage", "downloadImage", "onMenuShareTimeline", "showAllNonBaseMenuItem"]
+            });
+
+            function upLoadFile() {
+                wx.chooseImage({
+                    count: 1, // 默认9
+                    sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+                    sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+                    success: function (res) {
+                        var localIds = res.localIds;  // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
+                        $('.ticket_img').val(localIds);
+                        wx.uploadImage({
+                            localId: $('.ticket_img').val(), // 需要上传的图片的本地ID，由chooseImage接口获得
+                            isShowProgressTips: 1, // 默认为1，显示进度提示
+                            success: function (res) {
+                                var serverId = res.serverId; // 返回图片的服务器端ID
+                                var pars = {};
+                                pars.serverId = serverId
+                                $.ajax({
+                                    url: "{php echo $this->createMobileUrl('ajax',array('sdo'=>'upload_ticket'))}",
+                                    type: "post",
+                                    dataType: "json",
+                                    data: pars,
+                                    success: function (res) {
+                                        if (res.error_code == 1) {
+                                            alert('上传成功,工作人员正在拼命审核中……');
+                                            location.href = "{php echo $this->createMobileUrl('user_upLoad_ticket')}";
+                                        } else {
+                                            alert(res.error_msg);
+                                        }
+                                    }
+                                })
+                            }
+                        });
+                    }
+                });
+            }
+        </script>
+        {template 'share'}
+    </body>
+</html>
+

@@ -1,0 +1,129 @@
+{include file="public/header"}
+
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .info_div{display: grid;grid-template-columns: repeat(2,1fr);-moz-column-gap: 0px;column-gap: 0px;row-gap: 0px;}
+    @media screen and (max-width: 450px){
+        .info_div{display: grid;grid-template-columns: repeat(1,1fr);-moz-column-gap: 0px;column-gap: 0px;row-gap: 0px;}
+    }
+    .printed_type2,.type2{display:none;width:100px;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+
+                        <!--未打印订单-->
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">未打印订单</label>
+                            <div class="layui-input-block disf">
+                                <div class="sel_box" style="margin-right:5px;">
+                                    <select name="type" id="type" lay-search lay-filter="type">
+                                        <option value="1" {if $data['type']==1}selected{/if}>每天</option>
+                                        <option value="2" {if $data['type']==2}selected{/if}>每小时</option>
+                                    </select>
+                                </div>
+                                <div class="layui-form-mid layui-word-aux type2_aux" style="display:{if $data['type']==2}block{else}none{/if};">每</div>
+                                <input type="text" name="type2" value="{$data['type2']}" class="layui-input type2" style="display:{if $data['type']==2}block{else}none{/if};">
+                                <div class="layui-form-mid layui-word-aux type2_aux" style="display:{if $data['type']==2}block{else}none{/if};">小时</div>
+                                <div class="layui-form-mid layui-word-aux">查询</div>
+                                <div class="sel_box">
+                                    <input type="text" name="times" value="1" readonly class="layui-input">
+                                </div>
+                                <div class="layui-form-mid layui-word-aux">次</div>
+                            </div>
+                        </div>
+
+                        <!--已打印订单-->
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">已打印订单</label>
+                            <div class="layui-input-block disf">
+                                <div class="sel_box" style="margin-right:5px;">
+                                    <select name="printed_type" id="printed_type" lay-search lay-filter="printed_type">
+                                        <option value="1" {if $data['printed_type']==1}selected{/if}>每天</option>
+                                        <option value="2" {if $data['printed_type']==2}selected{/if}>每小时</option>
+                                    </select>
+                                </div>
+                                <div class="layui-form-mid layui-word-aux printed_type2_aux" style="display:{if $data['printed_type']==2}block{else}none{/if};">每</div>
+                                <input type="text" name="printed_type2" value="{$data['printed_type2']}" class="layui-input printed_type2" style="display:{if $data['printed_type']==2}block{else}none{/if};">
+                                <div class="layui-form-mid layui-word-aux printed_type2_aux" style="display:{if $data['printed_type']==2}block{else}none{/if};">小时</div>
+                                <div class="layui-form-mid layui-word-aux">查询</div>
+                                <div class="sel_box">
+                                    <input type="text" name="printed_times" value="1" readonly class="layui-input">
+                                </div>
+                                <div class="layui-form-mid layui-word-aux">次</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload'],function(){
+        var laydate = layui.laydate
+            ,layer = layui.layer
+            ,form  = layui.form
+            ,$ = layui.jquery
+            ,upload = layui.upload;
+
+        form.on('select(type)',function(data){
+           let val = data.value;
+           if(val==1){
+               $('.type2,.type2_aux').hide();
+           }else if(val==2){
+               $('.type2,.type2_aux').show();
+           }
+        });
+
+        form.on('select(printed_type)',function(data){
+            let val = data.value;
+            if(val==1){
+                $('.printed_type2,.printed_type2_aux').hide();
+            }else if(val==2){
+                $('.printed_type2,.printed_type2_aux').show();
+            }
+        });
+
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+
+            $.ajax({
+                url:"{:Url('admin/warehouse/express_inquiry')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            window.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

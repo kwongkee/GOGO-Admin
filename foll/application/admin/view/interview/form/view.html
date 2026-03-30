@@ -1,0 +1,75 @@
+{include file="public/header" /}
+<body>
+<div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+  <div class="layui-tab-content layui-form">
+    <div class="layui-tab-item layui-show">
+    <div class="layui-form-item">
+      <label class="layui-form-label">评测标题</label>
+      <div class="layui-input-block">
+      	<input type="text" name="form_title" autocomplete="off" class="layui-input" value="ceshi">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">请选择岗位</label>
+      <div class="layui-input-block">
+      	<select name="job_id" lay-verify="">
+      	  <option value="">请选择一个岗位</option>
+      	  {volist name="$joblist" id="vo"}
+      	  <option value="{$vo.id}">{$vo.job_name}</option>
+      	  {/volist}
+      	</select>
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">请选择题目</label>
+      <div class="layui-input-block">
+      	<select name="question_id" lay-verify="">
+      	  <option value="">请选择一个题目</option>
+      	  {volist name="$queslist" id="vo"}
+      	  <option value="{$vo.id}">{$vo.question_title}</option>
+      	  {/volist}
+      	</select>
+      </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+      <button type="submit" class="layui-btn" lay-submit="" lay-filter="form-test-submit">提交</button>
+          <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+layui.use(['form', 'element'], function(){
+  var $ = layui.jquery
+  ,form = layui.form
+  ,element = layui.element;
+  /* 监听提交 */
+  form.on('submit(form-test-submit)', function(data){
+      // console.log(data.field);
+    $.ajax({   
+      url:"{:Url('admin/interview/formadd')}",
+      method:'post',
+      data:data.field,
+      dataType:'json',
+      success:function(res){
+          layer.msg(res.msg,{time:2000}, function () {
+              if(res.code == 1)
+              {
+                  var index = parent.layer.getFrameIndex(window.name);
+                  parent.layer.close(index);
+                  parent.window.location.reload();
+              }
+          }); 
+      },
+      error:function (data) {
+          layer.msg('系统错误',{time:2000});
+      }
+    });
+    return false;
+  });
+});
+</script>
+</body>
+</html>

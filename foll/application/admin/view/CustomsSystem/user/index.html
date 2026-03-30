@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="common/meta"}
+    <link rel="stylesheet" href="./static/hadmin/layui/css/layui.css"></link>
+    <!-- 全局js -->
+    <script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<!--    <script src="./static/hadmin/js/bootstrap.min.js?v=3.3.6"></script>-->
+    <!-- 自定义js -->
+<!--    <script src="./static/hadmin/js/content.js?v=1.0.0"></script>-->
+    <!-- Bootstrap table -->
+<!--    <script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>-->
+<!--    <script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>-->
+<!--    <script src="./static/hadmin/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>-->
+    <script src="./static/hadmin/layui/layui.all.js"></script>
+    <style>
+        .layui-table-cell{height:45px;}
+    </style>
+</head>
+<body class="gray-bg">
+
+<div class="layui-col-md12">
+    <table id="merchant"></table>
+</div>
+</body>
+<script type="text/html" id="bor">
+
+    {{#  if(d.user_status === '审核中'){ }}
+        <a class="btn btn-info" href="#"  type="button" onclick="check('{{d.id}}')"><i class="fa fa-paste"></i> 通过</a>
+        <a class="btn-danger btn" href="{:Url('admin/customssystem/declUserVerif')}&uid={{d.id}}&status=3" type="button" onclick=""><i class="fa fa-paste"></i> 拒绝</a>
+    {{#  } else { }}
+        <a href="#" class="btn btn-info" onclick="setRate('{{d.id}}','{{d.openid}}')">国内结算费率</a>
+        <a href="#" class="btn btn-info" onclick="sendmsg('{{d.id}}','{{d.openid}}')">消息下发</a>
+        <a href="#" class="btn btn-info" onclick="menu('{{d.id}}')">权限配置</a>
+        <a href="#" class="btn btn-info" onclick="shows('{{d.id}}')">查看</a>
+        {{#  if(d.user_status === '禁用'){ }}
+            <a class="btn btn-warning " href="{:Url('admin/customssystem/changeUserStatus')}&uid={{d.id}}&status=0" type="button" onclick=""><i class="fa fa-paste"></i> 启用</a>
+        {{#  } else { }}
+            <a class="btn btn-danger " href="{:Url('admin/customssystem/changeUserStatus')}&uid={{d.id}}&status=1" type="button" onclick=""><i class="fa fa-paste"></i> 禁用</a>
+        {{#  } }}
+        <a href="#" class="btn btn-info" onclick="add('{{d.id}}')" title="添加二次对账用户">对账信息</a>
+        <!--<a href="#" class="btn btn-primary" onclick="assignDeviceExpress('{{d.id}}')">分配设备&快递公司</a>-->
+        <!--<a href="#" class="btn btn-primary" onclick="addPrint('{{d.id}}')">添加打印设备</a>-->
+        <a href="{:Url('paychannel/index')}&id={{d.id}}&cname={{d.user_name}}" class="btn btn-success">配置支付通道</a>
+        <!--<a href="#" class="btn btn-success" onclick="service('{{d.supplier}}');">服务功能</a>-->
+        <!--<a href="{:Url('additional/index')}&id={{d.id}}&cname={{d.user_name}}" class="btn btn-success">额外费用</a>-->
+        <a href="#" class="btn btn-success" onclick="setOffshoreRate('{{d.id}}','{{d.openid}}')">配置离岸手续费</a>
+        <a href="#" class="btn btn-success" onclick="setAccount('{{d.id}}','{{d.openid}}')">配置商户的会计</a>
+        <!--<a href="#" class="btn btn-success" onclick="setFreight('{{d.id}}','{{d.openid}}')">拖车配置</a>-->
+        <a href="#" class="btn btn-success" onclick="setSysApp('{{d.id}}','{{d.openid}}')">系统应用权限</a>
+        <!--<a href="#" class="btn btn-success" onclick="setUser('{{d.id}}','{{d.openid}}')">用户配置</a>-->
+    {{#  } }}
+
+    <!--<a class="btn btn-danger " href="" type="button" onclick=""><i class="fa fa-paste"></i> 删除</a>-->
+
+</script>
+<script type="text/html" id="role">
+    <select name="role2" id="role2" onchange="role(this,'{{d.id}}');" style="display: block;">
+        {{#  layui.each(d.role, function(index, item){ }}
+            <option value="{{item.id}}" {{item.id==d.role_id?"selected='selected'":""}}+'>{{item.role_name}}</option>
+        {{#  }); }}
+     </select>
+</script>
+<script>
+
+
+    layui.use(['form','table','layer'], function () {
+        form = layui.form;
+        table = layui.table;
+        layer = layui.layer;
+        var load = layer.load(1);
+        //执行渲染
+        datagrid = table.render({
+            elem: '#merchant', //指定原始表格元素选择器（推荐id选择器）
+            url:"{:Url('admin/customssystem/getDeclMerchant')}",
+            where : {}, //增加条件，默认加载表格数据就带上参数
+            page: true,
+            loading:true,
+            width:"100%",
+            height: "full-230", //容器高度
+            limits: [10,20,50,100,200,500],//每页数据选择项
+            limit: 10 ,//默认采用60
+            cols:  [[ //标题栏
+                {field: 'id', title: '序号', width: 100},
+                {field: 'user_name', title: '名称', width: 100},
+                {field: 'wechat_info', title: '微信信息', width: 200},
+                {field: 'user_tel', title: '手机号', width: 120},
+                {field: 'user_status', title: '状态', width: 80},
+                {field: 'role_id', title: '角色', width: 140,templet:'#role'},
+                {field: 'start_up', title: '验证次数', width: 150,templet:function(data){
+                        return '<input type="hidden" id="id" name="id" value="'+data.id+'"><select  style="display: block;"  id="verifs" onchange="verifs(this,'+data.id+');"><option value="1" '+(data.start_up==1?"selected=true":"")+'>一次验证</option><option value="2" '+(data.start_up==2?"selected=true":"")+'>二次验证</option></select>';
+                }},
+                {field: 'uniacid', title: '分配公众号', width: 200,templet:function (data) {
+                        var h ='<select style="display: block;" id="distri" onchange="distribution(this,'+data.id+','+data.user_tel+');"><option value="">请分配公众号</option>';
+                        for (var i=0;i<data.public.length;i++){
+                            h+='<option value="'+data.public[i].uniacid+'" '+(data.uniacid==data.public[i].uniacid?"selected":"")+'>'+data.public[i].name+'</option>';
+                        }
+                        h+='</select>';
+                        return h;
+                    }},
+                {field: 'account_auth', title: '分配会计系统权限', width: 200,templet:function (data) {
+                    var str = data.account_auth;
+                    if(typeof(str)=='object' && str==null){
+                        str='';
+                    }
+                    console.log(str.indexOf("1")!=-1?"selected2":"");
+                        var h ='<select style="display: block;overflow:scroll;padding-bottom:10px;" size="3" id="accountAuth" multiple="multiple" onchange="accountAuth(this,'+data.id+','+data.user_tel+');"><option value="">凭证汇总系统权限</option>';
+                            h+='<option value="1" '+(str.indexOf("1")!=-1?"selected":"")+'>登记端</option>';
+                            // h+='<option value="2" '+(str.indexOf("2")!=-1?"selected":"")+'>记账端</option>';
+                            // h+='<option value="3" '+(str.indexOf("3")!=-1?"selected":"")+'>管理端</option>';
+                        h+='</select>';
+                        return h;
+                    }},
+                {field: 'sbDis', title: '申报折扣', width: 120,templet:function (data) {
+                    return '<input type="text" name="discount" value="'+data.sbDis+'" onchange="addDiscount(this,'+data.id+');" placeholder="请输入0-9">';
+                    }},
+                {field: 'created_at', title: '时间', width: 180},
+                {width:580, align:'center', 'title':'操作', toolbar:'#bor'},
+            ]],
+            response: {
+                statusName: 'code' //数据状态的字段名称，默认：code
+                ,statusCode: 0 //成功的状态码，默认：0
+                ,msgName: 'message' //状态信息的字段名称，默认：msg
+            },
+            done:function () {
+                layer.close(load);
+                $('.layui-form-select').remove();
+                // form.render('select'); //刷新select选择框渲染
+
+            }
+        });
+        // form.render();
+        // form.render('select'); //刷新select选择框渲染
+
+    });
+
+    //限制字符个数
+    $(".uname").each(function(){
+        var maxwidth=10;
+        if($(this).text().length > maxwidth){
+            $(this).text($(this).text().substring(0,maxwidth));
+            $(this).html($(this).html()+'...');
+        }
+    });
+
+    //国内结算费率
+    function setRate(id,openid){
+        layer.open({
+            type:2,
+            title:'设置商户国内结算费率',
+            shade:0.3,
+            area:['500px','520px'],
+            content:"{:Url('admin/customssystem/settlementRate')}&id="+id+'&openid='+openid, //弹窗内容
+            cancel:function (e) {
+            }
+        });
+    }
+
+    // function setUser(id,openid){
+    //     layer.open({
+    //         type:2,
+    //         title:'设置用户配置',
+    //         shade:0.3,
+    //         area:['500px','520px'],
+    //         content:"{:Url('admin/customssystem/setUser')}&id="+id+'&openid='+openid, //弹窗内容
+    //         cancel:function (e) {
+    //         }
+    //     });
+    // }
+
+    //设置离岸手续费
+    function setOffshoreRate(id,openid){
+        layer.open({
+            type:2,
+            title:'设置商户离岸手续费',
+            shade:0.3,
+            area:['500px','520px'],
+            content:"{:Url('admin/customssystem/setOffshoreRate')}&id="+id+'&openid='+openid, //弹窗内容
+            cancel:function (e) {
+            }
+        });
+    }
+
+    //设置商户的会计师
+    function setAccount(id,openid){
+        layer.open({
+            type:2,
+            title:'配置商户的会计',
+            shade:0.3,
+            area:['500px','520px'],
+            content:"{:Url('admin/customssystem/setAccount')}&id="+id+'&openid='+openid, //弹窗内容
+            cancel:function (e) {
+            }
+        });
+    }
+
+    //设置商户拖车信息
+    function setFreight(id,openid){
+        layer.open({
+            type:2,
+            title:'配置商户的拖车信息',
+            shade:0.3,
+            area:['500px','520px'],
+            content:"{:Url('admin/customssystem/setFreight')}&id="+id+'&openid='+openid, //弹窗内容
+            cancel:function (e) {
+            }
+        });
+    }
+
+    //设置该商户的系统应用权限
+    function setSysApp(id,openid){
+        layer.open({
+            type:2,
+            title:'配置商户的系统应用权限',
+            shade:0.3,
+            area:['500px','520px'],
+            content:"{:Url('admin/customssystem/setSysApp')}&id="+id+'&openid='+openid, //弹窗内容
+            cancel:function (e) {
+            }
+        });
+    }
+
+    // 微信下发消息
+    function sendmsg(id,openid) {
+        if(openid == 'null' || openid == '')
+        {
+            layer.msg('该商户还未绑定微信！');
+        }else{
+            layer.msg('开发中');
+        }
+    }
+
+    function add(id)
+    {
+        layer.open({
+            type:2,
+            title:'添加二次用户对账信息',
+            shade:0.3,
+            area:['500px','520px'],
+            content:"{:Url('admin/merchant/add')}&id="+id, //弹窗内容
+            cancel:function (e) {
+            }
+        });
+
+    }
+
+    function shows(id)
+    {
+        var url = "{:Url('admin/merchant/show')}&pid="+id;
+        window.location.href = url;
+        //layer.msg('二次用户查看',{icon:1});
+    }
+
+    function menu(id)
+    {
+        //layer.msg('稍后开放',{icon:1});
+        var index = layer.open({
+            type:2,
+            title:'用户权限菜单配置',
+            shade:0.3,
+            content:"{:Url('admin/merchant/menu')}&id="+id, //弹窗内容
+            cancel:function (e) {
+            }
+        });
+        layer.full(index);
+    }
+
+
+    function verifs(boj,id) {
+        $.ajax({
+            url:"{:Url('admin/customssystem/changeVerifIdcardFrequency')}",
+            type:"GET",
+            dataType:'json',
+            data:{id:id,startUp:$(boj).val()},
+            success:function(res){
+                layer.msg(res.message);
+            },error:function () {
+                layer.msg('链接服务器错误');
+            }
+        });
+    }
+
+    // 分配公众号  2019-12-06
+    function distribution(obj,id,mobile) {
+
+        if($(obj).val() == '') {
+            layer.msg('请选择公众号');
+            return false;
+        }
+
+        $.ajax({
+            url:"{:Url('admin/customssystem/distribution')}",
+            type:"POST",
+            dataType:'json',
+            data:{id:id,uniacid:$(obj).val(),mobile:mobile},
+            success:function(res){
+                layer.msg(res.message);
+            },error:function () {
+                layer.msg('链接服务器错误');
+            }
+        });
+    }
+
+    //分配会计系统 2022-1-20
+    function accountAuth(obj,id,mobile){
+        if($(obj).val() == '') {
+            layer.msg('请选择会计系统权限');
+            return false;
+        }
+        var val = $(obj).val();
+        var val2 = '';
+        val.forEach(function(i,k){
+            val2 += i+',';
+        });
+
+        $.ajax({
+            url:"{:Url('admin/customssystem/account_auth')}",
+            type:"POST",
+            dataType:'json',
+            data:{id:id,account_auth:val2,mobile:mobile},
+            success:function(res){
+                layer.msg(res.message);
+            },error:function () {
+                layer.msg('链接服务器错误');
+            }
+        });
+    }
+
+    function role(obj,id){
+        $.ajax({
+            url:"{:Url('admin/customssystem/charge_user_role')}",
+            type:"GET",
+            dataType:'json',
+            data:{id:id,role_id:$(obj).val()},
+            success:function(res){
+                layer.msg(res.message);
+            },error:function () {
+                layer.msg('链接服务器错误');
+            }
+        });
+    }
+    // $('#role2').change(function () {
+    //
+    // });
+    function check(id) {
+        //页面层
+        $('#uid').val(id);
+        layer.open({
+            type: 1,        //弹窗类型
+            title: '显示标题',   //显示标题
+            closeBtn: 1,     //是否显示关闭按钮
+            shadeClose: true, //显示模态窗口
+            skin: 'layui-layer-rim', //加上边框
+            area: ['600px', '440px'], //宽高
+            content: $('#f'), //弹窗内容
+            cancel:function () {
+                $('#f').css('display','none');
+            }
+        });
+    }
+    function addDiscount(obj,id){
+        console.log();
+        console.log(id);
+        $.ajax({
+            url:"{:Url('admin/customssystem/addOrderCustomsDiscount')}",
+            type:"GET",
+            dataType:'json',
+            data:{id:id,discountNum:$(obj).val()},
+            success:function(res){
+                layer.msg(res.message);
+            },error:function () {
+                layer.msg('链接服务器错误');
+            }
+        });
+    }
+
+
+    function addPrint(uid) {
+        layer.open({
+            type:2,        //弹窗类型
+            closeBtn: 1,     //是否显示关闭按钮
+            shadeClose: true, //显示模态窗口
+            skin: 'layui-layer-rim', //加上边框
+            area: ['600px', '440px'], //宽高
+            content: "{:Url('admin/add_printdevice')}&uid="+uid, //弹窗内容
+        });
+        return false;
+    }
+    function assignDeviceExpress(uid){
+        layer.open({
+            type:2,        //弹窗类型
+            closeBtn: 1,     //是否显示关闭按钮
+            shadeClose: true, //显示模态窗口
+            skin: 'layui-layer-rim', //加上边框
+            area: ['600px', '440px'], //宽高
+            content: "{:Url('admin/assign_device_express')}&uid="+uid, //弹窗内容
+        });
+        return false;
+    }
+    function service(id)
+    {
+        layer.open({
+            type:2,
+            title:'服务提供',
+            shade:0.3,
+            area:['850px','520px'],
+            content:"{:Url('admin/MerchantServiceProvision/index')}&id="+id, //弹窗内容
+            cancel:function (e) {
+            }
+        });
+
+    }
+</script>
+<!-- Peity -->
+<form id="f" method="post" action="{:Url('admin/customssystem/declUserVerif')}" class="form-horizontal" style="display:none;">
+    <input type="hidden" name="status" id="status" value="0">
+    <input type="hidden" name="uid" id="uid" value="">
+    <div class="col-md-12" >
+        <div class="form-group">
+            <label class="col-sm-3 control-label">分配角色：</label>
+            <div class="col-sm-9">
+                <select class="form-control" name="role" id="roles">
+                    {volist name='roles' id="role"}
+                    <option value="{$role.id}">{$role.role_name}</option>
+                    {/volist}
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-12 col-sm-offset-3">
+                <button class="btn btn-primary" type="submit">确定提交</button>
+            </div>
+        </div>
+    </div>
+</form>
+</html>

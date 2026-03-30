@@ -1,0 +1,190 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/header', TEMPLATE_INCLUDEPATH)) : (include template('common/header', TEMPLATE_INCLUDEPATH));?>
+<!--<title>项目配置中心</title>-->
+<style type="text/css">
+    body {margin:0px; background:#efefef; font-family:'微软雅黑'; -moz-appearance:none;}
+    .info_main {height:auto;  background:#fff; margin-top:14px; border-bottom:1px solid #e8e8e8; border-top:1px solid #e8e8e8;}
+    .info_main .line {margin:0 10px; height:40px; border-bottom:1px solid #e8e8e8; line-height:40px; color:#999;}
+    .info_main .line .title {height:40px; width:80px; line-height:40px; color:#444; float:left; font-size:14px;}
+    .info_main .line .info { width:100%;float:right;margin-left:-80px; }
+    .info_main .line .inner { margin-left:80px; }
+    .info_main .line .inner input {height:40px; width:100%;display:block; padding:0px; margin:0px; border:0px; float:left; font-size:14px;}
+    .info_main .line .inner .user_sex {line-height:40px;}
+    .info_sub {height:44px; margin:14px 5px; background:#31cd00; border-radius:4px; text-align:center; font-size:16px; line-height:44px; color:#fff;}
+    .select { border:1px solid #ccc;height:25px;}
+    .floatBox{position: fixed;right: 10px;z-index: 999;font-size: 14px;color: #fff;width: 52px;height: 52px;transition: all .7s;background: #1E9FFF !important;bottom: 140px;border-radius: 50%;text-align: center;padding: 0;padding-top:6px;box-sizing:border-box;}
+    .table{width:100%;font-size:15px;}
+    .table tr{height:25px;}
+    /*.table tr td:nth-of-type(1){width:88%;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;}*/
+    .table tr td:nth-of-type(2){width:20%;}
+    .see{box-sizing: border-box;padding: 2px 4px;font-size: 15px;color: #fff;background: #1E9FFF;text-align:center;}
+    .hui-form-items{padding:7px 7px !important;align-items:center;}
+    #hui-input-clear{right:22% !important;}
+</style>
+
+<link type="text/css" rel="stylesheet" href="../addons/sz_yi/template/pc/default/static/css/bootstrap.min.css" />
+<!--<script type="text/javascript" src="../addons/sz_yi/static/template/pc/default/static/js/bootstrap.min.js"></script>-->
+
+<link rel="stylesheet" type="text/css" href="../addons/sz_yi/static/travel_express/css/hui.css" />
+<script src="../addons/sz_yi/static/travel_express/js/hui.js" type="text/javascript" charset="utf-8"></script>
+<script src="../addons/sz_yi/static/travel_express/js/hui-form.js" type="text/javascript" charset="utf-8"></script>
+
+<div id="container">
+    <div class="page_topbar">
+        <div class="title">国内结算</div>
+    </div>
+    <div class="hui-wrap">
+        <form class="hui-form" id="form1">
+            <div class="hui-form-items">
+                <div class="hui-form-items-title">类型</div>
+                <div class="hui-form-radios" style="line-height:38px;display: flex;align-items:center;">
+                    <input type="radio" value="1" name="type" id="g1" onchange="showSelectRes(this);" /><label for="g1">收款信息</label><br />
+                    <input type="radio" value="2" name="type" id="g2" checked="checked" onchange="showSelectRes(this);"  /><label style="margin-left:15px;" for="g2">付款信息</label>
+                    <input type="text" name="h_type" id="h_type" value="1" style="display:none;" />
+                    <input type="text" id="h_mobile" name="h_mobile" value="" style="display:none;" />
+                </div>
+            </div>
+            <div class="hui-form-items">
+                <div class="hui-form-items-title">手机号</div>
+                <input type="number" class="hui-input hui-input-clear" id="mobile" style="width:60% !important;" name="mobile" placeholder="请输入手机号进行查询收/付款信息" />
+                
+                <button type="button" class="hui-button hui-primary hui-fr" id="submitBtn" style="height: 40px;line-height: 20px;width:fit-content;padding:0 12px;">搜索</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="info_main">
+    </div>
+    <!--<div id="newpagediv" style="display:none;position:absolute;left:0;top:170px;width:100%;height:100%;font-size:20px;font-weight:550;text-align: right;padding-right: 10px;background: #fff;border-top-left-radius: 15px;border-top-right-radius: 15px;box-shadow: #000 0px 55px 100px;border-top: 1px solid #ddd;z-index:99999999999999;">-->
+    <!--    <div style="font-size:28px;font-weight:550;" class="close">×</div>-->
+    <!--    <iframe id="newpage" height="98%" width="100%" src="" frameborder="0" scrolling="yes" style="padding-bottom:20px;"></iframe>    -->
+    <!--</div>-->
+    
+</div>
+
+<script language="javascript">
+window.addEventListener('pageshow', function (e) {
+    if(e.persisted || (window.performance && window.performance.navigation.type == 2)){
+        var type = $('#h_type').val();
+        var mobile = $('#h_mobile').val();
+        
+        if(mobile!='' && typeof(mobile)!='undefined'){
+            document.getElementById('submitBtn').click();
+        }
+    }
+});
+    $(function(){
+        // $('.close').click(function(){
+        //     $('#newpagediv').hide();
+        //     $('.info_main').show();   
+        // })
+         
+        var type = $('#h_type').val();
+        var mobile = $('#h_mobile').val();
+        
+        if(mobile!='' && typeof(mobile)!='undefined'){
+            $('#submitBtn').click();
+        }
+    });
+    
+    hui.formInit();
+    //表单元素数据收集演示
+    hui('#submitBtn').click(function(){
+        // hui.alert('请观察控制台');
+        var datas = hui.getFormData('#form1');
+        // console.log(data.mobile);
+        if(datas.mobile=='' || typeof(datas.mobile)=='undefined'){
+            hui.alert('请输入有效的手机号进行查询！');return;
+        }
+
+
+
+        $.ajax({
+            url:"<?php  echo $this->createMobileUrl('member/customcollection');?>",
+            type:'POST',
+            dataType:'json',
+            data:{'op':'search_paycollect_info',type:datas.type, mobile:datas.mobile},
+            success:function(json) {
+                $('#h_mobile').val(datas.mobile);
+                if(json.status==-1){
+                    hui.alert(json.result.msg);
+                    // hui.upToast(json.result.msg);    
+                }else if(json.status==1){
+                    var data = json.result.data;
+                    var html = '';
+                    if(data=='' || typeof(data)=='undefined'){
+                        html += '<div class="line" style="text-align:center;">暂无信息</div>';
+                    }else{
+                        html += ' <table class="table table-striped">\n' +
+                                '                <thead>\n' +
+                                '                    <tr>\n' +
+                                '                        <td>订单号</td>\n';
+                                if(datas.type==1){
+                                    html += '            <td>付款人</td>\n';
+                                }else if(datas.type==2){
+                                    html += '            <td>发起人</td>\n';
+                                }
+                                
+                                html += '                <td>状态</td>\n' +
+                                '                        <td>操作</td>\n' +
+                                '                    </tr>\n' +
+                                '                </thead>\n' +
+                                '                <tbody>\n';
+                                for(var i=0;i<data.length;i++){
+                                    html += '             <tr>\n' +
+                                    '                        <td  style="width: 130px;max-width: 130px;min-width: 130px;word-break: break-all;">'+data[i]['ordersn']+'</td>\n';
+                                    if(datas.type==1){
+                                        html += '                <td style="text-overflow: ellipsis;width:80px;max-width:80px;overflow:hidden;white-space:nowrap;">'+data[i]['payer_name']+'</td>\n';
+                                    }else if(datas.type==2){
+                                        html += '                <td style="text-overflow: ellipsis;width:80px;max-width:80px;overflow:hidden;white-space:nowrap;">'+data[i]['user_name']+'</td>\n';
+                                    }
+                                    if(data[i]['status']=='待付款'){
+                                        html += '                    <td style="color:#ff5555;">'+data[i]['status']+'</td>\n';
+                                    }else if(data[i]['status']=='已付款'){
+                                        html += '                    <td style="color:green;">'+data[i]['status']+'</td>\n';
+                                    }
+                                    html+='                        <td><div class="see" onclick=\'see('+data[i]['id']+','+datas.type+')\'>查看</div></td>\n' +
+                                    '                    </tr>\n';
+                                }
+                                '                </tbody>\n' +
+                                '            </table>';
+                    
+                        
+                    }
+                    $('.info_main').html(html);
+                }
+            }
+        });
+    });
+    //获取单选框的值
+    function showSelectRes(_selfBtn){
+        var val;
+        hui(_selfBtn).parent().find('input').each(function(cObj){
+            if(cObj.checked){val = cObj.value;}
+        });
+        $('#h_type').val(val);
+        // console.log(val);
+    }
+
+    function see(id,typ){
+        if(typ==1){
+            //发起人查看
+            // $('#newpage').attr('src','https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=domestic&m=sz_yi&p=collection&op=search_detail&id='+id);
+            // $('#newpagediv').show();
+            // $('.info_main').hide();
+            // window.open('https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=domestic&m=sz_yi&p=collection&op=search_detail&id='+id,'_self');
+            hui.open('https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=domestic&m=sz_yi&p=collection&op=search_detail&id='+id);
+        }else if(typ==2){
+            //付款人查看
+            // $('#newpage').attr('src','https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=member&p=custompayment&m=sz_yi&oid='+id);
+            // $('#newpagediv').show();
+            // $('.info_main').hide();
+            // window.open('https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=member&p=custompayment&m=sz_yi&oid='+id,'_self');
+            hui.open('https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=member&p=custompayment&m=sz_yi&oid='+id);
+        }
+    }
+    require(['tpl', 'core'], function(tpl, core) {
+        
+    })
+</script>
+
+<?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/footer', TEMPLATE_INCLUDEPATH)) : (include template('common/footer', TEMPLATE_INCLUDEPATH));?>

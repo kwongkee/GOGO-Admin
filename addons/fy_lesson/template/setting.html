@@ -1,0 +1,436 @@
+<!-- 
+ * 参数设置
+ * ============================================================================
+ * ============================================================================
+-->
+
+{template 'common/header'}
+<ul class="nav nav-tabs">
+    <li class="active"><a href="jacascript:;">基本设置</a></li>
+</ul>
+<style>
+.item_box img{
+	width: 100%;
+	height: 100%;
+}
+.focus-setting{
+	border-bottom:1px #428BCA dashed;
+	padding-bottom:20px;
+}
+</style>
+<div class="main">
+	<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                模版消息通知 (所在行业：IT科技/互联网|电子商务，IT科技/IT软件与服务)
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">是否开启</label>
+                    <div class="col-sm-9">
+                        <label class="radio-inline"><input type="radio" name="istplnotice" value="1" id="isshow1" {if $setting['istplnotice'] == 1}checked="true"{/if} /> 是</label>
+                        &nbsp;
+                        <label class="radio-inline"><input type="radio" name="istplnotice" value="0" id="isshow2"  {if empty($setting) || $setting['istplnotice'] == 0}checked="true"{/if} /> 否</label>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">用户购买成功通知</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="buysucc" value="{$setting['buysucc']}" class="form-control"/>
+                        <div class="help-block">
+                            【留空为关闭该通知】用户购买VIP服务或课程成功后模版消息通知，选择编号TM00001(购买成功通知)
+                        </div>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">用户会员服务过期</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="pastvip" value="{$setting['pastvip']}" class="form-control"/>
+                        <div class="help-block">
+                            【留空为关闭该通知】用户VIP服务过期提醒，选择编号OPENTM207718900(会员过期提醒)
+                        </div>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">佣金提醒</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="cnotice" value="{$setting['cnotice']}" class="form-control"/>
+                        <div class="help-block">
+                            【留空为关闭该通知】下级购买课程时，上级获得佣金提醒，选择编号OPENTM201812627(佣金提醒)
+                        </div>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">下级加入提醒</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="newjoin" value="{$setting['newjoin']}" class="form-control"/>
+                        <div class="help-block">
+                            【留空为关闭该通知】成功推荐下级加入时，给推荐上级提醒，选择编号OPENTM207372740(三级分销下级加入提醒)
+                        </div>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">开课提醒</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="newlesson" value="{$setting['newlesson']}" class="form-control"/>
+                        <div class="help-block">
+                            【留空为关闭该通知】讲师新开课程后，给关注该讲师的学员发送消息，选择编号OPENTM405482828(开课提醒)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+		<div class="panel panel-default">
+            <div class="panel-heading">购买会员服务</div>
+            <div class="panel-body">
+				{loop $vip $k=>$v}
+				<div class="form-group item">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">套餐{php echo $k+1;}</label>
+					<div class="col-sm-4">
+						<div class="input-group">
+							<span class="input-group-addon">充</span><input type="text" name="viptime[]" value="{$v['viptime']}" class="form-control"><span class="input-group-addon">月</span><span class="input-group-addon">需</span><input type="text" name="vipmoney[]" value="{$v['vipmoney']}" class="form-control"><span class="input-group-addon">元</span>
+						</div>
+					</div>
+				</div>
+				{/loop}
+				<div id="vipdiv">
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
+					<div class="col-sm-9 col-xs-12">
+						<a href="javascript:;" id="vip-add"><i class="fa fa-plus-circle"></i> 添加套餐列表</a>
+					</div>
+				</div>
+			</div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">基本设置</div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">网站名称</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="sitename" value="{$setting['sitename']}" class="form-control"/>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">网站版权</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="copyright" value="{$setting['copyright']}" class="form-control"/>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">网站logo</label>
+                    <div class="col-sm-9">
+                        {php echo tpl_form_field_image('logo', $setting['logo']);}
+						<span class="help-block">建议尺寸150px * 70px，建议格式PNG</span>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">首页课程显示</label>
+                    <div class="col-sm-9">
+                        <label class="radio-inline"><input type="radio" name="lessonshow" value="1" {if $setting['lessonshow']==1}checked{/if} /> 一行显示一个课程</label>
+                        &nbsp;
+                        <label class="radio-inline"><input type="radio" name="lessonshow" value="2" {if $setting['lessonshow']==2}checked{/if} /> 一行显示两个课程</label>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">菜单显示方式</label>
+                    <div class="col-sm-9">
+                        <label class="radio-inline"><input type="radio" name="footnav" value="0" {if $setting['footnav']==0}checked{/if} /> 底部菜单</label>
+                        &nbsp;
+                        <label class="radio-inline"><input type="radio" name="footnav" value="1" {if $setting['footnav']==1}checked{/if} /> 悬浮菜单</label>
+                        <span class="help-block">该菜单显示在前台手机端，默认为底部菜单</span>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">引导关注</label>
+                    <div class="col-sm-9">
+						<label class="radio-inline"><input type="radio" name="isfollow" value="1" {if $setting['isfollow']==1}checked{/if} /> 开启</label>
+						&nbsp;
+                        <label class="radio-inline"><input type="radio" name="isfollow" value="0" {if $setting['isfollow']==0}checked{/if} /> 关闭</label>
+                        <span class="help-block"><strong></strong>开启引导关注公众号，未关注公众号的用户访问首页和课程页面时，顶部将出现引导关注公众号信息</span>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">公众号二维码</label>
+                    <div class="col-sm-9">
+						{php echo tpl_form_field_image('qrcode', $setting['qrcode']);}
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">未付款订单关闭间隔</label>
+					<div class="col-sm-9">
+						<div class="input-group">
+                            <input type="text" name="closespace" value="{$setting['closespace']}" class="form-control">
+                            <span class="input-group-addon">分钟</span>
+                        </div>
+						<div class="help-block">
+							默认为60分钟，0表示不自动关闭未付款订单
+						</div>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">讲师分成</label>
+                    <div class="col-sm-9">
+						<div class="input-group">
+                            <input type="text" name="teacher_income" value="{$setting['teacher_income']}" class="form-control">
+                            <span class="input-group-addon">%</span>
+                        </div>
+						<div class="help-block">
+							留空或0表示关闭用户申请讲师，例如设为40%，即表示用户申请讲师后，该用户的课程每次出售都以出售价格的40%作为讲师的收入。<br/> 为了确保课程的质量，请讲师把课程给网站进行发布。
+						</div>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">VIP会员购买课程折扣</label>
+                    <div class="col-sm-9">
+						<div class="input-group">
+                            <input type="text" name="vipdiscount" value="{$setting['vipdiscount']}" class="form-control">
+                            <span class="input-group-addon">%</span>
+                        </div>
+						<div class="help-block">
+							留空或0表示关闭所有课程对VIP会员折扣价
+						</div>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">打印视频错误信息</label>
+                    <div class="col-sm-9">
+                        <label class="radio-inline"><input type="radio" name="print_error" value="1" {if $setting['print_error']==1}checked{/if} /> 开启</label>
+                        &nbsp;
+                        <label class="radio-inline"><input type="radio" name="print_error" value="0" {if $setting['print_error']==0}checked{/if} /> 关闭</label>
+                        <span class="help-block">前台无法播放视频时，可开启该选项输出错误信息，平时请关闭。</span>
+                    </div>
+                </div>
+				
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">焦点图1</label>
+                    <div class="col-sm-9">
+                        {php echo tpl_form_field_image("banner[0][img]", $banner[0]['img']);}
+						<span>建议尺寸580px * 228px</span>
+                    </div>
+                </div>
+				<div class="form-group focus-setting">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">焦点图链接1</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="banner[0][link]" value="{$banner[0]['link']}" class="form-control"/>
+						<span>请填写完整URL地址，包括http://</span>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">焦点图2</label>
+                    <div class="col-sm-9">
+                        {php echo tpl_form_field_image("banner[1][img]", $banner[1]['img']);}
+						<span>建议尺寸580px * 228px</span>
+                    </div>
+                </div>
+				<div class="form-group focus-setting">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">焦点图链接2</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="banner[1][link]" value="{$banner[1]['link']}" class="form-control"/>
+						<span>请填写完整URL地址，包括http://</span>
+					</div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">焦点图3</label>
+                    <div class="col-sm-9">
+                        {php echo tpl_form_field_image("banner[2][img]", $banner[2]['img']);}
+						<span>建议尺寸580px * 228px</span>
+                    </div>
+                </div>
+				<div class="form-group focus-setting">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">焦点图链接3</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="banner[2][link]" value="{$banner[2]['link']}" class="form-control"/>
+						<span>请填写完整URL地址，包括http://</span>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">焦点图4</label>
+                    <div class="col-sm-9">
+                        {php echo tpl_form_field_image("banner[3][img]", $banner[3]['img']);}
+						<span>建议尺寸580px * 228px</span>
+                    </div>
+                </div>
+				<div class="form-group focus-setting">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">焦点图链接4</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="banner[3][link]" value="{$banner[3]['link']}" class="form-control"/>
+						<span>请填写完整URL地址，包括http://</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+		<div class="panel panel-default">
+            <div class="panel-heading">存储设置</div>
+            <div class="panel-body">
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">存储方式设置</label>
+					<div class="col-sm-9">
+						<label class="radio-inline">
+							<input type="radio" name="savetype" value="0" {if $setting['savetype']==0}checked{/if}>其他存储方式
+						</label>
+						<label class="radio-inline">
+							<input type="radio" name="savetype" value="1" {if $setting['savetype']==1}checked{/if}>七牛云存储
+						</label>
+						<label class="radio-inline">
+							<input type="radio" name="savetype" value="2" {if $setting['savetype']==2}checked{/if}>腾讯云存储
+						</label>
+						<span class="help-block">默认课程视频存储方式，设置后也可以在课程章节里修改</span>
+					</div>
+				</div>
+				<!-- 七牛 Start -->
+				<div class="form-group qiniu-params-admin" {if $setting['savetype']!=1}style="display: none;"{/if}>
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">七牛ACCESS_KEY</label>
+					<div class="col-sm-9">
+						<input type="text" name="qiniu[access_key]" class="form-control" value="{$qiniu[access_key]}" autocomplete="off">
+					</div>
+				</div>
+				<div class="form-group qiniu-params-admin" {if $setting['savetype']!=1}style="display: none;"{/if}>
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">七牛SECRET_KEY</label>
+					<div class="col-sm-9">
+						<input type="text" name="qiniu[secret_key]" class="form-control" value="{$qiniu[secret_key]}" autocomplete="off">
+					</div>
+				</div>
+				<div class="form-group qiniu-params-admin" {if $setting['savetype']!=1}style="display: none;"{/if}>
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">七牛URL(空间链接)</label>
+					<div class="col-sm-9">
+						<input type="text" name="qiniu[url]" class="form-control" value="{$qiniu[url]}" autocomplete="off">
+						<span class="help-block">请填写空间链接，不明白请查看<a href="http://wx.haoshu888.com/readme/fy_lesson.pdf" target="_blank">微课堂帮助手册七牛云存储配置</a></span>
+					</div>
+				</div>
+				<!-- 七牛 End -->
+
+				<!-- 腾讯云 Start -->
+				<div class="form-group qcloud-params-admin" {if $setting['savetype']!=2}style="display: none;"{/if}>
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">腾讯云APPID</label>
+					<div class="col-sm-9">
+						<input type="text" name="qcloud[appid]" class="form-control" value="{$qcloud[appid]}" autocomplete="off">
+					</div>
+				</div>
+				<div class="form-group qcloud-params-admin" {if $setting['savetype']!=2}style="display: none;"{/if}>
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">Bucket</label>
+					<div class="col-sm-9">
+						<input type="text" name="qcloud[bucket]" class="form-control" value="{$qcloud[bucket]}" autocomplete="off">
+					</div>
+				</div>
+				<div class="form-group qcloud-params-admin" {if $setting['savetype']!=2}style="display: none;"{/if}>
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">腾讯云SecretID</label>
+					<div class="col-sm-9">
+						<input type="text" name="qcloud[secretid]" class="form-control" value="{$qcloud[secretid]}" autocomplete="off">
+					</div>
+				</div>
+				<div class="form-group qcloud-params-admin" {if $setting['savetype']!=2}style="display: none;"{/if}>
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">腾讯云SecretKey</label>
+					<div class="col-sm-9">
+						<input type="text" name="qcloud[secretkey]" class="form-control" value="{$qcloud[secretkey]}" autocomplete="off">
+						<span class="help-block">不明白请查看<a href="http://wx.haoshu888.com/readme/fy_lesson.pdf" target="_blank">微课堂帮助手册腾讯云存储配置</a></span>
+					</div>
+				</div>
+				<!-- 腾讯云 End -->
+	 
+			</div>
+        </div>
+
+		<div class="panel panel-default">
+            <div class="panel-heading">
+                支付方式
+            </div>
+            <div class="panel-body">
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">余额支付</label>
+                    <div class="col-sm-9">
+                        <label  class="radio-inline"><input type="radio" name="credit" value="1" {if $payswitch['credit']==1}checked{/if} /> 开启</label>
+                        &nbsp;&nbsp;&nbsp;
+                        <label class="radio-inline"><input type="radio" name="credit" value="0" {if $payswitch['credit']==0}checked{/if} /> 关闭</label>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">微信支付</label>
+                    <div class="col-sm-9">
+                        <label class="radio-inline"><input type="radio" name="wechat" value="1" {if $payswitch['wechat']==1}checked{/if} /> 开启</label>
+                        &nbsp;&nbsp;&nbsp;
+                        <label class="radio-inline"><input type="radio" name="wechat" value="0" {if $payswitch['wechat']==0}checked{/if} /> 关闭</label>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">支付宝支付</label>
+                    <div class="col-sm-9">
+                        <label class="radio-inline"><input type="radio" name="alipay" value="1" {if $payswitch['alipay']==1}checked{/if} /> 开启</label>
+                        &nbsp;&nbsp;&nbsp;
+                        <label class="radio-inline"><input type="radio" name="alipay" value="0" {if $payswitch['alipay']==0}checked{/if} /> 关闭</label>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">银联支付</label>
+                    <div class="col-sm-9">
+                        <label class="radio-inline"><input type="radio" name="unionpay" value="1" {if $payswitch['unionpay']==1}checked{/if} /> 开启</label>
+                        &nbsp;&nbsp;&nbsp;
+                        <label class="radio-inline"><input type="radio" name="unionpay" value="0" {if $payswitch['unionpay']==0}checked{/if} /> 关闭</label>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">百度钱包支付</label>
+                    <div class="col-sm-9">
+                        <label class="radio-inline"><input type="radio" name="baifubao" value="1" {if $payswitch['baifubao']==1}checked{/if} /> 开启</label>
+                        &nbsp;&nbsp;&nbsp;
+                        <label class="radio-inline"><input type="radio" name="baifubao" value="0" {if $payswitch['baifubao']==0}checked{/if} /> 关闭</label>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
+                    <div class="col-sm-9">
+                        <span class="help-block">开启相应的支付方式后，必须到“功能选项—><a href="index.php?c=profile&a=payment&">支付参数</a>”里配置相应的支付参数才有效</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group col-sm-12">
+            <input type="hidden" name="id" value="{$setting['id']}" />
+            <input type="submit" name="submit" value="保存设置" class="btn btn-primary col-lg-1" />
+            <input type="hidden" name="token" value="{$_W['token']}" />
+        </div>
+	</form>
+</div>
+
+<script type="text/javascript">
+$("#vip-add").click(function(){
+	var chtml = '';
+	chtml += '<div class="form-group item">';
+	chtml += '	<label class="col-xs-12 col-sm-3 col-md-2 control-label">新套餐</label>';
+	chtml += '	<div class="col-sm-4">';
+	chtml += '		<div class="input-group">';
+	chtml += '			<span class="input-group-addon">充</span><input type="text" name="viptime[]" class="form-control"><span class="input-group-addon">月</span><span class="input-group-addon">需</span><input type="text" name="vipmoney[]" class="form-control"><span class="input-group-addon">元</span>';
+	chtml += '		</div>';
+	chtml += '	</div>';
+	chtml += '</div>';
+
+	$("#vipdiv").append(chtml);
+});
+
+$(function () {
+	$(':radio[name="savetype"]').click(function (){
+		if($(this).val()=='0'){
+			$('.qiniu-params-admin').hide();
+			$('.qcloud-params-admin').hide();
+		}else if($(this).val()=='1'){
+			$('.qiniu-params-admin').show();
+			$('.qcloud-params-admin').hide();
+		}else if($(this).val()=='2'){
+			$('.qiniu-params-admin').hide();
+			$('.qcloud-params-admin').show();
+		}
+	});
+});
+
+</script>
+{template 'common/footer'}

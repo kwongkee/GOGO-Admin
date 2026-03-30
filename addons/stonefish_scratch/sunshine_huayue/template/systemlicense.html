@@ -1,0 +1,96 @@
+{template 'header'}
+<div class="container-fluid">
+    {if $_W['isfounder']}
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <h4>安全盾</h4>
+            <div class="input-group">
+                <span class="input-group-addon">域名</span>
+                <input type="text"  class="form-control"  placeholder='{$server_name}'>
+            </div>
+            <br>
+            <div class="input-group">
+                <span class="input-group-addon">地址</span>
+                <input type="text"  class="form-control"  placeholder='{$ip}'>
+            </div>
+            <br>
+            <div class="input-group">
+                <span class="input-group-addon">签名</span>
+                <input type="text"  class="form-control"  placeholder='{$sign}'>
+            </div>
+            <br>
+            <div class="input-group">
+                <span class="input-group-addon">密钥</span>
+                <input type="text"  class="form-control"  placeholder='{$system_license}' readonly>
+            </div>
+            <p class="help-block">secretkey为应用唯一凭证，请妥善保管。如果重新修改了服务器的域名，请联系开发者团队进行更换密钥。</p>
+            <p class="help-block">不要随意修改你的密钥，否则将导致无法正常使用，请谨慎操作。</p>
+            <button class="btn btn-sm btn-primary" onclick="$('#system_license_layer').toggle()">修改密钥</button>
+        </div>
+    </div>
+    <br>
+    <div class="row" id="system_license_layer" style="display: none">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="input-group">
+                <span class="input-group-addon">新密钥</span>
+                <input  class="form-control" id='system_license' type="text" placeholder="请谨慎修改">
+            </div>
+            <br>
+            <button class="btn btn-sm btn-success" onclick="doSave('system_license')">保存新的密钥</button>
+        </div>
+    </div>
+    {else}
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <h4>安全盾</h4>
+            <p>普通管理员无权限</p>
+        </div>
+    </div>
+    {/if}
+</div>
+<script type="text/javascript">
+
+    function doSave(type,val) {
+
+        if(!type) {
+            return false;
+        }
+        // 开关
+        if(type == 'system_license') {
+            var settings_name = 'system_license';
+            var settings_value = $("#system_license").val();
+        }else {
+            alert("保存失败");
+            return;
+        }
+
+        if(!settings_value) {
+            alert("不能为空");
+            return;
+        }
+
+        if(!confirm("请保证您即将要更新的密钥可用，否则将导致应用无法正常使用")) {
+            return;
+        }
+
+        $.ajax({
+            type:'post',
+            data:{
+                settings_name:settings_name,
+                settings_value:settings_value
+            },
+
+            url:"{php echo $this->createWebUrl('settingformnew')}",
+            success:function(d) {
+                if(d.res == '100') {
+                    alert('保存成功');
+                    window.location.href='';
+                }else {
+                    alert(d.msg);
+                }
+            }
+        })
+
+    }
+</script>
+{template 'footer'}

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>设置离岸手续费</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <style>
+        .entry_type2,.entry_type4,.entry_type6,.entry_type8{display:none;}
+        .fee_show{display:block;}
+        .fee_hide{display:none;}
+    </style>
+</head>
+<body>
+<form class="layui-form" action="" style="padding-top:15px;padding-right:15px;box-sizing:border-box;">
+
+    <div class="layui-tab">
+        <ul class="layui-tab-title">
+            <li class="layui-this">离岸入账手续费</li>
+            <li>离岸转账手续费</li>
+            <li>离岸换汇手续费</li>
+            <li>在岸结汇手续费</li>
+        </ul>
+        <div class="layui-tab-content">
+            <div class="layui-tab-item layui-show">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">配置方式</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="entry_type" value="1" title="按（币种）X元收取" {if $user['offshore_entry_info']['entry_type']==1}checked{/if} lay-filter="entry_type">
+                        <input type="radio" name="entry_type" value="2" title="按交易金额的Y‰收取" {if $user['offshore_entry_info']['entry_type']==2}checked{/if} lay-filter="entry_type">
+                    </div>
+                </div>
+                <div class="entry_type1 {$user['offshore_entry_info']['entry_type']==1?'fee_show':'fee_hide'}">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">收费币种</label>
+                        <div class="layui-input-block">
+                            <select name="currency1" id="currency1" lay-search>
+                                <option value="">请选择收费币种</option>
+                                {volist name="currency" id="vo"}
+                                <option value="{$vo.code_value}"  {if $user['offshore_entry_info']['currency']==$vo.code_value}selected{/if}>{$vo.code_name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">收费金额</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" name="money1" id="money1" placeholder="请输入收费金额" value="{$user['offshore_entry_info']['money']}">
+                        </div>
+                    </div>
+                </div>
+                <div class="entry_type2 {$user['offshore_entry_info']['entry_type']==2?'fee_show':'fee_hide'}" style="display:none;">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">交易金额手续费率</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" name="trade_rate1" id="trade_rate1" placeholder="请输入费率：0.006" value="{$user['offshore_entry_info']['trade_rate']}" onkeyup="if(isNaN(value))execCommand('undo')" onafterpaste="if(isNaN(value))execCommand('undo')">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">最低收取Y元</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" type="number" name="trade_low_money1" id="trade_low_money1" placeholder="请输入最低收取Y元" value="{$user['offshore_entry_info']['trade_low_money']}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--离岸转账-->
+            <div class="layui-tab-item">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">配置方式</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="entry_type2" value="3" title="按（币种）X元收取"  {if $user['offshore_transfer_info']['entry_type']==3}checked{/if} lay-filter="entry_type2">
+                        <input type="radio" name="entry_type2" value="4" title="按交易金额的Y‰收取" {if $user['offshore_transfer_info']['entry_type']==4}checked{/if} lay-filter="entry_type2">
+                    </div>
+                </div>
+                <div class="entry_type3 {$user['offshore_transfer_info']['entry_type']==3?'fee_show':'fee_hide'}">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">收费币种</label>
+                        <div class="layui-input-block">
+                            <select name="currency2" id="currency2" lay-search>
+                                <option value="">请选择收费币种</option>
+                                {volist name="currency" id="vo"}
+                                <option value="{$vo.code_value}" {if $user['offshore_transfer_info']['currency']==$vo.code_value}selected{/if}>{$vo.code_name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">收费金额</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" name="money2" id="money2" placeholder="请输入收费金额" value="{$user['offshore_transfer_info']['money']}">
+                        </div>
+                    </div>
+                </div>
+                <div class="entry_type4 {$user['offshore_transfer_info']['entry_type']==4?'fee_show':'fee_hide'}">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">交易金额手续费率</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" name="trade_rate2" id="trade_rate2" placeholder="请输入费率：0.006" value="{$user['offshore_transfer_info']['trade_rate']}" onkeyup="if(isNaN(value))execCommand('undo')" onafterpaste="if(isNaN(value))execCommand('undo')">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">最低收取Y元</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" type="number" name="trade_low_money2" id="trade_low_money2" placeholder="请输入最低收取Y元" value="{$user['offshore_transfer_info']['trade_low_money']}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--离岸换汇-->
+            <div class="layui-tab-item">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">配置方式</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="entry_type3" value="5" title="按（币种）X元收取"  {if $user['offshore_exchange_info']['entry_type']==5}checked{/if} lay-filter="entry_type3">
+                        <input type="radio" name="entry_type3" value="6" title="按交易金额的Y‰收取" {if $user['offshore_exchange_info']['entry_type']==6}checked{/if} lay-filter="entry_type3">
+                    </div>
+                </div>
+                <div class="entry_type5 {$user['offshore_exchange_info']['entry_type']==5?'fee_show':'fee_hide'}">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">收费币种</label>
+                        <div class="layui-input-block">
+                            <select name="currency3" id="currency3" lay-search>
+                                <option value="">请选择收费币种</option>
+                                {volist name="currency" id="vo"}
+                                <option value="{$vo.code_value}" {if $user['offshore_exchange_info']['currency']==$vo.code_value}selected{/if}>{$vo.code_name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">收费金额</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" name="money3" id="money3" placeholder="请输入收费金额" value="{$user['offshore_exchange_info']['money']}">
+                        </div>
+                    </div>
+                </div>
+                <div class="entry_type6 {$user['offshore_exchange_info']['entry_type']==6?'fee_show':'fee_hide'}">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">交易金额手续费率</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" name="trade_rate3" id="trade_rate3" placeholder="请输入费率：0.006" value="{$user['offshore_exchange_info']['trade_rate']}" onkeyup="if(isNaN(value))execCommand('undo')" onafterpaste="if(isNaN(value))execCommand('undo')">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">最低收取Y元</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" type="number" name="trade_low_money3" id="trade_low_money3" placeholder="请输入最低收取Y元" value="{$user['offshore_exchange_info']['trade_low_money']}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--在岸结汇-->
+            <div class="layui-tab-item">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">配置方式</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="entry_type4" value="7" title="按（币种）X元收取"  {if $user['onshore_exchange_info']['entry_type']==7}checked{/if} lay-filter="entry_type4">
+                        <input type="radio" name="entry_type4" value="8" title="按交易金额的Y‰收取" {if $user['onshore_exchange_info']['entry_type']==8}checked{/if} lay-filter="entry_type4">
+                    </div>
+                </div>
+                <div class="entry_type7 {$user['onshore_exchange_info']['entry_type']==7?'fee_show':'fee_hide'}">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">收费币种</label>
+                        <div class="layui-input-block">
+                            <select name="currency4" id="currency4" lay-search>
+                                <option value="">请选择收费币种</option>
+                                {volist name="currency" id="vo"}
+                                <option value="{$vo.code_value}" {if $user['onshore_exchange_info']['currency']==$vo.code_value}selected{/if}>{$vo.code_name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">收费金额</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" name="money4" id="money4" placeholder="请输入收费金额" value="{$user['onshore_exchange_info']['money']}">
+                        </div>
+                    </div>
+                </div>
+                <div class="entry_type8 {$user['onshore_exchange_info']['entry_type']==8?'fee_show':'fee_hide'}">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">交易金额手续费率</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" name="trade_rate4" id="trade_rate4" placeholder="请输入费率：0.006" value="{$user['onshore_exchange_info']['trade_rate']}" onkeyup="if(isNaN(value))execCommand('undo')" onafterpaste="if(isNaN(value))execCommand('undo')">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">最低收取Y元</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" type="number" name="trade_low_money4" id="trade_low_money4" placeholder="请输入最低收取Y元" value="{$user['onshore_exchange_info']['trade_low_money']}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+
+</body>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<!--<script src="./static/hadmin/assets/layui/xm-select.js"></script>-->
+<script>
+    layui.use(['form','jquery','element'], function(){
+        var form = layui.form;
+        var $ = layui.jquery;
+        var element = layui.element;
+
+        //离岸收款
+        form.on('radio(entry_type)', function(data){
+            if(data.value==1){
+                $('.entry_type1').show();
+                $('.entry_type2').hide();
+            }else if(data.value==2){
+                $('.entry_type2').show();
+                $('.entry_type1').hide();
+            }
+        });
+
+        //离岸转账
+        form.on('radio(entry_type2)', function(data){
+            if(data.value==3){
+                $('.entry_type3').show();
+                $('.entry_type4').hide();
+            }else if(data.value==4){
+                $('.entry_type4').show();
+                $('.entry_type3').hide();
+            }
+        });
+
+        //离岸换汇
+        form.on('radio(entry_type3)', function(data){
+            if(data.value==5){
+                $('.entry_type5').show();
+                $('.entry_type6').hide();
+            }else if(data.value==6){
+                $('.entry_type6').show();
+                $('.entry_type5').hide();
+            }
+        });
+
+        //在岸结汇
+        form.on('radio(entry_type4)', function(data){
+            if(data.value==7){
+                $('.entry_type7').show();
+                $('.entry_type8').hide();
+            }else if(data.value==8){
+                $('.entry_type8').show();
+                $('.entry_type7').hide();
+            }
+        });
+
+        form.on('submit(formDemo)', function(data) {
+            $.ajax({
+                url: '{:Url("admin/customssystem/setOffshoreRate")}',
+                type: "POST",
+                dataType: "JSON",
+                data: {"uid":{$user['id']},"data":data.field},
+                success:function (res) {
+                    layer.msg(res.message);
+                    // if (res.code==0){
+                    //     setTimeout(function () {
+                    //         location.reload();
+                    //     },2000);
+                    // }
+                },error:function (xhr) {
+                    layer.msg("连接服务错误..");
+                }
+            });
+            return false;
+        });
+    });
+
+</script>
+</html>

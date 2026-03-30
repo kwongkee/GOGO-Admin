@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 14px;color: #fff;
+            font-size: 16px;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<div class="header">
+    <span>支付渠道列表</span>
+    <button class="layui-btn" style="margin-right: 3%;" onclick="add();">添加支付通道</button>
+    <a class="layui-btn" style="margin-right: 10%;" href="javascript:void(0);" onclick="black()">返回上一页</a>
+    <div></div>
+</div>
+
+<table class="layui-table">
+    <thead>
+    <tr class="ths">
+        <th>序号</th>
+        <th>支付企业名称</th>
+        <th>支付类型英文名</th>
+        <th>支付企业备案号</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {volist name="list" id="vo" key="k" }
+    <tr class="boys">
+        <td>{$k}</td>
+        <td>{$vo.PayEntName}-{$vo.remark}</td>
+        <td>{$vo.PayType}</td>
+        <td>{$vo.PayEntNo}</td>
+        <td>
+            <button class="layui-btn layui-btn-normal layui-btn-sm" onclick="Edit({$vo.id})">编辑</button>
+            <button class="layui-btn layui-btn-sm layui-btn-danger" onclick="Del({$vo.id})">删除</button>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    layui.use(['layer','jquery'],function(){
+        layer = layui.layer;
+        $ = layui.jquery;
+    });
+
+    // 添加
+    function add()
+    {
+        layer.open({
+            type: 2,
+            title: '添加支付通道',
+            shadeClose: true,
+            shade: 0.3,
+            area: ['600px', '360px'],
+            content: "{:Url('admin/paychannels/payedit')}", //iframe的url
+            yes:function(){
+                //setTimeout(function(){window.location.reload();},800);
+            },
+            end:function() {
+                setTimeout(function () {
+                    //window.location.reload();
+                }, 800);
+            }
+        });
+    }
+
+    // 编辑
+    function Edit(id)
+    {
+        layer.open({
+            type: 2,
+            title: '编辑支付通道',
+            shadeClose: true,
+            shade: 0.3,
+            area: ['600px', '360px'],
+            content: "{:Url('admin/paychannels/payedit')}&id="+id, //iframe的url
+            yes:function(){
+                //setTimeout(function(){window.location.reload();},800);
+            },
+            end:function() {
+                setTimeout(function () {
+                    //window.location.reload();
+                }, 800);
+            }
+        });
+    }
+
+
+    // 删除操作
+    function Del(ids) {
+        layer.confirm('确定要删除吗?',{
+            icon:3,
+            btn:['确定','取消']
+        },function(){
+            $.ajax({
+                url:"{:url('admin/paychannels/paydel')}",
+                type:'post',
+                dataType:'json',
+                data:{'id':ids},
+                success:function(res) {
+                    // var res = JSON.parse(data);
+                    if(res.code <= 0) {
+                        layer.msg(res.msg,{icon:2});
+                    }
+                    layer.msg(res.msg,{icon:1});
+                    setTimeout(function(){window.location.reload();},1000);
+                }
+            })
+        })
+    }
+
+    // 返回上一页
+    function black() {
+        window.history.go(-1);
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{include file="public/header_new"}
+
+<div class="" style="padding:20px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-evenly;">
+    <button style="margin-right: 0px;" type="button" class="btn btn-warning btn-md" onclick="generate_pdf(1)">发件人联PDF</button>
+    <button style="margin-right: 0px;" type="button" class="btn btn-primary btn-md" onclick="share_2_merchant()">集运商联HTML</button>
+</div>
+
+<div class="merchant_div" style="padding:20px;box-sizing:border-box;display:none;">
+    <div class="get_qrcode" style="text-align:center;">
+        
+    </div>
+    <div class="text" style="text-align:center;font-size:15px;">
+        请用手机微信扫码，打开后右上角分享至集运商。
+    </div>
+</div>
+<script type="text/javascript" charset="utf-8">
+    $(function(){
+        
+    });
+
+    function generate_pdf(typ){
+        window.location.href="{:url('centralize/index/export_waybill_pdf')}&id={$id}&type="+typ;
+    }
+
+    function share_2_merchant(){
+        $.ajax({
+            url: "{:Url('centralize/index/get_qrcode')}",
+            method: 'post',
+            data: {id:"{$id}"},
+            dataType: 'JSON',
+            success: function (res) {
+                $('.get_qrcode').html('<img src="'+res.img+'" style="width:200px;height:200px;">');
+                layer.open({
+                    type: 1,
+                    title: '分享运单 \\ 集运商联',
+                    area:['100%','100%'],
+                    content: $('.merchant_div')
+                });
+            }
+        });
+    }
+</script>

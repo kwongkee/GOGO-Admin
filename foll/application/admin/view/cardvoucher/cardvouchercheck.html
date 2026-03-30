@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="common/meta"}
+</head>
+<link rel="stylesheet" href="./static/hadmin/css/cardvoucher.css">
+<body class="gray-bg">
+<div class="col-sm-12">
+    <div class="ibox float-e-margins">
+        <div class="ibox-content" style="display:block;" id="list1">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>发行商户</th>
+                    <th>卡券名称</th>
+                    <th>卡卷金额</th>
+                    <th>发行数量</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                	{volist name="list.data" id="vo" empty="没有数据"}
+	                    <tr>
+	                        <td>{$vo.busin_name}</td>
+                            <td>{$vo.coupon_name}</td>
+                            <td>{$vo.coupon_money}</td>
+                            <td>{$vo.total}</td>
+                            <td>
+                                <a class="btn btn-info btn-rounded" href="javascript:;" onclick="shoufei('{$vo.id}')">通过</a>
+                                <a class="btn btn-danger btn-rounded" href="{:Url('admincardvoucher/passorreject')}&id={$vo.id}&check_status=2">拒绝</a>
+                            </td>
+
+	                    </tr>
+	                {/volist}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+	<!--<div class="card-pay">
+		
+	</div>-->
+	
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/js/bootstrap.min.js?v=3.3.6"></script>
+<!-- 自定义js -->
+<script src="./static/hadmin/js/content.js?v=1.0.0"></script>
+<!-- Bootstrap table -->
+<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="./static/hadmin/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="./static/hadmin/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="./static/hadmin/layui/layui.all.js"></script>
+<script>
+    var id =null;
+    var url = "{:Url('admincardvoucher/passorreject')}"
+    function shoufei(id){
+        id = id;
+        parent.layer.open({
+            type: 1,
+            title:'发行费用设定',
+            skin: 'layui-layer-lan',
+            area: ['600px', '320px'], //宽高
+            content: '<div class="col-sm-12">\n' +
+            '                                <form role="form" action="'+url+'" method="post">\n' +
+            '                                    <div class="form-group">\n' +
+            '                                        <label class="col-sm-2 control-label">条件金额</label>\n' +
+            '                                         <div class="col-sm-10">\n' +
+            '                                        <input type="text" placeholder="请输入您下面所选对应的金额" name="money" id="money" class="form-control">\n' +
+            '                                        </div>\n' +
+            '                                    </div><input type="hidden" name="id" value="'+id+'">\n' +
+            '                                  <div class="form-group">\n' +
+            '                                    <label class="col-sm-2 control-label">费用标准</label>\n' +
+            '                                     <div class="col-sm-10">\n' +
+            '                                    <select class="form-control m-b" name="type" id="type">\n' +
+            '                                        <option>请选择</option>\n' +
+            '                                        <option value="1">按发行金额X%</option>\n' +
+            '                                        <option value="2">按发行数量Y/元张</option>\n' +
+            '                                        <option value="3">收取一次性费用Z元</option>\n' +
+            '                                    </select>\n' +
+            '                                </div>\n' +
+            '                                </div>\n' +
+            '                                    <div>\n' +
+            '                                        <button class="btn btn-sm btn-primary pull-right m-t-n-xs"  id="sub"  style="width:100%"><strong>提 交</strong>\n' +
+            '                                        </button>\n' +
+            '                                    </div>\n' +
+            '                                </form>\n' +
+            '                            </div>',
+
+        });
+        return false;
+    }
+</script>
+<!-- Peity -->
+</body>
+</html>

@@ -1,0 +1,85 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="./static/css/aui.2.0.css" />
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body>
+<header class="aui-bar aui-bar-nav">车位详情</header>
+<div class="aui-content aui-margin-b-15">
+    <ul class="aui-list aui-list-in">
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-title" style="font-size:13px;">运营企业：</div>
+                <div class="aui-list-item-right">佛山市成柏电子科技有限公司</div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-title" style="font-size:13px;">车位地址：</div>
+                <div class="aui-list-item-right">{$data[0]['City'].$data[0]['Area'].$data[0]['Town'].$data[0]['Committee']}</div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-title" style="font-size:13px;">车位道路：</div>
+                <div class="aui-list-item-right">{$data[0]['Road']}</div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-title" style="font-size:13px;">车位编号：</div>
+                <div class="aui-list-item-right">{$data[0]['nums']}</div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-title" style="font-size:13px;">所属管理员</div>
+                <div class="aui-list-item-right"><a href="tel:{$data[0]['phone']}">{$data[0]['user']}</a></div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-title" style="font-size:13px;">停入时间：</div>
+                <div class="aui-list-item-right">{$data[0]['starttime']|date="y-m-d H:i:s",###}</div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-title" style="font-size:13px;">离场时间：</div>
+                {if empty($data[0]['endtime'])}
+                <div class="aui-list-item-right"></div>
+                {else}
+                <div class="aui-list-item-right">{$data[0]['endtime']|date="y-m-d H:i:s",###}</div>
+                {/if}
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-title" style="font-size:13px;">已停时长：</div>
+                <div class="aui-list-item-right"><?php echo floor((time()-$data[0]['starttime'])/60) ?>分钟</div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-title" style="font-size:13px;">是否计费：</div>
+                <div class="aui-list-item-right">{if $data[0]['status']=='已停车'}正免费{else}{$data[0]['status']}{/if}</div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-title" style="font-size:13px;">付费类型：</div>
+                {if $data[0]['charge_type']==0}
+                <div class="aui-list-item-right">预付费</div>
+                {else}
+                <div class="aui-list-item-right">后付费</div>
+                {/if}
+            </div>
+        </li>
+    </ul>
+</div>
+</body>
+</html>

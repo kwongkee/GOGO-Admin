@@ -1,0 +1,72 @@
+<!--<script src="http://qzonestyle.gtimg.cn/open/qcloud/video/live/h5/live_connect.js"
+charset="utf-8" ></script>-->
+<script src="{$_W['siteroot']}addons/sunshine_huayue/common/js/lvb_connect.js"></script>
+<div style="position:fixed;top:0px;z-index:1;width:100%" id="player_box">
+	<div id="player_container" >
+	</div>
+	<div style="height:45px;background-color:white;line-height:45px;" class="ui-border-tb" id="player_menu">
+		<button style="height:30px;padding:0px 10px;border-radius:5px;margin-left:5px;background-color:#3cc51f;color:white">{$lvb_status}</button>
+		<button style="height:30px;padding:0px 10px;border-radius:5px;margin-left:5px;background-color:orange;color:white" id="chatroom_online_num">当前{$online_num}人在线</button>
+		<!-- <button style="height:30px;padding:0px 10px;border-radius:5px;border:1px solid orange;margin-left:5px;background-color:orange;color:white;" onclick="RedPack.showlayer('{php echo $info['creator']}','主播')">赏红包</button>
+		<button style="height:30px;padding:0px 10px;border-radius:5px;border:1px solid orange;margin-left:5px;background-color:orange;color:white;" onclick="window.location.href='{php echo $this->createMobileUrl('chat',array('chat_openid'=>$info['creator']))}'">私聊</button>
+		<button style="height:30px;padding:0px 10px;border-radius:5px;border:1px solid orange;margin-left:5px;background-color:orange;color:white;" id='chat_gift_btn' onclick="$('#chat_gift_layer').toggle()">送礼物</button> -->
+		<button style="height:30px;padding:0px 10px;border-radius:5px;border:1px solid grey;margin-left:5px;" onclick="lvb_hd(this)">隐藏</button>
+	</div>
+</div>
+<script>
+var player = new qcVideo.Player(
+//页面放置播放位置的元素 ID
+"player_container", {
+	//直播视频 ID (必选参数)
+	"channel_id": "{php echo $info['lvb_channel_id']}",
+	//应用 ID (必选参数)，同一个账户下的视频，该参数是相同的
+	"app_id": "{php echo $this->settings['lvb_appid']}",
+	//播放器宽度，单位像素(必选参数)
+	"width": screen.width,
+	//播放器高度，单位像素(必选参数)
+	"height": screen.width*9/16,
+	// //直播画面开始播放前，最大缓存时间 ; 这个属性可有效下行带宽不足导致避免 rtmp 直播
+	// //卡顿的情况(可选参数)
+	"cache_time": 0.3,
+	//h5播放，开始播放前贴片(可选参数)
+	"h5_start_patch": {
+		url: '{$info['room_logo']}',
+		//图片地址
+		stretch: true //是否拉伸图片铺面整个播放器，默认不是
+	},
+	// //直播提示语自定义（目前仅支持 h5播放，后面将会支持 flash 播放提示配置）(可选参数)
+	"wording": {
+		'10000': '请求超时,请检查网络设置',
+		'11046': '密码错误，请重新输入',
+		'20110': '密码错误，请重新输入',
+		'20113': '直播源不存在(20113)',
+		'1009': '直播源已失效(1009)',
+		'3': '直播源已结束',
+		'1001': '无效参数',
+		TIP_REQUIRE_SAFARI: '当前浏览器不能支持视频播放,请使用 safari 打开观看',
+		TIP_REQUIRE_FLASH: '当前浏览器不能支持视频播放，可下载最新的 QQ 浏览器或者安装 FLASH 即可播放'
+	}
+});
+
+var lvb_resize = function() {
+	// $("#player_container").css({width:'100px',height:'80px'});
+	resize(100,50);
+}
+
+var lvb_hd = function(obj) {
+	var self = $(obj);
+	var menu = $("#player_menu");
+	var container = $("#player_container");
+
+	
+	if(container.css('display') != 'none') {
+		//menu.css({'position':'fixed','top':'0px'});
+		container.hide();
+		self.html('显示');
+	}else {
+		//menu.css({'position':'relative'});
+		container.show();
+		self.html('隐藏');
+	}
+}
+</script>

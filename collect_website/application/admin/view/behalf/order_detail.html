@@ -1,0 +1,171 @@
+{include file="common/header_inner_new"}
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    /**收货信息**/
+    .detail_user{padding:10px 15px;box-sizing: border-box;border-bottom: 1px solid #e8e8e8;}
+    .detail_user .info .fa-map-marker{font-size:25px;}
+    .detail_user .info .inner{margin-left:15px;}
+    .detail_user .info .inner #address_address{color:#666;font-size:14px;}
+
+    .buyer_info{border-bottom: 1px solid #e8e8e8;}
+    .buyer_info .layui-form-item{margin-bottom:0px;}
+    .buyer_info .layui-form-label{padding-left:0px;padding-top:5px;padding-bottom:5px;}
+    .buyer_info .pure_text{margin-left:90px;line-height: 30px;}
+
+    .goods_info{display: flex;align-items: center;border-bottom: 1px solid #e8e8e8;padding:10px 15px;box-sizing: border-box;}
+    .goods_info .img{width:10%;}
+    .goods_info .img img{width:90%;height:100%;}
+    .goods_info .info{width:75%;}
+    .goods_info .info .name{overflow:hidden;text-overflow: ellipsis;white-space: nowrap;}
+    .goods_info .info .option{font-size:13px;color:#666;}
+    .goods_info .price{width:20%;text-align: right;}
+    .goods_info .num {border: 1px solid #dedede;width: 140px;height: 34px;float: right;margin-right: 0px;}
+    .goods_info .num div {width: 35px;height: 34px;border: none;color: #333;float: left;background: #eee;-webkit-appearance: none;text-align: center;line-height: 35px;}
+    .goods_info .num input{width: 59px;border-left: 1px solid #dedede;border-right: 1px solid #dedede;text-align: center;border: none;height: 28px;line-height: 28px;float: left;-webkit-appearance: none;}
+    .goods_info .num div#btn_plus {float: right;}
+
+    .detail_price{border-bottom: 1px solid #e8e8e8;padding:10px 15px;box-sizing: border-box;font-size:13px;}
+    .detail_price .price .line{font-size:13px;}
+    .detail_price .price .line span{float: right;font-size:13px;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$order['id']}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="detail_user">
+                            <!--                    <input type="hidden" id="addressid" value="146802">-->
+                            <div class="info disf">
+                                <div class="ico"><i class="fa fa-map-marker"></i></div>
+                                <div class="info1">
+                                    <div class="inner">
+                                        <div class="user">收件人：<span id="address_realname">{$address['realname']}</span>(<span id="address_mobile">{$address['mobile']}</span>)</div>
+                                        <div class="address"><span id="address_address">{$address['address']}</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="buyer_info">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">买家姓名:</label>
+                                <div class="layui-input-block layui-select-fscon pure_text">
+                                    {$info['realname']}
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">身份证号:</label>
+                                <div class="layui-input-block layui-select-fscon pure_text">
+                                    {$info['id_card']}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="goods_info">
+                            <div class="img"><img src="{$goods['main_img']}"></div>
+                            <div class="info">
+                                <div class="inner">
+                                    <div class="name">{$goods['name']}</div>
+                                    <div class="option">规格：{$goods['option']}</div>
+                                </div>
+                            </div>
+
+                            <div class="price">
+                                <div class="pnum"><span class="marketprice">￥{$goods['price']}</span></div>
+                                <div class="pnum"><span class="total">×{$order['buy_num']}</span></div>
+                            </div>
+                        </div>
+
+                        <div class="detail_price">
+                            <div class="price">
+                                <div class="line">订单编号:<span><span class="ordersn">{$order['ordersn']}</span></span></div>
+                                <div class="line">支付编号:<span><span class="paysn">{$order['paysn']}</span></span></div>
+                                {if !empty($order['expresssn'])}
+                                <div class="line">运单编号:<span><span class="expresssn">{$order['expresssn']}</span></span></div>
+                                {/if}
+                                <div class="line">商品小计:<span style="color:#ff6600">￥<span class="goodsprice" style="color:#ff6600">{$order['totalprice']}</span></span></div>
+                                <div class="line">订单状态:<span><span class="status">
+                                    {if $order['status']==1}
+                                        已确认
+                                    {else}
+                                        未确认
+                                    {/if}
+                                </span></span></div>
+                                <div class="line">下单时间:<span><span class="createtime"><?php echo date('Y-m-d H:i:s',$order['createtime']);?></span></span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+
+        form.on('submit(component-form-element)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            if( $('#img_file-upload-list').children().length == 0 )
+            {
+                layer.msg('请上传企业标识！');
+                return false;
+            }
+
+            if( $('#img_file2-upload-list').children().length == 0 )
+            {
+                layer.msg('请上传运单格式！');
+                return false;
+            }
+
+
+            $.ajax({
+                url:"{:Url('admin/behalf/add_logistics')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+</script>
+</body>
+</html>

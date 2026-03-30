@@ -1,0 +1,323 @@
+{include file="common/header_inner_new"}
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .other_link,.other_navbar,.other_pic,.other_msg{display:none;}
+
+    .chargeBox{width:100%;padding: 10px 0;border-bottom: 1px solid #000;}
+    .charge_select{width:120px;}
+    .charge_input{width:120px;}
+    .charge_num_div2{display: none;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <input type="text" style="display:none;" name="type" id="type" value="{$type}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">支付方式(系统判断用)</div>
+                            <div class="layui-input-block">
+                                <select name="pay_id">
+                                    <option value="">请选择</option>
+                                    {volist name="pay_method" id="vo"}
+                                    <option value="{$vo['id']}" {if $vo['id']==$data['pay_id']}selected{/if}>{$vo['name']}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">通道币种</div>
+                            <div class="layui-input-block">
+                                <select name="currency" lay-search lay-verify="required">
+                                    <option value="">请选择</option>
+                                    {volist name="currency" id="vo"}
+                                    <option value="{$vo['id']}" {if $vo['id']==$data['currency']}selected{/if}>{$vo['currency_symbol_standard']}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">汇率说明</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" lay-verify="" name="rate_remark" value="{$data['rate_remark']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">通道名称</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" lay-verify="required" name="name" value="{$data['name']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">通道图标(400*200)</div>
+                            <div class="layui-input-block">
+                                <div class="layui-upload" style="margin-top: 10px;">
+                                    <button type="button" class="layui-btn" id="img_file-upload">上传图片(一张)</button>
+                                    <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                                        预览图：
+                                        <div class="layui-upload-list" id="img_file-upload-list">
+                                            {if !empty($data['icon'])}
+                                            <div style="display: inline-block;">
+                                                <img onclick="seePic(this);" src="/{$data['icon']}" class="layui-upload-img" style="width:80px;height:80px;">
+                                                <button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button>
+                                                <input type="hidden" name="icon[]" value="{$data['icon']}">
+                                            </div>
+                                            {/if}
+                                        </div>
+                                    </blockquote>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">通道描述</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" lay-verify="" name="remark" value="{$data['remark']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">通道手续费</div>
+                            <div class="layui-input-block">
+                                <div class="chargeDiv">
+                                    {volist name="data.service_charge" key="key" id="vo"}
+                                    <div class="chargeBox disf">
+                                        <div class="disf" style="min-width:750px;">
+                                            <div class="">
+                                                支付金额>=
+                                            </div>
+                                            &nbsp;
+                                            <input type="number" class="layui-input start_money charge_input" name="start_money[]" placeholder="起始金额" value="{$vo['start_money']}">
+                                            &nbsp;
+                                            <div class="">
+                                                至
+                                            </div>
+                                            &nbsp;
+                                            <div class="end_type charge_select">
+                                                <select name="end_type[]" class="end_type_sel" lay-filter="end_type">
+                                                    <option value="1" {if $vo['end_type']==1}selected{/if}>数值</option>
+                                                    <option value="2" {if $vo['end_type']==2}selected{/if}>以上</option>
+                                                </select>
+                                            </div>
+                                            <input type="number" class="layui-input end_money charge_input" name="end_money[]" placeholder="末止金额" value="{$vo['end_money']}" style="display:{if $vo['end_type']==1}block{else}none{/if};">
+                                            <div class="charge_type charge_select">
+                                                <select name="charge_type[]" lay-filter="charge_type">
+                                                    <option value="1" {if $vo['charge_type']==1}selected{/if}>按额</option>
+                                                    <option value="2" {if $vo['charge_type']==2}selected{/if}>按笔</option>
+                                                </select>
+                                            </div>
+                                            <input type="number" class="layui-input charge_num charge_input" name="charge_num[]" placeholder="费率" value="{$vo['charge_num']}">
+                                            &nbsp;
+                                            <div class="charge_num_div1" style="display:{if $vo['charge_type']==1}block{else}none{/if};">
+                                                %
+                                            </div>
+                                            <div class="charge_num_div2" style="display:{if $vo['charge_type']==2}block{else}none{/if};">
+                                                元&nbsp;/&nbsp;笔
+                                            </div>
+                                            &nbsp;
+                                        </div>
+                                        <div class="disf chargeOperaDiv">
+                                            <div class="layui-btn add layui-btn-success" onclick="add_charge(this)">+</div>
+                                            <div class="layui-btn del layui-btn-danger" style="display: {if $key==1}none{/if};" onclick="del_charge(this)">-</div>
+                                        </div>
+                                    </div>
+                                    {/volist}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload'],function(){
+        var laydate = layui.laydate,
+            layer = layui.layer,
+            form  = layui.form,
+            $ = layui.jquery,
+            upload = layui.upload;
+
+        form.on('select(end_type)',function(data){
+            let val = data.value;
+            if(val==1){
+                $(this).parents(":eq(3)").find('.end_money').show();
+            }
+            else if(val==2){
+                $(this).parents(":eq(3)").find('.end_money').hide();
+            }
+        });
+
+        form.on('select(charge_type)',function(data){
+            let val = data.value;
+            if(val==1){
+                $(this).parents(':eq(3)').find('.charge_num_div1').show();
+                $(this).parents(':eq(3)').find('.charge_num_div2').hide();
+            }
+            else if(val==2){
+                $(this).parents(':eq(3)').find('.charge_num_div1').hide();
+                $(this).parents(':eq(3)').find('.charge_num_div2').show();
+            }
+        });
+
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            if( $('#img_file-upload-list').children().length == 0 )
+            {
+                layer.msg('请上传支付图片！');
+                return false;
+            }
+
+            $.ajax({
+                url:"{:Url('admin/shopping/save_settlement')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+        // 轮播图文件
+        upload.render({
+            elem: '#img_file-upload'
+            ,url: '{:Url("admin/basic/upload_file")}'
+            ,accept: 'image'
+            ,data: { folder: 'centralize', type: 'website_pay'}
+            ,multiple: false
+            ,number:1
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+
+                    $('#img_file-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="icon[]" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+    });
+
+    function add_charge(t){
+        var layer = layui.layer,
+            form = layui.form,
+            $ = layui.jquery;
+
+        let end_type = $(t).parents(":eq(1)").find('.end_type .end_type_sel').val();
+        if(end_type==2){
+            layer.msg("当前行已设置“以上”字段，无需再增加");
+            return false;
+        }
+
+        let up_end_money = $(t).parents(":eq(1)").find('.end_money').val();
+        if(up_end_money=='' && up_end_money==0){
+            layer.msg("请输入费率计算金额");
+            return false;
+        }
+
+        let start_money = parseFloat(up_end_money) + 0.001;
+
+        let html = '<div class="chargeBox disf">\n' +
+            '                                    <div class="disf" style="min-width:750px;">\n'+
+            '                                        <div class="">\n' +
+            '                                            支付金额>=\n' +
+            '                                        </div>\n' +
+            '                                        &nbsp;\n' +
+            '                                        <input type="number" class="layui-input start_money charge_input" name="start_money[]" placeholder="起始金额" value="'+start_money+'" readonly>\n' +
+            '                                        &nbsp;\n' +
+            '                                        <div class="">\n' +
+            '                                            至\n' +
+            '                                        </div>\n' +
+            '                                        &nbsp;\n' +
+            '                                        <div class="end_type charge_select">\n' +
+            '                                            <select name="end_type[]" class="end_type_sel" lay-filter="end_type">\n' +
+            '                                                <option value="1">数值</option>\n' +
+            '                                                <option value="2">以上</option>\n' +
+            '                                            </select>\n' +
+            '                                        </div>\n' +
+            '                                        <input type="number" class="layui-input end_money charge_input" name="end_money[]" placeholder="末止金额">\n' +
+            '                                        <div class="charge_type charge_select">\n' +
+            '                                            <select name="charge_type[]" lay-filter="charge_type">\n' +
+            '                                                <option value="1">按额</option>\n' +
+            '                                                <option value="2">按笔</option>\n' +
+            '                                            </select>\n' +
+            '                                        </div>\n' +
+            '                                        <input type="number" class="layui-input charge_num charge_input" name="charge_num[]" placeholder="费率">\n' +
+            '                                        &nbsp;\n' +
+            '                                        <div class="charge_num_div1">\n' +
+            '                                            %\n' +
+            '                                        </div>\n' +
+            '                                        <div class="charge_num_div2">\n' +
+            '                                            元&nbsp;/&nbsp;笔\n' +
+            '                                        </div>\n' +
+            '                                        &nbsp;\n' +
+            '                                  </div>\n'+
+            '                                  <div class="disf chargeOperaDiv">\n' +
+            '                                       <div class="layui-btn add layui-btn-success" onclick="add_charge(this)">+</div>\n' +
+            '                                       <div class="layui-btn del layui-btn-danger" onclick="del_charge(this)">-</div>\n' +
+            '                                  </div>\n' +
+            '                            </div>';
+
+        $('.chargeDiv').append(html);
+        form.render(null,'component-form-element');
+    }
+
+    function del_charge(t){
+        var layer = layui.layer,
+            form = layui.form,
+            $ = layui.jquery;
+
+        layer.confirm('确认要删除该行？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(t).parents(":eq(1)").remove();
+            form.render(null,'component-form-element');
+            layer.closeAll('');
+        }, function(){
+
+        });
+    }
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+</script>
+</body>
+</html>

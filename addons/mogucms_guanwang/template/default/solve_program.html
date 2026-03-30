@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>{if !empty($title['solve'])}{$title['solve']}{else}解决方案-{$setting['company']}{/if}</title>
+<meta name="keywords" content="{$setting['keywords']}" />
+<meta name="description" content="{$setting['description']}" />
+{if !empty($setting['icon'])}
+<link rel="shortcut icon" href="{$_W['attachurl']}{$setting['icon']}" />
+{/if}
+<meta name="format-detection" content="telephone=no"/>
+<meta content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<meta content="yes" name="apple-mobile-web-app-capable" />
+<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+<meta content="telephone=no" name="format-detection" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+<link href="../addons/mogucms_guanwang/template/style/css/common.css" type="text/css" rel="stylesheet">
+<link href="../addons/mogucms_guanwang/template/style/css/style.css" type="text/css" rel="stylesheet">
+<script src="../addons/mogucms_guanwang/template/style/js/jquery.js"></script>
+<script src="../addons/mogucms_guanwang/template/style/js/wow.min.js"></script>
+<script src="../addons/mogucms_guanwang/template/style/js/jquery.lazyload.js"></script>
+<script src="../addons/mogucms_guanwang/template/style/js/comloding.js"></script>
+<script src="../addons/mogucms_guanwang/template/style/js/common.js"></script>
+<!--[if lt IE 9]>
+<script src="../addons/mogucms_guanwang/template/style/js/html5.js"></script>
+<![endif]-->
+<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<script type="text/javascript">
+  wx.config({
+	  debug: false,
+      appId: "{$jssdk['appId']}",
+      timestamp: "{$jssdk['timestamp']}",
+      nonceStr: "{$jssdk['nonceStr']}",
+      signature: "{$jssdk['signature']}",
+      jsApiList: [
+		'checkJsApi',
+        'onMenuShareTimeline',
+        'onMenuShareAppMessage'
+      ]
+  });
+  wx.ready(function () {
+  
+    var shareData = {
+    title: "{if !empty($title['solve'])}{$title['solve']}{else}首页-{$setting['company']}{/if}",
+    desc: "{$setting['keywords']}",
+    link: "{$jssdk['url']}",
+    imgUrl: "{if $setting['logo2']}{$_W['attachurl']}{$setting['logo2']}{elseif $fdset['logo2']}{$_W['attachurl']}{$fdset['logo2']}{else}../addons/mogucms_guanwang/template/style/images/logo2.png{/if}",
+  };
+ 
+  wx.onMenuShareAppMessage({
+      title: shareData.title,
+      desc: shareData.desc,
+      link: shareData.link,
+      imgUrl:shareData.imgUrl,
+      success: function (res) {
+      }
+    });
+  wx.onMenuShareTimeline({
+      title: shareData.title+"---"+shareData.desc,
+      link: shareData.link,
+      imgUrl:shareData.imgUrl,
+      success: function (res) {
+      }
+    }); 
+  });
+</script>
+</head>
+{if !empty($setting['shangqiao']) && $setting['isshangqiao']=="1"}{php echo html_entity_decode($setting['shangqiao'])}{/if}
+<body>
+{template 'default/header'}
+<div class="container">
+    <div id="banner" class="banner" style="background:url({if !empty($banner['solve'])}{$_W['attachurl']}{$banner['solve']}{else}../addons/mogucms_guanwang/template/style/images/jjfa_banner.jpg{/if}) no-repeat center center; background-size:cover;">
+    	<div class="wrapper">
+        	<div class="jjfa_bantxt">
+            	<h2 class="wow fadeInUp">{if !empty($banner['solvetitle'])}{$banner['solvetitle']}{else}解决方案{/if}<span></span></h2>
+               <div class="wow fadeInUp animated delay-2s bannerp">
+			   {php echo $content}
+			   </div>
+            </div>
+        </div>
+    </div>
+    <div class="n_mnu">
+    	<div class="wrapper">
+        	<ul>
+            	<li {if $cid==0}class="on"{/if}><a href="{php echo $this->mogucms_url('solve')}">全部</a></li>
+				{loop $categorys $c}
+            	<li {if $cid==$c['id']}class="on"{/if}><a href="{php echo $this->mogucms_url('solve',array('cid'=>$c['id']))}">{$c['categoryname']}</a></li>
+            	{/loop}
+            </ul>
+        </div>
+    </div>
+    <div class="solve_content bgf4">
+        <div class="wrapper">
+            <div class="jjfa_list">
+                <ul>
+					{loop $lists $ls}
+                    <li class="wow fadeInUp">
+                        <a href="{php echo $this->mogucms_url('solvedetail',array('id'=>$ls['id']))}"><h1><img src="{$_W['attachurl']}{$ls['image']}" />{if !empty($ls['erweima'])}<span><img src="{$_W['attachurl']}{$ls['erweima']}"></span>{/if}</h1></a>
+                        <h2><a href="{php echo $this->mogucms_url('solvedetail',array('id'=>$ls['id']))}">{$ls['title']}</a></h2>
+                        <p>{$ls['categoryname']}服务类型</p>
+                        <!--<h3><span class="fl">{$ls['count']}</span><span class="fr">{$ls['num']}</span></h3>-->
+                    </li>
+                    {/loop}
+                </ul>
+            </div>
+   			<div class="page">
+			{if $pindex>1}
+				<a href="{php echo $this->mogucms_url('solve',array('page'=>($pindex-1)))}"><img src="../addons/mogucms_guanwang/template/style/images/page_lico.png"></a>
+				{/if}
+				{php for($i=1;$i<=$allpage;$i++){}
+				<a {if $pindex==$i}class="on"{/if} href="{php echo $this->mogucms_url('solve',array('page'=>$i))}">{$i}</a>
+				{php }}
+				
+				{if $pindex<$allpage}
+				<a href="{php echo $this->mogucms_url('solve',array('page'=>($pindex+1)))}"><img src="../addons/mogucms_guanwang/template/style/images/page_rico.png"></a>
+				{/if}
+			</div>
+        </div>
+    </div>
+</div>
+
+{template 'default/footer'}

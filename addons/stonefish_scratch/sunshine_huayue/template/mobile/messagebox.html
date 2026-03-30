@@ -1,0 +1,48 @@
+{template 'header'}
+<style type="text/css">
+	.ui-reddot {
+		padding:0px;
+	}
+</style>
+<div class="ui-container">
+	<ul class="ui-list ui-list-link ui-list-cover ui-border-tb" id='list_container'>
+<!-- 		<li class="ui-row-flex ui-whitespace ui-border-t " onclick="Surrounds.openNew('{php echo $this->createMobileUrl('messagelist')}')" style="line-height:20px;height:60px;background-color:rgb(230,230,230)">
+			<div class="ui-col  ui-flex ui-flex-ver ui-flex-pack-center ui-flex-align-center">
+				<span class='ui-icon-bugle' style='display:inline-block;font-size:14px;'></span>查看和我打招呼的人
+			</div>
+		</li> -->
+		{loop $chatlist $item}
+		<li class="ui-row-flex ui-whitespace ui-border-t " onclick="Surrounds.openNew('{php echo $this->createMobileUrl('chat',array('chat_openid'=>$item['to_openid']))}')" style="line-height:20px;">
+			<div class="ui-col ui-col ui-flex ui-flex-ver ui-flex-pack-center ui-flex-align-start">
+				<div class="ui-list-thumb {if $item['remindchat']['res'] == '100' }ui-reddot{/if}">
+				<span style="border-radius:3px;background-image:url({$item['headimgurl']})"></span>
+				</div>
+			</div>
+			<div class="ui-col ui-col-4 ui-flex ui-flex-ver ui-flex-pack-center ui-flex-align-start">
+				<div>
+					{$item['nickname']}
+				</div>
+				<div class="ui-label-list">
+					{if $item['sex'] == 1}
+					<label class="ui-label-me ui-label-s-3"><span class="fa fa-mars"></span></label>
+					{else}
+					<label class="ui-label-me ui-label-s-1"><span class="fa fa-venus"></span></label>
+					{/if}
+					{if $item['province'] || $item['city']}
+					{php $item['city'] = $item['province'] == $item['city'] ? '':$item['city']}
+					<label class="ui-label-me ui-label-s-2">{$item['province']}{$item['city']}</label>
+					{/if}
+				</div>
+				<div>
+					
+				</div>
+				<div style="color:grey;">
+				{$item['remindchat']['msg']}
+				</div>
+			</div>
+		</li>
+		{/loop}
+	</ul>
+	{template 'menu'}
+</div>
+{template 'footer'}

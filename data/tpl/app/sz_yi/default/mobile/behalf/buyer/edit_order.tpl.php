@@ -1,0 +1,221 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/warehouse_header', TEMPLATE_INCLUDEPATH)) : (include template('common/warehouse_header', TEMPLATE_INCLUDEPATH));?>
+<title>修改订单</title>
+<style>
+    .layui-table td, .layui-table th{ text-align: center;}
+    .layui-table th{ background-color: #ecf6fc; }
+    .required{color: red;font-size: 1.3rem;right: 3px;position: relative;top: 7px;}
+    .icon-right{font-size: 20px;line-height: 20px;padding-right: 10px;vertical-align: middle;}
+    .layui-layer-adminRight{top : 0px !important;}
+    .layui-layer-btn .layui-layer-btn0{border-color: #F7931E!important;background-color: #F7931E!important;}
+    .layui-table-cell{padding:0 2px;}
+    .laytable-cell-1-0-2{height:auto;min-height:auto;}
+    .page_head{width:100%;background:#fff;margin-bottom:5px;box-shadow:0 0 4px #ddd;padding:10px 0 10px;}
+    .page_head .left{width:20%;display:flex;align-items:center;font-size:15px;}
+    .page_head .left .back{width:13px;height:13px;border-top:2px solid #000;border-left:2px solid #000;transform:rotate(-50deg);margin-left:15px;margin-right:5px;}
+    .layui-layer-hui .layui-layer-content{color:#fff;}
+    .disf{display:flex;align-items: center;}
+    .user_tel,.user_email{display:none;}
+    .show{display:block;}
+    /**收货信息**/
+    .detail_user{padding:10px 15px;box-sizing: border-box;border-bottom: 1px solid #e8e8e8;}
+    .detail_user .info .fa-map-marker{font-size:25px;}
+    .detail_user .info .inner{margin-left:15px;}
+    .detail_user .info .inner #address_address{color:#666;font-size:14px;}
+
+    .buyer_info{border-bottom: 1px solid #e8e8e8;}
+    .buyer_info .layui-form-item{margin-bottom:0px;}
+    .buyer_info .layui-form-label{padding-left:0px;padding-top:5px;padding-bottom:5px;}
+    .buyer_info .pure_text{margin-left:90px;line-height: 30px;}
+
+    .goods_info{display: flex;align-items: center;border-bottom: 1px solid #e8e8e8;padding:10px 15px;box-sizing: border-box;}
+    .goods_info .img{width:15%;}
+    .goods_info .img img{width:45px;height:45px;}
+    .goods_info .info{width:65%;}
+    .goods_info .info .name{overflow:hidden;text-overflow: ellipsis;white-space: nowrap;}
+    .goods_info .info .option{font-size:13px;color:#666;}
+    .goods_info .price{width:20%;text-align: right;}
+    .goods_info .num {border: 1px solid #dedede;width: 140px;height: 34px;float: right;margin-right: 0px;}
+    .goods_info .num div {width: 35px;height: 34px;border: none;color: #333;float: left;background: #eee;-webkit-appearance: none;text-align: center;line-height: 35px;}
+    .goods_info .num input{width: 59px;border-left: 1px solid #dedede;border-right: 1px solid #dedede;text-align: center;border: none;height: 28px;line-height: 28px;float: left;-webkit-appearance: none;}
+    .goods_info .num div#btn_plus {float: right;}
+
+    .detail_price{border-bottom: 1px solid #e8e8e8;padding:10px 15px;box-sizing: border-box;font-size:13px;}
+    .detail_price .price .line{font-size:13px;}
+    .detail_price .price .line span{float: right;font-size:13px;}
+</style>
+<div class="page_head">
+    <div class="left" onclick="javascript:window.history.back(-1);">
+        <div class="back"></div>
+        <div style="font-size:15px;padding-top:2px;">返回</div>
+    </div>
+</div>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            修改订单
+        </div>
+        <div class="layui-card-body" style="padding: 0px;">
+            <form class="layui-form" action="" lay-filter="component-form-demo1">
+                <input type="number" name="id" value="<?php  echo $id;?>" style="display: none;">
+                <div class="detail_user">
+<!--                    <input type="hidden" id="addressid" value="146802">-->
+                    <div class="info disf">
+                        <div class="ico"><i class="fa fa-map-marker"></i></div>
+                        <div class="info1">
+                            <div class="inner">
+                                <div class="user">收件人：<span id="address_realname"><?php  echo $address['realname'];?></span>(<span id="address_mobile"><?php  echo $address['mobile'];?></span>)</div>
+                                <div class="address"><span id="address_address"><?php  echo $address['address'];?></span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="buyer_info">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">买家姓名:</label>
+                        <div class="layui-input-block layui-select-fscon pure_text">
+                            <?php  echo $info['realname'];?>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">身份证号:</label>
+                        <div class="layui-input-block layui-select-fscon pure_text">
+                            <?php  echo $info['id_card'];?>
+                        </div>
+                    </div>
+                </div>
+                <div class="goods_info">
+                    <div class="img"><img src="<?php  echo $goods['main_img'];?>"></div>
+                    <div class="info">
+                        <div class="inner">
+                            <div class="name"><?php  echo $goods['name'];?></div>
+                            <div class="option">规格：<?php  echo $goods['option'];?></div>
+                        </div>
+                    </div>
+
+                    <div class="price">
+                        <div class="pnum"><span class="marketprice">￥<?php  echo $goods['price'];?></span></div>
+                        <div class="pnum"><span class="total">
+                            <?php  if($order['status']==1) { ?>
+                            ×<?php  echo $order['buy_num'];?>
+                            <?php  } else { ?>
+                            <div class="num">
+                                <div id="btn_minus" onclick="javascript:reduceNum();"><i class="fa fa-minus"></i></div>
+                                <input type="number" name="totalnum" id="total" value="<?php  echo $order['buy_num'];?>" onchange="javascript:totalmoney();" min="1" onkeyup="value=(parseInt((value=value.replace(/\D/g,''))==''||parseInt((value=value.replace(/\D/g,''))==0)?'1':value,10))">
+                                <div id="btn_plus" onclick="javascript:addNum();"><i class="fa fa-plus"></i></div>
+                          </div>
+                            <?php  } ?>
+                        </span></div>
+                    </div>
+                </div>
+
+                <div class="detail_price">
+                    <div class="price">
+                        <div class="line">订单编号:<span><span class="ordersn"><?php  echo $order['ordersn'];?></span></span></div>
+                        <div class="line">支付编号:<span><span class="paysn"><?php  echo $order['paysn'];?></span></span></div>
+                        <?php  if(!empty($order['expresssn'])) { ?>
+                        <div class="line">运单编号:<span><span class="expresssn"><?php  echo $order['expresssn'];?></span></span></div>
+                        <?php  } ?>
+                        <div class="line">商品小计:<span style="color:#ff6600">￥<span class="goodsprice" style="color:#ff6600"><?php  echo $order['totalprice'];?></span></span></div>
+                        <div class="line">订单状态:<span><span class="status">
+                            <?php  if($order['status']==1) { ?>
+                                已确认
+                            <?php  } else { ?>
+                                未确认
+                            <?php  } ?>
+                        </span></span></div>
+                        <div class="line">下单时间:<span><span class="createtime"><?php  echo date('Y-m-d H:i:s',$order['createtime'])?></span></span></div>
+                    </div>
+                </div>
+<!--                <input type="text" name="upd_address" lay-verify="required" placeholder="请输入货品名称" autocomplete="off" class="layui-input" value="<?php  echo $address['address'];?>">-->
+                <?php  if($order['status']==0) { ?>
+                <div class="layui-form-item layui-layout-admin">
+                    <div class="layui-input-block">
+                        <div class="layui-footer" style="left: 0;text-align:center;">
+                            <button class="layui-btn" lay-submit="" lay-filter="component-form-demo">立即修改</button>
+                            <!--<button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+                        </div>
+                    </div>
+                </div>
+                <?php  } ?>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['layer', 'form', 'table', 'upload', 'laydate'], function () {
+        var $ = layui.$
+            , layer = layui.layer
+            , form = layui.form
+            , element = layui.element
+            , laydate = layui.laydate
+            , upload = layui.upload
+            , table = layui.table;
+
+        form.render(null, 'component-form-demo1');
+
+
+        /* 监听提交 */
+        form.on('submit(component-form-demo)', function(data){
+            $.ajax({
+                url:"./index.php?i=3&c=entry&do=behalf&p=buyer&m=sz_yi&op=edit_order",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.result.msg,{time:3000}, function () {
+                        if(res.status == 0)
+                        {
+                            window.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:3000});
+                }
+            });
+            return false;
+        });
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+
+        layer.confirm("确认删除？", {
+            btn: ["删除","取消"]
+        }, function(){
+            $(obj).parent().remove();
+            layer.close(layer.index);
+        }, function(){
+
+        });
+    }
+
+    //增加数量
+    function addNum() {
+        var total = $("#total");
+        var num = parseInt(total.val()) + 1;
+        total.val(num);
+        totalmoney();
+    }
+    //减少数量
+    function reduceNum() {
+        var total = $("#total");
+        var num = parseInt(total.val());
+        if (num - 1 <= 0) {
+            return;
+        }
+        num--;
+        total.val(num);
+        totalmoney();
+    }
+    //计算总价
+    function totalmoney(){
+        var total = $("#total");
+        var num = parseInt(total.val());
+        var g_price = Number(parseFloat("<?php  echo $goods['price'];?>"));
+        var totalprice = parseFloat(Number(num)*Number(g_price)).toFixed(2);
+        $('.goodsprice').text(totalprice);
+    }
+</script>

@@ -1,0 +1,57 @@
+{include file="public/header"}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeIn">
+    <button class="layui-btn" id="load"><i class="layui-icon"></i>通过接口更新数据</button>
+    <table class="layui-table">
+        <colgroup>
+            <col width="150">
+            <col  width="150">
+        </colgroup>
+        <thead>
+        <tr>
+            <th>国家简写</th>
+            <th>国家英文名称</th>
+            <th>国家中文名称</th>
+            <th>国家编码</th>
+        </tr>
+        </thead>
+        <tbody>
+        {volist name="list" id="vo"}
+            <tr>
+                <td>{$vo.ShortName}</td>
+                <td>{$vo.EnName}</td>
+                <td>{$vo.Cnname}</td>
+                <td>{$vo.Base_placeId}</td>
+            </tr>
+        {/volist}
+        </tbody>
+    </table>
+
+</div>
+<!-- 全局js -->
+<script src="./static/hadmin/js/jquery.min.js?v=2.1.4"></script>
+<script src="./static/hadmin/js/bootstrap.min.js?v=3.3.6"></script>
+<script src="./static/hadmin/layui/layui.all.js"></script>
+</body>
+<script>
+    layui.use(['upload','layer'], function () {
+        uploads = layui.upload;
+        layer = layui.layer;
+    });
+    $('#load').bind('click',function () {
+        $.ajax({
+            type: "POST",
+            url: '{:Url("centralize/index/set_country")}',
+            dataType: "json",
+            data: {'pa':1},
+            timeout: 2000,
+            success: function (res) {
+                window.location.reload();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+            }
+        });
+    });
+</script>
+</html>

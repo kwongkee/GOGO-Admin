@@ -1,0 +1,213 @@
+{include file="public/header_new"}
+<body class="gray-bg">
+<form class="form-horizontal" style="margin-left: 18%;margin-top: 12%;">
+    <div class="form-group" style="margin-bottom:20px;">
+        <label for="batch_name" class="col-sm-2 control-label">提单批次编号</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="batch_name" id="batch_name" placeholder="申报清单提单的批次编号">
+        </div>
+        <div class="col-sm-3">
+            <button type="button" class="btn btn-primary btn-lg btn-block" onclick="connect();return false;" style="width: 50%;margin-left: 16%;">关联</button>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="ebc_body_id" class="col-sm-2 control-label">电商企业</label>
+        <div class="col-sm-6">
+            <select name="ebc_body_id" id="ebc_body_id">
+                <option value="">请选择电商企业</option>
+                {foreach $ebc as $k=>$v}
+                <option value="{$v['id']}">{$v['id']}-{$v['ebc_name']}</option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="preNo" class="col-sm-2 control-label">预录入编号</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="preNo" id="preNo" placeholder="预录入编号">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="invtNo" class="col-sm-2 control-label">清单编号</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="invtNo" id="invtNo" placeholder="清单编号">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="entIntNum" class="col-sm-2 control-label">企业内部编号</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="entIntNum" id="entIntNum" placeholder="企业内部编号">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="ordNo" class="col-sm-2 control-label">订单编号</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="ordNo" id="ordNo" placeholder="订单编号">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="logisticsNo" class="col-sm-2 control-label">运单编号</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="logisticsNo" id="logisticsNo" placeholder="运单编号">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="ebp_name" class="col-sm-2 control-label">电商平台名称</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="ebp_name" id="ebp_name" placeholder="电商平台名称">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="saleEnt" class="col-sm-2 control-label">生产销售企业名称</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="saleEnt" id="saleEnt" placeholder="生产销售企业名称">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="ebc_name" class="col-sm-2 control-label">申报企业名称</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="ebc_name" id="ebc_name" placeholder="申报企业名称">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="transMode" class="col-sm-2 control-label">运输方式</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="transMode" id="transMode" placeholder="运输方式">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="voyago" class="col-sm-2 control-label">航班航次号</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="voyago" id="voyago" placeholder="航班航次号">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="deliveryNum" class="col-sm-2 control-label">提运单号</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="deliveryNum" id="deliveryNum" placeholder="提运单号">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="epcNo" class="col-sm-2 control-label">总包号</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="epcNo" id="epcNo" placeholder="总包号">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="tradeModeName" class="col-sm-2 control-label">贸易方式</label>
+        <div class="col-sm-6">
+            <select name="tradeModeName" id="tradeModeName">
+                <option value="">请选择贸易方式</option>
+                <option value="全部">0-全部</option>
+                <option value="特殊区域出口">1210-特殊区域出口</option>
+                <option value="保税电商A">1239-保税电商A</option>
+                <option value="一般出口">9610-一般出口</option>
+                <option value="跨境电商B2B直接出口">9710-跨境电商B2B直接出口</option>
+                <option value="跨境电商出口海外仓">9810-跨境电商出口海外仓</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="declType" class="col-sm-2 control-label">申报类型</label>
+        <div class="col-sm-6">
+            <select name="declType" id="declType">
+                <option value="">请选择申报类型</option>
+                <option value="全部">0-全部</option>
+                <option value="简化申报">A-简化申报</option>
+                <option value="汇总申报">B-汇总申报</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="appStatusName" class="col-sm-2 control-label">业务状态</label>
+        <div class="col-sm-6">
+            <select name="appStatusName" id="appStatusName">
+                <option value="">请选择申报类型</option>
+                <option value="全部">0-全部</option>
+                <option value="暂存">1-暂存</option>
+                <option value="海关退单">100-海关退单</option>
+                <option value="申报">2-申报</option>
+                <option value="发送海关失败">4-发送海关失败</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="beginDate" class="col-sm-2 control-label">入库时间</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="beginDate" id="beginDate" placeholder="入库时间" value="{$date}">
+        </div>
+    </div>
+
+    <button type="button" class="btn btn-primary btn-lg btn-block" onclick="req();return false;" style="width: 50%;margin-left: 16%;">新增</button>
+</form>
+</body>
+
+<script type="text/javascript">
+    function req() {
+        let data={};
+        let value = $('form').serializeArray();
+        $.each(value,function (index,item) {
+            if(item.name!='batch_name') {
+                data[item.name] = item.value;
+            }
+        });
+        var i=layer.load(1); //风格1的加载
+        $.ajax({
+            url:"{:url('admin/reduction/generate_declareorderlist')}",
+            type:"POST",
+            dataType:"json",
+            data:data,
+            success:function (res) {
+                layer.close(i);
+                if(res.code<0){
+                    layer.msg(res.msg, {icon:5, time:2000});
+                }else{
+                    layer.msg(res.msg, {icon:6, time:2000});
+                    window.close();
+                    parent.location.reload();
+                }
+            }
+        });
+        return false;
+    }
+
+    function connect(){
+        let batch_num = $('#batch_name').val();
+        if(batch_num==''){
+            layer.msg('请填写批次编号进行关联', {icon:5, time:2000});
+            return false;
+        }
+
+        $.ajax({
+            url:"{:url('admin/reduction/connect_declareorder')}",
+            type:"POST",
+            dataType:"json",
+            data:{'batch_num':batch_num},
+            success:function (res) {
+                if(res.code<0){
+                    layer.msg(res.msg, {icon:5, time:2000});
+                }else{
+                    //关联信息
+                    $('#ordNo').val(res.list.ordersn);
+                    $('#logisticsNo').val(res.list.logistics_no);
+                    $('#ebp_name').val(res.list.ebp_name);
+                    $('#saleEnt').val(res.list.owner_name);
+                    $('#ebc_name').val(res.list.ebc_name);
+                    $('#transMode').val(res.list.traf_mode);
+                    $('#voyago').val(res.list.voyage_no);
+                    $('#deliveryNum').val(res.list.tracking_num);
+                    $('#epcNo').val(res.list.epcNo);
+                    $('#invtNo').val(res.list.cop_no);
+                    $('#entIntNum').val(res.list.vpn_account);
+
+                    layer.msg(res.msg, {icon:6, time:2000});
+                }
+            },error:function(res){
+                console.log(res);
+            }
+        });
+        return false;
+    }
+</script>
+</html>

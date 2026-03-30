@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+    <head lang="en">
+        <meta charset="UTF-8">
+        <title>活动详情</title>
+        <script src="{$modulePublic}shop/js/SetSize.js"></script>
+        <meta name="screen-orientation" content="portrait/landscape">
+        <meta content="yes" name="apple-mobile-web-app-capable">
+        <meta content="yes" name="apple-touch-fullscreen">
+        <meta content="black" name="apple-mobile-web-app-status-bar-style">
+        <meta content="telephone=no" name="format-detection">
+        <link href="{$modulePublic}shop/css/content.css" rel="stylesheet" type="text/css">
+        <link href="{$modulePublic}shop/css/storeUpActivity.css" rel="stylesheet" type="text/css">
+        <script src="{$modulePublic}shop/js/baidu.js"></script>
+    </head>
+    <body>
+        <script>
+            document.body.style.fontSize = SetSize.getScreenRatio() * 10 + 'px';
+        </script>
+        <script src="{$modulePublic}shop/js/svgPackage.js"></script>
+        <section id="main"><div class="bannerPanel_03">
+                <div class="ADMoodBtn">
+                    <a href="javascript:window.history.back(-1)" class="ADMoodBtn_a"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_goBack_2"></use></svg></a>
+                    <!--<a href="javascript:void()" id="a_share" class="ADMoodBtn_a"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_share_1"></use></svg></a>-->
+                </div>
+                <div class="imgField">
+                    <span><img src="{php echo $attach_url . '/'.$shop_activity_info['img']}"></span>
+                </div>
+                <div class="textField">
+                    <h2>{$shop_activity_info['title']}</h2>
+                    <p><i><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_confirm_1"></use></svg></i>已报名{$shop_activity_info['sign_num']}</p>
+                </div>
+            </div>
+            <div class="receivePanel_01">
+                <div class="titleField">
+                    <h3>{$shop_activity_info['sub_title']}</h3>
+                </div>
+                <div class="priceField">
+                    <div class="time">
+                        <p>{$shop_activity_info['expiry_date_start']} ~ {$shop_activity_info['expiry_date_end']} </p>
+                    </div>
+                </div>
+
+                <div class="btnField collection allLineWiderBtn">
+                    {if $shop_activity_info['sign_num']<$shop_activity_info['can_sign_num'] && !$sign_info}
+                    <a class="btn" href="{php echo $this->createMobileUrl('activity_sign',array('id'=>$shop_activity_info['id']))}">
+                        报名
+                    </a>
+                    {else if $sign_info}
+                    <a class="btn" href="javascript::">
+                        已报名
+                    </a>
+                    {else}
+                    <a class="btn" href="javascript::">
+                        报名已满
+                    </a>
+                    {/if}
+                </div>
+            </div>
+            <div class="acdiv_hasbtnlist">
+                <ul>
+                    <li>
+                        <p>{$shop_activity_info['sub_title']}</p>
+                        <em>{$shop_activity_info['expiry_date_start']} ~ {$shop_activity_info['expiry_date_end']}</em>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="rulePanel_01">
+                <div class="titleField">
+                    <h3>活动详情</h3>
+                </div>
+                <div class="infoField">
+                    {php echo htmlspecialchars_decode(preg_replace('/font-size\s*\:\s*\d*px\s*\;*/is', '', $shop_activity_info['desc']))}
+                </div>
+
+                <!--                <div class="titleField">
+                                    <h3 id="div_name">适用商场</h3>
+                                </div>
+                
+                                <div class="detailField">
+                                     <a href="{php echo $this->createMobileUrl('shop_detail',array('id'=>$shop_info['id']))}">
+                                        <h3>{$shop_info['name']}</h3>
+                                        <p><span class="dianpingRank rank5"><svg><use xlink:href="#dianpingRankBg_1" /></svg></span></p>
+                                    </a>
+                                    <a href="tel:{$shop_info['tel']}" class="btn"><i class="icon1"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon_telephone_1"></use></svg></i></a>
+                                </div>-->
+
+            </div>
+        </section>
+            <nav id="nav"  class="mainNav">
+            <div class="linkField" >
+         <ul>
+                    <li>
+                        <a href="{php echo $this->createMobileUrl('index2')}">
+                            <i><svg><use xlink:href = "#icon_index_1"/></svg></i>
+                            <span>逛商场</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="{php echo $this->createMobileUrl('shop_activity_list')}" class="current">
+                            <i><svg><use xlink:href = "#icon_star_1"/></svg></i>
+                            <span>活动</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{php echo $this->createMobileUrl('award_list')}">
+                            <i><svg><use xlink:href = "#icon_gift_1"/></svg></i>
+                            <span>换礼品</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{php echo $this->createMobileUrl('index')}" >
+                            <i><svg><use xlink:href = "#icon_user_2"/></svg></i>
+                            <span>我</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <header id="header" style="display:none"></header>
+        <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script>
+    wx.config({
+        debug: false,
+        appId: "{$_W['account']['jssdkconfig']['appId']}",
+        timestamp: "{$_W['account']['jssdkconfig']['timestamp']}",
+        nonceStr: "{$_W['account']['jssdkconfig']['nonceStr']}",
+        signature: "{$_W['account']['jssdkconfig']['signature']}",
+        jsApiList: ["onMenuShareAppMessage", "onMenuShareTimeline", "onMenuShareQQ","chooseImage", "uploadImage", "downloadImage", "onMenuShareTimeline", "showAllNonBaseMenuItem"]
+    });
+    wx.ready(function () {
+        sharedata = {
+            title: "【{php echo $this->module['config']['name'];}】{$shop_activity_info['title']}",
+            desc: "{$shop_activity_info['sub_title']}",
+//            link: "{php echo $this->createMobileUrl('shop_activity_detail',array('id'=>$shop_activity_info['id']))}",
+            imgUrl: "{php echo $attach_url . '/'.$shop_activity_info['img']}",
+            success: function () {
+            },
+            cancel: function () {
+                //                        alert('分享取消');
+            }
+        };
+        //            wx.onMenuShareAppMessage(sharedata);
+        wx.onMenuShareTimeline(sharedata);
+        wx.onMenuShareAppMessage(sharedata);
+        //            wx.onMenuShareQQ(sharedata);
+    });
+</script>
+<div style="display: none;">
+</div>
+    </body>
+</html>

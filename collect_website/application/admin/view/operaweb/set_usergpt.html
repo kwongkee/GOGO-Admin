@@ -1,0 +1,140 @@
+{include file="common/header_inner_new"}
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .other_link,.other_navbar{display:none;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="user_id" id="user_id" value="{$user['id']}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">时间间隔：</div>
+
+                            <div class="layui-form-label">时间限制</div>
+                            <div class="layui-input-inline">
+                                <input type="number" class="layui-input" lay-verify="required" name="times" value="{$data['times']}" oninput="if(value>3000)value=3000">
+                                <p style="color:#ff2222;">*注意：只能输入最大值3000</p>
+                            </div>
+
+                            <div class="layui-form-label">时间类型</div>
+                            <div class="layui-input-inline">
+                                <select name="times_type" id="times_type" lay-verify="required">
+                                    <!--<option value="1" {if $data['times_type']==1}selected{/if}>秒数</option>-->
+                                    <option value="2" {if $data['times_type']==2}selected{/if}>分钟</option>
+                                    <!--<option value="3" {if $data['times_type']==3}selected{/if}>小时</option>-->
+                                </select>
+                            </div>
+
+                            <div class="layui-form-label">访问次数</div>
+                            <div class="layui-input-inline">
+                                <input type="number" class="layui-input" lay-verify="required" name="times_limit" value="{$data['times_limit']}">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item" style="display: none;">
+                            <div class="layui-form-label">累计次数：</div>
+
+                            <div class="layui-form-label">时间限制</div>
+                            <div class="layui-input-inline">
+                                <input type="number" class="layui-input" lay-verify name="count_times" value="{$data['count_times']}">
+                            </div>
+
+                            <div class="layui-form-label">时间类型</div>
+                            <div class="layui-input-inline">
+                                <select name="count_type" id="count_type" lay-verify>
+                                    <option value="1" {if $data['count_type']==1}selected{/if}>分钟</option>
+                                    <option value="2" {if $data['count_type']==2}selected{/if}>小时</option>
+                                </select>
+                            </div>
+
+                            <div class="layui-form-label">访问次数≤</div>
+                            <div class="layui-input-inline">
+                                <input type="number" class="layui-input" lay-verify name="count_limit" value="{$data['count_limit']}">
+                            </div>
+                        </div>
+
+                        <table class="layui-hide" id="mainTable"></table>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload','table'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        var table  = layui.table;
+        $ = layui.jquery;
+        var upload = layui.upload;
+
+        table.render({
+            elem: '#mainTable'
+            ,url: "{:Url('admin/operaweb/set_usergpt')}&pa=1&user_id={$user['id']}"
+            ,cellMinWidth: 200
+            ,cols: [[
+                {field:'id', title: '序号'}
+                ,{field:'ip', title: 'ip'}
+                ,{field:'device', title: '设备'}
+                ,{field:'count_times', title: '耗费时间(秒)'}
+                ,{field:'remain_times', title: '剩余次数'}
+                ,{field:'createtime', title: '登入日期'}
+            ]]
+            ,page: true
+        });
+
+        form.on('submit(component-form-element)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+
+            $.ajax({
+                url:"{:Url('admin/operaweb/set_usergpt')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            window.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+
+</script>
+</body>
+</html>

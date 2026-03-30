@@ -1,0 +1,103 @@
+{include file="common/header_inner_new"}
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    #service_ids{width:200px;}
+    .addService,.delService{font-size:20px;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">训练日志</div>
+                            <div class="layui-input-block">
+                                <table class="layui-table">
+                                    <thead>
+                                    <th style="min-width:30%;max-width: 30%;width: 30%;">推理事项</th>
+                                    <th style="min-width:30%;max-width: 30%;width: 30%;">花费时间(秒)</th>
+                                    </thead>
+                                    <tbody>
+                                    {if !empty($data)}
+                                    {volist name="data" id="vo"}
+                                    <tr>
+                                        <td>{$vo['opera_name']}</td>
+                                        <td><?php echo sprintf('%.2f',$vo['use_time']);?></td>
+                                    </tr>
+                                    {/volist}
+                                    {/if}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;display:none;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element2">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload','colorpicker'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+        var colorpicker = layui.colorpicker;
+
+        form.render(null,'component-form-element');
+
+        form.on('select(check_status)',function(data){
+            let val = data.value;
+
+            if(val==1){
+                $(this).parents(":eq(3)").find('td').eq(2).find('textarea').hide();
+            }
+            else if(val==-1){
+                $(this).parents(":eq(3)").find('td').eq(2).find('textarea').show();
+            }
+            else{
+                $(this).parents(":eq(3)").find('td').eq(2).find('textarea').hide();
+            }
+        });
+
+        form.on('submit(component-form-element2)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+
+            $.ajax({
+                url:"{:Url('admin/model/save_qa_history')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>

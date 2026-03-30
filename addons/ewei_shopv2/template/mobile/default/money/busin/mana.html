@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<!-- 控制浏览器缓存 -->
+		<meta http-equiv="Cache-Control" content="no-store" />
+		<!-- 优先使用 IE 最新版本和 Chrome -->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<!-- 页面描述 -->
+		<meta name="description" content="不超过150个字符" />
+		<!-- 页面关键词 -->
+		<meta name="keywords" content="" />
+		<link rel="stylesheet" href="../addons/ewei_shopv2/static/css/frozenui/css/frozen.css">
+		<link rel="stylesheet" href="../addons/ewei_shopv2/static/ydui/ydui.css">
+		<link rel="stylesheet" href="../addons/ewei_shopv2/static/timepicker/jquery.datetimepicker.css">
+		<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+		<!-- 引入YDUI脚本 -->
+		<script src="../addons/ewei_shopv2/static/ydui/ydui.js"></script>
+		
+		<link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.2/style/weui.min.css">
+		<link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.0/css/jquery-weui.min.css">
+		
+		<style>
+			* {margin: 0;padding: 0;box-sizing: border-box;}
+			
+			/*html,body {height: 100%;overflow: hidden;}*/
+			#form1{margin-top: 0px;}
+			
+			.clearfix:after {content: "\200B";display: block;height: 0;clear: both;}
+			.weui-tabbar{position: fixed;}
+			
+			.clearfix {*zoom: 1;text-align: center;display: inline-block;}
+			
+			/*IE/7/6*/
+			
+			.shuru div::-webkit-scrollbar {width: 0;height: 0;-webkit-transition: 1s;}
+			
+			.shuru div::-webkit-scrollbar-thumb {background-color: #a7afb4;background-clip: padding-box;min-height: 28px;}
+			
+			.shuru div::-webkit-scrollbar-thumb:hover {background-color: #525252;background-clip: padding-box;min-height: 28px;}
+			
+			.shuru div::-webkit-scrollbar-track-piece {background-color: #ccd0d2;}
+			
+			.wrap {position: relative;margin: auto;max-width: 640px;min-width: 320px;width: 100%;height: 100%;background: #F0EFF5;/*overflow: hidden;padding-top: 10px;*/}
+			
+			.layer-content {position: absolute;left: 50%;bottom: -200px;width: 100%;max-width: 640px;height: auto;z-index: 12;-webkit-transform: translateX(-50%);transform: translateX(-50%);}
+			
+			/* 输入表单 */
+			
+			.edit_cash {display: block;margin-top: 15px;padding: 15px;margin: 0 auto;width: 90%;border: 1px solid #CFCFCF;border-radius: 10px;background-color: #fff;}
+			
+			.edit_cash p {font-size: 14px;color: #8D8D8F;}
+			
+			.shuru {position: relative;margin-bottom: 10px;}
+			
+			.shuru div {border: none;width: 100%;height: 50px;font-size: 25px;line-height: 50px;border-bottom: 1px solid #CFCFCF;text-indent: 30px;outline: none;white-space: pre;overflow-x: scroll;}
+			
+			.shuru span {position: absolute;top: 5px;font-size: 25px;}
+			
+			.submit {display: block;margin: 10px auto 0;
+			width: 90%;height: 40px;font-size: 16px;color: #fff;background: #04BE02;/*border: 1px solid #47D14C;*/border-radius: 3px;
+			border: none;
+			}
+			
+			.submit1 {display: block;margin: 10px auto 0;
+			width: 90%;height: 40px;font-size: 16px;color: #fff;background: #18b4ed;/*border: 1px solid #47D14C;*/border: none;border-radius: 3px;}
+			
+			
+			/* 键盘 */
+			
+			.form_edit {width: 100%;background: #D1D4DD;}
+			
+			.form_edit> div {margin-bottom: 2px;margin-right: 0.5%;float: left;width: 33%;height: 45px;text-align: center;color: #333;line-height: 45px;font-size: 18px;font-weight: 600;background-color: #fff;border-radius: 5px;}
+			
+			.form_edit> div:nth-child(3n) {margin-right: 0;}
+			
+			.form_edit> div:last-child {background-color: #DEE1E9;}
+			
+			#header{width: 100%;text-align: center;
+			margin-bottom: 8px;
+			font-size: 16px;
+			border-bottom: 1px solid silver;
+			font-weight: 300;
+				background: #04BE02;
+				line-height: 40px;
+				color: white;
+			}
+			#pay{widows: 90px;text-align: center;margin: 5px auto;}
+			
+			#mone{width: 70%;height: auto;}
+			#mone>li{width: 100%;height: 25px;line-height: 25px;font-size:14px;}
+			#go{display: inline-block;width: 30%;float: right;margin-top: 25px;font-size: 16px;}
+			.show{display: none;}
+			.tops{margin-top: 0px;}
+			.tops1{margin-top: 8px;}
+			#J_Quantity{height: 24px;width: 80px;line-height: 24;}
+		</style>
+		
+	</head>
+	<body>
+		
+		<!-- 商家添加  -->
+		<div id="div1" class="wrap">
+			
+			<form method="post" id="form1" name="form1" class="weui-cells weui-cells_form weui-form-preview">
+			  
+			  <div style="margin-top: 5px;">
+			  	<p style="text-align: center;color: green;line-height: 35px;font-size: 26px;font-weight: bold;">微预约</p>
+			  </div>
+			  
+			    <div class="weui-cells">
+					
+					<a class="weui-cell weui-cell_access" href="javascript:;" id="weiw">
+						<div class="weui-cell__bd">
+						      <p>预约设置</p>
+						</div>
+						<div class="weui-cell__ft"></div>
+					</a>
+					
+					<!-- 业务确认 -->
+					<div class="weiw" style="display: none;" zt="no">
+
+						<div class="weui-cells weui-cells_radio">
+							
+							<div class="weui-cell">
+							    <div class="weui-cell__bd">
+							      <p style="text-align: center;">确认方式</p>
+							    </div>
+							</div>
+								
+							  <label class="weui-cell weui-check__label" for="x11" style="width: 50%;float: left;">
+							    <div class="weui-cell__bd">
+							      <p>列印确认</p>
+							    </div>
+							    <div class="weui-cell__ft">
+							      <input type="radio" name="confirm" class="weui-check" id="x11" value="machine">
+							      <span class="weui-icon-checked"></span>
+							    </div>
+							  </label>
+							  <label class="weui-cell weui-check__label" for="x12" style="width: 50%;float: left;">
+							
+							    <div class="weui-cell__bd">
+							      <p>在线确认</p>
+							    </div>
+							    <div class="weui-cell__ft">
+							      <input type="radio" name="confirm" class="weui-check" id="x12" value="people" checked="checked">
+							      <span class="weui-icon-checked"></span>
+							    </div>
+							  </label>
+						</div>
+					
+						<div class="weui-cell">
+						    <div class="weui-cell__hd"><label class="weui-label">预约时段:</label></div>
+						    <div class="weui-cell__bd" style="line-height: 30px;font-size: 15px;">每
+						    	<span class="m-spinner" id="J_Quantity">
+								    <a href="javascript:;" class="J_Del" style="width: 26px;height: 24px;line-height: 24px;"></a>
+								    	<input type="text" name="yVal" class="J_Input" style="width: 25px;height: 24px;line-height: 24px;font-size: 14px;" value="1" min="1" max="60" placeholder=""/>
+								    <a href="javascript:;" class="J_Add" style="width: 26px;height: 24px;line-height: 24px;"></a>
+								</span>
+								分钟为1预约时段
+						    </div>
+						</div>
+					
+						<div class="weui-cell">
+						    <div class="weui-cell__hd"><label class="weui-label">预约限值:</label></div>
+						    <div class="weui-cell__bd" style="font-size: 15px;">
+						    	<lable id="times"></lable>
+						      <input class="weui-input" type="text" style="width: 30px;" name="Limit" min="1" id="Limit" autofocus placeholder="请输入可预约人数">
+						    	人预约
+						    </div>
+						</div>
+						<div class="weui-cells__title" id="LimitText" style="color: red;text-align: center;display: none;">表单报错</div>
+					
+						<div class="weui-cell">
+						    <div class="weui-cell__bd">
+						      <p style="text-align: center;">预约时间</p>
+						    </div>
+						</div>
+					
+						<div class="weui-cell">
+						    <div class="weui-cell__hd"><label class="weui-label">工作日:</label></div>
+						    <div class="weui-cell__bd">
+						    	<input type="time" name="Stime" id="Stime" value="09:01" placeholder="开始时间"/>
+						      		<lable>至</lable>
+						      	<input type="time" name="Etime" id="Etime" value="17:30" placeholder="结束时间" />
+						    </div>
+						</div>
+					
+						<div class="weui-cell">
+						    <div class="weui-cell__hd"><label class="weui-label">节假日:</label></div>
+						    <div class="weui-cell__bd" style="line-height: 30px;">
+						        <input type="time" name="Stime1" id="Stime1" value="10:01" placeholder="开始时间"/>
+						      	至
+						      	<input type="time" name="Etime1" id="Etime1" value="16:20" placeholder="结束时间" />
+						    </div>
+						</div>
+					
+					
+						<div class="weui-cell">
+						    <div class="weui-cell__bd">
+						    	<input type="hidden" id="YyueSet" value="<?php echo mobileUrl('money/business/YyueSet');?>" />
+						      	<input class="weui-btn weui-btn_primary" type="button" id="query1" value="确认提交">
+						    </div>
+					    </div>
+					</div>
+					
+					<!-- 分钟为1预约时段 -->
+					<script>
+						$('#J_Quantity').spinner({
+					        input: '.J_Input',
+					        add: '.J_Add',
+					        minus: '.J_Del',
+					        unit: function () {
+					            return 1;
+					        },
+					        max: function () {
+					            return 60;
+					        },
+					        callback: function (value, $ele) {
+								$('#times').html(value+'分钟可接受');
+					        }
+				    	});
+					
+						var MAX = 60, MIN = 1;
+						$('.weui-count__decrease').click(function (e) {
+						  var $input = $(e.currentTarget).parent().find('.weui-count__number');
+						  var number = parseInt($input.val() || "0") - 1
+						  if (number < MIN) number = MIN;
+						  $input.val(number)
+						})
+						$('.weui-count__increase').click(function (e) {
+						  var $input = $(e.currentTarget).parent().find('.weui-count__number');
+						  var number = parseInt($input.val() || "0") + 1
+						  if (number > MAX) number = MAX;
+						  $input.val(number)
+						})
+						
+						
+						$('#weiw').click(function(){
+							var sty = $('.weiw').attr('zt');
+							if(sty == 'no'){
+								$('.weiw').css('display','block');
+								$('.weiw').attr('zt','yes');
+							}else{
+								$('.weiw').css('display','none');
+								$('.weiw').attr('zt','no');
+							}
+						})
+						
+						//确认手机微网功能
+						$('#query1').bind('click',function() {							
+							$.ajax({
+								type:"post",
+								url:$('#YyueSet').val(),
+								async:'false',
+								dataType:'json',
+								data:$("#form1").serialize(),
+								success:function(res){
+									console.dir(res);
+									if(res.status >=1){
+										alert(res.result.message);
+									}else{
+										alert(res.result.message);
+									}
+								}
+							});
+						});
+						
+					</script>
+					</form>
+					
+					<a class="weui-cell weui-cell_access" href="javascript:;" id="yz">
+						<div class="weui-cell__bd">
+						    <p>服务管理</p>
+						</div>
+						<div class="weui-cell__ft"></div>
+					</a>
+					
+					<!-- 服务管理 -->
+					<div class="yz" style="display: none;" zt="no">
+						
+						<div class="weui-cell">
+						    <div class="weui-cell__bd">
+						      <p style="text-align: center;">服务上架</p>
+						    </div>
+						</div>
+				        
+				        <script type="text/javascript">
+				        	$('.selects').bind('click',function(){
+				        		
+				        		if($(this).index() == 0){
+				        			$('#qiye').css('display','block');
+				        			$('#faRen').css('display','none');
+				        			
+				        			$(this).addClass('weui-btn_primary');
+				        			$(this).removeClass('weui-btn_default');
+				        			$(this).siblings().removeClass('weui-btn_primary');
+				        			$(this).siblings().addClass('weui-btn_default');
+				        			
+				        		}else {
+				        			$('#faRen').css('display','block');
+				        			$('#qiye').css('display','none');
+				        			
+				        			$(this).addClass('weui-btn_primary');
+				        			$(this).removeClass('weui-btn_default');
+				        			$(this).siblings().removeClass('weui-btn_primary');
+				        			$(this).siblings().addClass('weui-btn_default');
+				        		}     		
+				        		
+				        	});
+				        </script>
+
+						
+						<!--  服务上架  -->
+						<div id="qiye" >
+							<form method="post" id="form2" name="form2" class="weui-cells weui-cells_form weui-form-preview" style="margin-top: 1px;">
+								<div class="weui-cell">
+							    <div class="weui-cell__hd"><label class="weui-label">商品名称:</label></div>
+							    <div class="weui-cell__bd">
+							      <input class="weui-input" type="text" name="ComName" maxlength="30" id="ComName" autofocus value="<?php echo $UserInfo['username'];?>"  placeholder="请输入商品名称">
+							    </div>
+							    </div>
+							    <div class="weui-cells__title" id="ComNameText" style="color: red;text-align: center;display: none;">表单报错</div>
+							  
+								<div class="weui-cell">
+								    <div class="weui-cell__hd"><label class="weui-label">商品单价:</label></div>
+								    <div class="weui-cell__bd">
+								      <input class="weui-input" type="text" name="price" min="16" maxlength="19" id="price" placeholder="请输入商品单价">
+								    </div>
+								  </div>
+								<div class="weui-cells__title" id="priceText" style="color: red;text-align: center;display: none;">表单报错</div>
+								  
+								<!--<div class="weui-cell">
+								    <div class="weui-cell__hd"><label class="weui-label">商品参数:</label></div>
+								    <div class="weui-cell__bd">
+								      <input class="weui-input" type="text" name="param" maxlength="11" id="brank" placeholder="请输入商品参数">
+								    </div>
+								</div>
+								<div class="weui-cells__title" id="paramText" style="color: red;text-align: center;display: none;">表单报错</div>-->
+								
+								
+								<div class="weui-cell">
+								    <div class="weui-cell__bd">
+								      <p style="text-align: center;">商品参数</p>
+								    </div>
+								</div>
+								
+								<a href="#" style="display: inline-block;width: 100%;float: right;" rel="external nofollow" rel="external nofollow" rel="external nofollow" id="AddMoreFileBox" class="btn btn-info">+ 添加更多</a>
+								<div id="InputsWrapper">
+									<div>
+										<input class="weui-input" style="width: 75%;" type="text" name="mytext[]" id="field_1" placeholder="请输入商品参数"><a href="#" rel="external nofollow" rel="external nofollow" rel="external nofollow" class="removeclass"><input type='button' class="weui-btn weui-btn_mini weui-btn_default" value='删除'/></a>
+									</div>
+								</div>
+								
+								
+								
+								<div class="weui-cell">
+								    <div class="weui-cell__bd">
+								      <p style="text-align: center;">商品描述</p>
+								    </div>
+								</div>
+								<!--<textarea rows="5" cols="36" name="desc" class="editor" id="editor" style="margin: 0px 5px;" placeholder="请输入商品描述"></textarea>-->
+								
+								<div id="editor">
+									<p>欢迎使用<b>wangEditor</b>富文本编辑器</p>
+								</div>
+								
+								<script type="text/javascript" src="https://unpkg.com/wangeditor@3.1.0/release/wangEditor.min.js"></script>
+								<script type="text/javascript">
+									var E = window.wangEditor
+									var editor = new E('#editor');
+									editor.create();
+								</script>
+														
+								<div class="button_sp_area" style="text-align: center;">
+						          <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_primary" id="query1">确认添加</a>
+						          <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_default" id="reset1">重新填写</a>
+						          <input type="hidden" name="AccType" value="qiye"/>						          
+						        </div>
+							</form>
+							
+							<script>
+								$(document).ready(function() {
+									var MaxInputs    = 8; //maximum input boxes allowed
+									var InputsWrapper  = $("#InputsWrapper"); //Input boxes wrapper ID
+									var AddButton    = $("#AddMoreFileBox"); //Add button ID
+									var x = InputsWrapper.length; //initlal text box count
+									var FieldCount=1; //to keep track of text box added
+									$(AddButton).click(function (e) //on add input button click
+									{
+									    if(x <= MaxInputs) //max input box allowed
+									    {
+									      FieldCount++; //text box added increment
+									      //add input box
+									      $(InputsWrapper).append('<div><input class="weui-input" style="width: 75%;" placeholder="请输入商品参数" type="text" name="mytext[]" id="field_'+ FieldCount +'" value=""/><a href="#" rel="external nofollow" rel="external nofollow" rel="external nofollow" class="removeclass"><input type="button" class="weui-btn weui-btn_mini weui-btn_default" value="删除"/></a></div>');
+									      x++; //text box increment
+									    }
+										return false;
+									});
+									$("body").on("click",".removeclass", function(e){ //user click on remove text
+									    if( x > 1 ) {
+									        $(this).parent('div').remove(); //remove text box
+									        x--; //decrement textbox
+									    }
+										return false;
+									})
+								});
+							</script>
+							
+							
+							<script type="text/javascript">
+								
+								
+								//确认添加
+								$('#query').click(function() {
+									
+									if(!checkBankNo($('#CardNumber').val())){
+										$('#CardNumberText').css('display','block');
+										$('#CardNumberText').html('您输入的银行卡号格式不正确');
+										$('#CardNumber').focus();
+										return false;
+									}
+									
+									$.ajax({//数据发送请求
+										type:'post',
+										url:$('#nexitUrl').val(),
+										async:false,
+										dataType:'json',
+										data:$('#form2').serialize(),
+										success:function(res){
+											console.dir(res);
+											if(res.status >=1){
+												$.toast(res.result.message);
+											}else {
+												$.toast(res.result.message,'cancel');
+											}
+										}
+									});
+								});
+								
+								//重写  清楚数据
+								$('#reset').bind('click',function(){
+									$('#CardNumber').val('');
+									$('#brank').val('');
+								});
+								
+							</script>
+						</div>
+						
+					</div>
+					
+					<a class="weui-cell weui-cell_access" href="javascript:;" id="yz1">
+						<div class="weui-cell__bd">
+						    <p>待开通</p>
+						    <p></p>
+						</div>
+						<div class="weui-cell__ft"></div>
+					</a>
+					
+					<script type="text/javascript">
+						
+						//判断输入的银行卡号码
+						$('#CardNumbers').bind('keyup',function() {
+							if( $(this).val().length >=16 && $(this).val().length <= 19 ){
+								if ( !checkBankNo($(this).val()) ) {
+									
+									$('#CardNumberTexts').css('display','block');
+									$('#CardNumberTexts').html('您输入的银行卡号格式不正确');
+									$('#CardNumber').focus();
+									return false;
+								}else {
+									$('#CardNumberTexts').css('display','none');
+								}
+							}
+						});
+						
+						//确认添加
+						$('#querys').click(function(){
+							if(!checkBankNo($('#CardNumbers').val())){
+								$('#CardNumberTexts').css('display','block');
+								$('#CardNumberTexts').html('您输入的银行卡号格式不正确');
+								$('#CardNumbers').focus();
+								return false;
+							}
+							
+							$.ajax({//数据发送请求
+								type:'post',
+								url:$('#nexitUrls').val(),
+								async:false,
+								dataType:'json',
+								data:$('#form3').serialize(),
+								success:function(res){
+									console.dir(res);
+									if(res.status >=1){
+										$.toast(res.result.message);
+									}else {
+										$.toast(res.result.message,'cancel');
+									}
+								}
+							});
+						});
+						
+						//重写  清楚数据
+						$('#resets').bind('click',function(){
+							$('#CardNumbers').val('');
+							$('#branks').val('');
+						});
+					
+						
+						$('#yz').click(function(){
+							var sty = $('.yz').attr('zt');
+							if(sty == 'no'){
+								$('.yz').css('display','block');
+								$('.yz').attr('zt','yes');
+							}else{
+								$('.yz').css('display','none');
+								$('.yz').attr('zt','no');
+							}
+						})
+					</script>
+				</div>
+			
+		</div>
+
+
+		<!-- 引入菜单  -->
+		{template "money/busin/menu"}
+		
+	</body>
+	
+
+	<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/jquery-weui/1.2.0/js/jquery-weui.min.js"></script>
+	<script src="https://cdn.bootcss.com/jquery-weui/1.2.0/js/swiper.min.js"></script>
+	<script src="https://cdn.bootcss.com/jquery-weui/1.2.0/js/city-picker.min.js"></script>
+	
+	<script type="text/javascript">
+	
+//		  $("#datetime-picker").datetimePicker();
+		
+		
+		
+		//判断表单是否有空值 表单一
+    	function checkForm1()
+    	{
+    		var inputs = document.form1.getElementsByTagName("input");
+			
+			for(var i = 0; i < inputs.length; i++) {
+//				console.dir(inputs[i].value);
+			    if(inputs[i].value == ''){
+			    	return false;
+			    }
+			}
+			return true;
+    	}
+    	
+    	
+    	//判断表单是否有空值 表单二
+    	function checkForm2()
+    	{
+    		var inputs = document.form2.getElementsByTagName("input");
+			
+			for(var i = 0; i < inputs.length; i++) {
+//				console.dir(inputs[i].value);
+			    if(inputs[i].value == ''){
+			    	return false;
+			    }
+			}
+			return true;
+    	}
+		
+		// 验证手机号
+		function checkPhone(phone){
+			var pattern = /^1[345678]\d{9}$/;
+			return pattern.test(phone);
+		}
+		
+		//验证手机号码中是否存在中文字符
+		function isChinese(tem){
+			var te = /^[\u4E00-\u9FA5]$/;
+			return te.test(tem);
+		}
+		
+		//验证中文名称
+		function isChinaName(name) {
+			var pattern = /^[\u4E00-\u9FA5]{1,6}$/;
+			return pattern.test(name);
+		}
+		
+		
+		//身份证判断正则；
+		function checkCertNo(obj)
+		{
+	        var aCity = {11: "北京", 12: "天津", 13: "河北", 14: "山西", 15: "内蒙古", 21: "辽宁", 22: "吉林", 23: "黑龙 江", 31: "上海", 32: "江苏", 33: "浙江", 34: "安徽", 35: "福建", 36: "江西", 37: "山东", 41: "河南", 42: "湖 北", 43: "湖南", 44: "广东", 45: "广西", 46: "海南", 50: "重庆", 51: "四川", 52: "贵州", 53: "云南", 54: "西 藏", 61: "陕西", 62: "甘肃", 63: "青海", 64: "宁夏", 65: "新疆", 71: "台湾", 81: "香港", 82: "澳门", 91: "国 外"};
+	        var iSum = 0;
+	        //var info = "";
+	        var strIDno = obj;
+	        var idCardLength = strIDno.length;
+//	        if (!/^\d{17}(\d|x)$/i.test(strIDno) && !/^\d{15}$/i.test(strIDno))
+	        if(!/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/.test(strIDno))
+	            return false; //非法身份证号
+	
+	        if (aCity[parseInt(strIDno.substr(0, 2))] == null)
+	            return false;// 非法地区
+	
+	        // 15位身份证转换为18位
+	        if (idCardLength == 15)
+	        {
+	            sBirthday = "19" + strIDno.substr(6, 2) + "-" + Number(strIDno.substr(8, 2)) + "-" + Number(strIDno.substr(10, 2));
+	            var d = new Date(sBirthday.replace(/-/g, "/"))
+	            var dd = d.getFullYear().toString() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+	            if (sBirthday != dd)
+	                return false; //非法生日
+	            strIDno = strIDno.substring(0, 6) + "19" + strIDno.substring(6, 15);
+	            strIDno = strIDno + GetVerifyBit(strIDno);
+	        }
+	
+	        // 判断是否大于2078年，小于1900年  1990
+	        var year = strIDno.substring(6, 10);
+	        if (year < 1900 || year > 2078)
+	            return false;//非法生日
+	
+	        //18位身份证处理
+	
+	        //在后面的运算中x相当于数字10,所以转换成a
+	        strIDno = strIDno.replace(/x$/i, "a");
+	
+	        sBirthday = strIDno.substr(6, 4) + "-" + Number(strIDno.substr(10, 2)) + "-" + Number(strIDno.substr(12, 2));
+	        var d = new Date(sBirthday.replace(/-/g, "/"))
+	        if (sBirthday != (d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate()))
+	            return false; //非法生日
+	        // 身份证编码规范验证
+	        for (var i = 17; i >= 0; i --)
+	            iSum += (Math.pow(2, i) % 11) * parseInt(strIDno.charAt(17 - i), 11);
+	        if (iSum % 11 != 1)
+	            return false;// 非法身份证号
+	
+	        // 判断是否屏蔽身份证
+	        var words = new Array();
+	        words = new Array("11111119111111111", "12121219121212121");
+	
+	        for (var k = 0; k < words.length; k++) {
+	            if (strIDno.indexOf(words[k]) != -1) {
+	                return false;;
+	            }
+	        }
+	        return true;
+    	}
+		
+		
+		/**
+	 * 检查银行卡号是否符合规则
+	 * @param bankno 银行卡号
+	 * @returns
+	 */
+	 function checkBankNo(bankno) {
+	    var bankno = bankno.replace(/\s/g, '');
+	    if (bankno == "") {
+//								        alert("请填写银行卡号");
+	        return false;
+     	}
+	    if (bankno.length < 16 || bankno.length > 19) {
+//								        alert("银行卡号长度必须在16到19之间");
+	        return false;
+	    }
+	    var 
+	    num = /^\d*$/;// 全数字
+	    if (!num.exec(bankno)) {
+//								         alert("银行卡号必须全为数字");
+	         return false;
+	     }
+	     // 开头两位
+	     var strBin = "10,18,30,35,37,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,58,60,62,65,68,69,84,87,88,94,95,98,99";
+	     if (strBin.indexOf(bankno.substring(0, 2)) == -1) {
+//								         alert("银行卡号开头两位不符合规范");
+	         return false;
+	     }
+	     // luhn校验
+	     if (!luhnCheck(bankno)) {
+	        return false;
+	     }
+	     return true;
+	}
+	 
+	 /**
+	 * 银行卡号luhn校验算法
+	 * luhn校验规则：16位银行卡号（19位通用）:
+	 * 1.将未带校验位的 15（或18）位卡号从右依次编号 1 到 15（18），位于奇数位号上的数字乘以 2。
+	 * 2.将奇位乘积的个十位全部相加，再加上所有偶数位上的数字。
+	 * 3.将加法和加上校验位能被 10 整除。
+	 * @param bankno 银行卡号
+	 * @returns
+	 */
+	function luhnCheck(bankno) {
+	    var lastNum = bankno.substr(bankno.length - 1, 1);// 取出最后一位（与luhn进行比较）
+	    var first15Num = bankno.substr(0, bankno.length - 1);// 前15或18位
+	    var newArr = new Array();
+	    for (var i = first15Num.length - 1; i > -1; i--) { // 前15或18位倒序存进数组
+	        newArr.push(first15Num.substr(i, 1));
+	    }
+	    var arrJiShu = new Array(); // 奇数位*2的积 <9
+	    var arrJiShu2 = new Array(); // 奇数位*2的积 >9
+	    var arrOuShu = new Array(); // 偶数位数组
+	    for (var j = 0; j < newArr.length; j++) {
+	        if ((j + 1) % 2 == 1) {// 奇数位
+	            if (parseInt(newArr[j]) * 2 < 9) {
+	                arrJiShu.push(parseInt(newArr[j]) * 2);
+	            } else {
+	                arrJiShu2.push(parseInt(newArr[j]) * 2);
+	            }
+	        } else {
+	            arrOuShu.push(newArr[j]);// 偶数位
+	        }
+	    }
+	
+	    var jishu_child1 = new Array();// 奇数位*2 >9 的分割之后的数组个位数
+	    var jishu_child2 = new Array();// 奇数位*2 >9 的分割之后的数组十位数
+	    for (var h = 0; h < arrJiShu2.length; h++) {
+	        jishu_child1.push(parseInt(arrJiShu2[h]) % 10);
+	        jishu_child2.push(parseInt(arrJiShu2[h]) / 10);
+	    }
+	    var sumJiShu = 0; // 奇数位*2 < 9 的数组之和
+	    var sumOuShu = 0; // 偶数位数组之和
+	    var sumJiShuChild1 = 0; // 奇数位*2 >9 的分割之后的数组个位数之和
+	    var sumJiShuChild2 = 0; // 奇数位*2 >9 的分割之后的数组十位数之和
+	    var sumTotal = 0;
+	    for (var m = 0; m < arrJiShu.length; m++) {
+	        sumJiShu = sumJiShu + parseInt(arrJiShu[m]);
+	    }
+	    for (var n = 0; n < arrOuShu.length; n++) {
+	        sumOuShu = sumOuShu + parseInt(arrOuShu[n]);
+	    }
+	    for (var p = 0; p < jishu_child1.length; p++) {
+	        sumJiShuChild1 = sumJiShuChild1 + parseInt(jishu_child1[p]);
+	        sumJiShuChild2 = sumJiShuChild2 + parseInt(jishu_child2[p]);
+	    }
+	    // 计算总和
+	    sumTotal = parseInt(sumJiShu) + parseInt(sumOuShu)
+	            + parseInt(sumJiShuChild1) + parseInt(sumJiShuChild2);
+	    // 计算luhn值
+	    var k = parseInt(sumTotal) % 10 == 0 ? 10 : parseInt(sumTotal) % 10;
+	    var luhn = 10 - k;
+	    if (lastNum == luhn) {
+//								        console.log("验证通过");
+	        return true;
+	    } else {
+//								        alert("银行卡号必须符合luhn校验");
+	        return false;
+	    }
+	}
+
+	</script>
+
+	<script src="../addons/ewei_shopv2/static/timepicker/jquery.js"></script>
+	<script src="../addons/ewei_shopv2/static/timepicker/jquery.datetimepicker.full.js"></script>
+	<script type="text/javascript">
+		$('#datetimepicker').datetimepicker({
+			datepicker:false,
+			format:'H:i',
+			step:5
+		});
+		
+		$('#datetimepicker1').datetimepicker({
+			datepicker:false,
+			format:'H:i',
+			step:5
+		});
+		
+		$('#datetimepicker2').datetimepicker({
+			datepicker:false,
+			format:'H:i',
+			step:5
+		});
+		
+		$('#datetimepicker3').datetimepicker({
+			datepicker:false,
+			format:'H:i',
+			step:5
+		});
+		
+		
+	</script>
+
+	
+</html>

@@ -1,0 +1,142 @@
+{template "parking/base/header"}
+<body>
+<div class="wx_box">
+	
+    <div class="license_Fee">
+        <h3 class="title_h3"><span>扣费授权信息</span></h3>
+        
+        {if $flag }
+        
+        <dl>
+            <dd>
+                <p><img src="../addons/ewei_shopv2/static/images/img/shouq.png"><span>授权类型</span>
+                    <i class="gray">
+                        <a href="javascript:void(0);" class="blue">{$userinfo['auth_type']}</a>
+                    </i>
+                </p>
+                
+                <p><img src="../addons/ewei_shopv2/static/images/img/yiwen.png"><span>授权状态</span>
+                    <i class="gray">
+                        <a href="javascript:void(0);" class="blue">{$userinfo['auth_status']}</a>
+                        <img src="../addons/ewei_shopv2/static/images/img/succ.png">
+                    </i>
+                </p>
+                
+                <p><img src="../addons/ewei_shopv2/static/images/img/user.png"><span>用户姓名</span>
+                    <i class="gray">
+                        <a href="javascript:void(0);" class="blue">{$userinfo['name']}</a>
+                    </i>
+                </p>
+                
+                <p><img src="../addons/ewei_shopv2/static/images/img/phone.png"><span>注册手机</span>
+                    <i class="gray">
+                        <a href="javascript:void(0);" class="blue">{$userinfo['mobile']}</a>
+                    </i>
+                </p>
+                
+                <p><img src="../addons/ewei_shopv2/static/images/img/car.png"><span>车牌号码</span>
+                    <i class="gray">
+                        <a href="javascript:void(0);" class="blue">{$userinfo['CarNo']}</a>
+                    </i>
+                </p>
+                
+                 <p><img src="../addons/ewei_shopv2/static/images/img/card.png"><span>签约卡号</span>
+                    <i class="gray">
+                        <a href="javascript:void(0);" class="blue">{$userinfo['credit_accout']}</a>
+                    </i>
+                </p>
+                
+            </dd>
+        </dl>
+        <a href="javascript:void(0);" onclick="return Surrent();" ><p class="order_tab_button">前往解约</p></a>
+        <a href="javascript:void(0);" onclick="window.history.go(-1)"><p class="order_tab_button">返回上一页</p></a>
+        
+        {else}
+        
+        <dl>
+            <dd style="text-align: center;">
+            	<img type="image/svg+xml" width="200px" src="../addons/ewei_shopv2/static/images/img/error.svg">
+                <p style="font-size:16px;">
+                	暂无授权信息
+                </p>
+            </dd>
+        </dl>
+        <a href="javascript:void(0);" onclick="window.history.go(-1)"><p class="order_tab_button">返回上一页</p></a>
+        {/if}
+    </div>
+    <input type="hidden" name="surrent" id="surrent" value="{$surrent}" />
+    <div class="footer">Technology by </div>
+    <div class="footer_placeholder"> </div>
+    
+</div>
+</body>
+<script type="text/javascript">
+	
+	function Surrent() {
+		var s = document.getElementById('surrent').value;
+		console.dir(s);
+		var urls = '';
+		switch(s){
+			case 'FCreditCard'://无感免密
+				urls = "<?php echo mobileUrl('parking/auth/SignSurrender');?>";
+			break;
+			case 'FAgro'://农商免密  
+				urls = "<?php echo mobileUrl('parking/auth/FagroSurrender');?>";
+			break;			
+		}
+		console.dir(urls);
+		var c = confirm('您确定要解约吗?');
+		if(c) {
+			window.location.href = urls;
+		} else {
+			return false;
+		}
+		
+	}
+	
+    var height = $(window).height();
+    $(".wx_box").css({"min-height":height});
+    $(function(){
+        new Swipe(document.getElementById('focus'), {
+            speed:500,
+            auto:3000,
+            callback: function(){
+                var lis = $(this.element).next("ol").children();
+                lis.removeClass("on").eq(this.index).addClass("on");
+            }
+        });
+    });
+    
+    
+    function timer(opj){
+        $(opj).find('ul').animate({
+            marginTop : "-0.4rem"
+        },500,function(){
+            $(this).css({marginTop : "0rem"}).find("li:first").appendTo(this);
+        })
+    }
+    var num = $('.notice').find('li').length;
+    if(num > 1){
+        var time=setInterval('timer(".notice")',3500);
+        $('.notice ul li a').hover(function(){
+            clearInterval(time);
+        }).mouseout(function(){
+            time = setInterval('timer(".notice")',3500);
+        });
+    };
+    $(".license_Fee_arrow").click(function(){
+        $(this).toggleClass("license_Fee_arrow02");
+        $(this).parents("dl").find("dd").toggle();
+    });
+    $(".showPopup").click(function(){
+        $(".black_bg,.popup").show();
+    });
+
+    $(".license_Fee_arrow").parents("dl").find("a").bind("click",function (e) {
+        if($(this).is('.showPopup')){
+            $(this).attr("href","#");
+           return false;
+        }
+    })
+</script>
+{template "parking/base/footer"}

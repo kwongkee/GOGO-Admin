@@ -1,0 +1,107 @@
+{include file="public/header"}
+<body style="padding: 10px;">
+<!-- 上级ID -->
+<input type="hidden" id="pid" value="1">
+<div class="header">
+    <span>商户计费配置列表</span>
+
+    <button class="layui-btn layui-btn-sm" onclick="addName()">添加计费配置</button>
+
+    <div></div>
+</div>
+
+<table class="layui-table">
+    <thead>
+    <tr>
+        <th>所属公众号</th>
+        <th>商户名称</th>
+<!--        <th>物流计费</th>-->
+<!--        <th>快递计费</th>-->
+<!--        <th>包材计费</th>-->
+<!--        <th>快递保费</th>-->
+<!--        <th>清关计费</th>-->
+<!--        <th>税费计费</th>-->
+<!--        <th>商品计费</th>-->
+        <th>添加时间</th>
+        <th>更新时间</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {volist name="data.data" id='vo'}
+    <tr>
+        <td>{$vo['publicId']|publicId}</td>
+        <td>{$vo['merchatId']|merchatId}</td>
+<!--        <td>{$vo['isLogisFee']?'收费':'不收费'}</td>-->
+<!--        <td>{$vo['isExpressFee']?'收费':'不收费'}</td>-->
+<!--        <td>{$vo['isPackageFee']?'收费':'不收费'}</td>-->
+<!--        <td>{$vo['isPremium']?'收费':'不收费'}</td>-->
+<!--        <td>{$vo['isShut']?'收费':'不收费'}</td>-->
+<!--        <td>{$vo['isTax']?'收费':'不收费'}</td>-->
+<!--        <td>{$vo['isShop']?'收费':'不收费'}</td>-->
+        <td>{$vo['createTime']|date='Y-m-d H:i:s',###}</td>
+        <td>{$vo['updateTime']|date='Y-m-d H:i:s',###}</td>
+        <td>
+            <button class="layui-btn layui-btn-xs" onclick="edit({$vo['id']})">编辑配置</button>
+            <button class="layui-btn layui-btn-danger layui-btn-xs" onclick="del({$vo['id']})">删除</button>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<div class="layui-page">
+    {$page}
+</div>
+
+<script type="text/javascript">
+
+    layui.use(['layer'],function(){
+        layer = layui.layer;
+        $     = layui.jquery;
+    });
+
+    // 添加物流企业
+    function addName() {
+        layer.open({
+            type:2,
+            title:'商户计费配置',
+            shade:0.3,
+            area:['820px','620px'],
+            content:'{:Url("admin/charging/add")}'
+        });
+    }
+
+    function edit(id) {
+        layer.open({
+            type:2,
+            title:'编辑配置',                   
+            shade:0.3,
+            area:['820px','620px'],
+            content:'{:Url("admin/charging/edit")}&id='+id
+        })
+    }
+
+    // 删除数据
+    function del(id)
+    {
+        layer.confirm('确定要删除吗？',{icon:3,btn:['确定','取消']},function() {
+            $.post("{:Url('admin/charging/Del')}",{id:id},function(resd){
+                var res = JSON.parse(resd);
+                if(res.code == 1) {
+                    layer.msg(res.msg,{icon:1});
+                    setTimeout(function(){
+                        layer.closeAll();
+                        parent.window.location.reload();
+                    },1100);
+                } else {
+                    layer.alert(res.msg,{icon:2});
+                }
+            },'json');
+        })
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>备案商品统计</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  	<link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+	<script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+	<style type="text/css">
+		p{width: 100%;margin: 5px auto;font-size: 16px;color: green;font-weight: bold;text-align: center;padding-left: 45px;}
+		.show{display: none;};
+	</style>
+</head>
+<body>
+
+<div style="margin-top: 10px;"></div>
+{if condition="$order.goodFlag eq 2"}
+<p>按备案量计算统计</p>
+<table class="layui-table">
+  <thead>
+    <tr>
+        <th>编号</th>
+        <th>商品名称</th>
+        <th>商品品牌</th>
+        <th>商品单价</th>
+        <th>国检审核</th>
+        <th>备案状态</th>
+        <th>详情</th>
+    </tr>
+  </thead>
+  
+  <tbody>
+	    {volist name='order.goodInfo.lists' id='vo' key='index'}
+	    <tr>
+	    		<td>{$index}</td>
+					<td>{$vo.GoodsName}</td>
+					<td>{$vo.Brand}</td>
+					<td>￥{$vo.RegPrice}</td>
+					<td>{$vo.CIQNotes}</td>
+					<td>
+						{if condition="$vo.CIQGRegStatus eq 'C'"}
+								<input type="button" class="layui-btn layui-btn-sm" value="备案成功" />
+						{else/}
+							  <input type="button" class="layui-btn layui-btn-sm layui-btn-danger" value="备案失败" />
+						{/if}
+					</td>
+	        <td><a href="javascript:;" class="layui-btn layui-btn-sm layui-btn-radius" onclick="getInfo('{$vo.id}')">查看详细</a></td>
+	    </tr>
+	    {/volist}
+    <tr>
+    	<td>统计</td>
+    	<td colspan="10">
+    		提交日期：<span style="color: green;">{$order.goodInfo.lists[0]['InputDate']}</span>
+    		&nbsp;&nbsp;
+    		备案商品数量：<span class="x-right" style="color: green;">{$order.goodInfo.total} </span>条
+    		&nbsp;&nbsp;&nbsp;&nbsp;
+    		应收服务费:&nbsp;<span style="color: red;font-size: 16px;">￥{$order.goodMoney}元</span>
+    		&nbsp;&nbsp;&nbsp;&nbsp;
+    		应付服务费:&nbsp;<span style="color: red;font-size: 16px;">￥{$order.goodMoney}元</span>
+    		&nbsp;&nbsp;&nbsp;&nbsp;
+    		
+    		<span {if condition="$order.status neq 3"} class="show" {/if}>
+    			<input type="button" class="layui-btn layui-btn-sm" value="确认" onclick="Confirm()"/>
+    			<input type="button" class="layui-btn layui-btn-sm layui-btn-danger" value="有误" onclick="Mistaken('good')" />
+    		</span>
+    		
+    		{if condition="$order.status eq 2"}
+    			<span>您的有误账单已提交给管理员，请等待管理员联系！</span>
+    		{/if}
+    		
+    		{if condition="$order.status eq 1"}
+    			<span>您的备案账单已发送到您的邮箱，请查收！</span>
+    		{/if}
+    		
+    	</td>
+    </tr>
+  </tbody>
+</table>
+
+{else/}
+
+<p>按批量计算统计</p>
+<table class="layui-table">
+  <thead>
+    <tr>
+        <th>编号</th>
+        <th>申报企业编号</th>
+        <th>申报企业名称</th>
+        <th>主管海关代码</th>
+        <th>检验检疫机构代码</th>
+        <th>申报状态</th>
+        <th>详情</th>
+    </tr>
+  </thead>
+  
+  <tbody>
+	    {volist name='order.goodInfo.lists' id='vo' key='index'}
+	    <tr>
+	    		<td>{$index}</td>
+					<td>{$vo.DeclEntNo}</td>
+					<td>{$vo.DeclEntName}</td>
+					<td>{$vo.CustomsCode}</td>
+					<td>{$vo.CIQOrgCode}</td>
+					<td>
+						{if condition="$vo.declare_status eq 1"}
+							<input type="button" class="layui-btn layui-btn-sm layui-btn-danger" value="申报失败"/>
+						{else/}
+							<input type="button" class="layui-btn layui-btn-sm" value="申报成功"/>
+						{/if}
+					</td>
+	        <td>
+	        	<a href="javascript:;" class="layui-btn layui-btn-sm layui-btn-radius" onclick="piciInfo('{$vo.id}')">查看详细</a>
+	        </td>
+	    </tr>
+	    {/volist}
+    <tr>
+    	<td>统计</td>
+    	<td colspan="10">
+    		提交日期：<span style="color: green;">{$order.goodInfo.lists[0]['InputDate']}</span>
+    		批次数：<span class="x-right" style="color: green;">{$order.goodInfo.total} </span>次
+    		&nbsp;&nbsp;&nbsp;&nbsp;
+    		应收服务费:&nbsp;<span style="color: red;font-size: 16px;">￥{$order.goodMoney}元</span>
+    		&nbsp;&nbsp;&nbsp;&nbsp;
+    		应付服务费:&nbsp;<span style="color: red;font-size: 16px;">￥{$order.goodMoney}元</span>
+    		&nbsp;&nbsp;&nbsp;&nbsp;
+    		
+    		<span {if condition="$order.status neq 3"} class="show" {/if}>
+    			<input type="button" class="layui-btn layui-btn-sm" value="确认" onclick="Confirma()"/>
+    			<input type="button" class="layui-btn layui-btn-sm layui-btn-danger" value="有误" onclick="Mistaken('pici')" />
+    		</span>
+    		
+    		{if condition="$order.status eq 2"}
+    			<span>您的有误账单已提交给管理员，请等待管理员联系！</span>
+    		{/if}
+    		
+    		{if condition="$order.status eq 1"}
+    			<span>您的备案账单已发送到您的邮箱，请查收！</span>
+    		{/if}
+    		
+    	</td>
+    </tr>
+  </tbody>
+</table>
+
+{/if}
+
+<div class="layui-box layui-laypage layui-laypage-default">
+	{$order.goodInfo.pages}
+</div>
+
+<script type="text/javascript">
+		layui.use(['layer','jquery'],function(){
+			layer = layui.layer;
+			$ = layui.jquery;
+		});
+		
+		//商品详细
+		function getInfo(id)
+		{
+			layer.open({
+			  type: 2,
+			  title:'商品详细',
+			  shadeClose: true,
+			  shade: 0.3,
+			  area: ['490px', '489px'],
+			  content: "{:Url('Reconcil/Statistic/')}&id="+id //iframe的url
+			}); 
+		}
+		
+		//备案批次详细
+		function piciInfo(id)
+		{
+			layer.open({
+			  type: 2,
+			  title:'备案批次详细',
+			  shadeClose: true,
+			  shade: 0.3,
+			  area: ['490px', '489px'],
+			  content: "{:Url('Reconcil/piciInfo/')}&id="+id //iframe的url
+			}); 
+		}
+		
+		//确认对账  商品列表
+		function Confirm()
+		{
+			/**
+			 * 打开确认页面，默认显示用户邮箱，没有的话需要商户输入；
+			 */
+				layer.open({
+					type:2,
+					title:'确认对账下载',
+					shade:0.3,
+					content:"{:Url('Reconcil/Confirm')}"
+				});
+		}
+		
+		//下载统计批次
+		function Confirma()
+		{
+			/**
+			 * 打开确认页面，默认显示用户邮箱，没有的话需要商户输入；
+			 */
+				layer.open({
+					type:2,
+					title:'确认对账下载',
+					shade:0.3,
+					content:"{:Url('Reconcil/Confirma')}"
+				});
+		}
+		
+		//有误对账  商品列表
+		function Mistaken(val)
+		{
+			$.post("{:Url('Reconcil/Mistaken')}",{'token':val},function(res){
+				console.dir(res);
+				if(res.code > 0){
+					layer.alert(res.msg,{icon:5});
+				} else {
+					layer.msg(res.msg,{icon:6});
+					setTimeout(function(){
+						window.location.reload();
+					},1000);
+				}
+			});
+		}
+		
+	</script>
+</body>
+</html>

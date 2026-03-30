@@ -1,0 +1,533 @@
+{template "parking/_header"}
+<link rel="stylesheet" href="../addons/ewei_shopv2/static/css/frozenui/css/frozen.css">
+<link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.0/css/jquery-weui.min.css">
+<style type="text/css">
+	/*lable{display: inline-block;width: 99px;height: 30px;text-align: center;line-height: 30px;}*/
+	.content{height: 35px;width: 100%;border-bottom: 1px solid lightskyblue;text-align: center;line-height: 35px;}
+	#content{height: 35px;width: 100%;text-align: center;line-height: 35px;
+		font-family: "微软雅黑";
+	}
+	.errors{color: red;}
+	#show_head{display: none;}
+</style>
+<!-- 如果使用了某些拓展插件还需要额外的JS -->
+
+<body>
+
+<header class="ui-header ui-header-stable ui-border-b">
+    <i class="ui-icon-return" onclick="history.back()"></i><h1>发票抬头管理</h1>
+</header>
+<div style="margin-top:50px;"></div>
+
+
+<div class="ui-form ui-border-t" id="" style="text-align: center;">
+	
+    <form id="form_head" method="post" action="{$urls}">
+    	
+		<!--<h1>发票抬头类型</h1>-->
+        
+        <style type="text/css">
+        	#headss{
+        		width: 92%;height: 44px;padding: 0 10px;
+        		/*border: 1px solid red;*/
+        	}
+        	#headss1{width: 100%;float: left;}
+        	#headss1>li{float: left;width: 50%;height:44px;line-height: 44px;
+        			/*position: relative;*/
+        	}
+        	/*}*/
+        	#h11{
+        		display:inline-block;
+        		border:1px solid darkgray;width: 20px;
+        		height: 20px;
+        		border-radius: 50%;
+        		color: green;
+        		line-height: 44px;
+        		position: absolute;
+        		top: 13px;
+        		left: 13px;
+        	}
+        	
+        	#h12{display:inline-block;
+        		border:1px solid darkgray;width: 20px;
+        		height: 20px;
+        		border-radius: 50%;
+        		color: green;
+        		line-height: 44px;
+        		
+        		position: absolute;
+        		top: 13px;
+        		left: 13px;
+        	}
+        	#hd{
+        		display: inline-block;padding-top: 3px;
+        		position: relative;
+        	}
+        	#hd1{display: inline-block;padding-top: 3px;}
+        	.position1{width: 100%;position: relative;}
+        	
+        </style>
+        
+        
+        <div id="headss">
+        	<ul id="headss1">
+        		<input type="hidden" name="head" id="head" value="01">
+        		<li id="heads">
+        			<div class="position1">
+        				<div id="h11"></div><lable id="hd">企业抬头</lable>
+        			</div>
+        		</li>
+        		<li id="heads1">
+        			<div  class="position1">
+        				<div id="h12" style="background: deepskyblue;"></div><lable id="hd1">个人抬头</lable>
+        			</div>
+        		</li>
+        	</ul>
+        </div>
+        
+        
+         <script type="text/javascript">
+
+        	$('#heads').click("click",function() {
+        		$("#h11").css('background-color','deepskyblue');
+        		$("#h12").css('background-color','');
+        		$('#show_head').css('display','block');
+				$('#show_head1').css('display','none');
+				
+				$('#head').val('01');
+        	});
+        	
+        	
+        	$('#heads1').click("click",function(){        	 	
+        	 	$("#h12").css('background-color','deepskyblue');
+        	 	$("#h11").css('background-color','');
+        	 	$('#show_head').css('display','none');
+				$('#show_head1').css('display','block');
+				
+        		$('#head').val('03');
+        	});
+        	
+        </script>
+        
+        
+        <!-- 企业类型  -->
+        <div id="show_head">
+        	<lable class="errors" id="head_nametext"></lable>
+	        <div class="ui-form-item ui-border-b">
+	            <label>发票抬头</label>
+	            <input type="text" name="head_name" value="<?php echo $head['head_name']?$head['head_name']:''; ?>" id="head_name" placeholder="填写纳税人抬头"/>
+	        </div>
+        
+	        <lable class="errors" id="nsrsbhtext"></lable>
+	        <div class="ui-form-item ui-border-b">
+	            <label>统一信用号</label>
+	            <input type="text" name="nsrsbh" value="<?php echo $head['nsrsbh']?$head['nsrsbh']:''; ?>" id="nsrsbh" placeholder="填写纳税人识别号"/>
+	        </div>
+        
+	        <lable class="errors" id="op_banktext"></lable>
+	        <div class="ui-form-item ui-border-b">
+	            <label>开户行</label>
+	            <input type="text" name="op_bank" value="<?php echo $head['op_bank']?$head['op_bank']:''; ?>" id="op_bank" placeholder="填写纳税人开户行"/>
+	        </div>
+        
+	        <lable class="errors" id="bank_numbertext"></lable>
+	        <div class="ui-form-item ui-border-b">
+	            <label>银行账号</label>
+	            <input type="text" name="bank_number" value="<?php echo $head['bank_acc']?$head['bank_acc']:''; ?>" id="bank_number" placeholder="填写纳税人银行账号"/>
+	        </div>
+        
+	        <lable class="errors" id="phonetext"></lable>
+	        <div class="ui-form-item ui-border-b">
+	            <label>手机号</label>
+	            <input type="text" name="phone" value="<?php echo $head['phone_number']?$head['phone_number']:$Tel['mobile']; ?>" id="phone" placeholder="填写纳税人手机号码"/>
+	        </div>
+
+
+ 			<lable class="errors" id="addresstext"></lable>
+	        <div class="ui-form-item ui-border-b">
+	            <label>所在地区</label>
+	            <input type="text" name="addressHead"  value="<?php echo $head['addressHead']?$head['addressHead']:''; ?>" id='city-picker' placeholder="所在地区"/>
+	        </div>
+
+	        <lable class="errors" id="addresstext"></lable>
+	        <div class="ui-form-item ui-border-b">
+	            <label>详细地址</label>
+	            <input type="text" name="address"  value="<?php echo $head['address']?$head['address']:''; ?>" id="address" placeholder="街道，楼牌号等"/>
+	        </div>
+        
+	        <!--<lable class="errors" id="gddhtext"></lable>
+	        <div class="ui-form-item ui-border-b">
+	            <label>固定电话</label>
+	            <input type="text" name="gddh" value="<?php echo $head['gddh']?$head['gddh']:''; ?>" id="gddh" placeholder="填写公司固定电话"/>
+	        </div>-->
+        
+	        <lable class="errors" id="emailtext"></lable>
+	        <div class="ui-form-item ui-border-b">
+	            <label>电子邮箱</label>
+	            <input type="email" name="email" value="<?php echo $head['email']?$head['email']:''; ?>" id="email" placeholder="填写电子邮箱"/>
+	        </div>
+        
+	        <div class="ui-form-item ui-border-b">
+	            <label>备注</label>
+	            <input type="text" name="bz" value="<?php echo $head['bz']?$head['bz']:''; ?>" id="bz" placeholder="填写备注"/>
+	            <input type="hidden" name="" id="urls" value="{$urls}" />
+	        </div>
+	        
+	        <div class="ui-btn-wrap">       	
+			    <input type="submit" class="ui-btn ui-btn-primary" name="" id="submit" value="确定" />
+			    <input type="reset"  class="ui-btn" name="" id="" value="取消" />
+			</div>
+       	</div>
+       
+       	
+        <!-- 个人类型  -->
+        <div id="show_head1">
+        	<lable class="errors" id="head_nametext2"></lable>
+	        <div class="ui-form-item ui-border-b">
+	            <label>发票抬头</label>
+	            <input type="text" name="head_name2" value="<?php echo $head['head_name']?$head['head_name']:''; ?>" id="head_name2" placeholder="填写纳税人抬头"/>
+	        </div>
+	        
+	        <lable class="errors" id="phonetext2"></lable>
+	        <div class="ui-form-item ui-border-b">
+	            <label>手机号</label>
+	            <input type="text" name="phone2" value="<?php echo $head['phone_number']?$head['phone_number']:''; ?>" id="phone2" placeholder="填写纳税人手机号码"/>
+	        </div>
+	        
+	        <lable class="errors" id="emailtext2"></lable>
+	        <div class="ui-form-item ui-border-b">
+	            <label>电子邮箱</label>
+	            <input type="email" name="email2" value="<?php echo $head['email']?$head['email']:''; ?>" id="email2" placeholder="填写电子邮箱"/>
+	        </div>
+	        
+	        <div class="ui-form-item ui-border-b">
+	            <label>备注</label>
+	            <input type="text" name="bz2" value="<?php echo $head['bz']?$head['bz']:''; ?>" id="bz2" placeholder="填写备注"/>	            
+	        </div>
+	        
+	        <div class="ui-btn-wrap">       	
+			    <input type="submit" class="ui-btn ui-btn-primary" name="" id="submit2" value="确定" />
+			    <input type="reset"  class="ui-btn" name="" id="" value="取消" />
+			</div>
+        </div>
+    </form>
+
+    	
+    <script type="text/javascript">
+  
+    	//发票抬头
+		$("#head_name").blur(function() {//发票抬头
+			var t = $('#head_name').val();
+			if ($.trim($('#head_name').val()).length == 0) {					
+				$('#head_name').val('').focus().val(t);				
+				$('#head_nametext').html('请输入纳税人抬头');
+				$('#head_nametext').css('display','block');				
+			} else {
+				if (isChinaName($.trim($('#head_name').val())) == false) {
+					$('#head_name').val('').focus().val(t);					
+					$('#head_nametext').html('纳税人名字输入不正确');
+					$('#head_nametext').css('display','block');
+				}else{
+					$('#head_nametext').css('display','none');
+				}
+			}
+		});
+		
+		
+		//发票抬头2
+		$("#head_name2").blur(function() {//发票抬头
+			var t = $('#head_name2').val();
+			if ($.trim($('#head_name2').val()).length == 0) {					
+				$('#head_name2').val('').focus().val(t);				
+				$('#head_nametext2').html('请输入纳税人抬头');
+				$('#head_nametext2').css('display','block');				
+			} else {
+				if (isChinaName($.trim($('#head_name2').val())) == false) {
+					$('#head_name2').val('').focus().val(t);					
+					$('#head_nametext2').html('纳税人名字输入不正确');
+					$('#head_nametext2').css('display','block');
+				}else{
+					$('#head_nametext2').css('display','none');
+				}
+			}
+		});
+		
+		
+		//纳税人识别号号输入；
+		$("#nsrsbh").keydown(function(){
+			$('#nsrsbh').maxLength(18);//控制输入长度
+			var t = $('#nsrsbh').val();
+		});
+		
+		//银行账号
+		$("#bank_number").keydown(function() {
+			
+			$('#bank_number').maxLength(19);//控制输入长度
+			
+			var t = $('#bank_number').val();
+		});
+
+		//预留手机号码控制；
+		$("#phone").blur(function() {//会员注册手机号码
+			var t = $('#phone').val();
+			if ($.trim($('#phone').val()).length == 0) {					
+				$('#phone').val('').focus().val(t);
+				$('#phonetext').html('请输入手机号码');
+				$('#phonetext').css('display','block');
+			} else {
+				if (isPhoneNo($.trim($('#phone').val())) == false) {
+					$('#phone').val('').focus().val(t);
+					$('#phonetext').html('手机号码不正确');
+					$('#phonetext').css('display','block');
+				}else{
+					$('#phonetext').css('display','none');
+				}
+			}
+		});
+		//会员注册手机号码控制；
+		$("#phone").keydown(function(){
+			$('#phone').maxLength(11);//控制输入长度				
+		});
+		
+		
+		//预留手机号码控制；
+		$("#phone2").blur(function() {//会员注册手机号码
+			var t = $('#phone2').val();
+			if ($.trim($('#phone2').val()).length == 0) {					
+				$('#phone2').val('').focus().val(t);
+				$('#phonetext2').html('请输入手机号码');
+				$('#phonetext2').css('display','block');
+			} else {
+				if (isPhoneNo($.trim($('#phone2').val())) == false) {
+					$('#phone2').val('').focus().val(t);
+					$('#phonetext2').html('手机号码不正确');
+					$('#phonetext2').css('display','block');
+				}else{
+					$('#phonetext2').css('display','none');
+				}
+			}
+		});
+		//会员注册手机号码控制；
+		$("#phone2").keydown(function(){
+			$('#phone2').maxLength(11);//控制输入长度				
+		});
+		
+		
+		//开户行
+		$("#op_bank").blur(function() {
+			var t = $('#op_bank').val();
+			if ($.trim($('#op_bank').val()).length == 0) {					
+				$('#op_bank').val('').focus().val(t);				
+				$('#op_banktext').html('请输入开户行');
+				$('#op_banktext').css('display','block');				
+			} else {
+				if (isChinaName($.trim($('#op_bank').val())) == false) {
+					$('#op_bank').val('').focus().val(t);					
+					$('#op_banktext').html('开户行输入不正确');
+					$('#op_banktext').css('display','block');
+				}else{
+					$('#op_banktext').css('display','none');
+				}
+			}
+		});
+		
+		//电子邮箱
+		$("#email").blur(function() {
+			var t = $('#email').val();
+			if ($.trim($('#email').val()).length == 0) {					
+				$('#email').val('').focus().val(t);				
+				$('#emailtext').html('请输入电子邮箱');
+				$('#emailtext').css('display','block');				
+			} else {
+				if (isemail($.trim($('#email').val())) == false) {
+					$('#email').val('').focus().val(t);					
+					$('#emailtext').html('电子邮箱输入不正确');
+					$('#emailtext').css('display','block');
+				}else{
+					$('#emailtext').css('display','none');
+				}
+			}
+		});
+		
+		
+		//电子邮箱2
+		$("#email2").blur(function() {
+			var t = $('#email2').val();
+			if ($.trim($('#email2').val()).length == 0) {					
+				$('#email2').val('').focus().val(t);				
+				$('#emailtext2').html('请输入电子邮箱');
+				$('#emailtext2').css('display','block');				
+			} else {
+				if (isemail($.trim($('#email2').val())) == false) {
+					$('#email2').val('').focus().val(t);					
+					$('#emailtext2').html('电子邮箱输入不正确');
+					$('#emailtext2').css('display','block');
+				}else{
+					$('#emailtext2').css('display','none');
+				}
+			}
+		});
+		
+		$('#nsrsbh').blur(function() {
+			if(!CheckSocialCreditCodeOrg($(this).val())){
+				alert('请输入正确的纳税人识别号');
+				$('#nsrsbh').val('').focus().val($(this).val());
+			}
+		});
+		
+    	
+    	/*姓名身份证，手机号提交*/
+		function isemail(name) {
+			var pattern = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/;
+			return pattern.test(name);
+		}
+		
+		/*姓名身份证，手机号提交*/
+		function isChinaName(name) {
+			var pattern = /^[\u4E00-\u9FA5]{1,18}$/;
+			return pattern.test(name);
+		}
+    	
+    	// 验证银行卡
+		function isCardNo(card) {
+			var pattern = /^\d{16}$/g;
+			return pattern.test(card);
+		}
+		
+		// 验证手机号
+		function isPhoneNo(phone) {
+			var pattern = /^1[34578]\d{9}$/;
+			return pattern.test(phone);
+		}
+    	
+    	jQuery.fn.maxLength = function(max){  
+	        this.each(function(){  
+	            var type = this.tagName.toLowerCase();  
+	            var inputType = this.type? this.type.toLowerCase() : null;  
+	            if(type == "input" && inputType == "text" || inputType == "password"){  
+	                //Apply the standard maxLength  
+	                this.maxLength = max;  
+	            }  
+	            else if(type == "textarea"){  
+	                this.onkeypress = function(e){  
+	                    var ob = e || event;  
+	                    var keyCode = ob.keyCode;  
+	                    var hasSelection = document.selection? document.selection.createRange().text.length > 0 : this.selectionStart != this.selectionEnd;  
+	                    return !(this.value.length >= max && (keyCode > 50 || keyCode == 32 || keyCode == 0 || keyCode == 13) && !ob.ctrlKey && !ob.altKey && !hasSelection);  
+	                };  
+	                this.onkeyup = function(){  
+	                    if(this.value.length > max){  
+	                        this.value = this.value.substring(0,max);  
+	                    }  
+	                };  
+	            }  
+	        });  
+	   };
+	   
+	   function CheckSocialCreditCodeOrg(Code)
+	   {
+		    var patrn = /^[0-9A-Z]+$/;
+		    //18位校验及大写校验
+		    if ((Code.length != 18) || (patrn.test(Code) == false))
+		    {
+		        return false;
+		    }
+		    else
+		    {
+		        var Ancode;//信用代码/税号的每一个值
+		        var Ancodevalue;//信用代码/税号每一个值的权重
+		        var total = 0;
+		        var weightedfactors = [1, 3, 9, 27, 19, 26, 16, 17, 20, 29, 25, 13, 8, 24, 10, 30, 28];//加权因子
+		        var str = '0123456789ABCDEFGHJKLMNPQRTUWXY';
+		        //不用I、O、S、V、Z
+		        for (var i = 0; i < Code.length - 1; i++)
+		        {
+		            Ancode = Code.substring(i, i + 1);
+		            Ancodevalue = str.indexOf(Ancode);
+		            total = total + Ancodevalue * weightedfactors[i];
+		            //权重与加权因子相乘之和
+		        }
+		        var logiccheckcode = 31 - total % 31;
+		        if (logiccheckcode == 31)
+		        {
+		            logiccheckcode = 0;
+		        }
+		        var Str = "0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F,G,H,J,K,L,M,N,P,Q,R,T,U,W,X,Y";
+		        var Array_Str = Str.split(',');
+		        logiccheckcode = Array_Str[logiccheckcode];
+		
+		
+		        var checkcode = Code.substring(17, 18);
+		        if (logiccheckcode != checkcode)
+		        {
+		            return false;
+		            // alert("不是有效的统一社会信用编码！");
+		        }else{
+		            return true;
+		        }
+		    }
+		}
+	   
+    </script>
+</div>
+
+<script type="text/javascript">
+	
+	$('#submit').click(function() {
+		//车牌颜色{php echo mobileUrl('parking/invoicelist/headers');}
+		var urls = $('#urls').val();//请求地址		
+		var head_name = $('#head_name').val();//发票抬头
+		var email = $('#email').val();//电子邮箱
+		var nsrsbh = $('#nsrsbh').val();//纳税人识别号
+		
+		if(head_name == ''){
+			alert('请填写发票抬头');
+			$('#head_name').val('').focus().val(head_name);
+			return false;
+		}else if(email == ''){
+			alert('请填写电子邮箱');
+			$('#email').val('').focus().val(email);
+			return false;
+		}else if(nsrsbh == ''){
+			alert('纳税人识别号');
+			$('#nsrsbh').val('').focus().val(nsrsbh);
+			return false;
+		}
+		return true;
+	})
+	
+	
+	$('#submit2').click(function() {
+		//车牌颜色{php echo mobileUrl('parking/invoicelist/headers');}
+		var urls = $('#urls').val();//请求地址		
+		var head_name = $('#head_name2').val();//发票抬头
+		var email = $('#email2').val();//电子邮箱
+		
+		if(head_name == ''){
+			alert('请填写发票抬头');
+			$('#head_name2').val('').focus().val(head_name);
+			return false;
+		}else if(email == ''){
+			alert('请填写电子邮箱');
+			$('#email2').val('').focus().val(email);
+			return false;
+		}
+
+		return true;
+	})
+	
+</script>
+       
+</body>
+
+<!-- body 最后 -->
+<!--<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>-->
+<script src="https://cdn.bootcss.com/jquery-weui/1.2.0/js/jquery-weui.min.js" type="text/javascript" charset="utf-8"></script>
+<!--<script src="https://cdn.bootcss.com/jquery-weui/1.2.0/js/swiper.min.js" type="text/javascript" charset="utf-8"></script>-->
+<script src="https://cdn.bootcss.com/jquery-weui/1.2.0/js/city-picker.min.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+		  $("#city-picker").cityPicker({
+		    title: "请选择收货地址"
+		  });
+		</script>
+{template "parking/_footer"}

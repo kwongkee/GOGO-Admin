@@ -1,0 +1,137 @@
+{include file="common/header"}
+
+<body>
+
+<form class="layui-form" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">金额</label>
+        <div class="layui-input-block">
+            <input type="text" name="money"  id="money"  placeholder="为空代表不修改" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">车牌号</label>
+        <div class="layui-input-block">
+            <input type="text" name="cardNo" id="cardNo" placeholder="为空代表不修改" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">离场时间</label>
+        <div class="layui-input-block">
+            <input type="text" name="endtime" id="endtime" placeholder="为空代表不修改"  class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">支付类型</label>
+        <div class="layui-input-block">
+            <select name="payType" id="payType" >
+                <option value="">请选择</option>
+                <option value="wechat">微信</option>
+                <option value="alipay">支付宝</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">订单状态</label>
+        <div class="layui-input-block">
+            <select name="payStatus" id="payStatus" >
+                <option value="">请选择</option>
+                <option value="1">已支付</option>
+<!--                <option value="0">未支付</option>-->
+            </select>
+        </div>
+    </div>
+    <input type="hidden" name="oid" id="oid" value="{$orderId}">
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+
+<form class="layui-form layui-form-pane" action="" style="display: none;" id="yzm">
+    <div class="layui-form-item">
+        <label class="layui-form-label">验证码</label>
+        <div class="layui-input-block">
+            <input type="text" name="code" id="code" required  lay-verify="required" placeholder="请输入验证码" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo3">立即提交</button>
+        </div>
+    </div>
+</form>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script>
+    //Demo
+    layui.use(['form','layer','laydate'], function(){
+        var form = layui.form;
+        var layer = layui.layer;
+        var laydate = layui.laydate;
+        laydate.render({
+            elem: '#endtime'
+            ,type: 'datetime'
+        });
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            sendYzm();//发送验证码
+            // layer.msg(JSON.stringify(data.field));
+            layer.open({
+                type: 1,
+                area:['446px','157px'],
+                content: $('#yzm') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+            });
+            return false;
+        });
+
+        form.on('submit(formDemo3)', function(data){
+            // layer.msg(JSON.stringify(data.field));
+           var oid = $('#oid').val();
+           var money = $('#money').val();
+           var cardNo = $('#cardNo').val();
+           var yzm = data.field.code;
+           var payType = $('#payType').val();
+           var payStatus = $('#payStatus').val();
+           var endtime = $('#endtime').val();
+           axios.post('{:Url("order/modifyOrder")}',{
+               'orderId':oid,
+               'money':money,
+               'cardNo':cardNo,
+               'payStatus':payStatus,
+               'payType':payType,
+               'endtime':endtime,
+               'yzm':yzm
+           }).then(function (res) {
+               console.dir(res);
+               if (res.data.code<0){
+                   layer.msg(res.data.msg);
+               } else{
+                   layer.msg(res.data.msg);
+                   setTimeout(function () {
+                       layer.closeAll();
+                   },2000);
+               }
+           }).catch(function (err) {
+               layer.msg(err);
+           });
+            return false;
+        });
+    });
+
+    function sendYzm() {
+        axios.get("{:Url('trial_order/send_code')}").then(function (reason) {
+            console.log(reason);
+            isMsg = true;
+        }).catch(function (reason) {
+            console.log(reason);
+        });
+        return false;
+    }
+
+</script>
+</body>
+</html>

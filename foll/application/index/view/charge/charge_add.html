@@ -1,0 +1,199 @@
+{include file="common/header"}
+<body>
+<div class="x-body">
+    <form class="layui-form">
+        <div class="layui-form-item">
+            <div class="layui-form-item">
+                <label class="layui-form-label">方案名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="plan" required  value="" lay-verify="required" placeholder="请输入方案名称" autocomplete="off" class="layui-input plan">
+                </div>
+            </div>
+            <div class="layui-form-item" style="font-size:14px;color:blue;margin-bottom:1px;margin-left: 20px;">
+                <label class="layui-form-label">--时段管理--</label>
+            </div>
+            <table class="layui-table" style="width:44%;margin-left: 110px;">
+                <colgroup>
+                    <col width="77">
+                    <col width="77">
+                    <col width="77">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>时段名称</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                </tr>
+                </thead>
+                <tbody id="bod">
+                </tbody>
+            </table>
+            <div style="margin-left:110px;margin-bottom:12px;">
+                <a class="layui-btn layui-btn-danger" id="time">增加时段+</a>
+            </div>
+            <div class="layui-form-item" style="font-size:14px;color:blue;margin-bottom:1px;margin-left: 20px;">
+                <label class="layui-form-label">--封顶管理--</label>
+            </div>
+            <style>
+                .layui-form-checkbox{
+                    height: 20px;
+                    width: 0px;
+                    line-height:16px;
+                }
+            </style>
+            <div class="layui-form-item" style=" margin-left: -57px;">
+                    <div class="layui-form-item" style="float: left;margin-top: 7px;">
+                        <label class="layui-form-label"></label>
+                        <div class="layui-input-block">
+                            <input type="checkbox" name="like1" id="like1" title="" checked>
+                        </div>
+                    </div>
+                <div class="layui-inline" style="float: left;margin-left: -28px;">
+                    <label class="layui-form-label">时段封顶</label>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="period_rand" placeholder="时段名称" autocomplete="off" class="layui-input" id="period_rand">
+                    </div>
+                    <div class="layui-form-mid">跨</div>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="period_rand2" placeholder="时段名2" autocomplete="off" class="layui-input" id="period_rand2">
+                    </div>
+                </div>
+                <div class="layui-inline" style="margin-left:-46px;">
+                    <label class="layui-form-label">最高限收</label>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="tel" name="time_limit" autocomplete="off" onkeyup="value=value.replace(/^[0]+[0-9]*$/gi,'')" placeholder="0元" class="layui-input time_limit">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-left: 52px;">
+                <div class="layui-form-item" style="float: left;position: absolute;margin-top: -3px;margin-top: 1px;">
+                    <label class="layui-form-label"></label>
+                    <div class="">
+                        <input type="checkbox" name="like2" id="like2" title="" checked>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="float:left;position: relative;margin-top:16px;margin-left: 12px;margin-top: 12px;">
+                    <label class="layui-form-label">全天封顶</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="allClass" value="0" title="停车时长满24小时" checked class="allClass">
+                        <input type="radio" name="allClass" value="1" title="停入当天23:59前" class="allClass">
+                        <div class="layui-inline" style="margin-left:-46px;margin-bottom:-6px;">
+                            <label class="layui-form-label">最高限收</label>
+                            <div class="layui-input-inline" style="width: 100px;">
+                                <input type="tel" name="Allcapped" autocomplete="off" placeholder="0元" onkeyup="value=value.replace(/^[0]+[0-9]*$/gi,'')" class="layui-input Allcapped">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+<div class="layui-form-item">
+    <label for="L_repass" class="layui-form-label"></label>
+    <button  class="layui-btn" lay-filter="add" lay-submit="">提 交</button>
+</div>
+</form>
+</div>
+<script>
+    var timeArray={};
+    var _periodArray={};
+    var index;
+    layui.use(['form','layer'], function(){
+        $ = layui.jquery;
+        var form = layui.form
+            ,layer = layui.layer;
+//时间选择器
+        $("#time").click(function () {
+            var alertHtml='<form class="layui-form" action="" id="f" style="width:400px;">';
+            alertHtml+='<div class="layui-form-item"><label class="layui-form-label">时段名称：</label><div class="layui-input-block"><input type="text" name="period_name" required="" lay-verify="required" placeholder="时段说明" autocomplete="off" class="layui-input" />';
+            alertHtml+='</div></div><div class="layui-form-item"><label class="layui-form-label">开始时间：</label><div class="layui-input-block"><input type="text" class="layui-input" name="starTime" placeholder="24小时制HH:MM"></div></div>';
+            alertHtml+='<div class="layui-form-item"><label class="layui-form-label">结束时间：</label><div class="layui-input-block"><input type="text" class="layui-input"  name="endTime" placeholder="24小时制HH:MM"></div></div>';
+            alertHtml+='<div class="layui-form-item"><label class="layui-form-label">免费时间：</label><div class="layui-input-block"><div style="float:left;margin-top:12px;">前</div><input type="tel" style="float:left;width: 168px;" onkeyup="value=value.replace(/^[0]+[0-9]*$/gi,\'\')" name="free" required="" lay-verify="required" placeholder="0分钟" autocomplete="off" class="layui-input" /><div style="margin-top:12px;float: left;">分钟免费</div></div></div><div class="layui-form-item">';
+            alertHtml+='<label class="layui-form-label">时段收费：</label><div class="layui-input-block" style="margin-bottom:12px;"><div style="float: left;margin-top: 12px;">每</div><input type="tel" style="width:100px;float: left;" onkeyup="value=value.replace(/^[0]+[0-9]*$/gi,\'\')" name="minute" required="" lay-verify="required" placeholder="0分钟" autocomplete="off" class="layui-input" /><div style="float:left;margin-top: 12px;">分钟</div><input type="tel"  name="price" onkeyup="value=value.replace(/^[0]+[0-9]*$/gi,\'\')" required="" style="width: 100px;float:left;" lay-verify="required" placeholder="0元" autocomplete="off" class="layui-input" /><div style="margin-top: 12px;float: left;">元</div>';
+            alertHtml+='</div><div class="layui-form-item"><label class="layui-form-label">时段封顶：</label><div class="layui-input-block"><div style="float:left;margin-top:12px;">最高限收</div><input style="float:left;width:100px" type="tel" onkeyup="value=value.replace(/^[0]+[0-9]*$/gi,\'\')" name="capped" required="" lay-verify="required" placeholder="0元" autocomplete="off" class="layui-input" /><div style="float:left;margin-top:12px;">元</div></div></div>';
+            alertHtml+='<div class="layui-form-item"><label class="layui-form-label">预付设置：</label><div class="layui-input-block"><div style="float:left;margin-top:12px;">首付时长</div><input style="float: left;width:100px;" type="tel" onkeyup="value=value.replace(/^[0]+[0-9]*$/gi,\'\')" name="y_minute_new" required="" lay-verify="required" placeholder="0分钟" autocomplete="off" class="layui-input" /><div style="margin-top:12px;float: left;">分钟</div>';
+            alertHtml+='</div></div><div class="layui-form-item"><label class="layui-form-label"></label><div class="layui-input-block"><div style="float:left;margin-top:12px;">增加时长</div><input style="float: left;width:100px;" type="tel" onkeyup="value=value.replace(/^[0]+[0-9]*$/gi,\'\')" class="layui-input"  name="addMinus" placeholder="0分钟"><div style="float:left;margin-top:12px;">分钟</div></div></div><div class="layui-form-item"><div class="layui-input-block"><a class="layui-btn" lay-submit="" lay-filter="formDemo" onclick="aa(this)">确认</a></div></div></form>';
+            index= layer.open({
+            type: 1,
+            area: ['90%', '90%'],
+                content:alertHtml
+            });
+        });
+        //自定义验证规则
+        //监听提交
+        form.on('submit(add)', function(data){
+            var periodTime=null;
+            var period_rand=null;
+            var period_rand2=null;
+            var allClass=null;
+            var Allcapped=null;
+            if($("#like1[type='checkbox']").is(':checked')){
+                 periodTime=$(".time_limit").val();
+                 period_rand=$("#period_rand").val();
+                period_rand2=$("#period_rand").val();
+                if(periodTime==''){
+                    layer.msg('时段最高上限不能为空', {icon: 5});
+                    return false;
+                }
+                if(period_rand==''&&period_rand2==''){
+                    layer.msg('时段范围不能为空', {icon: 5});
+                    return false;
+                }
+            }else{
+                 periodTime=0;
+                 period_rand='';
+                 period_rand2='';
+            }
+            var plan =$(".plan").val();
+            if($("#like2[type='checkbox']").is(':checked')){
+                 allClass=$('.allClass:checked').val();
+                 Allcapped=$(".Allcapped").val();
+                 if(Allcapped==''){
+                     layer.msg('请填写完整数据', {icon: 5});
+                     return false;
+                 }
+            }else{
+                allClass=2;
+                Allcapped=0;
+            }
+            $.post("{:Url('index/charge_save')}",{
+                "periodTime":JSON.stringify(_periodArray),
+                "plan":plan,
+                "Allcapped":Allcapped,
+                "period_limit":periodTime,
+                "period_rand":period_rand,
+                'period_rand2':period_rand2,
+                'allClass':allClass
+            },function (data) {
+                if(data.code==10000){
+                    layer.msg('增加成功', {icon: 6});
+                    setTimeout(function () {
+                        location.reload();
+                    },1500);
+                }
+                if(data.code==10001){
+                    layer.msg(data.msg, {icon: 5});
+                }
+            })
+            //发异步，把数据提交给php
+            return false;
+        });
+    });
+    var n=0;
+    function aa(obj) {
+        var _td=null;
+        timeArray={};
+        $("#f input").each(function () {
+            timeArray[$(this).attr('name')]=$(this).val().trim();
+        })
+        _periodArray[n]=timeArray;
+        _td+='<tr><td>'+_periodArray[n].period_name+'</td><td>'+_periodArray[n].starTime+'</td><td>'+_periodArray[n].endTime+'</td></tr>';
+        $('#bod').append(_td);
+        n++;
+        console.dir(_periodArray);
+        layer.close(index);//此时你只需要把获得的index，轻轻地赋予layer.close即可
+        return false;
+    }
+</script>
+</body>
+</html>

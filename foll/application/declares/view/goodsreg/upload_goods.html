@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>商品备案</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <!--<link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layuis.css"/>-->
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        th{
+            padding:3px 12px;
+        }
+        #formli {width: 100%;float: left;}
+        #formli li{float: left;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+<div class="layui-card" xmlns="http://www.w3.org/1999/html">
+    <div class="layui-card-header" style="padding:0 9px;line-height:26px;height:114px;background:#D1EEEE;">填报说明:</br>1.必须按照Excel模板文件填写</br>2.点击这里：<a style="color: red;" href="./static/successreg_goods.xls">下载Excel模板文件</a>;</br>3.建议每次最多导入1000行数据，大于3500行数据请分多批导入;</div>
+    <div class="layui-card-body">
+        <form class="layui-form layui-form-pane" id="form1" action="{:Url('goodsregsuce/saveGoodsRegSuce')}" method="post" enctype="multipart/form-data">
+            <ul id="formli">
+                <li>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" style="width: 150px;">申报日期:</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input" name="SendTime" id="time"  value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" style="width: 150px;">申报企业编号*:</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input" name="DeclEntNo"  value="" placeholder="">
+                        </div>
+                    </div>
+                <!--<li>-->
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" style="width: 150px;">申报企业名称:</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input" name="DeclEntName"  value="" placeholder="">
+                        </div>
+                    </div>
+                <!--</li>-->
+                </li>
+
+                <li>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" style="width: 150px;">Excel文件*:</label>
+                        <div class="layui-input-inline">
+                            <input type="file" class="layui-input" name="file"  value="" placeholder="">
+                        </div>
+                    </div>
+                </li>
+
+            </ul>
+            <button class="layui-btn" lay-submit lay-filter="formDemo" onclick="alertShade();">立即提交</button>
+        </form>
+    </div>
+</div>
+
+
+</body>
+<script type="text/javascript">
+    layui.use(['layer','form','jquery'],function(){
+        $ = layui.jquery;
+        layer = layui.layer;
+        var form = layui.form;
+    });
+    function alertShade(){
+        layer.load(1, {shade: 0.3});
+    }
+    function getNowFormatDate() {
+        var date = new Date();
+        var seperator1 = "-";
+        var seperator2 = ":";
+        var month = date.getMonth() + 1;
+        var strDate = date.getDate();
+        if (month >= 1 && month <= 9) {
+            month = "0" + month;
+        }
+        if (strDate >= 0 && strDate <= 9) {
+            strDate = "0" + strDate;
+        }
+        var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
+            + " " + date.getHours() + seperator2 + date.getMinutes()
+            + seperator2 + date.getSeconds();
+        return currentdate;
+    }
+    document.getElementById('time').value=getNowFormatDate();
+    function alertShade(){
+        layer.load(1, {shade: 0.3});
+    }
+</script>
+</html>

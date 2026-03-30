@@ -1,0 +1,46 @@
+{template 'header'}
+	<div class="container-fluid">
+		<h4><span class='glyphicon glyphicon-circle-arrow-right'></span>&nbsp;&nbsp;首页页面自定义</h4>
+		<div class="row">
+			<div class="col-md-6">
+				<label>积分跳转链接自定义</label>
+					<input type="text" class="form-control" value="{php echo $this->settings['index_credit_jump_url']}" id='index_credit_jump_url' placeholder='例如：积分商城链接'>
+				<p class="help-block">如果为空，则跳转到系统默认；必须以http://开头</p>
+				<button class="btn btn-sm btn-info" onclick="doSave('index_credit_jump_url')">保存</button>
+			</div>
+		</div>
+		<br>
+	</div>
+	<script type="text/javascript">
+	function doSave(type,val) {
+
+		if(!type) {
+			return false;
+		}
+
+		if(type == 'index_credit_jump_url') {
+			index_credit_jump_url = $("#index_credit_jump_url").val();
+		}
+		
+		$.ajax({
+			type:'post',
+			data:{
+				dataType:type, // 数据类型区分
+				index_credit_jump_url:index_credit_jump_url,
+				setval:val
+			},
+
+			url:"{php echo $this->createWebUrl('settingform')}",
+			success:function(d) {
+				if(d.res == '100') {
+					alert('保存成功');
+					window.location.href='';
+				}else {
+					alert(d.msg);
+				}
+			}
+		})
+
+	}
+	</script>
+{template 'footer'}

@@ -1,0 +1,82 @@
+{extend name="common/_header"}
+<!-- 右侧主体开始 -->
+
+{block name="conten"}
+<div class="page-content">
+    <div class="content">
+        <fieldset class="layui-elem-field layui-field-title site-title">
+            <legend><a name="default">信息统计</a></legend>
+        </fieldset>
+        <table class="layui-table">
+            <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+            <div id="main" style="width: 300px;height:200px;"></div>
+        </table>
+        <table class="layui-table">
+            <thead>
+            <tr>
+                <th colspan="2" scope="col">服务器信息</th>
+            </tr>
+            </thead>
+            <div id="main2" style="width: 300px;height:200px;"></div>
+        </table>
+        <!-- 右侧内容框架，更改从这里结束 -->
+    </div>
+</div>
+<!-- 右侧主体结束 -->
+</div>
+<script src="https://cdn.bootcss.com/echarts/4.0.4/echarts-en.common.js"></script>
+<!-- 引入 vintage 主题 -->
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+    // 指定图表的配置项和数据
+    var option =  {
+        tooltip: {
+            trigger: 'item',
+            formatter: "{a} <br/>{b}: {c} ({d}%)"
+        },
+        legend: {
+            orient: 'vertical',
+            x: 'left',
+            data:['停车订单','商城订单','自助订单','预约订单']
+        },
+        series: [
+            {
+                name:'订单',
+                type:'pie',
+                radius: ['50%', '70%'],
+                avoidLabelOverlap: false,
+                label: {
+                    normal: {
+                        show: false,
+                        position: 'center'
+                    },
+                    emphasis: {
+                        show: true,
+                        textStyle: {
+                            fontSize: '30',
+                            fontWeight: 'bold'
+                        }
+                    }
+                },
+                labelLine: {
+                    normal: {
+                        show: false
+                    }
+                },
+                data:[
+                    {value:335, name:'停车订单'},
+                    {value:310, name:'商城订单'},
+                    {value:234, name:'自助订单'},
+                    {value:135, name:'预约订单'},
+                ]
+            }
+        ]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+</script>
+<!-- 中部结束 -->
+{/block}
+{extend name="common/_footer"}

@@ -1,0 +1,154 @@
+{template 'common/sp_header'}
+{template 'common/navigation'}
+
+<title>供应商登录</title>
+<style type="text/css">
+	@media screen and (min-width: 769px) {
+		body {margin:0px; background:#efefef; font-family:'微软雅黑'; -moz-appearance:none;
+	background: url('../addons/sz_yi/static/images/bg.jpg') no-repeat center !important;
+    background-size: cover !important;height: 100%;}
+    .fl{float: right !important; background: unset;border: unset;}
+    .footer{
+			width: 100%;
+		    padding: 5px 0;
+		    background-color: #1481c5;
+		    text-align: center;
+		    color: white;
+		    position: fixed;
+		    bottom: 0;
+	    }
+    }
+    @media screen and (max-width: 768px) { 
+		body {margin:0px; background:#efefef; font-family:'微软雅黑'; -moz-appearance:none;
+		background: url('../addons/sz_yi/static/images/mobile_login_01.jpg') no-repeat center !important;
+	    background-size: cover !important;height: 100%;min-width: 100%; overflow-x: hidden;}
+	    .fl{float: none !important; background: unset;border: unset;}
+	    .regist-process-wrapper{
+	    	width: 100%;
+	    }
+	    .regist-process-body{
+	    	padding: 0;
+	    }
+	    .regist-process-login-left{
+	    	width: 320px !important; margin: 0 auto;
+	    }
+	    .regist-process-login-left .text{
+	    	width: 280px;
+	    }
+	    .regist-process-login-left .login-btn{
+	    	padding: 10px 120px;
+	    }
+	    .regist-process-login-left .operates {
+		    width: 280px;
+		}
+		.cover-page-wrapper{
+			margin-bottom: 0px;
+		}
+		.footer{
+			width: 100%; 
+		    padding: 5px 0;
+		    background-color: #1481c5;
+		    text-align: center;
+		    color: white;
+		    position: fixed;
+		    bottom: 0;
+	    }	
+    }
+    .regist-process-body h2{font-size: 14px; color: white;}
+    .supplier-logo{text-align: center;}
+    .info_sub {height:44px; margin:14px 5px; background:#31cd00; border-radius:4px; text-align:center; font-size:16px; line-height:44px; color:#fff;}
+    .register {height:44px; margin:14px 5px; background:#ccc; border-radius:4px; text-align:center; font-size:16px; line-height:44px; color:#fff;}
+    .select { border:1px solid #ccc;height:25px;}
+	.forget {color: #999;padding: 10px 20px 0 0;float: right;}
+	.head_top{background: unset;}
+	.head{background-color: unset;}
+	
+	.regist-process-login-left{ border-right: unset;width: 400px;background: rgba(255, 255, 255, 0.5);border: 1px solid rgba(255,255,255,.3);padding: 20px;}
+</style>
+<div class="fl wfs">
+  <div class="regist-process-wrapper">
+  	<div class="supplier-logo"><img src="../addons/sz_yi/static/images/supplier-logo.png" alt="" /></div>
+    <div class="regist-process-body fl wfs">
+        <div class="regist-process-login-left fl">
+          <h2 class="title">用户登录 | Login</h2>
+          <input class="form-control text" type="text" id='username' placeholder="请输入供应商名称"  value="" />
+          <input class="form-control text" type="password" id='password' placeholder=""  value="" />
+          <input class="btn btn-danger login-btn" id="sub" type="button" name="submit" value="登录" />
+          <input class="btn btn-success btn-block btn-lg hidden-xs" id="wxqrlogin" type="button" value="微信扫码登录" data-toggle="modal" data-target="#myModal"/>
+          <a class="btn btn-success btn-block btn-lg visible-xs-block" id="wxapplogin" href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx76d541cc3e471aeb&redirect_uri=http://shop.gogo198.cn/app/wxapp.php?type=4&response_type=code&scope=snsapi_base&state=123#wechat_redirect" style="color:#fff;">微信授权登录</a>
+        <div class="operates fl wfs">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body text-center" id="wxqrl_container"></div>
+    </div>
+  </div>
+</div>
+<script src="https://res.wx.qq.com/connect/zh_CN/htmledition/js/wxLogin.js"></script>
+<script>
+    var obj = new WxLogin({
+        id: "wxqrl_container",
+        appid: "wx56acdff97cef4e2b",
+        scope: "snsapi_login",
+        redirect_uri: encodeURIComponent("http://shop.gogo198.cn/app/wxqr.php?type=4"),
+        state: Math.ceil(Math.random()*1000),
+        style: "black",
+        href: ""});
+</script>
+<script language="javascript">
+    require(['tpl', 'core'], function(tpl, core) {
+        //$('#container').html(tpl('member_info'));
+            $('.register').click(function(){
+                location.href = "{php echo $this->createMobileUrl('member/register')}";
+            });
+
+            $('.forget').click(function(){
+              location.href = "{php echo $this->createMobileUrl('member/forget')}";
+            });
+            
+            $('#sub').click(function() {
+                  if($('#username').isEmpty()){
+                       core.tip.show('请输入用户名!');
+                       return;
+                  }
+                  if( $('#password').isEmpty()){
+                       core.tip.show('请输入密码!');
+                       return;
+                  }
+                  
+                    core.json('shop/login', {
+                       'userdata':{
+                            'username': $('#username').val(),
+                            'password': $('#password').val()
+                           } 
+                       }, function(json) {
+                        if(json.status==1){
+                             core.tip.show('登录成功');
+                             location.href=json.result.preurl;
+                        }
+                        else{
+                            core.tip.show('用户不存在或密码错误!');
+                        }
+
+                    },true,true);
+                });
+
+
+    })
+</script>
+</div>
+</body>
+<div class="footer">
+    <p>佛山市钜銘商務資訊服務有限公司 | 購購網  </p>
+    <!--<p>版权所有 © Gogo|購購網 &nbsp;&nbsp;&nbsp;粤ICP备09003656号 &nbsp;&nbsp;&nbsp; 增值业务许可证：粤B2-20120011    </p>-->
+</div>
+</html>

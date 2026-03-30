@@ -1,0 +1,89 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/header', TEMPLATE_INCLUDEPATH)) : (include template('common/header', TEMPLATE_INCLUDEPATH));?>
+<!--<title>项目配置中心</title>-->
+<style type="text/css">
+    body {margin:0px; background:#efefef; font-family:'微软雅黑'; -moz-appearance:none;}
+    .info_main {height:auto;  background:#fff; margin-top:14px; border-bottom:1px solid #e8e8e8; border-top:1px solid #e8e8e8;}
+    .info_main .line {margin:0 10px; height:40px; border-bottom:1px solid #e8e8e8; line-height:40px; color:#999;display:flex;}
+    .info_main .line .title {height:40px; width:80px; line-height:40px; color:#444; float:left; font-size:14px;}
+    .info_main .line .info { width:100%;float:right;margin-left:-80px; }
+    .info_main .line .inner { margin-left:80px; }
+    .info_main .line .inner input {height:40px; width:100%;display:block; padding:0px; margin:0px; border:0px; float:left; font-size:14px;}
+    .info_main .line .inner .user_sex {line-height:40px;}
+    .info_sub {height:44px; margin:14px 5px; background:#31cd00; border-radius:4px; text-align:center; font-size:16px; line-height:44px; color:#fff;}
+    .select { border:1px solid #ccc;height:25px;}
+    .table{width:100%;font-size:15px;}
+    .table thead td{background-color: #ecf6fc !important;}
+    .table tr{height:25px;}
+    .table tr td{vertical-align: middle !important;}
+
+    .see{box-sizing: border-box;padding: 4px 8px;font-size: 14px;color: #fff;background: #1E9FFF;text-align:center;}
+    .chakan{font-size:14px;padding:4px 10px;background:#1EA01E;width:fit-content;color:#fff;}
+    .submit{font-size:14px;padding:4px 10px;background:#ff5555;width:fit-content;margin-left:10px;margin-right:5px;color:#fff;}
+    .sign_box,.download_box{display:none;width: 80%;position: absolute;background: #ffffff;border-radius: 5px;z-index:1000;transform:translate(-50%,-50%);top: 50%;left:50%;}
+    .download_box .pic_div{height: 200px;max-height: 200px;min-height: 200px;overflow: scroll;padding:4px;width:100%;text-align:center;}
+    .sign_box .confirm,.download_box .confirm{height: 50px;border-top: 1px solid #eee;display: flex;}
+    .sign_box .confirm>span,.download_box .confirm>span{flex: 1;height: 50px;line-height: 50px;font-size: 16px;text-align: center;}
+    .sign_box .confirm>span:nth-child(1),.download_box .confirm>span:nth-child(1){color: red;}
+    .sign_box .confirm>span:nth-child(2),.download_box .confirm>span:nth-child(2){border-left: 1px solid #eee;}
+    .sign_box .important,.download_box .important{color: red;}
+    .sign_box .title,.download_box .title{text-align: center;border-bottom: 1px solid #eee;margin-bottom: 10px;}
+    .sign_box .title>p,.download_box .title>p{height: 40px;line-height: 40px;text-align: center;font-size: 18px;font-weight: bold;}
+
+    .page_head{width:100%;background:#fff;margin-bottom:5px;box-shadow:0 0 4px #ddd;padding:10px 0 10px;display:flex;align-items:center;}
+    .page_head .left{width:20%;display:flex;align-items:center;font-size:15px;}
+    .page_head .left .back{width:13px;height:13px;border-top:2px solid #000;border-left:2px solid #000;transform:rotate(-50deg);margin-left:15px;margin-right:5px;}
+    .page_head .right{width:80%;text-align:center;padding-right:80px;font-size:15px;padding-top:2px;}
+    .induce{background:#3388FF;font-size:14px;padding:4px 10px;width:fit-content;margin-left:10px;margin-right:5px;color:#fff;}
+    a{text-decoration: none;text-underline: none;}
+</style>
+
+<link type="text/css" rel="stylesheet" href="../addons/sz_yi/template/pc/default/static/css/bootstrap.min.css" />
+<link type="text/css" rel="stylesheet" href="../addons/sz_yi/static/travel_express/css/hui.css" />
+<!--<script type="text/javascript" src="../addons/sz_yi/template/mobile/default/enterprise/static/js/hui.js" charset="UTF-8"></script>-->
+
+<div class="page_head">
+    <div class="left">
+        <div class="back"></div>
+        <div style="font-size:15px;padding-top:2px;">返回</div>
+    </div>
+    <div class="right">
+        商户[<?php  echo $decl_user['user_name'];?>]
+    </div>
+</div>
+<div id="container">
+    <div class="info_main table-responsive main_list">
+        <?php  if(empty($batch_info)) { ?>
+        <div class="line" style="text-align:center;">暂无信息</div>
+        <?php  } else { ?>
+        <table class="table table-striped caozuo">
+            <thead>
+            <tr>
+                <td>批次号</td>
+                <td>日期</td>
+                <td style="width:25%;">操作</td>
+            </tr>
+            </thead>
+            <?php  if(is_array($batch_info)) { foreach($batch_info as $val) { ?>
+                <tr>
+                    <td><?php  echo $val['batch_num'];?></td>
+                    <td><?php  echo $val['createtime'];?></td>
+                    <td>
+                        <div class="see" style="width:fit-content;" onclick="javascript:window.location.href='./index.php?i=3&c=entry&do=account&m=sz_yi&p=bookkeeping&op=watch_voucher&id='+<?php  echo $val['id'];?>;">查看</div>
+                    </td>
+                </tr>
+            <?php  } } ?>
+        </table>
+        <?php  } ?>
+    </div>
+</div>
+
+<script language="javascript">
+    require(['tpl', 'core'], function(tpl, core) {
+        $('.page_head').find('.left').click(function(){
+            window.history.back(-1);
+        });
+    });
+
+</script>
+
+<?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/footer', TEMPLATE_INCLUDEPATH)) : (include template('common/footer', TEMPLATE_INCLUDEPATH));?>

@@ -1,0 +1,127 @@
+{include file="common/header_inner_new"}
+
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .continue,.typename{display:none;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="hidden" name="id" value="{$id}">
+            <input type="hidden" name="plain_id" value="{$plain_id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">标签名称</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" name="label_name" placeholder="请输入标签名称" lay-verify="required">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">标签类别</div>
+                            <div class="layui-input-block">
+                                <select name="label_type" id="label_type" lay-filter="label_type" lay-verify="required">
+                                    <option value="">请选择标签类别</option>
+                                    <option value="1">id</option>
+                                    <option value="2">class</option>
+                                    <option value="3">无</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item typename">
+                            <div class="layui-form-label">类别名称</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" name="type_name" placeholder="如有多个类别名称请用“，”号隔开">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">标签属性</div>
+                            <div class="layui-input-block">
+                                <select name="label_attr" id="label_attr" lay-filter="label_attr" lay-verify="required">
+                                    <option value="">请选择标签属性</option>
+                                    <option value="1">href-获取a标签下的链接</option>
+                                    <option value="2">text-获取标签下的普通文本</option>
+                                    <option value="3">src-获取img标签的链接</option>
+                                    <option value="4">无-获取标签下其他标签</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item continue">
+                            <div class="layui-form-label">往下爬取</div>
+                            <div class="layui-input-block">
+                                <select name="is_continue" id="is_continue">
+                                    <option value="1">是</option>
+                                    <option value="2">否</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+
+        form.on('select(label_attr)',function(data){
+            let val = data.value;
+            if(val==1){
+                $('.continue').show();
+            }else{
+                $('.continue').hide();
+            }
+        });
+        form.on('select(label_type)',function(data){
+            let val = data.value;
+            if(val==3){
+                $('.typename').hide();
+            }else{
+                $('.typename').show();
+            }
+        });
+        
+
+        form.on('submit(component-form-element)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            $.ajax({
+                url:"{:Url('admin/officialwebsite/add_label')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+
+</script>
+</body>
+</html>

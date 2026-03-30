@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.baidu.com" versionCode="0.6">
+	<application setting="false">
+		<name><![CDATA[智慧旅游景区]]></name>
+		<identifie><![CDATA[bm_attraction]]></identifie>
+		<version><![CDATA[2.1.5]]></version>
+		<type><![CDATA[business]]></type>
+		<ability><![CDATA[美丽景区]]></ability>
+		<description><![CDATA[景区视频与图文介绍、自助语音导游、地图展示等。]]></description>
+		<author><![CDATA[微赞]]></author>
+		<url><![CDATA[http://www.baidu.com]]></url>
+	</application>
+	<platform>
+		<subscribes>
+		</subscribes>
+		<handles>
+			<message type="text" />
+		</handles>
+		<rule embed="true" />
+	</platform>
+	<bindings>
+		<menu>
+			<entry title="景点管理" do="classify" state="" direct="false" />
+			<entry title="其他景点" do="other" state="" direct="false" />
+			<entry title="幻灯片管理" do="slide" state="" direct="false" />
+		</menu>
+	</bindings>
+	<install><![CDATA[
+CREATE TABLE IF NOT EXISTS `ims_bm_attraction_classify` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `weid` int(11) NOT NULL,
+  `sort` int(11) NOT NULL,
+  `spottitle` varchar(30) NOT NULL,
+  `department_id` int(11) NOT NULL,
+  `spotdesc` varchar(200) NOT NULL,
+  `spotpic` varchar(200) NOT NULL,
+  `spotinfo` text NOT NULL,
+  `spotrecord` varchar(200) NOT NULL,
+  `spotcolor` varchar(100) NOT NULL,
+  `spottime` varchar(100) NOT NULL,
+  `spotdistance` varchar(10) NOT NULL,
+  `spotsmallpic` varchar(200) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_bm_attraction_other` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `weid` int(11) NOT NULL,
+  `sort` int(11) NOT NULL,
+  `spottitle` varchar(30) NOT NULL,
+  `department_id` int(11) NOT NULL,
+  `spotdesc` varchar(200) NOT NULL,
+  `spotpic` varchar(200) NOT NULL,
+  `spotinfo` text NOT NULL,
+  `spotrecord` varchar(200) NOT NULL,
+  `spotcolor` varchar(100) NOT NULL,
+  `spottime` varchar(100) NOT NULL,
+  `spotdistance` varchar(10) NOT NULL,
+  `spotsmallpic` varchar(200) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_bm_attraction_reply` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `rid` int(10) unsigned NOT NULL DEFAULT '0',
+  `weid` int(11) NOT NULL,
+  `title` varchar(30) NOT NULL,
+  `picurl` varchar(500) NOT NULL,
+  `info` varchar(500) NOT NULL,
+  `department` varchar(100) NOT NULL,
+  `gonglueurl` varchar(200) NOT NULL,
+  `gonglue` text NOT NULL,
+  `imageurl` varchar(200) NOT NULL,
+  `imageinfo` text NOT NULL,
+  `map` varchar(100) NOT NULL,
+  `mapdesc` varchar(100) NOT NULL,
+  `detail` text NOT NULL,
+  `startdesc` varchar(100) NOT NULL,
+  `startrecord` varchar(200) NOT NULL,
+  `startinfo` text NOT NULL,
+  `lng` decimal(12,6) DEFAULT '0.000000',
+  `lat` decimal(12,6) DEFAULT '0.000000',
+  `telephone` varchar(20) NOT NULL,
+  `spoturl` varchar(100) NOT NULL,
+  `begin` varchar(100) NOT NULL,
+  `footer` varchar(100) NOT NULL,
+  `gongluepic` varchar(200) NOT NULL,
+  `imagepic` varchar(200) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_bm_attraction_slide` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `weid` int(11) DEFAULT NULL,
+  `hs_pic` text COMMENT '幻灯图片',
+  `createtime` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+]]></install>
+	<uninstall><![CDATA[
+DROP TABLE IF EXISTS `ims_bm_attraction_slide`;
+DROP TABLE IF EXISTS `ims_bm_attraction_reply`;
+DROP TABLE IF EXISTS `ims_bm_attraction_classify`;	
+DROP TABLE IF EXISTS `ims_bm_attraction_other`;	
+	]]></uninstall>
+	<upgrade><![CDATA[upgrade.php]]></upgrade>
+</manifest>

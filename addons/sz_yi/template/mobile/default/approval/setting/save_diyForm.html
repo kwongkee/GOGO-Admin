@@ -1,0 +1,653 @@
+<script src="../addons/sz_yi/static/warehouse/static_file/xm-select.js"></script>
+
+{template 'common/warehouse_header'}
+
+<style>
+    .layui-table td, .layui-table th{ text-align: center;}
+    .layui-table th{ background-color: #ecf6fc; }
+    .required{color: red;font-size: 1.3rem;right: 3px;position: relative;top: 7px;}
+    .icon-right{font-size: 20px;line-height: 20px;padding-right: 10px;vertical-align: middle;}
+    .layui-layer-adminRight{top : 0px !important;}
+    .layui-layer-btn .layui-layer-btn0{border-color: #F7931E!important;background-color: #F7931E!important;}
+    .layui-table-cell{padding:0 2px;}
+    .laytable-cell-1-0-2{height:auto;min-height:auto;}
+    .page_head{width:100%;background:#fff;margin-bottom:5px;box-shadow:0 0 4px #ddd;padding:10px 0 10px;}
+    .page_head .left{width:20%;display:flex;align-items:center;font-size:15px;}
+    .page_head .left .back{width:13px;height:13px;border-top:2px solid #000;border-left:2px solid #000;transform:rotate(-50deg);margin-left:15px;margin-right:5px;}
+    .layui-layer-hui .layui-layer-content{color:#fff;}
+    .layui-form-label{padding-left:8px;}
+
+    .add_form_box{width:98%;padding:5px 10px;box-sizing:border-box;border:1px solid #dcdcdc;margin-left:1%;margin-bottom:15px;}
+    .demonstration{margin-top:15px;}
+    .demonstration p{padding:10px;font-size:18px;text-align: center;color:#fff;background: #1790FF;margin-bottom:15px;}
+    .demonstration .demo{}
+    .demonstration .demo .content_box{margin-top:15px;}
+
+    .content_box .layui-form-label{padding:0 15px;}
+    .content_box .del{width:20px;height:20px;margin-left:8px;padding-top:8px;}
+    .can_add_box{padding:15px 10px 15px 10px;box-sizing: border-box;border:1px solid #1790FF;margin-top:15px;}
+    .can_add_box .name{color:#1790ff;}
+    .can_add_box .del{color:#ff2222;text-align: right;}
+    .can_add_box .new_add{background:#1790ff;text-align: center;width:100%;padding:10px 0;box-sizing:border-box;border-radius:15px;color:#fff;margin-top:15px;}
+</style>
+<div class="page_head">
+    <div class="left" onclick="javascript:window.history.back(-1);">
+        <div class="back"></div>
+        <div style="font-size:15px;padding-top:2px;">返回</div>
+    </div>
+</div>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            {$title}
+        </div>
+        <div class="layui-card-body" style="padding: 0px;">
+            <form class="layui-form" action="" lay-filter="component-form-demo1">
+                <input type="number" name="id" value="{$data['id']}" style="display: none;">
+                <input type="number" name="edit" value="1" style="display: none;">
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">表单名称</label>
+                    <div class="layui-input-block layui-select-fscon">
+                        <input type="text" name="name" lay-verify="required" placeholder="请输入表单名称" autocomplete="off" class="layui-input" value="{$info['name']}">
+                    </div>
+                </div>
+
+                <div class="add_form_box layui-col-xs12">
+                    {if $issee!=1}
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">表单参数</label>
+                        <div class="layui-input-block layui-select-fscon">
+                            <select name="param" lay-filter="param">
+                                <option value="">请表单参数</option>
+                                <option value="1">输入框</option>
+                                <option value="2">单选框</option>
+                                <option value="3">多选框</option>
+                                <option value="4">时间选择框</option>
+                                <option value="5">文件上传框</option>
+                            </select>
+                        </div>
+                    </div>
+                    {/if}
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">参数名称</label>
+                        <div class="layui-input-block layui-select-fscon">
+                            <input type="text" name="param_name" placeholder="请输入参数名称" autocomplete="off" class="layui-input" value="">
+                        </div>
+                    </div>
+                    <div class="layui-form-item select_val" style="display: none;">
+                        <label class="layui-form-label">参数属性</label>
+                        <div class="layui-input-block layui-select-fscon">
+                            <input type="text" name="select_val" placeholder="请输入参数可选属性,用','隔开" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">可新增参数</label>
+                        <div class="layui-input-block layui-select-fscon">
+                            <select name="can_add" lay-filter="can_add">
+                                <option value="1">不可以</option>
+                                <option value="2">可以</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-col-xs12" style="text-align: center;">
+                            <div class="layui-btn" onclick="add()">添加</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item demonstration">
+                    <p>表单模板演示</p>
+                    <div class="demo layui-col-xs12">
+                        {if !empty($info['id'])}
+                            {php $count=0}
+                            {loop $info['diy_form_fields'] $k $v}
+                                {if $v['can_add']==1}
+                                    {if $v['param']==1}
+                                        <div class="layui-col-xs12 content_box">
+                                           <label class="layui-form-label">
+                                               <input name="label_name[]" class="layui-input" value="{$v['label_name']}" lay-verify="required">
+                                               <input name="param[]" style="display:none;" value="{$v['param']}">
+                                               <input name="select_value[]" style="display:none;" value="{$v['select_value']}">
+                                               <input name="can_add[]" style="display:none;" value="{$v['can_add']}">
+                                           </label>
+                                           <div class="layui-input-block layui-select-fscon">
+                                               <div class="layui-col-xs10">
+                                                   <input class="layui-input" placeholder="输入框信息">
+                                               </div>
+                                               <div class="layui-col-xs2">
+                                                   <img src="../attachment/del.png" class="del" onclick="del(this)">
+                                               </div>
+                                            </div>
+                                        </div>
+                                    {elseif $v['param']==2}
+                                        <div class="layui-col-xs12 content_box">
+                                            <label class="layui-form-label">
+                                                <input name="label_name[]" class="layui-input" value="{$v['label_name']}" lay-verify="required">
+                                                <input name="param[]" style="display:none;" value="{$v['param']}">
+                                                <input name="select_value[]" style="display:none;" value="{$v['select_value']}">
+                                                <input name="can_add[]" style="display:none;" value="{$v['can_add']}">
+                                            </label>
+                                            <div class="layui-input-block layui-select-fscon">
+                                                <div class="layui-col-xs10">
+                                                    <select name="select_demo">
+                                                        {loop $v['select_value2'] $k2 $v2}
+                                                        <option value="">{$v2}</option>
+                                                        {/loop}
+                                                    </select>
+                                                </div>
+                                                <div class="layui-col-xs2">
+                                                    <img src="../attachment/del.png" class="del" onclick="del(this)">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {elseif $v['param']==3}
+                                        <div class="layui-col-xs12 content_box">
+                                            <label class="layui-form-label">
+                                                <input name="label_name[]" class="layui-input" value="{$v['label_name']}" lay-verify="required">
+                                                <input name="param[]" style="display:none;" value="{$v['param']}">
+                                                <input name="select_value[]" style="display:none;" value="{$v['select_value']}">
+                                                <input name="can_add[]" style="display:none;" value="{$v['can_add']}">
+                                            </label>
+                                            <div class="layui-input-block layui-select-fscon">
+                                                <div class="layui-col-xs10">
+                                                    <div id="xm-select-demo{$v['random_name']}" class="xm-select-demo"></div>
+                                                </div>
+                                                <div class="layui-col-xs2">
+                                                    <img src="../attachment/del.png" class="del" onclick="del(this)">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {elseif $v['param']==4}
+                                        <div class="layui-col-xs12 content_box">
+                                            <label class="layui-form-label">
+                                                <input name="label_name[]" class="layui-input" value="{$v['label_name']}" lay-verify="required">
+                                                <input name="param[]" style="display:none;" value="{$v['param']}">
+                                                <input name="select_value[]" style="display:none;" value="{$v['select_value']}">
+                                                <input name="can_add[]" style="display:none;" value="{$v['can_add']}">
+                                            </label>
+                                            <div class="layui-input-block layui-select-fscon">
+                                                <div class="layui-col-xs10">
+                                                    <input type="text" name="date_demo" class="layui-input" id="date_demo{$v['random_name']}" placeholder="时间选择框">
+                                                </div>
+                                                <div class="layui-col-xs2">
+                                                    <img src="../attachment/del.png" class="del" onclick="del(this)">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {elseif $v['param']==5}
+                                        <div class="layui-col-xs12 content_box">
+                                            <label class="layui-form-label">
+                                                <input name="label_name[]" class="layui-input" value="{$v['label_name']}" lay-verify="required">
+                                                <input name="param[]" style="display:none;" value="{$v['param']}">
+                                                <input name="select_value[]" style="display:none;" value="{$v['select_value']}">
+                                                <input name="can_add[]" style="display:none;" value="{$v['can_add']}">
+                                            </label>
+                                            <div class="layui-input-block layui-select-fscon">
+                                                <div class="layui-col-xs10">
+                                                  <div class="layui-input-block" style="margin-left:0;">
+                                                     <div class="layui-upload" style="text-align:left;">
+                                                        <div class="layui-btn" onclick="javascript:alert('仅限于模板演示，不可上传文件！');">上传文件</div>
+                                                        <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                                                              预览图：
+                                                              <div class="layui-upload-list" id="transport_file-upload-list"></div>
+                                                        </blockquote>
+                                                     </div>
+                                                  </div>
+                                                </div>
+                                                <div class="layui-col-xs2">
+                                                    <img src="../attachment/del.png" class="del" onclick="del(this)">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {/if}
+                                {elseif $v['can_add']==2}
+                                    {if $count==0}
+                                        <div class="can_add_box layui-col-xs12">
+                                            <div class="layui-col-xs12">
+                                                <div class="layui-col-xs6 name">
+                                                    {$info['name']}明细 1
+                                                </div>
+                                                {if $issee==0}
+                                                <div class="layui-col-xs6 del" onclick="javascript:alert('仅限于模板演示，不可删除！');">删除</div>
+                                                {/if}
+                                            </div>
+                                            {loop $can_add $kk $vv}
+                                                {if $vv['param']==1}
+                                                    <div class="layui-col-xs12 content_box">
+                                                    <label class="layui-form-label">
+                                                        <input name="label_name[]" class="layui-input" value="{$vv['label_name']}" lay-verify="required">
+                                                        <input name="param[]" style="display:none;" value="{$vv['param']}">
+                                                        <input name="select_value[]" style="display:none;" value="{$vv['select_value']}">
+                                                        <input name="can_add[]" style="display:none;" value="{$vv['can_add']}">
+                                                    </label>
+                                                    <div class="layui-input-block layui-select-fscon">
+                                                        <div class="layui-col-xs10">
+                                                            <input class="layui-input" placeholder="输入框信息">
+                                                        </div>
+                                                        <div class="layui-col-xs2">
+                                                            <img src="../attachment/del.png" class="del" onclick="del(this)">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {elseif $vv['param']==2}
+                                                    <div class="layui-col-xs12 content_box">
+                                                    <label class="layui-form-label">
+                                                        <input name="label_name[]" class="layui-input" value="{$vv['label_name']}" lay-verify="required">
+                                                        <input name="param[]" style="display:none;" value="{$vv['param']}">
+                                                        <input name="select_value[]" style="display:none;" value="{$vv['select_value']}">
+                                                        <input name="can_add[]" style="display:none;" value="{$vv['can_add']}">
+                                                    </label>
+                                                    <div class="layui-input-block layui-select-fscon">
+                                                        <div class="layui-col-xs10">
+                                                            <select name="select_demo">
+                                                                {loop $vv['select_value2'] $k2 $v2}
+                                                                <option value="">{$v2}</option>
+                                                                {/loop}
+                                                            </select>
+                                                        </div>
+                                                        <div class="layui-col-xs2">
+                                                            <img src="../attachment/del.png" class="del" onclick="del(this)">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {elseif $vv['param']==3}
+                                                    <div class="layui-col-xs12 content_box">
+                                                    <label class="layui-form-label">
+                                                        <input name="label_name[]" class="layui-input" value="{$vv['label_name']}" lay-verify="required">
+                                                        <input name="param[]" style="display:none;" value="{$vv['param']}">
+                                                        <input name="select_value[]" style="display:none;" value="{$vv['select_value']}">
+                                                        <input name="can_add[]" style="display:none;" value="{$vv['can_add']}">
+                                                    </label>
+                                                    <div class="layui-input-block layui-select-fscon">
+                                                        <div class="layui-col-xs10">
+                                                            <div id="xm-select-demo{$vv['random_name']}" class="xm-select-demo"></div>
+                                                        </div>
+                                                        <div class="layui-col-xs2">
+                                                            <img src="../attachment/del.png" class="del" onclick="del(this)">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {elseif $vv['param']==4}
+                                                    <div class="layui-col-xs12 content_box">
+                                                    <label class="layui-form-label">
+                                                        <input name="label_name[]" class="layui-input" value="{$vv['label_name']}" lay-verify="required">
+                                                        <input name="param[]" style="display:none;" value="{$vv['param']}">
+                                                        <input name="select_value[]" style="display:none;" value="{$vv['select_value']}">
+                                                        <input name="can_add[]" style="display:none;" value="{$vv['can_add']}">
+                                                    </label>
+                                                    <div class="layui-input-block layui-select-fscon">
+                                                        <div class="layui-col-xs10">
+                                                            <input type="text" name="date_demo" class="layui-input" id="date_demo{$vv['random_name']}" placeholder="时间选择框">
+                                                        </div>
+                                                        <div class="layui-col-xs2">
+                                                            <img src="../attachment/del.png" class="del" onclick="del(this)">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {/if}
+                                            {/loop}
+                                            <div class="new_add layui-col-xs12" onclick="javascript:alert('仅限于模板演示，不可新增！');">新增</div>
+                                        </div>
+                                    {/if}
+                                    {php $count+=1;}
+                                {/if}
+                            {/loop}
+                        {/if}
+                    </div>
+                </div>
+
+                {if $issee!=1}
+                <div class="layui-form-item layui-layout-admin">
+                    <div class="layui-input-block">
+                        <div class="layui-footer" style="left: 0;text-align:center;">
+                            <button class="layui-btn" lay-submit="" lay-filter="component-form-demo1">立即提交</button>
+                            <!--<button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+                        </div>
+                    </div>
+                </div>
+                {/if}
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['layer', 'form', 'table', 'upload', 'laydate','jquery'], function () {
+        var layer = layui.layer
+            , form = layui.form
+            , element = layui.element
+            , laydate = layui.laydate
+            , upload = layui.upload
+            , table = layui.table
+            , $ = layui.jquery;
+
+        form.render(null, 'component-form-demo1');
+        {if $issee==1}
+            $('.del').hide();
+        {/if}
+
+        {if !empty($info['id'])}
+            {php $count2=0;}
+            {loop $info['diy_form_fields'] $k $v}
+                {if $v['can_add']==1}
+                    {if $v['param']==3}
+                        xmSelect.render({
+                            el: '#xm-select-demo'+"{$v['random_name']}",
+                            paging: true,
+                            pageSize: 5,
+                            filterable: true,
+                            prop: {
+                                name: 'name',
+                                value: 'id',
+                            },
+                            autoRow: true,
+                            data: {$v['select_value2']},
+                            name: 'authList',
+                            layVerify: 'required',
+                            layVerType: 'msg',
+                            // initValue: [$info['authList']]
+                        });
+                    {elseif $v['param']==4}
+                        laydate.render({
+                            elem: '#date_demo'+"{$v['random_name']}"
+                            ,type: 'datetime'
+                            ,format: 'yyyy-MM-dd HH:mm:ss'
+                            // ,value: new Date()
+                        });
+                    {/if}
+                {elseif $v['can_add']==2}
+                    {if $count2==0}
+                        {loop $can_add $kk $vv}
+                            {if $vv['param']==3}
+                                xmSelect.render({
+                                    el: '#xm-select-demo'+"{$vv['random_name']}",
+                                    paging: true,
+                                    pageSize: 5,
+                                    filterable: true,
+                                    prop: {
+                                        name: 'name',
+                                        value: 'id',
+                                    },
+                                    autoRow: true,
+                                    data: {$vv['select_value2']},
+                                    name: 'authList',
+                                    layVerify: 'required',
+                                    layVerType: 'msg',
+                                    // initValue: [$info['authList']]
+                                });
+                            {elseif $vv['param']==4}
+                                laydate.render({
+                                    elem: '#date_demo'+"{$vv['random_name']}"
+                                    ,type: 'datetime'
+                                    ,format: 'yyyy-MM-dd HH:mm:ss'
+                                    // ,value: new Date()
+                                });
+                            {/if}
+                        {/loop}
+                    {/if}
+                    {php $count2+=1;}
+                {/if}
+            {/loop}
+        {/if}
+
+        /* 监听提交 */
+        form.on('submit(component-form-demo1)', function(data){
+            $.ajax({
+                url:"./index.php?i=3&c=entry&do=approval&p=index&m=sz_yi&op=save_diyForm",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:3000}, function () {
+                        if(res.code == 0)
+                        {
+                            window.history.back(-1);
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:3000});
+                }
+            });
+            return false;
+        });
+
+        form.on('select(param)',function(data){
+            let val = data.value;
+            $('input[name="select_val"]').val("");
+            $('input[name="param_name"]').val("");
+            if(val==2 || val==3){
+                $('.select_val').show();
+            }else{
+                if(val==5){
+                    $('select[name="param"]').find('option[value="5"]').attr('disabled','disabled');
+                }
+                $('.select_val').hide();
+            }
+            form.render(null, 'component-form-demo1');
+        });
+    });
+
+    function add(){
+        var layer = layui.layer
+            , $ = layui.jquery
+            , form = layui.form
+            , laydate = layui.laydate;
+
+        let name = $('input[name="name"]').val();
+        let param = $('select[name="param"] :selected').val();
+        let param_name = $('input[name="param_name"]').val();
+        let select_val = $('input[name="select_val"]').val();
+        let can_add = $('select[name="can_add"] :selected').val();
+
+        if(can_add==2 && param==5){
+            layer.msg('文件上传框不可添加到可新增多个列表中！');return false;
+        }
+
+        if(param==''){
+            layer.msg('请选择表单参数！');return false;
+        }
+        if(param_name==''){
+            layer.msg('请填写参数名称！');return false;
+        }
+        if((param==2 || param==3) && select_val == ''){
+            layer.msg('请填写参数可选择的属性！');return false;
+        }
+        let html = '';
+        var xm_data = '';
+        var xm_random = '';
+        var date_random = '';
+
+        if(param==1){
+            //输入框
+            html += '<div class="layui-col-xs12 content_box">\n' +
+                '       <label class="layui-form-label">\n'+
+                '           <input name="label_name[]" class="layui-input" value="'+param_name+'" lay-verify="required">\n'+
+                '           <input name="param[]" style="display:none;" value="1">\n'+
+                '           <input name="select_value[]" style="display:none;" value="">\n'+
+                '           <input name="can_add[]" style="display:none;" value="'+can_add+'">\n'+
+                '       </label>\n'+
+                '       <div class="layui-input-block layui-select-fscon">\n'+
+                '       <div class="layui-col-xs10">\n'+
+                '           <input class="layui-input" placeholder="输入框信息">\n'+
+                '       </div>\n'+
+                '       <div class="layui-col-xs2">\n'+
+                '           <img src="../attachment/del.png" class="del" onclick="del(this)">\n'+
+                '       </div>\n'+
+                '    </div>';
+
+        }
+        else if(param==2){
+            //选择框
+            html += '<div class="layui-col-xs12 content_box">\n' +
+                '       <label class="layui-form-label">\n' +
+                '           <input name="label_name[]"  class="layui-input" value="' + param_name + '" lay-verify="required">\n' +
+                '           <input name="param[]" style="display:none;" value="2">\n' +
+                '           <input name="select_value[]" style="display:none;" value="' + select_val + '">\n' +
+                '           <input name="can_add[]" style="display:none;" value="'+can_add+'">\n'+
+                '       </label>\n' +
+                '       <div class="layui-input-block layui-select-fscon">\n' +
+                '       <div class="layui-col-xs10">\n' +
+                '          <select name="select_demo">\n';
+            //拆分选择框信息
+            let select_val2 = select_val.split(",");
+            for (let i = 0; i < select_val2.length; i++) {
+                if (select_val2[i] != '') {
+                    html += '    <option value="">' + select_val2[i] + '</option>\n';
+                }
+            }
+            html += '          </select>\n' +
+                '       </div>\n' +
+                '       <div class="layui-col-xs2">\n'+
+                '           <img src="../attachment/del.png" class="del" onclick="del(this)">\n'+
+                '       </div>\n'+
+                '    </div>';
+        }
+        else if(param==3){
+            //多选框
+            xm_random = getRandomNum(1111, 9999);
+            html += '<div class="layui-col-xs12 content_box">\n' +
+                '       <label class="layui-form-label">\n' +
+                '           <input name="label_name[]"  class="layui-input" value="' + param_name + '" lay-verify="required">\n' +
+                '           <input name="param[]" style="display:none;" value="3">\n' +
+                '           <input name="select_value[]" style="display:none;" value="' + select_val + '">\n' +
+                '           <input name="can_add[]" style="display:none;" value="'+can_add+'">\n'+
+                '       </label>\n' +
+                '       <div class="layui-input-block layui-select-fscon">\n' +
+                '       <div class="layui-col-xs10">\n' +
+                '          <div id="xm-select-demo' + xm_random + '" class="xm-select-demo"></div>\n' +
+                '       </div>\n' +
+                '       <div class="layui-col-xs2">\n'+
+                '           <img src="../attachment/del.png" class="del" onclick="del(this)">\n'+
+                '       </div>\n'+
+                '    </div>';
+            //拆分选择框信息
+            let select_val2 = select_val.split(",");
+            xm_data = '[';
+            for (let i = 0; i < select_val2.length; i++) {
+                if (select_val2[i] != '') {
+                    xm_data += '{"name":"' + select_val2[i] + '","id":"' + i + '"},';
+                }
+            }
+            xm_data += ']';
+        }
+        else if(param==4){
+            //时间选择框
+            date_random = getRandomNum(1111,9999);
+            html += '<div class="layui-col-xs12 content_box">\n' +
+                '       <label class="layui-form-label">\n' +
+                '           <input name="label_name[]"  class="layui-input" value="' + param_name + '" lay-verify="required">\n' +
+                '           <input name="param[]" style="display:none;" value="4">\n' +
+                '           <input name="select_value[]" style="display:none;" value="">\n' +
+                '           <input name="can_add[]" style="display:none;" value="'+can_add+'">\n'+
+                '       </label>\n' +
+                '       <div class="layui-input-block layui-select-fscon">\n' +
+                '       <div class="layui-col-xs10">\n' +
+                '          <input type="text" name="date_demo" class="layui-input" id="date_demo' + date_random + '" placeholder="时间选择框">\n' +
+                '       </div>\n' +
+                '       <div class="layui-col-xs2">\n'+
+                '           <img src="../attachment/del.png" class="del" onclick="del(this)">\n'+
+                '       </div>\n'+
+                '    </div>';
+        }
+        else if(param==5) {
+            //文件上传框
+            html += '<div class="layui-col-xs12 content_box upload_file">\n' +
+                '       <label class="layui-form-label">\n'+
+                '           <input name="label_name[]"  class="layui-input" value="'+param_name+'" lay-verify="required">\n'+
+                '           <input name="param[]" style="display:none;" value="5">\n'+
+                '           <input name="select_value[]" style="display:none;" value="">\n'+
+                '           <input name="can_add[]" style="display:none;" value="'+can_add+'">\n'+
+                '       </label>\n'+
+                '       <div class="layui-input-block layui-select-fscon">\n'+
+                '       <div class="layui-col-xs10">\n'+
+                '          <div class="layui-input-block" style="margin-left:0;">\n' +
+                '             <div class="layui-upload" style="text-align:left;">\n' +
+                '                <div class="layui-btn" onclick="javascript:alert('+"'"+'仅限于模板演示，不可上传文件！'+"'"+');">上传文件</div>\n' +
+                '                <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">\n' +
+                '                      预览图：\n' +
+                '                      <div class="layui-upload-list" id="transport_file-upload-list"></div>\n' +
+                '                </blockquote>\n' +
+                '             </div>\n' +
+                '          </div>\n'+
+                '       </div>\n'+
+                '       <div class="layui-col-xs2">\n'+
+                '           <img src="../attachment/del.png" class="del" onclick="del(this)">\n'+
+                '       </div>\n'+
+                '    </div>';
+        }
+
+        if(can_add==1) {
+            $('.demo').append(html);
+        } else if(can_add==2){
+            if($('div').hasClass('can_add_box')){
+                $('.new_add').remove();
+                $('.demo').find('.can_add_box').append(html+'<div class="new_add layui-col-xs12" onclick="javascript:alert('+"'"+'仅限于模板演示，不可新增！'+"'"+');">新增</div>');
+            }else{
+                $('.demo').append('<div class="can_add_box layui-col-xs12"><div class="layui-col-xs12"><div class="layui-col-xs6 name">'+name+'明细'+' 1'+'</div><div class="layui-col-xs6 del" onclick="javascript:alert('+"'"+'仅限于模板演示，不可删除！'+"'"+');">删除</div></div>'+html+'<div class="new_add layui-col-xs12" onclick="javascript:alert('+"'"+'仅限于模板演示，不可新增！'+"'"+');">新增</div></div>');
+            }
+        }
+        if(param==3){
+            //多选框
+            // console.log(xm_data.substr(0,xm_data.length-2)+']');return false;
+            xm_data = JSON.parse(xm_data.substr(0,xm_data.length-2)+']');
+            // console.log(xm_data);return false;
+            xmSelect.render({
+                el: '#xm-select-demo'+xm_random,
+                paging: true,
+                pageSize: 5,
+                filterable: true,
+                prop: {
+                    name: 'name',
+                    value: 'id',
+                },
+                autoRow: true,
+                data: xm_data,
+                name: 'xm-select-demo',
+                //layVerify: 'required',
+                layVerType: 'msg',
+            });
+        }
+        else if(param==4){
+            //时间选择框
+            laydate.render({
+                elem: '#date_demo'+date_random
+                ,type: 'datetime'
+                ,format: 'yyyy-MM-dd HH:mm:ss'
+                // ,value: new Date()
+            });
+        }
+        $('select[name="param"]').find('option[value=""]').removeAttr('selected');
+        $('select[name="param"]').find('option[value=""]').attr('selected','selected');
+
+        form.render(null,'component-form-demo1');
+        layer.msg('已添加',{time:1000});
+    }
+
+    function getRandomNum(Min,Max)
+    {
+        var Range = Max - Min;
+        var Rand = Math.random();
+        return(Min + Math.round(Rand * Range));
+    }
+
+    function del(t){
+        var layer = layui.layer
+            , $ = layui.jquery
+            , form = layui.form
+            , laydate = layui.laydate;
+
+        if($(t).parent().parent().parent().hasClass('upload_file')){
+            $('select[name="param"]').find('option[value="5"]').removeAttr('disabled');
+            form.render(null,'component-form-demo1');
+        }
+
+        $(t).parent().parent().parent().remove();
+        if(typeof($('.can_add_box').find('.content_box').html())=='undefined'){
+            $('.can_add_box').remove();
+        }
+    }
+</script>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>海关申报系统菜单管理</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <style>
+        .layui-form-label{
+            width:114px;
+        }
+        .layui-input-block {
+            margin-left: 145px;
+        }
+        .reason{display: none;}
+    </style>
+</head>
+<body>
+
+<form class="layui-form" action="">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <input type="hidden" name="id" value="{$data['id']}">
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">订单商品</label>
+        <div class="layui-input-block">
+            {foreach $data['goods'] as $k => $v}
+                <span><a href="https://shop.gogo198.cn/app/index.php?i={$v['uniacid']}&c=entry&p=detail&id={$v['id']}&do=shop&m=sz_yi" target="_blank">{$v['title']}</a></span><br/>
+            {/foreach}
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">审核状态</label>
+        <div class="layui-input-block">
+            <select name="status" lay-filter="status" lay-verify="required">
+                <option value="0" {if condition="$data['status'] eq 0"} selected {/if}>待审核</option>
+                <option value="1"  {if condition="$data['status'] eq 1"} selected {/if}>通过</option>
+                <option value="2"  {if condition="$data['status'] eq 2"} selected {/if}>不通过</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item {$data['status']==2?'':'reason'}">
+        <label class="layui-form-label">不通过原因</label>
+        <div class="layui-input-block">
+            <textarea name="check_remark" id="check_remark" cols="30" rows="10" placeholder="请输入不通过原因">{$data['check_remark']}</textarea>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">编辑数据</button>
+            <button type="reset" class="layui-btn layui-btn-danger">重置数据</button>
+        </div>
+    </div>
+</form>
+
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+
+<script>
+    //Demo
+    layui.use('form', function(){
+        var form = layui.form;
+
+        form.on('select(status)', function(data){
+            if(data.value == 2){
+                $('.reason').show();
+                form.render('select');
+            }else{
+                $('.reason').hide();
+                $('.reason').find('#check_remark').val('');
+                form.render('select');//select是固定写法 不是选择器
+            }
+        });
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            if(data.field.status=='2' && data.field.check_remark==''){
+                layer.msg('请输入不通过原因');
+                return false;
+            }
+
+            $.ajax({
+                url:"{:Url('admin/elec/shoporder_approve_edit')}",
+                type:"POST",
+                dataType:"json",
+                data:data.field,
+                success:function (res) {
+                    // var red = JSON.parse(res);
+                    console.log(res.code);
+                    if(res.code < 1) {
+                        layer.msg(res.msg);
+                        return false;
+                    }
+                    layer.msg(res.msg);
+                    setTimeout(function(){
+                        // layer.closeAll();
+                        // parent.window.location.reload();
+                        parent.window.table.bootstrapTable('refresh');
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                    },1200)
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</html>

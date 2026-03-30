@@ -1,0 +1,232 @@
+<?php defined('IN_IA') or exit('Access Denied');?><!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<title>清单列表</title>
+	<link rel="stylesheet" type="text/css" href="../addons/sz_yi/static/travel_express/css/hui.css" />
+	<link rel="stylesheet" type="text/css" href="../addons/sz_yi/static/travel_express/css/style.css" />
+	<style>
+        .hui-header h1{
+            padding: 0px 38px 0px 0;
+        }
+        .hui-list-text{
+            border-bottom: 1px solid #969696;
+            padding: 0 10px;
+            margin-left: 0px;
+        }
+        .hui-form-items-title {
+            width: 34%;
+        }
+        .hui-button {
+		    margin: 0 5%;
+		}
+    </style>
+</head>
+<body>
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1>清单列表</h1>
+</header>
+
+<div class="hui-wrap">
+    <?php  if(!$order) { ?>
+    <div style="padding:15px 8px; width: 75%;">
+        <button type="button" class="hui-button hui-primary hui-fr red" id="submitBtn"><img src="../addons/sz_yi/static/images/icon_07.png" alt="" class="button-pic">请先增加物品</button>
+    </div>
+    <?php  } else { ?>
+    <div class="wrap-top">
+        <div class="hui-footer-icons hui-icons-news top-icon" style="margin: 4px 10px 0 0;"></div>
+        <div class="text-title">
+            <p style="line-height: 34px;">单号<span class="title-en text-space" style="color: #0077ac;">(Single number)</span>：<?php  echo $order[0]['ordersn'];?></p>
+        </div>
+        <!-- <div class="status">待提交</div> -->
+    </div>
+    <div class="hui-list" style="background:#f7f7f7; margin:0 10px; border-bottom: 1px solid #969696;">
+        <ul>
+            <?php  if(is_array($order)) { foreach($order as $v) { ?>
+            <li>
+                <a href="javascript:void(0);">
+                    <div class="hui-list-text">
+                        <?php  if($v['brand_cn']=='0') { ?><?php  echo $v['brand_cn_other'];?><?php  } else { ?><?php  echo $v['brand_cn'];?><?php  } ?>(<?php  if($v['brand_en']=='0') { ?><?php  echo $v['brand_en_other'];?><?php  } else { ?><?php  echo $v['brand_en'];?><?php  } ?>)-<?php  echo $v['model'];?>-<?php  echo $v['material'];?>
+                        <div class="hui-list-info">
+                            <span class="hui-icons hui-icons-edit font-blue iconfont" onclick="javascript:window.location.href='<?php  echo $this->createMobileUrl('member/travel_express_receive')?>&op=edit&id=<?php  echo $v['id'];?>'" style="margin-right: 10px;"></span>
+                            <span class="hui-icons hui-icons-remove font-red iconfont" onclick="deletes('<?php  echo $v['id'];?>');"></span>
+                        </div>
+                    </div>
+                </a>
+            </li>
+            <?php  } } ?>         
+        </ul>
+    </div>
+
+    <div class="wrap-top" style="margin-top: 20px;">
+        <div class="hui-footer-icons hui-icons-news top-icon" style="margin: 4px 10px 0 0;"></div>
+        <div class="text-title">
+            <p style="line-height: 34px;">选择交货方式<span class="title-en text-space" style="color: #0077ac;">(Choose delivery method)</span></p>
+        </div>
+    </div>
+    <form style="padding:0 10px;" class="hui-form" id="form1">
+        <input type="hidden" name="ordersn" value="<?php  echo $order[0]['ordersn'];?>">
+        <div class="hui-form-items">
+            <div class="hui-form-items-title"><p><span class="font-red">*</span>收件地址</p><p class="sizes">Receiving address
+            </p></div>
+            <div class="hui-form-select wrap-select">
+                <select name="collect_id" id="collect_id">
+                    <?php  if(is_array($address)) { foreach($address as $v) { ?>
+                    <option value="<?php  echo $v['id'];?>"><?php  echo $v['realname'];?>-<?php  echo $v['mobile'];?>-<?php  echo $v['province'];?><?php  echo $v['city'];?><?php  echo $v['area'];?><?php  echo $v['address'];?></option>
+                    <?php  } } ?>
+                </select>
+                <input type="hidden" name="collect_address" id="collect_address">
+            </div>
+        </div>
+        <div class="hui-form-items">
+            <div class="hui-form-items-title"><p><span class="font-red">*</span>交货方式</p><p class="sizes">Delivery Method</p></div>
+            <div class="hui-form-select wrap-select">
+                <select name="select_type" id="select_type">
+                    <option value="1">智能柜 Smart cabinet</option>
+                    <option value="2">仓库交收 Warehouse delivery</option>
+                    <option value="3">上门揽收 Pick up</option>
+                </select>
+            </div>
+        </div>
+        <div class="hui-form-items" id="smart_code">
+            <div class="hui-form-items-title"><p><span class="font-red">*</span>智能柜标识</p><p class="sizes">Smart cabinet Code</p></div>
+            <input type="text" class="hui-input" placeholder="" name="smart_code" style="width: 55% !important;" />
+        </div>
+        <div class="hui-form-items" id="warehouse" style="display: none;">
+            <div class="hui-form-items-title"><p><span class="font-red">*</span>仓库地址</p><p class="sizes">Warehouse address</p></div>
+            <div class="hui-form-select">
+                <select name="warehouse" style="width: 80%;">
+                    <option value="仓库1">仓库1</option>
+                    <option value="仓库2">仓库2</option>
+                </select>
+            </div>
+        </div>
+        <div class="hui-form-items" id="pick_up" style="display: none;">
+            <div class="hui-form-items-title"><p><span class="font-red">*</span>详细地址</p><p class="sizes">Address</p></div>
+            <input type="text" class="hui-input" placeholder="" name="address" style="width: 55% !important;" />
+        </div>
+        
+        <div style="padding:15px 8px; width: 80%; margin: 20px auto 64px;">
+            <button type="button" class="hui-button hui-primary hui-fr red" id="submitBtn"><img src="../addons/sz_yi/static/images/icon_07.png" alt="" class="button-pic">增加物品</button>
+            <button type="button" class="hui-button hui-primary hui-fr blue" id="submitBtn1"><img src="../addons/sz_yi/static/images/icon_08.png" alt="" class="button-pic">提交</button>
+        </div>
+    </form>
+    <?php  } ?>
+    
+</div>
+
+<?php (!empty($this) && $this instanceof WeModuleSite) ? (include $this->template('common/travel_express_footer', TEMPLATE_INCLUDEPATH)) : (include template('common/travel_express_footer', TEMPLATE_INCLUDEPATH));?>
+<script src="../addons/sz_yi/static/js/jquery.js" type="text/javascript" charset="utf-8"></script>
+<script src="../addons/sz_yi/static/travel_express/js/hui.js" type="text/javascript" charset="utf-8"></script>
+<script src="../addons/sz_yi/static/travel_express/js/hui-form.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+hui.formInit();
+
+hui("#collect_address").val($("#collect_id option:first-child").text());
+hui('#collect_id').change(function(){  
+    hui("#collect_address").val($(this).find("option:selected").text())
+});
+
+//表单元素数据收集演示
+hui('#submitBtn').click(function(){
+    window.location.href="<?php  echo $this->createMobileUrl('member/travel_express_receive')?>";
+    var data = hui.getFormData('#form1');
+    console.log(JSON.stringify(data));
+});
+
+function deletes(id) {
+    hui.confirm('您确认要删除该商品吗？', ['取消','确定'], function(){
+        hui.ajax({
+                url  : '<?php  echo $this->createMobileUrl("member/travel_express_list")?>&op=del',
+                type : 'POST',
+                data : {id: id },
+                beforeSend : function(){hui.loading();},
+                complete   : function(){hui.closeLoading();},
+                success : function(res){
+                    hui.toast(res.result.msg);
+                    if(res.status == 1)
+                    {
+                        setTimeout(function(){
+                            location.reload();
+                        }, 2000);
+                    }
+                    
+                },
+                error : function(e){
+                    console.log(JSON.stringify(e));
+                    hui.iconToast('系统错误', 'warn');
+                },
+                'backType' : "JSON"
+            });
+    },function(){
+    });
+}
+hui("#select_type").change(function(){
+    var v = hui(this).val();
+    switch(v)
+    {
+        case '1':
+            $("#smart_code").css("display","flex");
+            hui("#warehouse").hide();
+            hui("#pick_up").hide();
+            break;
+        case '2':
+            hui("#smart_code").hide();
+            $("#warehouse").css("display","flex");
+            hui("#pick_up").hide();
+            break;
+        case '3':
+            hui("#smart_code").hide();
+            hui("#warehouse").hide();
+            $("#pick_up").css("display","flex");
+            break;
+    }
+});
+
+hui('#submitBtn1').click(function(){
+    
+    var data = hui.getFormData('#form1');
+    if(data['select_type'] == 1 && data['smart_code'] == '')
+    {
+        hui.toast('智能柜标识不能为空!');
+        return false;
+    }
+    if(data['select_type'] == 3 && data['address'] == '')
+    {
+        hui.toast('详细地址不能为空!');
+        return false;
+    }
+    
+    hui.confirm('您确认要提交审核吗？', ['取消','确定'], function(){
+        hui.ajax({
+                url  : '<?php  echo $this->createMobileUrl("member/travel_express_list")?>&op=submit',
+                type : 'POST',
+                data : {address: data.address, ordersn: data.ordersn, select_type: data.select_type, smart_code: data.smart_code, warehouse: data.warehouse, collect_address: data.collect_address, collect_id: data.collect_id },
+                beforeSend : function(){hui.loading();},
+                complete   : function(){hui.closeLoading();},
+                success : function(res){
+                    hui.toast(res.result.msg);
+                    if(res.status == 1)
+                    {
+                        setTimeout(function(){
+                            window.location.href="<?php  echo $this->createMobileUrl('member/travel_express')?>";
+                        }, 2000);
+                    }
+                    
+                },
+                error : function(e){
+                    console.log(JSON.stringify(e));
+                    hui.iconToast('系统错误', 'warn');
+                },
+                'backType' : "JSON"
+            });
+    },function(){
+    });
+            
+});
+
+</script>
+</body>
+</html>

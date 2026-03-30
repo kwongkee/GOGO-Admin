@@ -1,0 +1,138 @@
+
+{include file="public/header_new"}
+<body class="gray-bg">
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <h3 style="text-align: center;">换汇机构</h3>
+                <div id="toolbar" class="btn-group" style="margin-top: 10px;margin-bottom: 10px;line-height: 34px;">
+                    <button type="button" href="javascript:;" onClick="data_add('新增机构','{:url('admin/defaultInfo/exchange_add')}')" class="btn btn-default">
+                        新增机构
+                    </button>
+                </div>
+                <table id="table"
+
+                /*默认排序项*/
+                data-sort-name="create_at"
+                data-sort-order="desc"
+                /*工具栏相关*/
+                data-toolbar="#toolbar"
+                data-search="false"          /*搜索框*/
+                data-search-on-enter-key="false"
+                data-show-refresh="true"    /*刷新按钮*/
+                /*分页相关*/
+                data-side-pagination="server"
+                data-pagination="true"      /*显示分页*/
+                data-page-size="15"         /*每页显示条数*/
+                /*移动端相关*/
+                data-mobile-responsive="true"
+                data-card-view="true"
+                data-show-columns="true"
+                /*radio or checkbox字段名称*/
+                data-select-item-name="tids" >
+
+                <thead>
+                <tr>
+                    <th data-field="id"
+                        data-align="center"
+                        data-sortable="true">ID</th>
+                    <th data-field="name"
+                        data-align="center"
+                        data-sortable="true">机构名称</th>
+                    <th data-field="connect_name"
+                        data-align="center"
+                        data-sortable="true">关联结汇机构名称</th>
+                    <th data-field="create_at"
+                        data-align="center"
+                        data-sortable="true">创建时间</th>
+                    <th data-field="manage"
+                        data-align="center"
+                        class="td-manage">操作</th>
+                </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    var table;
+
+    $(document).ready(function(){
+        table = $('#table').bootstrapTable({
+            url: "{:Url('admin/defaultInfo/exchange')}",
+            queryParams: queryParams,
+
+        });
+
+    });
+
+    queryParams = function (params) {
+        var temp = {
+            sort: params.sort,
+            order: params.order,
+            limit: params.limit,            //页面大小
+            offset: params.offset,          //页码
+        };
+        return temp;
+    };
+
+
+    //配置权限
+    function editInfo(title,url,id)
+    {
+        var index = layer.open({
+            type: 2,
+            title: title,
+            content: url + '&id=' + id
+        });
+        layer.full(index);
+    }
+
+    function delInfo(id)
+    {
+        layer.confirm('确认要删除该账户吗？', {
+            btn: ['确认','取消']
+        }, function(){
+            $.ajax({
+                url:'{:Url("admin/defaultInfo/exchange_del")}',
+                type:"POST",
+                dataType:"json",
+                data: { id: id},
+                success:function (res) {
+                    layer.msg(res.message, {
+                        icon: 1,
+                        time: 2000
+                    }, function(){
+                        window.location.reload();
+                    });
+                },
+                error:function (xhr) {
+                    layer.msg('链接服务错误..');
+                }
+            });
+        }, function(){
+
+        });
+    }
+
+    function data_add(title,url)
+    {
+        var index = layer.open({
+            type: 2,
+            title: title,
+            content: url
+        });
+        layer.full(index);
+    }
+
+
+</script>
+
+</body>
+</html>

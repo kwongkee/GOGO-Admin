@@ -1,0 +1,305 @@
+{include file="common/header_inner_new"}
+<!--百度富文本-->
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="static/cklein/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+<style>
+    .format1,.format2,.url,.seo_content,.other_link,.other_navbar{display:none;}
+    .seo_content{border:1px solid #eee;padding:20px;box-sizing: border-box;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element">
+            <input type="text" style="display:none;" name="id" id="id" value="{$id}">
+            <input type="text" style="display:none;" name="system_id" id="system_id" value="{$system_id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">ICO(200*200)</div>
+                            <div class="layui-input-block">
+                                <div class="layui-upload" style="margin-top: 10px;">
+                                    <button type="button" class="layui-btn" id="slogo_file-upload">上传图片(一张)</button>
+                                    <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                                        预览图：
+                                        <div class="layui-upload-list" id="slogo_file-upload-list">
+                                            {if !empty($data['img'])}
+                                            <div style="display: inline-block;">
+                                                <img onclick="seePic(this);" src="/{$data['img']}" class="layui-upload-img" style="width:80px;height:80px;">
+                                                <button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button>
+                                                <input type="hidden" name="img" value="{$data['img']}">
+                                            </div>
+                                            {/if}
+                                        </div>
+                                    </blockquote>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">标题</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" lay-verify="required" name="title" value="{$data['title']}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">描述</div>
+                            <div class="layui-input-block">
+                                <textarea name="desc" id="desc" class="layui-textarea">{$data['desc']}</textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item" style="display: none;">
+                            <div class="layui-form-label">服务描述</div>
+                            <div class="layui-input-block">
+                                <script id="content" name="content" type="text/plain" style="width:100%;height:100px;">
+                                    {if !empty($data['content'])}
+                                        {$data['content']|htmlspecialchars_decode|stripslashes}
+                                    {/if}
+                                </script>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-label">选择关联</div>
+                            <div class="layui-input-block">
+                                <select name="link_type" lay-filter="link_type" >
+                                    {if $system_id==2}
+                                        <option value="1" {if $data['link_type']==1}selected{/if}>关联应用</option>
+                                        <option value="2" {if $data['link_type']==2}selected{/if}>跳转连接</option>
+                                    {elseif($system_id==3)}
+                                        <option value="2" {if $data['link_type']==2}selected{/if}>第三方链接</option>
+                                        <option value="1" {if $data['link_type']==1}selected{/if}>应用链接</option>
+                                        <option value="3" {if $data['link_type']==3}selected{/if}>图文链接</option>
+                                        <option value="4" {if $data['link_type']==4}selected{/if}>消息链接</option>
+                                    {/if}
+                                </select>
+                            </div>
+                        </div>
+                        {if $system_id==2}
+                            <div class="layui-form-item app" style="display:{if $data['link_type']==1}block{else}none{/if};">
+                                <div class="layui-form-label">关联应用</div>
+                                <div class="layui-input-block">
+                                    <div id="function" class="xm-select-demo"></div>
+                                </div>
+                            </div>
+                        {elseif($system_id==3)}
+                            <div class="layui-form-item other_navbar" style="display:{if $data['link_type']==1}block{else}none{/if};">
+                                <div class="layui-form-label">应用链接</div>
+                                <div class="layui-input-block">
+                                    <select name="other_navbar" lay-search>
+                                        <option value="">请选择应用</option>
+                                        {volist name="list" id="vo"}
+                                        <option value="{$vo.id}" {if $data['function_id']==$vo.id}selected{/if}>{$vo.name}</option>
+                                        {/volist}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item other_pic"  style="display:{if $data['link_type']==3}block{else}none{/if};">
+                                <div class="layui-form-label">图文链接</div>
+                                <div class="layui-input-block">
+                                    <select name="other_pic" lay-search>
+                                        <option value="">请选择图文</option>
+                                        {volist name="pic_list" id="vo"}
+                                        <option value="{$vo.id}" {if $data['function_id']==$vo.id}selected{/if}>{$vo.name}</option>
+                                        {/volist}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item other_msg"  style="display:{if $data['link_type']==4}block{else}none{/if};">
+                                <div class="layui-form-label">消息链接</div>
+                                <div class="layui-input-block">
+                                    <select name="other_msg" lay-search>
+                                        <option value="">请选择消息</option>
+                                        {volist name="msg_list" id="vo"}
+                                        <option value="{$vo.id}" {if $data['function_id']==$vo.id}selected{/if}>{$vo.name}</option>
+                                        {/volist}
+                                    </select>
+                                </div>
+                            </div>
+                        {/if}
+                        <div class="layui-form-item link" style="display:{if $data['link_type']==2}block{else}none{/if};">
+                            <div class="layui-form-label">跳转连接</div>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input" name="origin_link" value="{$data['origin_link']}" placeholder="请输入跳转连接">
+                            </div>
+                        </div>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+<script src="./static/hadmin/assets/layui/xm-select.js"></script>
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload','colorpicker'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+        var colorpicker = layui.colorpicker;
+
+        xmSelect.render({
+            el: '#function',
+            autoRow: true, //自动换行
+            filterable: true, //可搜索
+            searchTips: '请搜索',
+            radio: true,
+            name: "function_id",
+            model: {
+                icon: 'hidden',//是否展示复选框或者单选框图标 show, hidden:变换背景色  ！！这句话是重点，不然会变成父节点也有单选框！！
+            },
+            prop:{
+                name: 'content',
+                value: 'id',
+            },
+            tree: {
+                show: true, //用树显示
+                showFolderIcon: true, //是否显示节点前的三角图标
+                expandedKeys: false, //默认全部展开
+                showLine: true, //显示渐近线
+                indent: 20, //间距
+                strict: false, //重点！！设置成非严格父子模式，这样父节点被禁用，子节点依然可以点击
+                clickCheck: true,
+                vaguaSearch:0,//关闭模糊搜索
+            },
+            toolbar: {
+                show: false, //显示工具条
+                list: ['ALL', 'REVERSE', 'CLEAR']
+            },
+            height: '300px', //最大下拉框高度
+            data: {$process},
+            initValue:[{$data['function_id']}]
+        });
+        
+        form.on('select(link_type)',function(data){
+            let val = data.value;
+            if("{$system_id}"==2){
+                if(val==1){
+                    $('.app').show();
+                    $('.link').hide();
+                }else if(val==2){
+                    $('.app').hide();
+                    $('.link').show();
+                }
+            }
+            else if("{$system_id}"==3){
+                if(val==1){
+                    $('.other_navbar').show();
+                    $('.link').hide();
+                    $('.other_pic').hide();
+                    $('.other_msg').hide();
+                }else if(val==2){
+                    $('.other_navbar').hide();
+                    $('.link').show();
+                    $('.other_pic').hide();
+                    $('.other_msg').hide();
+                }else if(val==3){
+                    $('.other_navbar').hide();
+                    $('.link').hide();
+                    $('.other_pic').show();
+                    $('.other_msg').hide();
+                }else if(val==4){
+                    $('.other_navbar').hide();
+                    $('.link').hide();
+                    $('.other_pic').hide();
+                    $('.other_msg').show();
+                }
+            }
+        });
+        
+        // let ue = UE.getEditor('content', {
+        //     initialFrameHeight: 400,
+        //     serverUrl: 'static/cklein/plugins/ueditor/php/controller.php'
+        // });
+
+        form.on('select(type)',function(data){
+            let val = data.value;
+            if(val==1){
+                $('.imgtxt').show();
+                $('.social').hide();
+            }else if(val==2){
+                $('.imgtxt').hide();
+                $('.social').show();
+            }
+        });
+
+        upload.render({
+            elem: '#slogo_file-upload'
+            ,url: '{:Url("admin/basic/upload_file")}'
+            ,accept: 'file'
+            ,data: { folder: 'centralize', type: 'website_services'}
+            ,multiple: false
+            ,number:1
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+
+                    $('#slogo_file-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="img" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+
+        form.on('submit(component-form-element)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+
+            // if(data.field['editorValue']==''){
+            //     layer.msg('请输入内容！');
+            //     return false;
+            // }
+
+            // if( $('#img_file-upload-list').children().length == 0 )
+            // {
+            //     layer.msg('请上传主图！');
+            //     return false;
+            // }
+
+            $.ajax({
+                url:"{:Url('centralize/index/save_services')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+
+    function delPic(obj)
+    {
+        var layer = layui.layer,$ = layui.$;
+        layer.confirm('确认要删除该附件？', {
+            btn: ['删除','取消']
+        }, function(){
+            $(obj).parent().remove();
+            layer.closeAll();
+        }, function(){
+
+        });
+    }
+</script>
+</body>
+</html>

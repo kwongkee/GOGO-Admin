@@ -1,0 +1,137 @@
+    {template 'web/link'}
+    <style>
+        .layui-table thead tr{
+            background-color:#ecf6fc;
+        }
+        .layui-table thead tr th{
+            color: #1b7ab6;
+        }
+        .layui-input-block {
+            margin-left: 0;
+            min-height: 5px;
+        }
+        .layui-table td{
+            word-break:break-all;
+        }
+        hr{
+            margin: 40px 0 0;
+        }
+    </style>
+        <!-- 内容主体区域 -->
+        <div style="padding: 15px;">
+            <div class="laytitle"><span>商户接口</span></div>
+            <div class="layback" style="margin-right: 18px;"><a href="javascript:void(0);" onclick="go();">返回上一页</a></div>
+            <hr class="layui-bg-blue">
+            <div class="layui-form">
+                <table class="layui-table">
+                    <thead>
+                    <tr>
+                        <th>所属公众号</th>
+                        <th>平台</th>
+                        <th>Token</th>
+                        <th>接口地址</th>
+                        <th>EncodingAESKey</th>
+                        <th>支付通道</th>
+                        <th>商户号</th>
+                        <th>商户密钥</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {loop $interface $inx $item}
+                    <tr>
+                        <td>{$name}</td>
+                        <td>{$plate[$item['platform']]}</td>
+                        <td>{$item['Token']}</td>
+                        <td>{$item['interfaceUrl']}</td>
+                        <td>{$item['encodingKey']}</td>
+                        <td>{$item['payChannel']}</td>
+                        <td>{$item['merchatNum']}</td>
+                        <td>{$item['merchatKey']}</td>
+                        <td>
+                            <div>
+                                <div class="site-demo-button" id="layerDemo" style="margin-bottom: 0; float: left; margin-left: 10px;">
+                                    <button type="button" onclick="edit({$item['id']});" class="layui-btn layui-btn-warm layui-btn-sm" >编辑</button>
+                                </div>
+                                <div class="site-demo-button" id="delDemo" style="margin-bottom: 0; float: left; margin-left: 10px;">
+                                    <button type="button" onclick="del({$item['id']});" class="layui-btn layui-btn-danger layui-btn-sm">删除</button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {/loop}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+<script>
+    layui.use('layer', function(){ //独立版的layer无需执行这一句
+        var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
+    });
+
+    // 编辑接口
+    function edit(id) {
+        var urls = "{php echo WebUrl('mer_chats',array('m' => 'mer_chats','do'=>'index', 'p'=>'editpus'))}&id="+id;
+        layer.open({
+            type:2,
+            title:'编辑接口',
+            area:['480px','550px'],
+            skin:'layui-layer-lan',
+            content:urls
+        })
+    }
+
+    // 删除操作
+    function del(id) {
+        layer.confirm('您确定要删除吗？', {
+            btn: ['确定','取消'] //按钮
+        }, function() {
+            var urls = "{php echo WebUrl('mer_chats',array('m' => 'mer_chats','do'=>'index', 'p'=>'delpus'))}";
+            $.ajax({
+                url:urls,
+                type:'POST',
+                data:{id:id},
+                success:function(red){
+                    var res = JSON.parse(red);
+                    if(res.code != 1) {
+                        layer.msg(res.msg, {icon: 2});
+                        return false;
+                    }
+                    layer.msg(res.msg, {icon: 1});
+                    setTimeout(function(){
+                        parent.layer.closeAll();
+                        parent.window.location.reload();
+                    },1500)
+                }
+            })
+        }, function(){
+            layer.msg('取消', {icon: 2});
+        });
+    }
+
+    function go(){
+        window.history.go(-1);
+    }
+</script>
+
+
+<script>
+    layui.use(['form', 'layedit', 'laydate'], function(){
+        var form = layui.form
+            ,layer = layui.layer
+            ,layedit = layui.layedit
+            ,laydate = layui.laydate;
+
+        //表单赋值
+        layui.$('#LAY-component-form-setval').on('click', function(){
+            form.val('example', {
+                "like[checkbox]": true //复选框选中状态
+            });
+        });
+
+    });
+
+</script>

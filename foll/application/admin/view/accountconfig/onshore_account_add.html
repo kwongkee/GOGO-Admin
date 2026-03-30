@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>新增账户</title>
+    <link rel="stylesheet" href="./static/hadmin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/hadmin/assets/common.css"/>
+    <style>
+        form{
+            margin-top: 47px;
+            margin-right: 32px;
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form" action="">
+    
+    <div class="layui-form-item">
+        <label class="layui-form-label">配置名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="config_name" required  lay-verify="required" placeholder="如xx银行配置" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">账户用途</label>
+        <div class="layui-input-block">
+          <input type="radio" name="type" value="1" title="结汇提现" checked="">
+          <input type="radio" name="type" value="2" title="离岸转账">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">账户类型</label>
+        <div class="layui-input-block">
+          <input type="radio" name="account_type" value="1" title="境内公户" checked="">
+          <input type="radio" name="account_type" value="2" title="境内私户">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">银行户名</label>
+        <div class="layui-input-block">
+            <input type="text" name="name" placeholder="请输入银行户名" required  lay-verify="required" autocomplete="off" class="layui-input">
+            
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">银行名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="bank_name" placeholder="请输入银行名称" required  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">银行账号</label>
+        <div class="layui-input-block">
+            <input type="text" name="bank_account" placeholder="请输入银行账号" required  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    
+    
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即保存</button>
+        </div>
+    </div>
+</form>
+
+</body>
+<script src="./static/hadmin/assets/layui/layui.js"></script>
+<script src="./static/hadmin/assets/jquery-3.2.1.min.js"></script>
+
+<script>
+    layui.use(['form','upload'], function(){
+        var form = layui.form,upload = layui.upload;
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+
+            $.ajax({
+                    url:'{:Url("admin/accountConfig/onshore_account_add")}',
+                    type:"POST",
+                    dataType:"json",
+                    data:data.field,
+                    success:function (res) {
+                        layer.msg(res.message, {
+                                        icon: 1,
+                                        time: 2000
+                                    }, function(){
+                                        parent.window.location.reload();
+                                        var index = parent.layer.getFrameIndex(window.name);
+                                        parent.layer.close(index);
+                                    });
+                    },
+                    error:function (xhr) {
+                        layer.msg('链接服务错误..');
+                    }
+                });
+            return false;
+        });
+
+    });
+
+</script>
+</html>

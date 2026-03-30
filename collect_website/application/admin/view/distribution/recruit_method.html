@@ -1,0 +1,130 @@
+{include file="common/header_inner_new"}
+
+<style>
+    .disf{display:flex;align-items: center;}
+    .layui-card-header{background:#0a8ddf;color:#fff;}
+    .link,.qrcode{display:none;}
+    .show{display:block ;}
+</style>
+<body style="padding: 10px;background-color: #f2f2f2;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" action="" method="post" lay-filter="component-form-element2">
+            <input type="hidden" name="id" value="{$id}">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">招募方式</label>
+                            <div class="layui-input-block disf">
+                                <select name="type" id="type" lay-verify="required" lay-filter="type">
+                                    <option value="">请选择招募方式</option>
+                                    <option value="1" {if $data['recruit_rules']['type']==1}selected{/if}>网页</option>
+                                    <option value="2" {if $data['recruit_rules']['type']==2}selected{/if}>小程序</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item link {if $data['recruit_rules']['type']==1}show{/if}">
+                            <div class="layui-form-label">网页链接</div>
+                            <div class="layui-input-block disf">
+                                <input type="text" name="link" class="layui-input" value="{$data['recruit_rules']['link']}" placeholder="请输入网页链接">
+                            </div>
+                        </div>
+                        <div class="layui-form-item qrcode {if $data['recruit_rules']['type']==2}show{/if}">
+                            <div class="layui-form-label">二维码</div>
+                            <div class="layui-input-block">
+                                <div class="layui-upload" style="margin-top: 10px;">
+                                    <button type="button" class="layui-btn" id="img_file2-upload">上传图片(一张)</button>
+                                    <blockquote class="layui-elem-quote layui-quote-nm yulan" style="margin-top: 10px;">
+                                        预览图：
+                                        <div class="layui-upload-list" id="img_file2-upload-list">
+                                            {if !empty($data['recruit_rules']['qrcode'])}
+                                            <div style="display: inline-block;"><img onclick="seePic(this);" src="/{$data['recruit_rules']['qrcode']}" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="qrcode[]" value="{$data['recruit_rules']['qrcode']}"></div>
+                                            {/if}
+                                        </div>
+                                    </blockquote>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 25px;text-align: center;">
+                <div>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="component-form-element">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    layui.use(['layer','form','laydate','upload','colorpicker','element'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        var form  = layui.form;
+        $ = layui.jquery;
+        var upload = layui.upload;
+        var element = layui.element;
+        var colorpicker = layui.colorpicker;
+
+        form.on('select(type)',function(data){
+            let val = data.value;
+            if(val==1){
+                $('.link').show();
+                $('.qrcode').hide();
+            }else if(val==2){
+                $('.link').hide();
+                $('.qrcode').show();
+            }
+        });
+
+        // 轮播图内页文件
+        upload.render({
+            elem: '#img_file2-upload'
+            ,url: '{:Url("admin/basic/upload_file")}'
+            ,accept: 'image'
+            ,data: { folder: 'centralize', type: 'distr_qrcode'}
+            ,multiple: false
+            ,number:1
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(res){
+                layer.closeAll('loading'); //关闭loading
+                if(res.code == 1)
+                {
+
+                    $('#img_file2-upload-list').append('<div style="display: inline-block;"><img onclick="seePic(this);" src="/'+ res.file_path +'" class="layui-upload-img" style="width:80px;height:80px;"><button type="button" onclick="delPic(this);" class="layui-btn layui-btn-xs layui-btn-danger" style="position: relative;left: -45px;top: -39px;">删除</button><input type="hidden" name="qrcode[]" value="'+res.file_path+'"></div>')
+                }
+            }
+        });
+
+        form.on('submit(component-form-element)', function(data){
+            // JSON.stringify()
+            // console.log(data.field);return false;
+            $.ajax({
+                url:"{:Url('admin/distribution/recruit_method')}",
+                method:'post',
+                data:data.field,
+                dataType:'JSON',
+                success:function(res){
+                    layer.msg(res.msg,{time:2000}, function () {
+                        if(res.code == 0)
+                        {
+                            parent.location.reload();
+                        }
+                    });
+                },
+                error:function (data) {
+                    layer.msg('系统错误',{time:2000});
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

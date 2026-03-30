@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>查验风控</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/layui/css/layui.css"/>
+    <script type="text/javascript" src="__STATIC__/plugins/layui/layui.js"></script>
+    <style>
+        .header span{background: #009688;margin-left: 30px;padding: 10px;color: #fff;}
+        .header div{border-bottom:solid 2px #009688;margin-top: 8px;}
+        .header button{float: right;margin-top: -5px;}
+        .ths{font-size: 22px;font-weight: bold}
+        .boys{font-size: 16px;}
+    </style>
+</head>
+<body style="padding-top: 10px;">
+
+<p style="width: 80%;margin:1px auto;">
+    <a href="javascript:window.history.back(-1);" class="layui-btn layui-btn-sm"> 返回上一级 </a>
+    <a href="javascript:void(0);" class="layui-btn layui-btn-sm" onclick="Confirms('{$batch_num}')" style="float: right;"> 确认完成 </a>
+</p>
+
+<table class="layui-table">
+    <thead>
+    <tr>
+        <th>批次编号</th>
+        <th>订单编号</th>
+        <th>物流编号</th>
+        <th>品牌名称</th>
+        <th>商品名称</th>
+        <th>风险描述</th>
+        <th>生成时间</th>
+        <th>审核状态</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {volist name='order' id='vo' key='k'}
+    <tr>
+        <td>{$vo.batch_num}</td>
+        <td>{$vo.ordersn}</td>
+        <td>{$vo.waybill}</td>
+        <td>{$vo.brand}</td>
+        <td>{$vo.goodname}</td>
+        <td>{$vo.desc}</td>
+        <td>{$vo.create_time|date='Y-m-d H:i:s',###}</td>
+        <td>
+            {switch	name="$vo.status"}
+                {case	value="1"}<a href="javascript:void(0);" class="layui-btn layui-btn-sm">审核通过</a>{/case}
+                {case	value="2"}<a href="javascript:void(0);" class="layui-btn layui-btn-sm layui-btn-danger">已退回</a>{/case}
+                {default/}<a href="javascript:void(0)" class="layui-btn layui-btn-sm layui-btn-warm">待审核</a>
+            {/switch}
+        </td>
+        <td>
+            {if	condition="$vo.status==3"}
+                <a href="javascript:void(0);" onclick="updates('no','{$vo.ordersn}')" class="layui-btn layui-btn-sm layui-btn-danger">退回</a>
+                <a href="javascript:void(0);" onclick="updates('yes','{$vo.ordersn}')" class="layui-btn layui-btn-sm">通过</a>
+            {else	/}
+                <a href="javascript:void(0);" class="layui-btn layui-btn-sm layui-btn-normal">暂无操作</a>
+             {/if}
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+
+<div class="layui-box layui-laypage layui-laypage-default">{$page}</div>
+
+<script>
+    layui.use(['form','layer'], function() {
+        $ = layui.jquery;
+        var form = layui.form,layer = layui.layer;
+    });
+
+    function updates(type,ordersn) {
+        if(type == 'no') {
+
+            layer.confirm('您确定要退回吗？',{title:'消息提示',btn:['确认','取消'],icon:3},function(){
+
+                $.post("{:url('insps/updates')}",{type:type,ordersn:ordersn},function(res) {
+                    var das = JSON.parse(res);
+                    if(das.status) {
+                        layer.msg(das.msg);
+                        setTimeout(function(){
+                            document.location.reload();
+                        },800);
+                    } else {
+                        layer.msg(das.msg);
+                    }
+                })
+
+            },function(){
+                layer.msg('取消删除')
+            })
+
+        } else {
+
+            $.post("{:url('insps/updates')}",{type:type,ordersn:ordersn},function(res) {
+                var das = JSON.parse(res);
+                if(das.status) {
+                    layer.msg(das.msg);
+                    setTimeout(function(){
+                        document.location.reload();
+                    },800);
+                } else {
+                    layer.msg(das.msg);
+                }
+            })
+        }
+    }
+
+    // 全部完成，更新
+    function Confirms(batch_num) {
+
+        $.post("{:url('insps/checkall')}",{batch_num:batch_num},function(res) {
+
+            var das = JSON.parse(res);
+            if(das.status) {
+                layer.msg(das.msg);
+                setTimeout(function(){
+                    document.location.reload();
+                },800);
+            } else {
+                layer.msg(das.msg);
+            }
+
+        })
+    }
+</script>
+
+
+</body>
+</html>
