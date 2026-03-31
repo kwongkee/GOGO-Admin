@@ -18,6 +18,7 @@ if($op=='display'){
     if(empty($_GPC['oid'])){
         exit('订单id不能为空！');
     }else{
+
         if(intval($_GPC['isadmin'])==1){
             //管理员查看
             $data = pdo_fetch('select * from '.tablename('customs_collection').' where id=:id and uniacid=:uni',array(':id'=>trim($_GPC['oid']),':uni'=>$_W['uniacid']));
@@ -68,7 +69,7 @@ if($op=='display'){
         
         //实付金额
         $data['total_money'] = sprintf('%.2f',($data['trade_price']+$data['overdue_money']));
-        
+
         //付款依据
         if($data['basic']==1){
             $data['basic'] = '合同';
@@ -204,6 +205,8 @@ if($op=='display'){
         $platform_account = pdo_fetchall('select * from '.tablename('onshore_account').' where id!=1 order by id desc');
         //查询收款人账户
         $sender_account = pdo_fetchall('select * from '.tablename('customs_bank_account').' where openid=:send_openid order by id desc',[':send_openid'=>$data['send_openid']]);
+
+        //通知在payment/tgwechat/customnotify.php
 
         include $this->template('member/custompayment');
     }
@@ -583,6 +586,17 @@ elseif($op=='examine'){
         show_json(-1, '订单已支付，无需审核!');
     }
 
+    $other_database = array(
+        'host' => 'rm-wz9mt4j79jrdh0p3z.mysql.rds.aliyuncs.com',    //数据库IP或是域名
+        'username' => 'gogo198',       // 数据库连接用户名
+        'password' => 'Gogo@198',     // 数据库连接密码
+        'database' => 'lrw',     // 数据库名
+        'port' => 3306,             // 数据库连接端口
+        'tablepre' => '',       // 表前缀，如果没有前缀留空即可
+        'charset' => 'utf8',         // 数据库默认编码
+        'pconnect' => 0,            // 是否使用长连接
+    );
+
     if($type==1){
         //step1：确认收款后通知付款人
         $type2 = '';
@@ -605,7 +619,7 @@ elseif($op=='examine'){
             'keyword1'=>$order['ordersn'],
             'keyword2'=>$type2,
             'keyword3'=>'CNY '.$pay_money,
-            'keyword4'=>'线下支付',
+            'keyword4'=>'线上支付',
             'keyword5'=>date('Y-m-d H:i:s',time()),
             'remark' =>'感谢您的使用',
             'openid' =>$order['openid'],
@@ -615,59 +629,39 @@ elseif($op=='examine'){
         ]);
         ihttp_request('https://shop.gogo198.cn/api/sendwechattemplatenotice.php', $post2);
 
-        //todo：如果是商城订单，则需要通知供货商（平台客服-API/商家/买手）
-        $website_order = pdo_fetch('select * from '.tablename('website_order_list').' where pay_id='.$orderid);
-        if(!empty($website_order)){
-            //商城订单的通知
-            if($website_order['buyer_id'] > 0){
-                #通知买手或API客服
+        //step2:通知管理员（老板）
+        $post3 = json_encode([
+            'call'=>'collectionNotice',
+            'first'=>'您好，有［'.$type2.'］订单状态已变更为［订单已付］，点击查看详情！',
+            'keyword1'=>$order['ordersn'],
+            'keyword2'=>$type2,
+            'keyword3'=>'CNY '.$pay_money,
+            'keyword4'=>'线上支付',
+            'keyword5'=>date('Y-m-d H:i:s',time()),
+            'remark' =>'',
+            'openid' =>'ov3-bt8keSKg_8z9Wwi-zG1hRhwg',
+            'uniacid'=>$order['uniacid'],
+            'temp_id'=>'tHWxOL4Kc3v6uZinHT3Zo661I8o6EbAg46XKUP0FnnY',
+            'url'=>'https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=member&p=custompayment&m=sz_yi&oid='.$order['id'].'&isadmin=1'
+        ]);
+        ihttp_request('https://shop.gogo198.cn/api/sendwechattemplatenotice.php', $post3);
 
-            }
-            if($website_order['company_id'] > 0){
-                #通知商家
-
-            }
-            if($website_order['company_id']==0 && $website_order['buyer_id']){
-                #通知API客服
-
-            }
-        }else{
-            //普通收付款的通知
-
-            //step2:通知管理员（老板）
-            $post3 = json_encode([
-                'call'=>'collectionNotice',
-                'first'=>'您好，有［'.$type2.'］订单状态已变更为［订单已付］，点击查看详情！',
-                'keyword1'=>$order['ordersn'],
-                'keyword2'=>$type2,
-                'keyword3'=>'CNY '.$pay_money,
-                'keyword4'=>'线下支付',
-                'keyword5'=>date('Y-m-d H:i:s',time()),
-                'remark' =>'',
-                'openid' =>'ov3-bt8keSKg_8z9Wwi-zG1hRhwg',
-                'uniacid'=>$order['uniacid'],
-                'temp_id'=>'tHWxOL4Kc3v6uZinHT3Zo661I8o6EbAg46XKUP0FnnY',
-                'url'=>'https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=member&p=custompayment&m=sz_yi&oid='.$order['id'].'&isadmin=1'
-            ]);
-            ihttp_request('https://shop.gogo198.cn/api/sendwechattemplatenotice.php', $post3);
-
-            //step3:通知发起人（收款人）
-            $post = json_encode([
-                'call'=>'collectionNotice',
-                'first'=>'您有一笔收款信息',
-                'keyword1'=>$order['payer_name'],
-                'keyword2'=>'CNY '.$pay_money,
-                'keyword3'=>'线下支付',
-                'keyword4'=>date('Y-m-d H:i:s',time()),
-                'keyword5'=>$order['ordersn'],
-                'remark' =>'感谢您的使用',
-                'openid' =>$order['send_openid'],
-                'uniacid'=>$order['uniacid'],
-                'temp_id'=>'WcvDClChgUbLfWHu5jQw5TEilYU36VdNDH514KZ-f4w',
-                'url'=>'https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=member&p=custompayment&m=sz_yi&oid='.$order['id'].'&isadmin=1'
-            ]);
-            ihttp_request('https://shop.gogo198.cn/api/sendwechattemplatenotice.php', $post);
-        }
+        //step3:通知发起人（收款人）
+        $post = json_encode([
+            'call'=>'collectionNotice',
+            'first'=>'您有一笔收款信息',
+            'keyword1'=>$order['payer_name'],
+            'keyword2'=>'CNY '.$pay_money,
+            'keyword3'=>'线上支付',
+            'keyword4'=>date('Y-m-d H:i:s',time()),
+            'keyword5'=>$order['ordersn'],
+            'remark' =>'感谢您的使用',
+            'openid' =>$order['send_openid'],
+            'uniacid'=>$order['uniacid'],
+            'temp_id'=>'WcvDClChgUbLfWHu5jQw5TEilYU36VdNDH514KZ-f4w',
+            'url'=>'https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=member&p=custompayment&m=sz_yi&oid='.$order['id'].'&isadmin=1'
+        ]);
+        ihttp_request('https://shop.gogo198.cn/api/sendwechattemplatenotice.php', $post);
 
         //确认收款
         $res = pdo_update('customs_collection',[
@@ -678,12 +672,14 @@ elseif($op=='examine'){
             'status'=>1,
             'paytime'=>time()
             ],['id'=>intval($_GPC['orderid']),'uniacid'=>$_W['uniacid'],'send_openid'=>$_W['openid'],'status'=>0]);
+
         if($res){
             show_json(1, '提交成功!');
         }else{
             show_json(-1, '提交失败!');
         }
-    }elseif($type==2){
+    }
+    elseif($type==2){
         //未予收款
         if($order['is_nocheck_send']==1){
             show_json(-1, '此次审核已通知，请勿重复通知!');
@@ -704,7 +700,8 @@ elseif($op=='examine'){
             pdo_update('customs_collection',['is_nocheck_send'=>1],['id'=>intval($_GPC['orderid']),'uniacid'=>$_W['uniacid'],'send_openid'=>$_W['openid'],'status'=>0]);
             show_json(1);
         }
-    }elseif($type==3){
+    }
+    elseif($type==3){
         //到账不全
         if($order['is_nocheck_send']==1){
             show_json(-1, '此次审核已通知，请勿重复通知!');

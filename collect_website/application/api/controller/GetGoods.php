@@ -98,16 +98,37 @@ class GetGoods extends Controller
     public function create_order(Request $request){
         $dat = input();
 
-        $address['country'] = '中国';
-        $address['countryCode'] = 'CN';
-        $address['province'] = '广东省';
-        $address['city'] = '佛山市';
-        $address['detailAddress'] = '南海区桂城南三路11号广东珠江开关有限公司内3号楼D611室';
-//        $address['detailAddress'] = '南海区桂城';
-        $address['postCode'] = '528251';
-        $address['contactName'] = '区广祺';
-        $address['contactPhone'] = '13809703680';
-        $address['email'] = '198@gogo198.net';
+        $address = [];
+        $address_id = isset($dat['address_id'])?intval($dat['address_id']):0;
+        if(empty($address_id)){
+            //平台集运，用代发仓库地址
+            $address['country'] = '中国';
+            $address['countryCode'] = 'CN';
+            $address['province'] = '广东省';
+            $address['city'] = '佛山市';
+            $address['detailAddress'] = '南海区桂城南三路11号广东珠江开关有限公司内3号楼D611室';
+            $address['postCode'] = '528251';
+            $address['contactName'] = '区广祺';
+            $address['contactPhone'] = '13809703680';
+            $address['email'] = '198@gogo198.net';
+        }else{
+            //自主集运，寄往用户收货地址
+            $adr = Db::name('centralize_user_address')->where(['id'=>$address_id])->find();
+            $country = Db::name('centralize_diycountry_content')->where(['id'=>$adr['country_id']])->field('param2,param5')->find();
+            $province = Db::name('centralize_country_areas')->where(['id'=>$adr['province']])->value('name');
+            $city = Db::name('centralize_country_areas')->where(['id'=>$adr['city']])->value('name');
+
+            $address['country'] = $country['param2'];
+            $address['countryCode'] = $country['param5'];
+            $address['province'] = $province;
+            $address['city'] = $city;
+            $address['detailAddress'] = $adr['address1'];
+            $address['postCode'] = $adr['postal'];
+            $address['contactName'] = $adr['user_name'];
+            $address['contactPhone'] = $adr['mobile'];
+            $address['email'] = $adr['email'];
+        }
+
         #时间戳
         $timestamp = time();
         #请求数据

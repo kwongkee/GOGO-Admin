@@ -50,7 +50,7 @@
 <link type="text/css" rel="stylesheet" href="../addons/sz_yi/static/css/bootstrap.min.css" />
 <script type="text/javascript" src="../addons/sz_yi/template/pc/default/static/js/bootstrap.min.js"></script>
 
-<div id="container">
+<div id="container" style="padding-bottom: 10px;">
     <?php  if($iswaitcheck==1) { ?>
         <div class="page_topbar">
             <div class="title">收款审核</div>
@@ -748,7 +748,7 @@
                         var tgw = rjson.result.tgwechat;
                         
                         //2018-08-21
-                        $('#wecpay').attr('action', 'https://shop.gogo198.cn/addons/sz_yi/payment/tgwechat/Paymentess.php')
+                        $('#wecpay').attr('action', 'https://shop.gogo198.cn/addons/sz_yi/payment/tgwechat/Paymentess.php');
                         $('#tid').val(tgw.tid);
                         $('#opid').val(tgw.openid);
                         $('#title').val(tgw.title);

@@ -230,39 +230,56 @@ class Purchase extends Auth
                     if($buyer['type']==1){
                         #接口买手
 
-                        $productList = [];
-                        if(!empty($order['content']['goods_info'])){
-                            foreach($order['content']['goods_info'] as $k=>$v){
-                                $goods = Db::connect($this->config)->name('goods')->where(['goods_id'=>$v['good_id']])->find();
-                                foreach($v['sku_info'] as $k2=>$v2){
-                                    $sku_goods = Db::connect($this->config)->name('goods_sku')->where(['sku_id'=>$v2['sku_id']])->find();
-                                    $sku_goods['sku_prices'] = json_decode($sku_goods['sku_prices'],true);
+//                        $productList = [];
+//                        if(!empty($order['content']['goods_info'])){
+//                            foreach($order['content']['goods_info'] as $k=>$v){
+//                                $goods = Db::connect($this->config)->name('goods')->where(['goods_id'=>$v['good_id']])->find();
+//                                foreach($v['sku_info'] as $k2=>$v2){
+//                                    $sku_goods = Db::connect($this->config)->name('goods_sku')->where(['sku_id'=>$v2['sku_id']])->find();
+//                                    $sku_goods['sku_prices'] = json_decode($sku_goods['sku_prices'],true);
+//
+//                                    array_push($productList,[
+//                                        'platform'=>$goods['other_platform'],
+//                                        'productCount'=>$v2['goods_num'],
+//                                        'productLink'=>$goods['other_goods_link'],
+//                                        'productName'=>$goods['goods_name'],
+//                                        'productPrice'=>$sku_goods['sku_prices']['price'][0],#订购产品单价
+//                                        'skuCode'=>$sku_goods['goods_sn'],
+//                                        'spuCode'=>$goods['other_spuCode'],
+//                                        'productImage'=>$goods['goods_image'],
+//                                        'orderRemark'=>'买家：'.$user['custom_id']
+//                                    ]);
+//                                }
+//                            }
+//                        }
+//
+//                        $res = $this->create_order(json_encode(['ordersn'=>$order['ordersn'],'createtime'=>$time*1000,'productList'=>json_encode($productList,true)],true));
+//                        if($res['code']==0){
+//                            Db::name('website_order_list')->where(['id'=>$order['id']])->update([
+//                                'other_ordersn'=>$res['data']['shopOrderNo'],
+//                                'issend'=>1
+//                            ]);
 
-                                    array_push($productList,[
-                                        'platform'=>$goods['other_platform'],
-                                        'productCount'=>$v2['goods_num'],
-                                        'productLink'=>$goods['other_goods_link'],
-                                        'productName'=>$goods['goods_name'],
-                                        'productPrice'=>$sku_goods['sku_prices']['price'][0],#订购产品单价
-                                        'skuCode'=>$sku_goods['goods_sn'],
-                                        'spuCode'=>$goods['other_spuCode'],
-                                        'productImage'=>$goods['goods_image'],
-                                        'orderRemark'=>'买家：'.$user['custom_id']
-                                    ]);
-                                }
-                            }
-                        }
-
-                        $res = $this->create_order(json_encode(['ordersn'=>$order['ordersn'],'createtime'=>$time*1000,'productList'=>json_encode($productList,true)],true));
-                        if($res['code']==0){
+                            #分流并通知用户下单，下单后立即请求付款
                             Db::name('website_order_list')->where(['id'=>$order['id']])->update([
-                                'other_ordersn'=>$res['data']['shopOrderNo'],
+                                'status'=>0,
                                 'issend'=>1
                             ]);
 
+                            common_notice([
+                                'openid'=>$user['openid'],
+                                'phone'=>$user['phone'],
+                                'email'=>$user['email']
+                            ],[
+                                'msg'=>'订购清单['.$order['ordersn'].']确认有货，点击链接查看：https://www.gogo198.cn/cart.html?selected=1',
+                                'opera'=>'确认有货，请勾选支付',
+                                'url'=>'https://www.gogo198.cn/cart.html?selected=1'
+                            ]);
+
                             return json(['code'=>0,'msg'=>'已分流']);
-                        }
-                    }elseif($buyer['type']==2){
+//                        }
+                    }
+                    elseif($buyer['type']==2){
                         #人工买手
                         $buyer = Db::name('website_user')->where(['id'=>$buyer['uid']])->find();
                         common_notice([

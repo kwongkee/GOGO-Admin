@@ -252,66 +252,416 @@ if (!empty($data)) {
                 $name = pdo_fetchcolumn('select project_name from '.tablename('customs_project').' where id=:id',array(':id'=>$order['project_id']));
             }
             $order['total_money'] = $order['trade_price']+$order['overdue_money'];
-            //step1:发送消息给发起付款的人
-            $post = json_encode([
-                'call'=>'collectionNotice',
-                'first'=>'您有一笔收款信息',
-                'keyword1'=>$order['payer_name'],
-                'keyword2'=>'CNY '.$order['total_money'],
-                'keyword3'=>$zf_type,
-                'keyword4'=>date('Y-m-d H:i:s',time()),
-                'keyword5'=>$order['ordersn'],
-                'remark' =>'感谢您的使用',
-                'openid' =>$order['send_openid'],
-                'uniacid'=>$order['uniacid'],
-                'temp_id'=>'WcvDClChgUbLfWHu5jQw5TEilYU36VdNDH514KZ-f4w',
-                'url'=>'https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=member&p=custompayment&m=sz_yi&oid='.$order['id'].'&isadmin=1'
-            ]);
-            ihttp_request('https://shop.gogo198.cn/api/sendwechattemplatenotice.php', $post);
 
-            //step2:成功支付后，发送消息给本人
+            //如果是商城订单，则需要通知供货商（平台客服-API/商家/买手）
+            $website_order = pdo_fetch('select * from '.tablename('website_order_list').' where pay_id='.$order['id']);
+            $member = pdo_fetch('select * from '.tablename('website_user').' where id=:id',[':id'=>$website_order['user_id']]);
+            //step1:成功支付后，发送消息给本人
             $type = '';
-            if($order['trade_type']==1){
-                $type='商品';
-            }elseif($order['trade_type']==2){
-                $type='项目';
-            }elseif($order['trade_type']==3){
-                $type='多项服务';
+            if ($order['trade_type'] == 1) {
+                $type = '商品';
+            } elseif ($order['trade_type'] == 2) {
+                $type = '项目';
+            } elseif ($order['trade_type'] == 3) {
+                $type = '多项服务';
             }
-            if(is_numeric($order['openid'])){
-                $order['openid'] = pdo_fetchcolumn('select openid from '.tablename('sz_yi_member').' where mobile=:mob',[':mob'=>$order['openid']]);
+            if (is_numeric($order['openid'])) {
+                $order['openid'] = pdo_fetchcolumn('select openid from ' . tablename('sz_yi_member') . ' where mobile=:mob', [':mob' => $order['openid']]);
             }
             $post2 = json_encode([
-                'call'=>'collectionNotice',
-                'first'=>'您好，您已经完成新订单的处理，点击查看详情，如有疑问，敬请联系客服075786329911，感谢您的支持！',
-                'keyword1'=>$order['ordersn'],
-                'keyword2'=>$type,
-                'keyword3'=>'CNY '.$order['total_money'],
-                'keyword4'=>$zf_type,
-                'keyword5'=>date('Y-m-d H:i:s',time()),
-                'remark' =>'感谢您的使用',
-                'openid' =>$order['openid'],
-                'uniacid'=>$order['uniacid'],
-                'temp_id'=>'tHWxOL4Kc3v6uZinHT3Zo661I8o6EbAg46XKUP0FnnY',
-                'url'=>'https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=member&p=custompayment&m=sz_yi&oid='.$order['id']
+                'call' => 'collectionNotice',
+                'first' => '您好，您已经完成新订单的处理，点击查看详情，如有疑问，敬请联系客服075786329911，感谢您的支持！',
+                'keyword1' => $order['ordersn'],
+                'keyword2' => $type,
+                'keyword3' => 'CNY ' . $order['total_money'],
+                'keyword4' => $zf_type,
+                'keyword5' => date('Y-m-d H:i:s', time()),
+                'remark' => '感谢您的使用',
+                'openid' => $order['openid'],
+                'uniacid' => $order['uniacid'],
+                'temp_id' => 'tHWxOL4Kc3v6uZinHT3Zo661I8o6EbAg46XKUP0FnnY',
+                'url' => 'https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=member&p=custompayment&m=sz_yi&oid=' . $order['id']
             ]);
             ihttp_request('https://shop.gogo198.cn/api/sendwechattemplatenotice.php', $post2);
-            //step3:成功支付后，发送消息给管理员（老板）
-            $post3 = json_encode([
-                'call'=>'collectionNotice',
-                'first'=>'您好，有［'.$type.'］订单状态已变更为［订单已付］，点击查看详情！',
-                'keyword1'=>$order['ordersn'],
-                'keyword2'=>$type,
-                'keyword3'=>'CNY '.$order['total_money'],
-                'keyword4'=>$zf_type,
-                'keyword5'=>date('Y-m-d H:i:s',time()),
-                'remark' =>'',
-                'openid' =>'ov3-bt8keSKg_8z9Wwi-zG1hRhwg',
-                'uniacid'=>$order['uniacid'],
-                'temp_id'=>'tHWxOL4Kc3v6uZinHT3Zo661I8o6EbAg46XKUP0FnnY',
-                'url'=>'https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=member&p=custompayment&m=sz_yi&oid='.$order['id'].'&isadmin=1'
-            ]);
-            ihttp_request('https://shop.gogo198.cn/api/sendwechattemplatenotice.php', $post3);
+
+            if(!empty($website_order)){
+                if($website_order['is_level']==0){
+                    #商品订单
+                    //商城订单的通知
+                    if($website_order['buyer_id'] > 0){
+                        #通知买手或API客服
+                        $buyer = pdo_fetch('select b.openid,a.id,a.type from '.tablename('website_buyer').' a left join '.tablename('website_user').' b on b.id=a.uid where a.id=:id',[':id'=>$website_order['buyer_id']]);
+
+                        if($buyer['type']==1){
+                            #接口买手
+                            $time = time();
+                            #通知接口下单
+                            $other_db = new DB($other_database);
+                            $productList = [];
+                            $gather_method = 1;//1平台集运，2自主集运（要求要买家的收货地址）
+                            if(!empty($order['content']['goods_info'])){
+                                foreach($order['content']['goods_info'] as $k=>$v){
+                                    $goods = $other_db->fetch('select * from goods where id=:gid',[':gid'=>$data['good_id']]);
+                                    foreach($v['sku_info'] as $k2=>$v2){
+                                        $sku_goods = $other_db->fetch('select * from goods_sku where sku_id=:sku_id',[':sku_id'=>$v2['sku_id']]);
+                                        $sku_goods['sku_prices'] = json_decode($sku_goods['sku_prices'],true);
+
+                                        array_push($productList,[
+                                            'platform'=>$goods['other_platform'],
+                                            'productCount'=>$v2['goods_num'],
+                                            'productLink'=>$goods['other_goods_link'],
+                                            'productName'=>$goods['goods_name'],
+                                            'productPrice'=>$sku_goods['sku_prices']['price'][0],#订购产品单价
+                                            'skuCode'=>$sku_goods['goods_sn'],
+                                            'spuCode'=>$goods['other_spuCode'],
+                                            'productImage'=>$goods['goods_image'],
+                                            'orderRemark'=>'买家：'.$member['custom_id']
+                                        ]);
+                                    }
+                                }
+                                #delivery_method：1中国收货，2海外收货
+                                if($order['content']['delivery_method']==1){
+                                    $gather_method = 2;
+                                }
+                                elseif($order['content']['delivery_method']==2){
+                                    $gather_method = $order['content']['gather_method'];
+                                }
+                            }
+//                    {"goods_info":[{"good_id":61064,"otherfee_content":null,"otherfee_currency":null,"otherfee_total":null,"reduction_content":null,"reduction_money":null,"prefe_gift":null,"prefe_reduction":null,"gift_money":null,"noinclude_content":null,"noinclude_money":null,"potential_content":null,"potential_money":null,"file":null,"services":"[{\"service_id\":2},{\"service_id\":12},{\"service_id\":13}]","sku_info":[{"sku_id":1727588,"goods_num":1,"price":"1.00","currency":"5","cart_id":180}]}],"warehouse_id":16,"delivery_method":2,"gather_method":1,"line_id":8,"address_id":24}
+                            $api_data = json_encode([
+                                'ordersn'=>$website_order['ordersn'],
+                                'createtime'=>$time*1000,
+                                'productList'=>json_encode($productList,true),
+                                'address_id'=>$gather_method==2?$website_order['address_id']:0,
+                            ],true);
+                            $res = httpRequest2('https://shop.gogo198.cn/collect_website/public/?s=/api/getgoods/create_order',$api_data,['Content-Type: application/json;charset=utf-8']);
+                            $res = json_decode($res,true);
+
+                            if($res['code'] == 0 && $gather_method==1){
+                                #平台集运才生成集运单
+
+                                #1、仓库预定
+                                $prediction_id = 2;
+                                $start = strtotime(date('Y-01-01 00:00:00'));$end = strtotime(date('Y-12-31 23:59:59'));
+                                $order_num = pdo_fetchcolumn("SELECT COUNT(*) FROM " . tablename('centralize_parcel_order') . " WHERE prediction_id = :prediction_id AND user_id = :user_id AND createtime BETWEEN :start AND :end", [
+                                    ':prediction_id' => $prediction_id,
+                                    ':user_id'       => $member['id'],
+                                    ':start'         => $start,
+                                    ':end'           => $end
+                                ]);
+                                $order_num = str_pad($order_num+1,3,'0',STR_PAD_LEFT);
+                                $ordersn = substr($member['custom_id'],-5) . date('Y') . $order_num;
+
+                                #多个包裹
+                                $content = [
+                                    'user_id'    => $member['id'],
+                                    'agent_id'   => $member['agent_id'],
+                                    'ordersn'    => 'G'.$ordersn,
+                                    'warehouse_id'=> 32,#默认直邮仓库
+                                    'prediction_id'=> $prediction_id,
+                                    'task_id'    => 0,
+                                    'sure_prediction'=>1,
+                                    'createtime' => $time
+                                ];
+                                pdo_insert('centralize_parcel_order',$content);
+                                $orderid = pdo_insertid();
+
+                                //1.1、任务信息处理
+                                #获取任务流水号
+//                            $start_num = $this->get_today_task($time);
+                                $today_task = pdo_fetch('select * from '.tablename('centralize_task').' where createtime=:times order by id desc',[':times'=>$time]);
+                                $start_num = substr($today_task['serial_number'],-2);
+                                if(empty($start_num)){
+                                    $serial_number = 'MC'.date('ymdHis',$time).str_pad(1,2,'0',STR_PAD_LEFT);
+                                }else{
+                                    $serial_number = 'MC'.date('ymdHis',$time).str_pad(intval($start_num)+1,2,'0',STR_PAD_LEFT);
+                                }
+                                #获取任务名称
+                                $task_name = $member['custom_id'].'发起任务[仓库预报]';
+                                pdo_insert('centralize_task',[
+                                    'user_id'=>$member['id'],
+                                    'type'=>3,
+                                    'task_name'=>$task_name,
+                                    'task_id'=>19,
+                                    'order_id'=>$orderid,
+                                    'serial_number'=>$serial_number,
+                                    'remark'=>'',
+                                    'status'=>1,
+                                    'createtime'=>$time
+                                ]);
+
+                                #2、包裹预报
+                                $insert_data = [
+                                    'user_id'=>$member['id'],
+                                    'orderid'=>$orderid,
+                                    'gogo_oid'=>$website_order['id'],
+                                    'express_id'=>'',#todo 待接口返回快递企业信息
+                                    'express_no'=>'',#todo 待接口返回快递编码信息
+                                    #入仓信息
+                                    'delivery_logistics'=>1,
+                                    'delivery_method'=>1,
+                                    #物品信息
+                                    'inspection_method'=>1,
+                                    #包装材质
+                                    'package'=>'',
+                                    'package_name'=>'',
+                                    #包裹毛重
+                                    'grosswt'=>'',
+                                    #包裹体积
+                                    'volumn'=>'1*1*1',
+                                    #状态
+                                    'status2'=>0,#直接转运或集货转运都要先签收入库
+                                    #创建时间
+                                    'createtime'=>$time
+                                ];
+                                pdo_insert('centralize_parcel_order_package',$insert_data);
+                                $package_id = pdo_insertid();
+
+                                #3、预报商品
+                                $brand_name = '';
+                                if(!empty($order['content']['goods_info'])){
+                                    foreach($order['content']['goods_info'] as $k=>$v){
+                                        $goods = $other_db->fetch('select * from goods where id=:gid',[':gid'=>$data['good_id']]);
+                                        foreach($v['sku_info'] as $k2=>$v2){
+                                            $sku_goods = $other_db->fetch('select * from goods_sku where sku_id=:sku_id',[':sku_id'=>$v2['sku_id']]);
+                                            $sku_goods['sku_prices'] = json_decode($sku_goods['sku_prices'],true);
+
+                                            array_push($productList,[
+                                                'platform'=>$goods['other_platform'],
+                                                'productCount'=>$v2['goods_num'],
+                                                'productLink'=>$goods['other_goods_link'],
+                                                'productName'=>$goods['goods_name'],
+                                                'productPrice'=>$sku_goods['sku_prices']['price'][0],#订购产品单价
+                                                'skuCode'=>$sku_goods['goods_sn'],
+                                                'spuCode'=>$goods['other_spuCode'],
+                                                'productImage'=>$goods['goods_image'],
+                                                'orderRemark'=>'买家：'.$member['custom_id']
+                                            ]);
+
+                                            pdo_insert('centralize_parcel_order_goods',[
+                                                'user_id'=>$member['id'],
+                                                'orderid'=>$orderid,
+                                                'package_id'=>$package_id,
+                                                #物品属性
+                                                'valueid'=>'',
+                                                #物品描述
+                                                'good_desc'=>$goods['goods_name'],
+                                                #物品数量
+                                                'good_num'=>$v2['goods_num'],
+                                                #物品单位
+                                                'good_unit'=>$sku_goods['sku_prices']['unit'][0],
+                                                #物品币种
+                                                'good_currency'=>$goods['currency'],
+                                                #物品金额
+                                                'good_price'=>$sku_goods['sku_prices']['price'][0],
+                                                #物品金额（等值美元）
+                                                'goods_usdprice'=>'',
+                                                #物品包装
+                                                'good_package'=>'',
+                                                #物品品牌类型
+                                                'brand_type'=>'',
+                                                'brand_name'=>$brand_name,
+                                                #物品备注
+                                                'good_remark'=>'',
+                                                #创建时间
+                                                'createtime'=>$time
+                                            ]);
+                                        }
+                                    }
+                                }
+
+                                #4、包裹订单
+                                pdo_insert('centralize_order_fee_log',[
+                                    'type'=>1,
+                                    'ordersn'=>'G'.date('YmdHis'),
+                                    'user_id'=>$member['id'],
+                                    'orderid'=>$orderid,
+                                    #包裹id
+                                    'good_id'=>$package_id,
+                                    'express_no'=>'',#todo 待接口返回快递编码信息
+                                    'service_status'=>1,
+                                    'order_status'=>0,
+                                    'createtime'=>$time
+                                ]);
+
+                                #5、修改购购网订单表（已采购待发货）
+                                pdo_update('website_order_list',['status'=>2],['id'=>$website_order['id']]);
+
+                                #todo 1、需要写查询订单接口，获取物流企业&物流编码
+                                #todo 2、通知仓库商
+
+                                #6、通知用户
+                                $post3 = json_encode([
+                                    'call'=>'collectionNotice',
+                                    'first'=>'您好，订单［'.$website_order['ordersn'].'］订单状态已变更为［已采购］，点击查看详情！',
+                                    'keyword1'=>$website_order['ordersn'],
+                                    'keyword2'=>'已采购',
+                                    'keyword3'=>date('Y-m-d H:i:s',time()),
+                                    'remark' =>'点击查看详情',
+                                    'url'=>'https://www.gogo198.com',
+                                    'openid' =>$member['openid'],
+                                    'temp_id'=>'SVVs5OeD3FfsGwW0PEfYlZWetjScIT8kDxht5tlI1V8',
+
+                                ]);
+                                ihttp_request('https://shop.gogo198.cn/api/sendwechattemplatenotice.php', $post3);
+                            }
+                        }
+                        elseif($buyer['type']==2){
+                            #平台买手
+                            if(!empty($buyer['openid'])){
+                                #买手才有openid
+                                $post3 = json_encode([
+                                    'call'=>'collectionNotice',
+                                    'first'=>'您好，有［'.$type.'］订单状态已变更为［订单已付］，点击查看详情！',
+                                    'keyword1'=>$website_order['ordersn'],
+                                    'keyword2'=>$type,
+                                    'keyword3'=>'CNY '.$order['total_money'],
+                                    'keyword4'=>$zf_type,
+                                    'keyword5'=>date('Y-m-d H:i:s',time()),
+                                    'remark' =>'点击登录商户端查看',
+                                    'openid' =>$buyer['openid'],
+                                    'uniacid'=>$order['uniacid'],
+                                    'temp_id'=>'tHWxOL4Kc3v6uZinHT3Zo661I8o6EbAg46XKUP0FnnY',
+                                    'url'=>'https://dtc.gogo198.net/?s=index/customer_login&is_merchs=1'
+                                ]);
+                                ihttp_request('https://shop.gogo198.cn/api/sendwechattemplatenotice.php', $post3);
+                            }
+                        }
+
+                        #通知总后台管理员&客服
+                        $servicers = pdo_fetchall('select * from '.tablename('centralize_system_servicer').' where status=1');
+                        foreach($servicers as $k=>$v) {
+                            $muser = pdo_fetch('select * from ' . tablename('website_user') . ' where id=:id', [':id' => $v['uid']]);
+                            if (!empty($muser['openid'])) {
+                                $post = json_encode([
+                                    'call'=>'collectionNotice',
+                                    'first'=>'您有一笔淘中国收款信息',
+                                    'keyword1'=>$order['payer_name'],
+                                    'keyword2'=>'CNY '.$order['total_money'],
+                                    'keyword3'=>$zf_type,
+                                    'keyword4'=>date('Y-m-d H:i:s',time()),
+                                    'keyword5'=>$order['ordersn'],
+                                    'remark' =>'感谢您的使用',
+                                    'openid' =>$muser['openid'],
+                                    'uniacid'=>$order['uniacid'],
+                                    'temp_id'=>'WcvDClChgUbLfWHu5jQw5TEilYU36VdNDH514KZ-f4w',
+                                    'url'=>'https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=member&p=custompayment&m=sz_yi&oid='.$order['id'].'&isadmin=1'
+                                ]);
+                                ihttp_request('https://shop.gogo198.cn/api/sendwechattemplatenotice.php', $post);
+                            }
+                        }
+                    }
+                    if($website_order['company_id'] > 0){
+                        #通知商家
+                        $manage = pdo_fetch('select b.openid from '.tablename('website_user_company').' a left join '.tablename('website_user').' b on b.id=a.user_id where a.id=:id',[':id'=>$website_order['company_id']]);
+
+                        if(!empty($manage['openid'])){
+                            $post3 = json_encode([
+                                'call'=>'collectionNotice',
+                                'first'=>'您好，有［'.$type.'］订单状态已变更为［订单已付］，点击查看详情！',
+                                'keyword1'=>$website_order['ordersn'],
+                                'keyword2'=>$type,
+                                'keyword3'=>'CNY '.$order['total_money'],
+                                'keyword4'=>$zf_type,
+                                'keyword5'=>date('Y-m-d H:i:s',time()),
+                                'remark' =>'点击登录商户端查看',
+                                'openid' =>$manage['openid'],
+                                'uniacid'=>$order['uniacid'],
+                                'temp_id'=>'tHWxOL4Kc3v6uZinHT3Zo661I8o6EbAg46XKUP0FnnY',
+                                'url'=>'https://dtc.gogo198.net/?s=index/customer_login&is_merchs=1'
+                            ]);
+                            ihttp_request('https://shop.gogo198.cn/api/sendwechattemplatenotice.php', $post3);
+                        }
+
+                        #通知总后台管理员&客服
+                        $servicers = pdo_fetchall('select * from '.tablename('centralize_system_servicer').' where status=1');
+                        foreach($servicers as $k=>$v) {
+                            $muser = pdo_fetch('select * from ' . tablename('website_user') . ' where id=:id', [':id' => $v['uid']]);
+                            if (!empty($muser['openid'])) {
+                                $post = json_encode([
+                                    'call'=>'collectionNotice',
+                                    'first'=>'您有一笔淘中国收款信息',
+                                    'keyword1'=>$order['payer_name'],
+                                    'keyword2'=>'CNY '.$order['total_money'],
+                                    'keyword3'=>$zf_type,
+                                    'keyword4'=>date('Y-m-d H:i:s',time()),
+                                    'keyword5'=>$order['ordersn'],
+                                    'remark' =>'感谢您的使用',
+                                    'openid' =>$muser['openid'],
+                                    'uniacid'=>$order['uniacid'],
+                                    'temp_id'=>'WcvDClChgUbLfWHu5jQw5TEilYU36VdNDH514KZ-f4w',
+                                    'url'=>'https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=member&p=custompayment&m=sz_yi&oid='.$order['id'].'&isadmin=1'
+                                ]);
+                                ihttp_request('https://shop.gogo198.cn/api/sendwechattemplatenotice.php', $post);
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                //普通收付款的通知
+
+                //step1:发送消息给发起付款的人
+                $post = json_encode([
+                    'call' => 'collectionNotice',
+                    'first' => '您有一笔收款信息',
+                    'keyword1' => $order['payer_name'],
+                    'keyword2' => 'CNY ' . $order['total_money'],
+                    'keyword3' => $zf_type,
+                    'keyword4' => date('Y-m-d H:i:s', time()),
+                    'keyword5' => $order['ordersn'],
+                    'remark' => '感谢您的使用',
+                    'openid' => $order['send_openid'],
+                    'uniacid' => $order['uniacid'],
+                    'temp_id' => 'WcvDClChgUbLfWHu5jQw5TEilYU36VdNDH514KZ-f4w',
+                    'url' => 'https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=member&p=custompayment&m=sz_yi&oid=' . $order['id'] . '&isadmin=1'
+                ]);
+                ihttp_request('https://shop.gogo198.cn/api/sendwechattemplatenotice.php', $post);
+
+                //step2:成功支付后，发送消息给本人
+                $type = '';
+                if ($order['trade_type'] == 1) {
+                    $type = '商品';
+                } elseif ($order['trade_type'] == 2) {
+                    $type = '项目';
+                } elseif ($order['trade_type'] == 3) {
+                    $type = '多项服务';
+                }
+                if (is_numeric($order['openid'])) {
+                    $order['openid'] = pdo_fetchcolumn('select openid from ' . tablename('sz_yi_member') . ' where mobile=:mob', [':mob' => $order['openid']]);
+                }
+                $post2 = json_encode([
+                    'call' => 'collectionNotice',
+                    'first' => '您好，您已经完成新订单的处理，点击查看详情，如有疑问，敬请联系客服075786329911，感谢您的支持！',
+                    'keyword1' => $order['ordersn'],
+                    'keyword2' => $type,
+                    'keyword3' => 'CNY ' . $order['total_money'],
+                    'keyword4' => $zf_type,
+                    'keyword5' => date('Y-m-d H:i:s', time()),
+                    'remark' => '感谢您的使用',
+                    'openid' => $order['openid'],
+                    'uniacid' => $order['uniacid'],
+                    'temp_id' => 'tHWxOL4Kc3v6uZinHT3Zo661I8o6EbAg46XKUP0FnnY',
+                    'url' => 'https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=member&p=custompayment&m=sz_yi&oid=' . $order['id']
+                ]);
+                ihttp_request('https://shop.gogo198.cn/api/sendwechattemplatenotice.php', $post2);
+                //step3:成功支付后，发送消息给管理员（老板）
+                $post3 = json_encode([
+                    'call' => 'collectionNotice',
+                    'first' => '您好，有［' . $type . '］订单状态已变更为［订单已付］，点击查看详情！',
+                    'keyword1' => $order['ordersn'],
+                    'keyword2' => $type,
+                    'keyword3' => 'CNY ' . $order['total_money'],
+                    'keyword4' => $zf_type,
+                    'keyword5' => date('Y-m-d H:i:s', time()),
+                    'remark' => '',
+                    'openid' => 'ov3-bt8keSKg_8z9Wwi-zG1hRhwg',
+                    'uniacid' => $order['uniacid'],
+                    'temp_id' => 'tHWxOL4Kc3v6uZinHT3Zo661I8o6EbAg46XKUP0FnnY',
+                    'url' => 'https://shop.gogo198.cn/app/index.php?i=3&c=entry&do=member&p=custompayment&m=sz_yi&oid=' . $order['id'] . '&isadmin=1'
+                ]);
+                ihttp_request('https://shop.gogo198.cn/api/sendwechattemplatenotice.php', $post3);
+            }
 		}
 		$answer['finished'] = 'SUCCESS';
 		
