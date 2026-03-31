@@ -1017,11 +1017,12 @@ class Miniprogram extends Controller
     public function get_ocr($data){
 //        require_once($_SERVER['DOCUMENT_ROOT'].'/collect_website/vendor/autoload.php');
 //        return json(['code'=>0,'content'=>'制造商：东莞市春信纸业有限公司地址：东莞xxxxxxx工业区']);
+        $key = Db::name('access_key_manage')->where(['id'=>1])->find();
         $config = new Config([
             // 必填，请确保代码运行环境设置了环境变量 ALIBABA_CLOUD_ACCESS_KEY_ID。
-            "accessKeyId" => "LTAI5tS4sntQrRaaG1tNNK59",
+            "accessKeyId" => $key['access_key'],
             // 必填，请确保代码运行环境设置了环境变量 ALIBABA_CLOUD_ACCESS_KEY_SECRET。
-            "accessKeySecret" => "acEBiU4vYI5KrvWC33NTBTiVJQYgCB"
+            "accessKeySecret" => $key['access_secret']
         ]);
         // Endpoint 请参考 https://api.aliyun.com/product/ocr-api
         $config->endpoint = "ocr-api.cn-hangzhou.aliyuncs.com";
