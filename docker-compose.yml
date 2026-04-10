@@ -1,0 +1,71 @@
+# GOGO-Admin Docker Compose - 本地测试环境
+version: '3.8'
+
+services:
+  # ThinkPHP应用
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gogo-admin
+    ports:
+      - "8082:80"
+    environment:
+      - APP_DEBUG=true
+      - DB_TYPE=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=gogo_admin
+      - DB_USER=gogo_user
+      - DB_PWD=gogo_pass_2024
+      - DB_PREFIX=tp_
+    volumes:
+      - .:/var/www/html
+      - ./runtime:/var/www/html/runtime
+    depends_on:
+      - mysql
+    networks:
+      - gogo-admin-network
+    restart: unless-stopped
+
+  # MySQL数据库
+  mysql:
+    image: mysql:5.7
+    container_name: gogo-admin-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password_2024
+      - MYSQL_DATABASE=gogo_admin
+      - MYSQL_USER=gogo_user
+      - MYSQL_PASSWORD=gogo_pass_2024
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - gogo-admin-network
+    restart: unless-stopped
+
+  # phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: gogo-admin-phpmyadmin
+    environment:
+      - PMA_HOST=mysql
+      - PMA_USER=root
+      - PMA_PASSWORD=root_password_2024
+    ports:
+      - "8083:80"
+    depends_on:
+      - mysql
+    networks:
+      - gogo-admin-network
+    restart: unless-stopped
+    profiles:
+      - tools
+
+volumes:
+  mysql_data:
+
+networks:
+  gogo-admin-network:
+    driver: bridge
