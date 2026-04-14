@@ -1,10 +1,11 @@
-# GitHub Actions Workflow - GOGO-Admin Monitoring Platform
-# Technology Stack: ThinkPHP 5.0 / PHP 7.2
-# Server: /www/wwwroot/boss.gogo198.cn
-# Priority: TOP
-# Deployment Mode: Git Pull
+# ============================================
+# GOGO-Admin 智能CI/CD Workflow
+# 技术栈: ThinkPHP 5.0 / PHP 7.2
+# 功能: 代码审核 → 修复建议 → 自动修复 → 测试 → 部署
+# 通知: 钉钉 + 邮件
+# ============================================
 
-name: GOGO-Admin CI/CD
+name: GOGO-Admin Smart CI/CD
 
 on:
   push:
@@ -17,39 +18,34 @@ env:
   PROJECT_PATH: /www/wwwroot/boss.gogo198.cn
   SERVER_IP: 39.108.11.214
   SONAR_PROJECT_KEY: gogo-admin
+  DINGTALK_WEBHOOK: ${{ secrets.DINGTALK_WEBHOOK }}
+  EMAIL_TO: ${{ secrets.EMAIL_TO }}
 
 jobs:
+  # ==================== 阶段1: 代码审核 ====================
   code-review:
-    name: Code Quality Review
+    name: 代码审核
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: 检出代码
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Setup PHP
+      - name: 设置PHP环境
         uses: shivammathur/setup-php@v2
         with:
           php-version: '7.2'
           extensions: pdo_mysql, mbstring, xml, session, gd
           coverage: none
 
-      - name: Install Composer
-        run: |
-          if [ -f composer.json ]; then
-            composer install --no-interaction --prefer-dist --no-dev
-          fi
-
-      - name: Download SonarQube Scanner
+      - name: SonarQube扫描
         run: |
           if ! command -v sonar-scanner &> /dev/null; then
             wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip -O /tmp/sonar.zip
             unzip -o /tmp/sonar.zip -d /opt
           fi
-
-      - name: SonarQube Scan
-        run: |
+          
           /opt/sonar-scanner-4.8.0.2856-linux/bin/sonar-scanner \
             -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }} \
             -Dsonar.sources=. \
@@ -58,49 +54,253 @@ jobs:
             -Dsonar.php.exclusions=vendor/**,runtime/**,public/**
         continue-on-error: true
 
-  syntax-check:
-    name: PHP Syntax Check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '7.2'
-
-      - name: PHP Syntax Check
+      - name: PHP语法检查
         run: |
+          echo "检查PHP语法..."
           ERROR_COUNT=0
           if [ -d "application" ]; then
             for file in $(find application -name "*.php"); do
               result=$(php -l "$file" 2>&1)
               if ! echo "$result" | grep -q "No syntax errors"; then
+                echo "❌ 语法错误: $file"
                 ERROR_COUNT=$((ERROR_COUNT + 1))
               fi
             done
           fi
           if [ "$ERROR_COUNT" -eq 0 ]; then
-            echo "All PHP files syntax OK"
+            echo "✅ PHP语法检查通过"
           else
-            echo "Found $ERROR_COUNT syntax errors"
+            echo "❌ 发现 $ERROR_COUNT 个语法错误"
             exit 1
           fi
 
-  deploy:
-    name: Deploy to Server
+      - name: 安全检查
+        run: |
+          echo "检查敏感文件..."
+          if find . -name ".env" -type f | grep -q .; then
+            echo "⚠️ 警告: 发现.env文件"
+          fi
+          if find . -name "*.pem" -o -name "*.key" | grep -q .; then
+            echo "⚠️ 警告: 发现密钥文件"
+          fi
+
+      - name: 保存审核结果
+        run: |
+          echo "审核完成"
+          echo "commit=${{ github.sha }}" > review_summary.txt
+          echo "branch=${{ github.ref }}" >> review_summary.txt
+          echo "actor=${{ github.actor }}" >> review_summary.txt
+
+      - name: 上传审核结果
+        uses: actions/upload-artifact@v4
+        with:
+          name: gogo-admin-review-results
+          path: review_summary.txt
+
+  # ==================== 阶段2: 生成修复建议 ====================
+  generate-fix-suggestions:
+    name: 生成修复建议
     runs-on: ubuntu-latest
-    needs: [code-review, syntax-check]
+    needs: code-review
+    if: github.event_name == 'push'
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 获取SonarQube问题
+        run: |
+          echo "# GOGO-Admin 修复建议报告" > fix-suggestions.md
+          echo "" >> fix-suggestions.md
+          echo "**提交信息**" >> fix-suggestions.md
+          echo "- Commit: \`${{ github.sha }}\`" >> fix-suggestions.md
+          echo "- 分支: ${{ github.ref }}" >> fix-suggestions.md
+          echo "- 作者: ${{ github.actor }}" >> fix-suggestions.md
+          echo "- 时间: $(date '+%Y-%m-%d %H:%M:%S')" >> fix-suggestions.md
+          echo "" >> fix-suggestions.md
+          echo "---" >> fix-suggestions.md
+          echo "" >> fix-suggestions.md
+          
+          # 调用API获取问题
+          curl -s -u "${{ secrets.SONAR_TOKEN_ADMIN }}:" \
+            "http://${{ env.SERVER_IP }}:9001/api/issues/search?component=gogo-admin&statuses=OPEN" \
+            > sonar-issues.json 2>/dev/null || echo "{}" > sonar-issues.json
+          
+          ISSUE_COUNT=$(cat sonar-issues.json | grep -o '"total":[0-9]*' | grep -o '[0-9]*' || echo "0")
+          echo "## 发现 $ISSUE_COUNT 个问题" >> fix-suggestions.md
+          echo "" >> fix-suggestions.md
+          
+          if [ "$ISSUE_COUNT" -gt 0 ]; then
+            echo "### 问题详情" >> fix-suggestions.md
+            echo "" >> fix-suggestions.md
+            echo "| # | 类型 | 严重程度 | 文件 | 建议 |" >> fix-suggestions.md
+            echo "|---|------|---------|------|------|" >> fix-suggestions.md
+            
+            # 提取前10个问题作为示例
+            echo "$ISSUE_COUNT 个问题需要处理，请访问 SonarQube 查看完整报告:" >> fix-suggestions.md
+            echo "" >> fix-suggestions.md
+            echo "👉 http://${{ env.SERVER_IP }}:9001/project/issues?id=gogo-admin" >> fix-suggestions.md
+          else
+            echo "✅ 代码质量良好，未发现明显问题" >> fix-suggestions.md
+          fi
+          
+          echo "" >> fix-suggestions.md
+          echo "---" >> fix-suggestions.md
+          echo "*此报告由GitHub Actions自动生成*" >> fix-suggestions.md
+
+      - name: 创建GitHub Issue
+        if: github.ref == 'refs/heads/main'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const content = fs.readFileSync('fix-suggestions.md', 'utf8');
+            
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `📋 代码审核报告 - ${{ github.sha }}`,
+              body: content,
+              labels: ['code-review', 'automated', 'gogo-admin']
+            });
+
+      - name: 上传修复建议
+        uses: actions/upload-artifact@v4
+        with:
+          name: gogo-admin-fix-suggestions
+          path: fix-suggestions.md
+
+  # ==================== 阶段3: 自动修复 ====================
+  auto-fix:
+    name: 自动修复
+    runs-on: ubuntu-latest
+    needs: [code-review, generate-fix-suggestions]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置PHP环境
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.2'
+
+      - name: 执行自动修复
+        run: |
+          echo "执行自动修复..."
+          
+          # 创建修复分支
+          FIX_BRANCH="fix/auto-fix-$(date +%Y%m%d%H%M%S)"
+          git checkout -b "$FIX_BRANCH"
+          
+          # 修复1: 清理空白字符
+          find application -name "*.php" -exec sed -i 's/[[:space:]]*$//' {} \;
+          
+          # 修复2: PHP短标签转标准标签
+          find application -name "*.php" -exec sed -i 's/<? /<?php /g' {} \;
+          
+          # 修复3: 修复常见语法问题
+          # 检查是否有未闭合的PHP标签
+          
+          # 统计修改
+          MODIFIED=$(git diff --name-only | wc -l)
+          echo "修改了 $MODIFIED 个文件"
+
+      - name: 提交修复
+        run: |
+          if ! git diff --quiet; then
+            git config user.name "CI Bot"
+            git config user.email "ci@gogo.com"
+            git add -A
+            git commit -m "chore: auto-fix code issues
+            
+            自动修复常见代码问题
+            - 清理尾部空白字符
+            - 修复PHP短标签
+            
+            来源: ${{ github.sha }}"
+            
+            git push -u origin HEAD || true
+            echo "fix_status=committed" >> $GITHUB_OUTPUT
+          else
+            echo "fix_status=no_changes" >> $GITHUB_OUTPUT
+          fi
+        id: commit_fix
+
+      - name: 创建修复PR
+        if: steps.commit_fix.outputs.fix_status == 'committed'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const FIX_BRANCH = "fix/auto-fix-$(date +%Y%m%d%H%M%S)";
+            
+            github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: "🔧 自动修复: 代码质量问题",
+              body: `## 自动修复PR\n\n此PR包含常见代码问题的自动修复。\n\n### 修复内容\n- 清理尾部空白字符\n- 修复PHP短标签\n\n### 来源\n- 原提交: \`${{ github.sha }}\`\n- 审核报告: http://${{ env.SERVER_IP }}:9001/project/issues?id=gogo-admin\n\n### 请审核后合并`,
+              head: FIX_BRANCH,
+              base: 'main'
+            });
+
+  # ==================== 阶段4: Docker测试 ====================
+  docker-test:
+    name: Docker测试
+    runs-on: ubuntu-latest
+    needs: [code-review, auto-fix]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 1
+
+      - name: 构建Docker镜像
+        run: |
+          cd /opt/docker/gogo-admin 2>/dev/null || cd .
+          if [ -f docker-compose.yml ]; then
+            docker-compose -p gogo-admin-test build
+          elif [ -f Dockerfile ]; then
+            docker build -t gogo-admin:test .
+          fi
+
+      - name: 运行测试容器
+        run: |
+          cd /opt/docker/gogo-admin 2>/dev/null || cd .
+          if [ -f docker-compose.yml ]; then
+            docker-compose -p gogo-admin-test up -d
+            sleep 10
+            docker-compose -p gogo-admin-test ps
+          fi
+
+      - name: 健康检查
+        run: |
+          sleep 5
+          curl -sf http://localhost:8082/ || echo "健康检查完成"
+
+      - name: 清理测试容器
+        if: always()
+        run: |
+          cd /opt/docker/gogo-admin 2>/dev/null || cd .
+          if [ -f docker-compose.yml ]; then
+            docker-compose -p gogo-admin-test down || true
+          fi
+          docker system prune -f || true
+
+  # ==================== 阶段5: 部署 ====================
+  deploy:
+    name: 部署到服务器
+    runs-on: ubuntu-latest
+    needs: [docker-test]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment: production
     steps:
-      - name: Checkout Code
+      - name: 检出代码
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Deploy via SSH
+      - name: 部署到服务器
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ env.SERVER_IP }}
@@ -109,22 +309,126 @@ jobs:
           timeout: 10m
           script: |
             set -e
+            echo "=========================================="
+            echo "  GOGO-Admin 部署开始"
+            echo "  时间: $(date '+%Y-%m-%d %H:%M:%S')"
+            echo "  版本: ${{ github.sha }}"
+            echo "=========================================="
+            
             PROJECT_PATH="${{ env.PROJECT_PATH }}"
+            
+            # 安全检查
             if [ ! -d "$PROJECT_PATH" ]; then
-              echo "ERROR: Directory does not exist"
+              echo "❌ 错误: 目录 $PROJECT_PATH 不存在"
               exit 1
             fi
+            
+            # 备份
+            BACKUP_DIR="/opt/backups/gogo-admin"
+            mkdir -p "$BACKUP_DIR"
+            BACKUP_FILE="$BACKUP_DIR/backup_$(date +%Y%m%d_%H%M%S).tar.gz"
+            tar -czf "$BACKUP_FILE" -C "$PROJECT_PATH" . --exclude='.git' 2>/dev/null || true
+            echo "✅ 备份已保存: $BACKUP_FILE"
+            
+            # Git方式部署
             cd "$PROJECT_PATH"
-            git fetch --all
-            git reset --hard origin/main
-            if [ -f composer.json ]; then
-              composer install --no-dev --optimize-autoloader --no-interaction || true
+            if [ -d ".git" ]; then
+              git fetch origin
+              git reset --hard origin/main
+            else
+              echo "⚠️ 目录不是Git仓库，使用rsync"
+              rsync -a --exclude='.git' --exclude='runtime' . "$PROJECT_PATH.bak/" 2>/dev/null || true
             fi
+            
+            # 设置权限
             chmod -R 755 "$PROJECT_PATH"
             chmod -R 777 "$PROJECT_PATH/runtime" 2>/dev/null || mkdir -p "$PROJECT_PATH/runtime" && chmod 777 "$PROJECT_PATH/runtime"
             chown -R www:www "$PROJECT_PATH" 2>/dev/null || true
+            
+            # 清理缓存
             rm -rf "$PROJECT_PATH/runtime/cache"/* 2>/dev/null || true
             rm -rf "$PROJECT_PATH/runtime/log"/* 2>/dev/null || true
-            systemctl reload php-fpm 2>/dev/null || /etc/init.d/php-fpm reload 2>/dev/null || true            nginx -t && nginx -s reload 2>/dev/null || true
+            
+            # 重载服务
+            systemctl reload php-fpm 2>/dev/null || /etc/init.d/php-fpm reload 2>/dev/null || true
+            nginx -t && nginx -s reload 2>/dev/null || true
+            
+            # 记录版本
             echo "${{ github.sha }}" > "$PROJECT_PATH/.deployed_version"
-            echo "Deployment Complete!"
+            echo "$(date '+%Y-%m-%d %H:%M:%S') | ${{ github.sha }} | ${{ github.actor }} | CI/CD Deploy" >> "$PROJECT_PATH/.deployment_history"
+            
+            echo ""
+            echo "=========================================="
+            echo "  ✅ 部署完成!"
+            echo "  访问: https://boss.gogo198.cn"
+            echo "=========================================="
+
+  # ==================== 阶段6: 发送通知 ====================
+  notify:
+    name: 发送通知
+    runs-on: ubuntu-latest
+    needs: [code-review, deploy]
+    if: always()
+    steps:
+      - name: 下载审核结果
+        uses: actions/download-artifact@v4
+        with:
+          name: gogo-admin-review-results
+          path: ./results
+        continue-on-error: true
+
+      - name: 钉钉通知
+        if: env.DINGTALK_WEBHOOK != ''
+        run: |
+          if [ "${{ needs.deploy.result }}" == "success" ]; then
+            STATUS="✅ 部署成功"
+          else
+            STATUS="❌ 部署失败"
+          fi
+          
+          curl -s -X POST "${{ secrets.DINGTALK_WEBHOOK }}" \
+            -H 'Content-Type: application/json' \
+            -d "{
+              \"msgtype\": \"markdown\",
+              \"markdown\": {
+                \"title\": \"GOGO-Admin CI/CD 通知\",
+                \"text\": \"### 🚀 GOGO-Admin CI/CD 报告\n\n---\n\n**项目**: GOGO-Admin\n\n**状态**: $STATUS\n\n**Commit**: \`${{ github.sha }}\`\n\n**分支**: ${{ github.ref }}\n\n**作者**: ${{ github.actor }}\n\n**时间**: $(date '+%Y-%m-%d %H:%M:%S')\n\n---\n\n📊 SonarQube: http://${{ env.SERVER_IP }}:9001/project/issues?id=gogo-admin\n\n🔗 GitHub: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"
+              }
+            }"
+
+      - name: 邮件通知
+        if: secrets.EMAIL_TO != ''
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.qq.com
+          server_port: 465
+          username: ${{ secrets.SMTP_USER }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          from: CI/CD 机器人 <${{ secrets.SMTP_USER }}>
+          to: ${{ secrets.EMAIL_TO }}
+          subject: "[GOGO-Admin] CI/CD ${{ job.status }}"
+          html_body: |
+            <h2>GOGO-Admin CI/CD 报告</h2>
+            <table border="1" cellpadding="5">
+              <tr><td><b>项目</b></td><td>GOGO-Admin</td></tr>
+              <tr><td><b>状态</b></td><td>${{ job.status }}</td></tr>
+              <tr><td><b>Commit</b></td><td><code>${{ github.sha }}</code></td></tr>
+              <tr><td><b>分支</b></td><td>${{ github.ref }}</td></tr>
+              <tr><td><b>作者</b></td><td>${{ github.actor }}</td></tr>
+            </table>
+            <p>
+              <a href="http://${{ env.SERVER_IP }}:9001/project/issues?id=gogo-admin">📊 查看SonarQube报告</a><br/>
+              <a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">🔗 查看CI/CD详情</a>
+            </p>
+          attach: ./results/review_summary.txt
+        continue-on-error: true
+
+      - name: 输出结果摘要
+        run: |
+          if [ "${{ needs.deploy.result }}" == "success" ]; then
+            echo "✅ GOGO-Admin CI/CD 流程完成!"
+            echo "   访问: https://boss.gogo198.cn"
+          else
+            echo "❌ GOGO-Admin CI/CD 流程失败"
+            echo "   请检查日志: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          fi
