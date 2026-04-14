@@ -97,6 +97,586 @@ jobs:
           name: gogo-admin-review-results
           path: review_summary.txt
 
+  # ==================== 阶段1.5: 架构文档生成 ====================
+  architecture-doc:
+    name: 架构文档生成
+    runs-on: ubuntu-latest
+    needs: code-review
+    if: github.event_name == 'push'
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 设置PHP环境
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          extensions: pdo_mysql, mbstring, xml, json
+
+      - name: 下载架构文档生成脚本
+        run: |
+          # 创建脚本
+          cat > generate-arch-doc.php << 'PHPSCRIPT'
+#!/usr/bin/env php
+<?php
+/**
+ * GOGO项目架构文档生成器 v2.0
+ * 功能：生成项目目录结构、控制器/模型列表、API路由文档
+ */
+
+class ArchDocGenerator
+{
+    private $projectPath;
+    private $outputDir;
+    private $projectName;
+    private $result = [];
+
+    public function __construct($projectPath, $outputDir = './docs')
+    {
+        $this->projectPath = rtrim($projectPath, '/');
+        $this->outputDir = rtrim($outputDir, '/');
+        $this->projectName = basename($this->projectPath);
+    }
+
+    public function generate()
+    {
+        echo "🏗️  开始生成架构文档...\n";
+        
+        $this->result['info'] = $this->getProjectInfo();
+        $this->result['structure'] = $this->generateStructureTree();
+        $this->result['controllers'] = $this->analyzeControllers();
+        $this->result['models'] = $this->analyzeModels();
+        $this->result['routes'] = $this->analyzeRoutes();
+        $this->result['files'] = $this->analyzeFiles();
+
+        $this->saveDocumentation();
+        echo "\n✅ 架构文档生成完成！\n";
+    }
+
+    private function getProjectInfo()
+    {
+        $info = [
+            'name' => $this->projectName,
+            'path' => $this->projectPath,
+            'generated_at' => date('Y-m-d H:i:s'),
+            'php_version' => PHP_VERSION,
+        ];
+
+        $fileCount = 0;
+        $phpFiles = [];
+        
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($this->projectPath, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::SELF_FIRST
+        );
+
+        foreach ($iterator as $file) {
+            if ($file->isFile()) {
+                $fileCount++;
+                if ($file->getExtension() === 'php') {
+                    $phpFiles[] = $file->getPathname();
+                }
+            }
+        }
+
+        $info['total_files'] = $fileCount;
+        $info['php_files'] = count($phpFiles);
+        $info['size'] = $this->formatSize($this->getDirectorySize($this->projectPath));
+
+        return $info;
+    }
+
+    private function generateStructureTree()
+    {
+        echo "🌲 生成目录结构树...\n";
+        
+        $tree = [];
+        $maxDepth = 4;
+        $excludeDirs = ['.git', 'node_modules', 'vendor', '__pycache__', '.idea', '.vscode', 'runtime', 'logs', '.gitignore'];
+
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($this->projectPath, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::SELF_FIRST
+        );
+
+        foreach ($iterator as $file) {
+            $path = $file->getPathname();
+            $relativePath = str_replace($this->projectPath . '/', '', $path);
+            $depth = substr_count($relativePath, '/');
+            
+            if ($depth > $maxDepth) continue;
+            if (in_array(basename($path), $excludeDirs)) continue;
+
+            if ($file->isDir()) {
+                $tree[$relativePath] = ['type' => 'dir'];
+            } else {
+                $tree[$relativePath] = [
+                    'type' => 'file',
+                    'size' => $file->getSize(),
+                    'ext' => $file->getExtension()
+                ];
+            }
+        }
+
+        return $tree;
+    }
+
+    private function analyzeControllers()
+    {
+        echo "🎮 分析控制器...\n";
+        
+        $controllers = [];
+        $controllerDirs = [
+            $this->projectPath . '/application/index/controller',
+            $this->projectPath . '/application/admin/controller',
+            $this->projectPath . '/application/home/controller',
+            $this->projectPath . '/application/api/controller',
+            $this->projectPath . '/application',
+            $this->projectPath . '/controllers',
+        ];
+
+        foreach ($controllerDirs as $dir) {
+            if (!is_dir($dir)) continue;
+            
+            $files = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS)
+            );
+
+            foreach ($files as $file) {
+                if ($file->getExtension() !== 'php') continue;
+                
+                $relativePath = str_replace($this->projectPath . '/', '', $file->getPathname());
+                $content = file_get_contents($file->getPathname());
+                
+                preg_match('/class\s+(\w+)(?:\s+extends\s+\w+)?/i', $content, $classMatch);
+                
+                if (empty($classMatch)) continue;
+                
+                $className = $classMatch[1];
+                $methods = [];
+                
+                preg_match_all('/public\s+function\s+(\w+)\s*\(/i', $content, $methodMatches);
+                
+                if (!empty($methodMatches[1])) {
+                    $methods = array_filter($methodMatches[1], function($m) {
+                        return !in_array(strtolower($m), ['__construct', '__destruct', '__call', '__get', '__set']);
+                    });
+                }
+
+                $controllers[] = [
+                    'class' => $className,
+                    'file' => $relativePath,
+                    'methods' => array_values($methods),
+                    'lines' => substr_count($content, "\n"),
+                ];
+            }
+        }
+
+        return $controllers;
+    }
+
+    private function analyzeModels()
+    {
+        echo "📦 分析模型...\n";
+        
+        $models = [];
+        $modelDirs = [
+            $this->projectPath . '/application/index/model',
+            $this->projectPath . '/application/admin/model',
+            $this->projectPath . '/application/common/model',
+            $this->projectPath . '/application/model',
+            $this->projectPath . '/models',
+        ];
+
+        foreach ($modelDirs as $dir) {
+            if (!is_dir($dir)) continue;
+            
+            $files = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS)
+            );
+
+            foreach ($files as $file) {
+                if ($file->getExtension() !== 'php') continue;
+                
+                $relativePath = str_replace($this->projectPath . '/', '', $file->getPathname());
+                $content = file_get_contents($file->getPathname());
+                
+                preg_match('/class\s+(\w+)(?:\s+extends\s+\w+)?/i', $content, $classMatch);
+                
+                if (empty($classMatch)) continue;
+                
+                $className = $classMatch[1];
+                
+                $tableName = null;
+                preg_match('/protected\s+\$table\s*=\s*[\'"](\w+)[\'"]/i', $content, $tableMatch);
+                if (!empty($tableMatch)) {
+                    $tableName = $tableMatch[1];
+                }
+                
+                preg_match_all('/public\s+function\s+(\w+)\s*\(/i', $content, $methodMatches);
+                $methods = array_filter($methodMatches[1] ?? [], function($m) {
+                    return !in_array(strtolower($m), ['__construct', '__destruct']);
+                });
+
+                $models[] = [
+                    'class' => $className,
+                    'file' => $relativePath,
+                    'table' => $tableName ?? 'N/A',
+                    'methods' => array_values($methods),
+                    'lines' => substr_count($content, "\n"),
+                ];
+            }
+        }
+
+        return $models;
+    }
+
+    private function analyzeRoutes()
+    {
+        echo "🛤️  分析路由...\n";
+        
+        $routes = [];
+        $this->inferRoutesFromControllers($routes);
+        return $routes;
+    }
+
+    private function inferRoutesFromControllers(&$routes)
+    {
+        $controllerDirs = [
+            $this->projectPath . '/application/index/controller',
+            $this->projectPath . '/application/admin/controller',
+            $this->projectPath . '/application/api/controller',
+        ];
+
+        foreach ($controllerDirs as $dir) {
+            if (!is_dir($dir)) continue;
+            
+            $module = strtolower(basename(dirname($dir)));
+            
+            $files = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS)
+            );
+
+            foreach ($files as $file) {
+                if ($file->getExtension() !== 'php') continue;
+                
+                $content = file_get_contents($file->getPathname());
+                preg_match('/class\s+(\w+)/i', $content, $classMatch);
+                
+                if (empty($classMatch)) continue;
+                
+                $className = $classMatch[1];
+                preg_match_all('/public\s+function\s+(\w+)\s*\(/i', $content, $methodMatches);
+                
+                foreach ($methodMatches[1] ?? [] as $method) {
+                    if (in_array(strtolower($method), ['__construct', '__destruct'])) continue;
+                    
+                    $action = ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', $method)), '_');
+                    $controller = strtolower(preg_replace('/Controller$/', '', $className));
+                    
+                    $routes[] = [
+                        'method' => 'AUTO',
+                        'path' => '/' . $module . '/' . $controller . '/' . $action,
+                        'action' => $className . '->' . $method,
+                        'source' => 'inferred',
+                    ];
+                }
+            }
+        }
+    }
+
+    private function analyzeFiles()
+    {
+        echo "📈 统计文件...\n";
+        
+        $stats = [
+            'by_type' => [],
+            'largest' => [],
+        ];
+
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($this->projectPath, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::SELF_FIRST
+        );
+
+        $allFiles = [];
+        
+        foreach ($iterator as $file) {
+            if ($file->isFile()) {
+                $ext = $file->getExtension() ?: 'no_ext';
+                $size = $file->getSize();
+                
+                if (!isset($stats['by_type'][$ext])) {
+                    $stats['by_type'][$ext] = ['count' => 0, 'size' => 0];
+                }
+                $stats['by_type'][$ext]['count']++;
+                $stats['by_type'][$ext]['size'] += $size;
+                
+                $allFiles[] = [
+                    'path' => str_replace($this->projectPath . '/', '', $file->getPathname()),
+                    'size' => $size,
+                    'ext' => $ext,
+                ];
+            }
+        }
+
+        usort($allFiles, function($a, $b) {
+            return $b['size'] - $a['size'];
+        });
+        
+        $stats['largest'] = array_slice($allFiles, 0, 20);
+        
+        foreach ($stats['by_type'] as $ext => &$info) {
+            $info['size_str'] = $this->formatSize($info['size']);
+        }
+
+        return $stats;
+    }
+
+    private function saveDocumentation()
+    {
+        echo "💾 保存文档...\n";
+        
+        if (!is_dir($this->outputDir)) {
+            mkdir($this->outputDir, 0755, true);
+        }
+
+        $md = $this->generateMarkdown();
+        file_put_contents($this->outputDir . '/ARCHITECTURE.md', $md);
+
+        $structure = $this->generateStructureText();
+        file_put_contents($this->outputDir . '/structure.txt', $structure);
+
+        $json = json_encode($this->result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        file_put_contents($this->outputDir . '/components.json', $json);
+    }
+
+    private function generateMarkdown()
+    {
+        $md = "# {$this->projectName} 架构文档\n\n";
+        $md .= "> 生成时间: {$this->result['info']['generated_at']}\n\n";
+
+        $md .= "## 📊 项目概览\n\n";
+        $md .= "| 属性 | 值 |\n";
+        $md .= "|------|-----|\n";
+        $md .= "| 项目名称 | {$this->result['info']['name']} |\n";
+        $md .= "| 文件总数 | {$this->result['info']['total_files']} |\n";
+        $md .= "| PHP文件数 | {$this->result['info']['php_files']} |\n";
+        $md .= "| 项目大小 | {$this->result['info']['size']} |\n\n";
+
+        $md .= "## 🌲 目录结构\n\n";
+        $md .= "```\n";
+        $md .= $this->projectName . "/\n";
+        $md .= $this->generateStructureText(2);
+        $md .= "```\n\n";
+
+        $md .= "## 🎮 控制器列表\n\n";
+        if (!empty($this->result['controllers'])) {
+            $md .= "| 类名 | 文件路径 | 方法数 | 行数 |\n";
+            $md .= "|------|---------|--------|------|\n";
+            foreach ($this->result['controllers'] as $ctrl) {
+                $md .= "| {$ctrl['class']} | `{$ctrl['file']}` | " . count($ctrl['methods']) . " | {$ctrl['lines']} |\n";
+            }
+            $md .= "\n### 控制器详情\n\n";
+            foreach ($this->result['controllers'] as $ctrl) {
+                $md .= "### `{$ctrl['class']}`\n\n";
+                $md .= "**文件**: `{$ctrl['file']}`\n\n";
+                $md .= "**公开方法**:\n";
+                foreach ($ctrl['methods'] as $method) {
+                    $md .= "- `{$method}()`\n";
+                }
+                $md .= "\n";
+            }
+        } else {
+            $md .= "_未发现控制器文件_\n\n";
+        }
+
+        $md .= "## 📦 模型列表\n\n";
+        if (!empty($this->result['models'])) {
+            $md .= "| 类名 | 文件路径 | 数据表 | 方法数 |\n";
+            $md .= "|------|---------|--------|--------|\n";
+            foreach ($this->result['models'] as $model) {
+                $md .= "| {$model['class']} | `{$model['file']}` | {$model['table']} | " . count($model['methods']) . " |\n";
+            }
+            $md .= "\n### 模型详情\n\n";
+            foreach ($this->result['models'] as $model) {
+                $md .= "### `{$model['class']}`\n\n";
+                $md .= "**文件**: `{$model['file']}`\n";
+                $md .= "**数据表**: `{$model['table']}`\n\n";
+                if (!empty($model['methods'])) {
+                    $md .= "**方法**:\n";
+                    foreach ($model['methods'] as $method) {
+                        $md .= "- `{$method}()`\n";
+                    }
+                }
+                $md .= "\n";
+            }
+        } else {
+            $md .= "_未发现模型文件_\n\n";
+        }
+
+        $md .= "## 🛤️ API路由文档\n\n";
+        if (!empty($this->result['routes'])) {
+            $md .= "| 方法 | 路径 | 控制器 |\n";
+            $md .= "|------|------|--------|\n";
+            foreach ($this->result['routes'] as $route) {
+                $md .= "| {$route['method']} | `{$route['path']}` | `{$route['action']}` |\n";
+            }
+        } else {
+            $md .= "_未发现路由定义_\n\n";
+        }
+
+        $md .= "## 📈 文件统计\n\n";
+        $md .= "### 按文件类型\n\n";
+        $md .= "| 类型 | 文件数 | 总大小 |\n";
+        $md .= "|------|--------|--------|\n";
+        foreach ($this->result['files']['by_type'] as $ext => $info) {
+            $md .= "| .{$ext} | {$info['count']} | {$info['size_str']} |\n";
+        }
+
+        $md .= "\n### 最大文件 (Top 10)\n\n";
+        $md .= "| 文件路径 | 大小 |\n";
+        $md .= "|---------|------|\n";
+        foreach (array_slice($this->result['files']['largest'], 0, 10) as $file) {
+            $md .= "| `{$file['path']}` | {$this->formatSize($file['size'])} |\n";
+        }
+
+        $md .= "\n---\n\n";
+        $md .= "_本文档由 GOGO 架构文档生成器 自动生成_\n";
+
+        return $md;
+    }
+
+    private function generateStructureText($indentLevel = 0)
+    {
+        $lines = [];
+        $indent = str_repeat('│   ', $indentLevel);
+        
+        $sortedPaths = array_keys($this->result['structure']);
+        sort($sortedPaths);
+        
+        foreach ($sortedPaths as $path) {
+            $info = $this->result['structure'][$path];
+            $parts = explode('/', $path);
+            $name = array_pop($parts);
+            
+            $prefix = '';
+            for ($i = 0; $i < count($parts); $i++) {
+                if ($i === count($parts) - 1) {
+                    $prefix .= "├── ";
+                } else {
+                    $prefix .= "│   ";
+                }
+            }
+            
+            if ($info['type'] === 'dir') {
+                $lines[] = $indent . $prefix . "📁 {$name}/";
+            } else {
+                $ext = $info['ext'] ?? '';
+                $icon = $this->getFileIcon($ext);
+                $lines[] = $indent . $prefix . "{$icon} {$name}";
+            }
+        }
+        
+        return implode("\n", $lines);
+    }
+
+    private function getFileIcon($ext)
+    {
+        $icons = [
+            'php' => '🐘',
+            'js' => '📜',
+            'css' => '🎨',
+            'html' => '🌐',
+            'json' => '📋',
+            'md' => '📝',
+            'yml' => '⚙️',
+            'yaml' => '⚙️',
+        ];
+        return $icons[$ext] ?? '📄';
+    }
+
+    private function formatSize($bytes)
+    {
+        $units = ['B', 'KB', 'MB', 'GB'];
+        $i = 0;
+        while ($bytes >= 1024 && $i < count($units) - 1) {
+            $bytes /= 1024;
+            $i++;
+        }
+        return round($bytes, 2) . ' ' . $units[$i];
+    }
+
+    private function getDirectorySize($directory)
+    {
+        $size = 0;
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($directory, RecursiveDirectoryIterator::SKIP_DOTS)
+        );
+
+        foreach ($iterator as $file) {
+            if ($file->isFile()) {
+                $size += $file->getSize();
+            }
+        }
+
+        return $size;
+    }
+}
+
+if (php_sapi_name() !== 'cli') {
+    die("此脚本只能在命令行运行！\n");
+}
+
+$projectPath = $argv[1] ?? __DIR__;
+$outputDir = $argv[2] ?? __DIR__ . '/docs';
+
+$generator = new ArchDocGenerator($projectPath, $outputDir);
+$generator->generate();
+PHPSCRIPT
+          chmod +x generate-arch-doc.php
+          echo "✅ 脚本已创建"
+
+      - name: 生成架构文档
+        run: |
+          php generate-arch-doc.php . ./docs
+
+      - name: 显示文档预览
+        run: |
+          echo "📄 架构文档内容预览:"
+          echo "========================"
+          head -50 docs/ARCHITECTURE.md
+          echo "========================"
+          echo "... (更多内容见完整文档)"
+
+      - name: 上传架构文档
+        uses: actions/upload-artifact@v4
+        with:
+          name: gogo-admin-architecture-doc
+          path: docs/
+          retention-days: 30
+
+      - name: 提交架构文档到仓库
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            git config user.name "CI Bot"
+            git config user.email "ci@gogo.com"
+            git add docs/
+            git commit -m "docs: auto-update architecture documentation
+            
+            自动更新项目架构文档
+            - 目录结构树
+            - 控制器列表
+            - 模型列表
+            - API路由文档
+            - 文件统计
+            
+            Commit: ${{ github.sha }}" || echo "没有变更需要提交"
+            git push origin main || echo "推送失败（可能没有变更）"
+          fi
+
   # ==================== 阶段2: 生成修复建议 ====================
   generate-fix-suggestions:
     name: 生成修复建议
