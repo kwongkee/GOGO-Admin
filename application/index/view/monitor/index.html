@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOGO服务器监控面板</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; min-height: 100vh; }
+        
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .header h1 { font-size: 20px; }
+        .header .actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .header .btn { background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px; cursor: pointer; border: none; color: white; font-size: 13px; transition: all 0.3s; }
+        .header .btn:hover { background: rgba(255,255,255,0.3); }
+        .header .btn.wechat { background: #07c160; }
+        .header .btn.ai { background: #ff6b6b; }
+        .header .time { color: rgba(255,255,255,0.8); font-size: 12px; }
+
+        .container { max-width: 1400px; margin: 20px auto; padding: 0 20px; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: white; border-radius: 10px; padding: 15px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); cursor: pointer; transition: all 0.3s; position: relative; }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .stat-card .icon { font-size: 28px; margin-bottom: 8px; }
+        .stat-card .value { font-size: 24px; font-weight: bold; color: #333; }
+        .stat-card .label { color: #666; font-size: 13px; margin-top: 5px; }
+        .stat-card .click-hint { position: absolute; bottom: 5px; right: 10px; font-size: 10px; color: #999; opacity: 0; transition: opacity 0.3s; }
+        .stat-card:hover .click-hint { opacity: 1; }
+        .stat-card .value.warning { color: #faad14; }
+        .stat-card .value.danger { color: #f5222d; }
+        .stat-card .value.success { color: #52c41a; }
+        .stat-card.cpu-card { border-left: 4px solid #1890ff; }
+        .stat-card.mem-card { border-left: 4px solid #722ed1; }
+        .stat-card.disk-card { border-left: 4px solid #fa8c16; }
+        .stat-card.docker-card { border-left: 4px solid #13c2c2; }
+        .stat-card.sec-card { border-left: 4px solid #f5222d; }
+        .stat-card.task-card { border-left: 4px solid #722ed1; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
+        .card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .card h2 { font-size: 15px; color: #333; border-bottom: 2px solid #667eea; padding-bottom: 10px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .card h2 .count { background: #667eea; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: auto; }
+        .card h2 .refresh { margin-left: auto; cursor: pointer; font-size: 12px; color: #999; }
+        .card h2 .refresh:hover { color: #667eea; }
+
+        .metric { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
+        .metric .label { color: #666; }
+        .metric .value { font-weight: bold; color: #333; }
+        .metric .value.warning { color: #faad14; }
+        .metric .value.danger { color: #f5222d; }
+        .metric .value.success { color: #52c41a; }
+
+        .tabs { display: flex; gap: 5px; margin-bottom: 15px; flex-wrap: wrap; }
+        .tab { padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; background: #f0f0f0; color: #666; transition: all 0.3s; }
+        .tab:hover { background: #e6e6e6; }
+        .tab.active { background: #667eea; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .data-table th, .data-table td { padding: 8px; text-align: left; border-bottom: 1px solid #f0f0f0; }
+        .data-table th { background: #fafafa; color: #666; font-weight: normal; }
+        .data-table tr:hover { background: #fafafa; }
+        .data-table .center { text-align: center; }
+        .data-table .action { color: #667eea; cursor: pointer; margin: 0 5px; }
+        .data-table .action:hover { text-decoration: underline; }
+        .data-table .tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+        .data-table .tag.success { background: #f6ffed; color: #52c41a; }
+        .data-table .tag.warning { background: #fffbe6; color: #faad14; }
+        .data-table .tag.danger { background: #fff1f0; color: #f5222d; }
+
+        .event-item { padding: 12px; border-radius: 8px; margin-bottom: 10px; background: #fafafa; border-left: 4px solid #ddd; cursor: pointer; transition: all 0.3s; }
+        .event-item:hover { background: #f0f0f0; }
+        .event-item.critical { border-left-color: #f5222d; background: #fff1f0; }
+        .event-item.warning { border-left-color: #faad14; background: #fffbe6; }
+        .event-item.info { border-left-color: #1890ff; }
+        .event-item .title { font-weight: bold; margin-bottom: 5px; }
+        .event-item .desc { color: #666; font-size: 13px; margin-bottom: 5px; }
+        .event-item .action { color: #667eea; font-size: 12px; margin: 5px 0; }
+        .event-item .time { color: #999; font-size: 11px; }
+
+        .empty-state { text-align: center; padding: 30px; color: #999; }
+        .empty-state .icon { font-size: 40px; margin-bottom: 10px; }
+        .loading { text-align: center; padding: 20px; color: #999; }
+
+        pre { background: #fafafa; padding: 10px; border-radius: 5px; overflow-x: auto; font-size: 12px; max-height: 300px; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; }
+        .modal.active { display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: white; border-radius: 10px; width: 90%; max-width: 700px; max-height: 90vh; overflow-y: auto; padding: 25px; position: relative; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+        .modal-header h3 { color: #333; font-size: 18px; }
+        .modal-close { width: 30px; height: 30px; border-radius: 50%; background: #f0f0f0; border: none; cursor: pointer; font-size: 18px; color: #666; }
+        .modal-close:hover { background: #e0e0e0; }
+        .modal-body { }
+        .modal-section { margin-bottom: 20px; }
+        .modal-section h4 { color: #333; margin-bottom: 10px; font-size: 14px; }
+        .modal-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+        .modal-info-item { background: #fafafa; padding: 10px; border-radius: 5px; }
+        .modal-info-item .label { color: #999; font-size: 12px; }
+        .modal-info-item .value { font-weight: bold; color: #333; font-size: 14px; }
+        .modal-info-item .value.warning { color: #faad14; }
+        .modal-info-item .value.danger { color: #f5222d; }
+        .modal-info-item .value.success { color: #52c41a; }
+
+        .ai-analysis { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 10px; margin: 15px 0; }
+        .ai-analysis .score { font-size: 36px; font-weight: bold; text-align: center; margin: 10px 0; }
+        .ai-analysis .assessment { text-align: center; font-size: 14px; opacity: 0.9; }
+        .ai-analysis .suggestions { margin-top: 15px; font-size: 13px; line-height: 1.8; }
+        .ai-analysis .suggestions li { margin: 5px 0; }
+        .ai-analysis .loading-text { text-align: center; padding: 20px; }
+
+        .ai-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-size: 13px; margin-top: 15px; }
+        .ai-btn:hover { opacity: 0.9; }
+
+        .progress-bar { width: 100%; height: 8px; background: #f0f0f0; border-radius: 4px; overflow: hidden; margin: 5px 0; }
+        .progress-bar .fill { height: 100%; transition: width 0.5s; border-radius: 4px; }
+        .progress-bar .fill.normal { background: linear-gradient(90deg, #52c41a, #73d13d); }
+        .progress-bar .fill.warning { background: linear-gradient(90deg, #faad14, #ffc53d); }
+        .progress-bar .fill.danger { background: linear-gradient(90deg, #f5222d, #ff4d4f); }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .header { padding: 10px 15px; }
+            .header h1 { font-size: 16px; }
+            .header .btn { padding: 6px 12px; font-size: 12px; }
+            .container { padding: 0 10px; }
+            .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+            .stat-card { padding: 10px; }
+            .stat-card .icon { font-size: 20px; }
+            .stat-card .value { font-size: 18px; }
+            .stat-card .label { font-size: 11px; }
+            .grid { grid-template-columns: 1fr; }
+            .data-table { font-size: 11px; }
+            .data-table th, .data-table td { padding: 5px; }
+            .tabs { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
+            .tab { white-space: nowrap; }
+            .modal-content { width: 95%; padding: 15px; }
+        }
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .stat-card:nth-child(3) { grid-column: span 2; }
+        }
+        
+        /* 趋势图表样式 */
+        .chart-container { position: relative; height: 250px; margin: 15px 0; }
+        .chart-controls { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .chart-btn { padding: 5px 15px; border-radius: 15px; border: 1px solid #ddd; background: white; cursor: pointer; font-size: 12px; transition: all 0.3s; }
+        .chart-btn:hover { border-color: #667eea; color: #667eea; }
+        .chart-btn.active { background: #667eea; color: white; border-color: #667eea; }
+        .chart-summary { display: flex; gap: 20px; margin-top: 10px; font-size: 13px; color: #666; }
+        
+        /* 自动化运维样式 */
+        .ops-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+        .ops-card { background: #fafafa; border-radius: 10px; padding: 20px; border-left: 4px solid #667eea; transition: all 0.3s; }
+        .ops-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .ops-card h4 { color: #333; margin-bottom: 10px; font-size: 15px; }
+        .ops-card p { color: #666; font-size: 13px; margin-bottom: 15px; line-height: 1.5; }
+        .ops-btn { background: #667eea; color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 13px; transition: all 0.3s; }
+        .ops-btn:hover { background: #5a6fd6; }
+        .ops-btn.danger { background: #f5222d; }
+        .ops-btn.danger:hover { background: #d92525; }
+        .ops-btn.warning { background: #faad14; }
+        .ops-btn.warning:hover { background: #d09b12; }
+        .ops-btn.success { background: #52c41a; }
+        .ops-btn.success:hover { background: #45a118; }
+        .ops-result { margin-top: 15px; padding: 10px; background: #f0f0f0; border-radius: 5px; font-size: 12px; max-height: 200px; overflow-y: auto; }
+        
+        /* 定时任务管理样式 */
+        .cron-form { background: #fafafa; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+        .cron-form .form-row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+        .cron-form label { display: block; font-size: 12px; color: #666; margin-bottom: 3px; }
+        .cron-form input, .cron-form select { padding: 8px 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px; width: 100%; }
+        .cron-form .field { flex: 1; min-width: 80px; }
+        .cron-form .field-full { flex: 1 1 100%; }
+        .cron-preview { background: #e8f4ff; padding: 10px; border-radius: 5px; font-family: monospace; margin-top: 10px; }
+        .cron-help { font-size: 11px; color: #999; margin-top: 5px; }
+        
+        /* Prometheus样式 */
+        .prometheus-info { background: linear-gradient(135deg, #e66465 0%, #9198e5 100%); color: white; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+        .prometheus-info h4 { margin-bottom: 10px; }
+        .prometheus-info code { background: rgba(0,0,0,0.2); padding: 2px 6px; border-radius: 3px; font-family: monospace; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>🖥️ GOGO服务器监控面板</h1>
+        <div class="actions">
+            <span class="time" id="currentTime"></span>
+            <button class="btn ai" onclick="openAIAnalysis()">🤖 AI分析</button>
+            <button class="btn wechat" onclick="testWechat()">🔔 测试推送</button>
+            <button class="btn" onclick="pushDailyReport()">📊 发送日报</button>
+            <button class="btn" onclick="logout()">🚪 退出</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card cpu-card" onclick="openDetail('cpu')">
+                <div class="icon">🖥️</div>
+                <div class="value" id="cpuValue">--</div>
+                <div class="label">CPU使用率</div>
+                <div class="click-hint">点击查看详情 →</div>
+            </div>
+            <div class="stat-card mem-card" onclick="openDetail('memory')">
+                <div class="icon">💾</div>
+                <div class="value" id="memValue">--</div>
+                <div class="label">内存使用率</div>
+                <div class="click-hint">点击查看详情 →</div>
+            </div>
+            <div class="stat-card disk-card" onclick="openDetail('disk')">
+                <div class="icon">💿</div>
+                <div class="value" id="diskValue">--</div>
+                <div class="label">磁盘使用率</div>
+                <div class="click-hint">点击查看详情 →</div>
+            </div>
+            <div class="stat-card docker-card" onclick="openDetail('docker')">
+                <div class="icon">🐳</div>
+                <div class="value" id="dockerValue">--</div>
+                <div class="label">Docker容器</div>
+                <div class="click-hint">点击查看详情 →</div>
+            </div>
+            <div class="stat-card sec-card" onclick="openDetail('security')">
+                <div class="icon">🔒</div>
+                <div class="value" id="secValue">--</div>
+                <div class="label">今日攻击</div>
+                <div class="click-hint">点击查看详情 →</div>
+            </div>
+            <div class="stat-card task-card" onclick="switchTab('tasks')">
+                <div class="icon">📋</div>
+                <div class="value" id="taskCount">--</div>
+                <div class="label">定时任务</div>
+                <div class="click-hint">点击查看详情 →</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('security')">🔒 安全事件</div>
+            <div class="tab" onclick="switchTab('ports')">📡 端口详情</div>
+            <div class="tab" onclick="switchTab('network')">🌐 网络连接</div>
+            <div class="tab" onclick="switchTab('crontab')">⏰ 定时任务</div>
+            <div class="tab" onclick="switchTab('tasks')">📋 任务管理</div>
+            <div class="tab" onclick="switchTab('report')">📋 每日报告</div>
+            <div class="tab" onclick="switchTab('aliyun')">☁️ 事件通知</div>
+            <div class="tab" onclick="switchTab('charts')">📈 趋势图表</div>
+            <div class="tab" onclick="switchTab('ops')">⚡ 自动化运维</div>
+            <div class="tab" onclick="switchTab('cronmgr')">🕐 任务调度</div>
+        </div>
+
+        <div id="tab-security" class="tab-content active">
+            <div class="card">
+                <h2>🚨 安全事件 <span class="count" id="secCount">0</span> <span class="refresh" onclick="loadSecurity()">🔄 刷新</span></h2>
+                <div id="security-data"><div class="loading">加载中...</div></div>
+            </div>
+        </div>
+
+        <div id="tab-ports" class="tab-content">
+            <div class="card">
+                <h2>📡 端口详情 <span class="refresh" onclick="loadPorts()">🔄 刷新</span></h2>
+                <div style="overflow-x:auto">
+                    <table class="data-table" id="portsTable">
+                        <thead><tr><th>服务</th><th>端口</th><th>协议</th><th>监听地址</th><th>说明</th></tr></thead>
+                        <tbody id="portsData"><tr><td colspan="5" class="center"><div class="loading">加载中...</div></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-network" class="tab-content">
+            <div class="card">
+                <h2>🌐 网络连接 <span class="refresh" onclick="loadNetwork()">🔄 刷新</span></h2>
+                <div style="overflow-x:auto">
+                    <table class="data-table">
+                        <thead><tr><th>协议</th><th>本地地址</th><th>远程地址</th><th>状态</th></tr></thead>
+                        <tbody id="networkData"><tr><td colspan="4" class="center"><div class="loading">加载中...</div></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-crontab" class="tab-content">
+            <div class="card">
+                <h2>⏰ 定时任务 <span class="refresh" onclick="loadCrontab()">🔄 刷新</span></h2>
+                <div id="crontabData"><div class="loading">加载中...</div></div>
+            </div>
+        </div>
+
+        <div id="tab-report" class="tab-content">
+            <div class="card">
+                <h2>📋 每日运维报告 <span class="refresh" onclick="loadReport()">🔄 刷新</span></h2>
+                <div id="reportData"><div class="loading">加载中...</div></div>
+            </div>
+        </div>
+
+        <div id="tab-aliyun" class="tab-content">
+            <div class="card">
+                <h2>☁️ 阿里云事件通知 <span class="refresh" onclick="loadAliyunEvents()">🔄 刷新</span></h2>
+                <div id="aliyun-data"><div class="loading">加载中...</div></div>
+            </div>
+        </div>
+
+        <div id="tab-charts" class="tab-content">
+            <div class="card">
+                <h2>📈 资源使用趋势 <span class="refresh" onclick="refreshCharts()">🔄 刷新</span></h2>
+                <div class="chart-controls">
+                    <button class="chart-btn active" onclick="switchChart('cpu')">🖥️ CPU</button>
+                    <button class="chart-btn" onclick="switchChart('memory')">💾 内存</button>
+                    <button class="chart-btn" onclick="switchChart('disk')">💿 磁盘</button>
+                    <span style="margin-left:auto;font-size:13px;color:#666;">
+                        时间范围: 
+                        <select id="chartRange" onchange="changeChartRange()" style="padding:5px;border-radius:5px;border:1px solid #ddd;">
+                            <option value="1">最近1小时</option>
+                            <option value="6">最近6小时</option>
+                            <option value="12" selected>最近12小时</option>
+                            <option value="24">最近24小时</option>
+                        </select>
+                    </span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+                <div class="chart-summary">
+                    <span>平均值: <strong id="chartAvg">--</strong>%</span>
+                    <span>最大值: <strong id="chartMax">--</strong>%</span>
+                    <span>最小值: <strong id="chartMin">--</strong>%</span>
+                </div>
+            </div>
+            
+            <div class="prometheus-info">
+                <h4>📊 Prometheus 指标端点</h4>
+                <p>您可以通过以下地址获取Prometheus格式的监控指标：</p>
+                <p><code>?s=monitor/api&action=metrics</code></p>
+                <p style="margin-top:10px;font-size:12px;">可用于配置Prometheus抓取任务或与其他监控系统集成。</p>
+            </div>
+        </div>
+
+        <div id="tab-ops" class="tab-content">
+            <div class="card">
+                <h2>⚡ 自动化运维 <span class="refresh" onclick="loadOps()">🔄 刷新</span></h2>
+                <div class="ops-grid">
+                    <div class="ops-card">
+                        <h4>🧹 一键优化</h4>
+                        <p>同时清理内存缓存、Docker未使用资源、日志文件、临时文件</p>
+                        <button class="ops-btn" onclick="runAutoOptimize()">🚀 执行优化</button>
+                        <div id="ops-optimize-result"></div>
+                    </div>
+                    <div class="ops-card">
+                        <h4>💾 清理内存缓存</h4>
+                        <p>释放Linux系统缓存，回收内存占用</p>
+                        <button class="ops-btn success" onclick="runOptimizeMemory()">⚡ 清理内存</button>
+                        <div id="ops-memory-result"></div>
+                    </div>
+                    <div class="ops-card">
+                        <h4>🐳 清理Docker</h4>
+                        <p>清理未使用的镜像、容器、数据卷，释放磁盘空间</p>
+                        <button class="ops-btn warning" onclick="runCleanupDocker()">🗑️ 清理Docker</button>
+                        <div id="ops-docker-result"></div>
+                    </div>
+                    <div class="ops-card">
+                        <h4>📄 清理日志</h4>
+                        <p>清理大体积日志文件，保留必要日志</p>
+                        <button class="ops-btn warning" onclick="runCleanupLogs()">📄 清理日志</button>
+                        <div id="ops-logs-result"></div>
+                    </div>
+                    <div class="ops-card">
+                        <h4>🚫 自动封锁攻击IP</h4>
+                        <p>自动检测并封锁SSH暴力破解IP（超过设定阈值）</p>
+                        <div style="margin-bottom:10px;">
+                            <label style="font-size:12px;">攻击阈值: </label>
+                            <input type="number" id="attackThreshold" value="10" min="1" style="width:60px;padding:5px;">
+                            <span style="font-size:12px;">次</span>
+                        </div>
+                        <button class="ops-btn danger" onclick="runAutoBlock()">🚫 自动封锁</button>
+                        <div id="ops-block-result"></div>
+                    </div>
+                    <div class="ops-card">
+                        <h4>🔄 服务重启</h4>
+                        <p>重启指定系统服务（需谨慎操作）</p>
+                        <div style="margin-bottom:10px;">
+                            <select id="serviceToRestart" style="width:100%;padding:8px;">
+                                <option value="docker">Docker</option>
+                                <option value="nginx">Nginx</option>
+                                <option value="php-fpm">PHP-FPM</option>
+                                <option value="cron">Cron定时任务</option>
+                            </select>
+                        </div>
+                        <button class="ops-btn" onclick="runServiceRestart()">🔄 重启服务</button>
+                        <div id="ops-restart-result"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-cronmgr" class="tab-content">
+            <div class="card">
+                <h2>🕐 定时任务管理 <span class="refresh" onclick="loadCronManager()">🔄 刷新</span></h2>
+                
+                <div class="cron-form">
+                    <h4 style="margin-bottom:15px;color:#333;">➕ 添加新定时任务</h4>
+                    <div class="form-row">
+                        <div class="field">
+                            <label>分钟</label>
+                            <input type="text" id="cronMinute" value="*" placeholder="0-59/*">
+                        </div>
+                        <div class="field">
+                            <label>小时</label>
+                            <input type="text" id="cronHour" value="*" placeholder="0-23/*">
+                        </div>
+                        <div class="field">
+                            <label>日期</label>
+                            <input type="text" id="cronDay" value="*" placeholder="1-31/*">
+                        </div>
+                        <div class="field">
+                            <label>月份</label>
+                            <input type="text" id="cronMonth" value="*" placeholder="1-12/*">
+                        </div>
+                        <div class="field">
+                            <label>星期</label>
+                            <input type="text" id="cronWeekday" value="*" placeholder="0-6/*">
+                        </div>
+                    </div>
+                    <div class="form-row field-full">
+                        <label>执行命令</label>
+                        <input type="text" id="cronCommand" placeholder="curl https://your-site.com/api/cron">
+                    </div>
+                    <div class="cron-preview" id="cronPreview">* * * * * curl https://your-site.com/api/cron</div>
+                    <p class="cron-help">💡 分钟 小时 日期 月份 星期 - 例如: 0 9 * * * 表示每天9:00执行</p>
+                    <button class="ops-btn" onclick="addCronTask()" style="margin-top:15px;">✅ 添加任务</button>
+                </div>
+                
+                <h4 style="margin:20px 0 15px;color:#333;">📋 现有定时任务</h4>
+                <div style="overflow-x:auto">
+                    <table class="data-table">
+                        <thead><tr><th>序号</th><th>执行时间</th><th>命令</th><th>状态</th><th>操作</th></tr></thead>
+                        <tbody id="cronManagerData"><tr><td colspan="5" class="center"><div class="loading">加载中...</div></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-tasks" class="tab-content">
+            <div class="card">
+                <h2>📋 任务管理 <span class="count" id="taskTotal">0</span> <span class="refresh" onclick="loadTasks()">🔄 刷新</span></h2>
+                <div class="modal-info" style="margin-bottom:15px">
+                    <div class="modal-info-item">
+                        <div class="label">任务总数</div>
+                        <div class="value" id="taskStatTotal">--</div>
+                    </div>
+                    <div class="modal-info-item">
+                        <div class="label">电商平台</div>
+                        <div class="value" id="taskStatShop">--</div>
+                    </div>
+                    <div class="modal-info-item">
+                        <div class="label">报关系统</div>
+                        <div class="value" id="taskStatDeclare">--</div>
+                    </div>
+                    <div class="modal-info-item">
+                        <div class="label">监控系统</div>
+                        <div class="value" id="taskStatMonitor">--</div>
+                    </div>
+                </div>
+                <div style="overflow-x:auto">
+                    <table class="data-table" id="tasksTable">
+                        <thead><tr><th>任务名称</th><th>执行周期</th><th>目标站点</th><th>分类</th><th>下次执行</th><th>操作</th></tr></thead>
+                        <tbody id="tasksData"><tr><td colspan="6" class="center"><div class="loading">加载中...</div></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid" style="margin-top:20px">
+            <div class="card">
+                <h2>📈 系统运行信息</h2>
+                <div class="metric"><span class="label">运行时间</span><span class="value" id="uptime">--</span></div>
+                <div class="metric"><span class="label">系统负载</span><span class="value" id="loadavg">--</span></div>
+            </div>
+            <div class="card">
+                <h2>📊 Docker容器状态</h2>
+                <div class="metric"><span class="label">运行中</span><span class="value success" id="dockerRunning">--</span></div>
+                <div class="metric"><span class="label">已停止</span><span class="value danger" id="dockerStopped">--</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 详情模态框 -->
+    <div class="modal" id="detailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">详情</h3>
+                <button class="modal-close" onclick="closeModal('detailModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI分析模态框 -->
+    <div class="modal" id="aiModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🤖 AI智能分析</h3>
+                <button class="modal-close" onclick="closeModal('aiModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="ai-analysis" id="aiContent">
+                    <div class="loading-text">🔄 正在分析服务器状态...</div>
+                </div>
+                <div style="text-align:center;margin-top:15px">
+                    <button class="ai-btn" onclick="runAIAnalysis('system')">🔄 重新分析</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 微信推送模态框 -->
+    <div class="modal" id="wechatModal">
+        <div class="modal-content" style="max-width:400px">
+            <div class="modal-header">
+                <h3 id="wechatTitle">🔔 微信推送</h3>
+                <button class="modal-close" onclick="closeModal('wechatModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="wechatBody">
+                <div class="loading">发送中...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 容器详情模态框 -->
+    <div class="modal" id="containerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="containerTitle">容器详情</h3>
+                <button class="modal-close" onclick="closeModal('containerModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="containerBody"><div class="loading">加载中...</div></div>
+        </div>
+    </div>
+
+    <script>
+        const API = '?s=monitor/api';
+
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleString('zh-CN');
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        function loadAll() {
+            loadStats();
+        }
+
+        function loadStats() {
+            fetch(API + '&action=check').then(r => r.json()).then(d => {
+                if (d.code === 0) {
+                    const data = d.data;
+                    
+                    // CPU
+                    const cpuEl = document.getElementById('cpuValue');
+                    cpuEl.textContent = data.cpu.value + '%';
+                    cpuEl.className = 'value ' + (data.cpu.status === 'critical' ? 'danger' : data.cpu.status === 'warning' ? 'warning' : 'success');
+
+                    // 内存
+                    const memEl = document.getElementById('memValue');
+                    memEl.textContent = data.memory.value + '%';
+                    memEl.className = 'value ' + (data.memory.status === 'critical' ? 'danger' : data.memory.status === 'warning' ? 'warning' : 'success');
+
+                    // 磁盘
+                    const diskEl = document.getElementById('diskValue');
+                    diskEl.textContent = data.disk.value + '%';
+                    diskEl.className = 'value ' + (data.disk.status === 'critical' ? 'danger' : data.disk.status === 'warning' ? 'warning' : 'success');
+
+                    // Docker
+                    const dockerEl = document.getElementById('dockerValue');
+                    dockerEl.textContent = data.docker.running + '/' + data.docker.total;
+                    dockerEl.className = 'value ' + (data.docker.running === 0 ? 'danger' : 'success');
+                    document.getElementById('dockerRunning').textContent = data.docker.running;
+                    document.getElementById('dockerStopped').textContent = data.docker.total - data.docker.running;
+
+                    // 安全
+                    const secEl = document.getElementById('secValue');
+                    secEl.textContent = data.security.attacks;
+                    secEl.className = 'value ' + (data.security.status === 'critical' ? 'danger' : data.security.status === 'warning' ? 'warning' : 'success');
+                    document.getElementById('secCount').textContent = data.security.attacks;
+
+                    // 系统信息
+                    document.getElementById('uptime').textContent = data.uptime;
+                    document.getElementById('loadavg').textContent = data.load;
+                }
+            });
+        }
+
+        // 打开详情
+        function openDetail(type) {
+            const titles = {
+                cpu: '🖥️ CPU详细信息',
+                memory: '💾 内存详细信息',
+                disk: '💿 磁盘详细信息',
+                docker: '🐳 Docker容器概览',
+                security: '🔒 安全事件概览'
+            };
+            
+            document.getElementById('modalTitle').textContent = titles[type];
+            document.getElementById('modalBody').innerHTML = '<div class="loading">加载中...</div>';
+            document.getElementById('detailModal').classList.add('active');
+
+            fetch(API + '&action=system_detail&type=' + type).then(r => r.json()).then(d => {
+                if (d.code === 0) {
+                    renderDetail(d);
+                } else {
+                    document.getElementById('modalBody').innerHTML = '<div class="empty-state">加载失败</div>';
+                }
+            }).catch(() => {
+                document.getElementById('modalBody').innerHTML = '<div class="empty-state">加载失败</div>';
+            });
+        }
+
+        function renderDetail(d) {
+            let html = '';
+            const type = d.type;
+
+            if (type === 'cpu') {
+                const cpu = d.data;
+                html = `
+                    <div class="modal-info">
+                        <div class="modal-info-item"><div class="label">CPU型号</div><div class="value">${cpu.model}</div></div>
+                        <div class="modal-info-item"><div class="label">核心数</div><div class="value">${cpu.cores}</div></div>
+                        <div class="modal-info-item"><div class="label">当前使用</div><div class="value ${cpu.usage > 80 ? 'danger' : cpu.usage > 60 ? 'warning' : 'success'}">${cpu.usage}%</div></div>
+                        <div class="modal-info-item"><div class="label">用户空间</div><div class="value">${cpu.user}%</div></div>
+                        <div class="modal-info-item"><div class="label">系统空间</div><div class="value">${cpu.system}%</div></div>
+                        <div class="modal-info-item"><div class="label">空闲率</div><div class="value success">${cpu.idle}%</div></div>
+                    </div>
+                    <div class="modal-section">
+                        <h4>📊 系统负载</h4>
+                        <pre>${cpu.load_avg || '未知'}</pre>
+                    </div>
+                    <div class="modal-section">
+                        <h4>🔥 Top进程 (按CPU)</h4>
+                        <pre>${cpu.top_processes || '无法获取'}</pre>
+                    </div>
+                    <div class="modal-section">
+                        <h4>📈 使用趋势</h4>
+                        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center">
+                            ${(cpu.history || []).map(h => `
+                                <div style="background:#f0f0f0;padding:8px;border-radius:5px">
+                                    <div style="font-size:10px;color:#999">${h.time}</div>
+                                    <div style="font-weight:bold;color:#1890ff">${h.avg}%</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'memory') {
+                const mem = d.data;
+                html = `
+                    <div class="modal-info">
+                        <div class="modal-info-item"><div class="label">总内存</div><div class="value">${mem.total} GB</div></div>
+                        <div class="modal-info-item"><div class="label">已使用</div><div class="value ${mem.percent > 85 ? 'danger' : mem.percent > 70 ? 'warning' : 'success'}">${mem.used} GB</div></div>
+                        <div class="modal-info-item"><div class="label">可用内存</div><div class="value success">${mem.free} GB</div></div>
+                        <div class="modal-info-item"><div class="label">使用率</div><div class="value ${mem.percent > 85 ? 'danger' : mem.percent > 70 ? 'warning' : 'success'}">${mem.percent}%</div></div>
+                        <div class="modal-info-item"><div class="label">缓存/缓冲</div><div class="value">${mem.buffers} GB</div></div>
+                        <div class="modal-info-item"><div class="label">Swap总量</div><div class="value">${mem.swap_total} GB</div></div>
+                        <div class="modal-info-item"><div class="label">Swap已用</div><div class="value ${mem.swap_used > 0 ? 'warning' : ''}">${mem.swap_used} GB</div></div>
+                    </div>
+                    <div class="modal-section">
+                        <h4>📊 内存使用率</h4>
+                        <div class="progress-bar"><div class="fill ${mem.percent > 85 ? 'danger' : mem.percent > 70 ? 'warning' : 'normal'}" style="width:${mem.percent}%"></div></div>
+                        <div style="display:flex;justify-content:space-between;font-size:12px;color:#999"><span>0%</span><span>50%</span><span>100%</span></div>
+                    </div>
+                    <div class="modal-section">
+                        <h4>🔥 Top进程 (按内存)</h4>
+                        <pre>${mem.top_processes || '无法获取'}</pre>
+                    </div>
+                `;
+            } else if (type === 'disk') {
+                const disk = d.data;
+                html = `
+                    <div class="modal-section">
+                        <h4>💿 分区使用情况</h4>
+                        <table class="data-table">
+                            <thead><tr><th>文件系统</th><th>总大小</th><th>已用</th><th>可用</th><th>使用率</th></tr></thead>
+                            <tbody>
+                                ${(disk.partitions || []).map(p => `
+                                    <tr>
+                                        <td>${p.filesystem}</td>
+                                        <td>${p.size}</td>
+                                        <td>${p.used}</td>
+                                        <td>${p.available}</td>
+                                        <td><span class="tag ${p.use_percent >= 85 ? 'danger' : p.use_percent >= 70 ? 'warning' : 'success'}">${p.use_percent}%</span></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } else if (type === 'docker') {
+                const containers = d.data.containers || [];
+                const running = d.data.running || 0;
+                const total = d.data.total || 0;
+                html = `
+                    <div class="modal-info">
+                        <div class="modal-info-item"><div class="label">运行中</div><div class="value success">${running}</div></div>
+                        <div class="modal-info-item"><div class="label">已停止</div><div class="value ${total - running > 0 ? 'danger' : ''}">${total - running}</div></div>
+                        <div class="modal-info-item"><div class="label">总计</div><div class="value">${total}</div></div>
+                    </div>
+                    <div class="modal-section">
+                        <h4>🐳 容器详情</h4>
+                        <table class="data-table">
+                            <thead><tr><th>名称</th><th>状态</th><th>CPU</th><th>内存</th><th>操作</th></tr></thead>
+                            <tbody>
+                                ${containers.length > 0 ? containers.map(c => `
+                                    <tr>
+                                        <td><strong>${c.name}</strong></td>
+                                        <td><span class="tag ${c.status.toLowerCase().includes('up') ? 'success' : 'danger'}">${c.status}</span></td>
+                                        <td>${c.cpu}</td>
+                                        <td>${c.memory}</td>
+                                        <td><button class="btn" onclick="showContainerDetail('${c.name}')">查看详情</button></td>
+                                    </tr>
+                                `).join('') : '<tr><td colspan="5" class="center">暂无Docker容器</td></tr>'}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } else if (type === 'security') {
+                const sec = d.data;
+                html = `
+                    <div class="modal-info">
+                        <div class="modal-info-item"><div class="label">今日攻击次数</div><div class="value ${sec.today_attacks > 10 ? 'danger' : sec.today_attacks > 0 ? 'warning' : 'success'}">${sec.today_attacks}</div></div>
+                        <div class="modal-info-item"><div class="label">已封禁IP</div><div class="value">${sec.blocked_ips}</div></div>
+                        <div class="modal-info-item"><div class="label">白名单数量</div><div class="value">${sec.whitelist_count}</div></div>
+                    </div>
+                    <div class="modal-section">
+                        <h4>👤 最近登录</h4>
+                        <pre>${sec.last_logins || '暂无记录'}</pre>
+                    </div>
+                `;
+            }
+
+            document.getElementById('modalBody').innerHTML = html;
+        }
+
+        // AI分析
+        function openAIAnalysis() {
+            document.getElementById('aiModal').classList.add('active');
+            runAIAnalysis('system');
+        }
+        
+        // 显示容器详情
+        function showContainerDetail(name) {
+            document.getElementById('containerTitle').textContent = '🐳 ' + name + ' 详情';
+            document.getElementById('containerBody').innerHTML = '<div class="loading">加载中...</div>';
+            document.getElementById('containerModal').classList.add('active');
+            
+            fetch(API + '&action=container_detail&name=' + encodeURIComponent(name)).then(r => r.json()).then(d => {
+                if (d.code === 0) {
+                    let html = '<div class="modal-section"><h4>📊 资源使用</h4><pre>' + (d.stats || 'N/A') + '</pre></div>';
+                    html += '<div class="modal-section"><h4>🔌 端口映射</h4><pre>' + (d.ports || '无') + '</pre></div>';
+                    html += '<div class="modal-section"><h4>💾 挂载卷</h4><pre>' + (d.volumes || '无') + '</pre></div>';
+                    html += '<div class="modal-section"><h4>🌐 网络信息</h4><pre>' + (d.networks || '无') + '</pre></div>';
+                    document.getElementById('containerBody').innerHTML = html;
+                } else {
+                    document.getElementById('containerBody').innerHTML = '<div class="empty-state">加载失败</div>';
+                }
+            }).catch(() => {
+                document.getElementById('containerBody').innerHTML = '<div class="empty-state">加载失败</div>';
+            });
+        }
+
+        function runAIAnalysis(type) {
+            document.getElementById('aiContent').innerHTML = '<div class="loading-text">🔄 正在分析服务器状态...</div>';
+            
+            fetch(API + '&action=ai_analysis&type=' + type).then(r => r.json()).then(d => {
+                if (d.code === 0) {
+                    renderAIAnalysis(d.analysis);
+                } else {
+                    document.getElementById('aiContent').innerHTML = '<div class="empty-state">分析失败</div>';
+                }
+            }).catch(() => {
+                document.getElementById('aiContent').innerHTML = '<div class="empty-state">分析失败，请重试</div>';
+            });
+        }
+
+        function renderAIAnalysis(analysis) {
+            const scoreColor = analysis.score >= 80 ? '#52c41a' : analysis.score >= 60 ? '#faad14' : '#f5222d';
+            let html = `
+                <div class="score">${analysis.score}分</div>
+                <div class="assessment">综合评分：${analysis.assessment}</div>
+                <div class="suggestions">
+                    <strong>📋 分析摘要：</strong><br>
+                    ${(analysis.summary || '').replace(/\n/g, '<br>')}
+                    <br><br>
+                    <strong>💡 优化建议：</strong>
+                    <ul style="padding-left:20px">
+                        ${(analysis.suggestions || []).map(s => `<li>${s}</li>`).join('')}
+                    </ul>
+                </div>
+                <div style="text-align:center;font-size:11px;opacity:0.7;margin-top:15px">
+                    分析时间：${analysis.timestamp}
+                </div>
+            `;
+            document.getElementById('aiContent').innerHTML = html;
+        }
+
+        // 微信推送
+        function testWechat() {
+            document.getElementById('wechatTitle').textContent = '🔔 测试推送';
+            document.getElementById('wechatBody').innerHTML = '<div class="loading">发送中...</div>';
+            document.getElementById('wechatModal').classList.add('active');
+
+            fetch(API + '&action=wechat_test').then(r => r.json()).then(d => {
+                if (d.code === 0) {
+                    document.getElementById('wechatBody').innerHTML = '<div class="empty-state"><div class="icon">✅</div><div>推送成功！</div><p style="color:#999;margin-top:10px">请检查微信是否收到通知</p></div>';
+                } else {
+                    document.getElementById('wechatBody').innerHTML = '<div class="empty-state"><div class="icon">❌</div><div>推送失败</div><p style="color:#999;margin-top:10px">' + d.msg + '</p></div>';
+                }
+            }).catch(() => {
+                document.getElementById('wechatBody').innerHTML = '<div class="empty-state"><div class="icon">❌</div><div>推送失败</div></div>';
+            });
+        }
+
+        function pushDailyReport() {
+            document.getElementById('wechatTitle').textContent = '📊 发送日报';
+            document.getElementById('wechatBody').innerHTML = '<div class="loading">正在生成并发送每日报告...</div>';
+            document.getElementById('wechatModal').classList.add('active');
+
+            fetch(API + '&action=daily_report_push').then(r => r.json()).then(d => {
+                if (d.code === 0) {
+                    document.getElementById('wechatBody').innerHTML = '<div class="empty-state"><div class="icon">✅</div><div>日报推送成功！</div><p style="color:#999;margin-top:10px">您将在微信公众号收到今日运维报告</p></div>';
+                } else {
+                    document.getElementById('wechatBody').innerHTML = '<div class="empty-state"><div class="icon">❌</div><div>推送失败</div><p style="color:#999;margin-top:10px">' + d.msg + '</p></div>';
+                }
+            }).catch(() => {
+                document.getElementById('wechatBody').innerHTML = '<div class="empty-state"><div class="icon">❌</div><div>推送失败</div></div>';
+            });
+        }
+
+        function loadSecurity() {
+            document.getElementById('security-data').innerHTML = '<div class="loading">加载中...</div>';
+            fetch(API + '&action=security_events').then(r => r.json()).then(d => {
+                if (d.code === 0 && d.events && d.events.length > 0) {
+                    let html = '';
+                    d.events.forEach(e => {
+                        html += '<div class="event-item ' + e.severity + '">';
+                        html += '<div class="title">' + e.title + '</div>';
+                        html += '<div class="desc">' + e.description + '</div>';
+                        if (e.action) html += '<div class="action">' + e.action + '</div>';
+                        html += '<div class="time">⏰ ' + e.time + '</div>';
+                        html += '</div>';
+                    });
+                    document.getElementById('security-data').innerHTML = html;
+                } else {
+                    document.getElementById('security-data').innerHTML = '<div class="empty-state"><div class="icon">✅</div><div>暂无安全事件</div><p style="color:#999;margin-top:10px">系统运行安全</p></div>';
+                }
+            }).catch(() => {
+                document.getElementById('security-data').innerHTML = '<div class="empty-state">加载失败</div>';
+            });
+        }
+
+        function loadPorts() {
+            fetch(API + '&action=port_detail').then(r => r.json()).then(d => {
+                if (d.code === 0) {
+                    let html = '';
+                    d.ports.forEach(p => {
+                        const tagClass = 'success';
+                        html += '<tr>';
+                        html += '<td>' + p.name + '</td>';
+                        html += '<td>' + p.port + '</td>';
+                        html += '<td>' + p.protocol + '</td>';
+                        html += '<td>' + p.address + '</td>';
+                        html += '<td>' + p.desc + '</td>';
+                        html += '</tr>';
+                    });
+                    document.getElementById('portsData').innerHTML = html || '<tr><td colspan="5" class="center">暂无数据</td></tr>';
+                }
+            });
+        }
+
+        function loadNetwork() {
+            fetch(API + '&action=network_detail').then(r => r.json()).then(d => {
+                if (d.code === 0) {
+                    let html = '';
+                    d.connections.slice(0, 50).forEach(c => {
+                        html += '<tr>';
+                        html += '<td>' + c.protocol + '</td>';
+                        html += '<td>' + c.local + ':' + c.local_port + '</td>';
+                        html += '<td>' + c.remote + ':' + c.remote_port + '</td>';
+                        html += '<td><span class="tag ' + (c.state === 'ESTAB' ? 'success' : 'warning') + '">' + c.state + '</span></td>';
+                        html += '</tr>';
+                    });
+                    document.getElementById('networkData').innerHTML = html || '<tr><td colspan="4" class="center">暂无数据</td></tr>';
+                }
+            });
+        }
+
+        function loadCrontab() {
+            fetch(API + '&action=crontab').then(r => r.json()).then(d => {
+                if (d.code === 0) {
+                    let html = '<table class="data-table"><thead><tr><th>时间</th><th>描述</th><th>命令</th></tr></thead><tbody>';
+                    if (d.tasks && d.tasks.length > 0) {
+                        d.tasks.forEach(t => {
+                            html += '<tr>';
+                            html += '<td>' + t.minute + ' ' + t.hour + ' ' + t.day + ' ' + t.month + ' ' + t.weekday + '</td>';
+                            html += '<td>' + t.description + '</td>';
+                            html += '<td><code style="font-size:11px">' + t.command.substring(0, 50) + '</code></td>';
+                            html += '</tr>';
+                        });
+                    } else {
+                        html += '<tr><td colspan="3" class="center">暂无定时任务</td></tr>';
+                    }
+                    html += '</tbody></table>';
+                    document.getElementById('crontabData').innerHTML = html;
+                }
+            });
+        }
+
+        function loadTasks() {
+            document.getElementById('tasksData').innerHTML = '<tr><td colspan="6" class="center"><div class="loading">加载中...</div></td></tr>';
+            fetch(API + '&action=task_list').then(r => r.json()).then(d => {
+                if (d.code === 0 && d.tasks) {
+                    // 更新统计卡片
+                    document.getElementById('taskCount').textContent = d.total;
+                    document.getElementById('taskTotal').textContent = d.total;
+                    document.getElementById('taskStatTotal').textContent = d.total;
+
+                    // 更新分类统计
+                    const cats = d.summary.by_category || {};
+                    document.getElementById('taskStatShop').textContent = cats.shop || 0;
+                    document.getElementById('taskStatDeclare').textContent = cats.declare || 0;
+                    document.getElementById('taskStatMonitor').textContent = cats.monitor || 0;
+
+                    // 渲染表格
+                    let html = '';
+                    if (d.tasks.length > 0) {
+                        d.tasks.forEach(t => {
+                            const catClass = {
+                                'shop': 'success',
+                                'declare': 'warning',
+                                'monitor': 'info',
+                                'admin': '',
+                                'boss': '',
+                                'ssl': 'danger',
+                                'other': ''
+                            }[t.category] || '';
+
+                            const catName = {
+                                'shop': '电商平台',
+                                'declare': '报关系统',
+                                'monitor': '监控系统',
+                                'admin': '管理后台',
+                                'boss': 'Boss通知',
+                                'ssl': 'SSL证书',
+                                'other': '其他'
+                            }[t.category] || '其他';
+
+                            html += '<tr>';
+                            html += '<td><strong>' + t.name + '</strong></td>';
+                            html += '<td>' + t.schedule + '</td>';
+                            html += '<td><a href="#" onclick="event.preventDefault();window.open(\'http://' + t.target_name + '\')">' + t.target_name + '</a></td>';
+                            html += '<td><span class="tag ' + catClass + '">' + catName + '</span></td>';
+                            html += '<td>' + (t.next_run || '-') + '</td>';
+                            html += '<td>';
+                            html += '<a class="action" onclick="showTaskDetail(\'' + t.id + '\')">详情</a> ';
+                            html += '<a class="action" onclick="runTask(\'' + t.id + '\')">执行</a>';
+                            html += '</td>';
+                            html += '</tr>';
+                        });
+                    } else {
+                        html = '<tr><td colspan="6" class="center">暂无任务</td></tr>';
+                    }
+                    document.getElementById('tasksData').innerHTML = html;
+                } else {
+                    document.getElementById('tasksData').innerHTML = '<tr><td colspan="6" class="center">加载失败</td></tr>';
+                }
+            }).catch(() => {
+                document.getElementById('tasksData').innerHTML = '<tr><td colspan="6" class="center">网络错误</td></tr>';
+            });
+        }
+
+        function showTaskDetail(taskId) {
+            document.getElementById('modalTitle').textContent = '任务详情';
+            document.getElementById('modalBody').innerHTML = '<div class="loading">加载中...</div>';
+            document.getElementById('detailModal').classList.add('active');
+
+            fetch(API + '&action=task_detail&task_id=' + taskId).then(r => r.json()).then(d => {
+                if (d.code === 0 && d.detail) {
+                    let html = '<div class="modal-info">';
+                    html += '<div class="modal-info-item"><div class="label">任务ID</div><div class="value">' + taskId + '</div></div>';
+                    html += '<div class="modal-info-item"><div class="label">目标URL</div><div class="value"><a href="#" onclick="event.preventDefault();window.open(\'' + d.detail.target + '\')">' + d.detail.target_name + '</a></div></div>';
+                    html += '</div>';
+
+                    html += '<div class="modal-section"><h4>📝 脚本内容</h4><pre>' + (d.detail.script || '无') + '</pre></div>';
+                    html += '<div class="modal-section"><h4>📜 最近执行日志</h4><pre style="max-height:200px">' + (d.detail.log_tail || d.detail.log || '暂无日志') + '</pre></div>';
+                    html += '<div class="modal-section"><h4>📊 执行历史</h4><pre>' + (d.detail.history || '暂无历史记录') + '</pre></div>';
+                    html += '<button class="ai-btn" onclick="runTask(\'' + taskId + '\')">▶ 立即执行此任务</button>';
+
+                    document.getElementById('modalBody').innerHTML = html;
+                } else {
+                    document.getElementById('modalBody').innerHTML = '<div class="empty-state">加载失败</div>';
+                }
+            });
+        }
+
+        function runTask(taskId) {
+            if (!confirm('确定要手动执行此任务吗？')) return;
+
+            fetch(API + '&action=task_run&task_id=' + taskId).then(r => r.json()).then(d => {
+                if (d.code === 0) {
+                    alert('任务已执行：' + d.msg);
+                    if (d.output) {
+                        document.getElementById('modalBody').innerHTML = '<div class="modal-section"><h4>执行输出</h4><pre>' + d.output + '</pre></div>';
+                    }
+                } else {
+                    alert('执行失败：' + d.msg);
+                }
+            }).catch(() => {
+                alert('网络错误');
+            });
+        }
+
+        function loadReport() {
+            fetch(API + '&action=report').then(r => r.json()).then(d => {
+                if (d.code === 0) {
+                    document.getElementById('reportData').innerHTML = d.report;
+                } else {
+                    document.getElementById('reportData').innerHTML = '<div class="empty-state"><div class="icon">📋</div><div>暂无每日报告</div><p style="color:#999;margin-top:10px">报告将在每日0点自动生成</p></div>';
+                }
+            }).catch(() => {
+                document.getElementById('reportData').innerHTML = '<div class="empty-state">加载失败</div>';
+            });
+        }
+
+        function loadAliyunEvents() {
+            document.getElementById('aliyun-data').innerHTML = '<div class="loading">加载中...</div>';
+            fetch(API + '&action=aliyun_events').then(r => r.json()).then(d => {
+                if (d.code === 0 && d.events && d.events.length > 0) {
+                    let html = '';
+                    d.events.forEach(e => {
+                        html += '<div class="event-item ' + e.severity + '" ' + (e.url ? 'onclick="window.open(\'' + e.url + '\')"' : '') + '>';
+                        html += '<div class="title">' + e.title + '</div>';
+                        html += '<div class="desc">' + e.description + '</div>';
+                        if (e.action) html += '<div class="action">💡 ' + e.action + '</div>';
+                        html += '<div class="time">⏰ ' + e.time + '</div>';
+                        html += '</div>';
+                    });
+                    document.getElementById('aliyun-data').innerHTML = html;
+                } else {
+                    document.getElementById('aliyun-data').innerHTML = '<div class="empty-state"><div class="icon">☁️</div><div>暂无待处理事件</div><p style="color:#999;margin-top:10px">定期检查阿里云控制台以获取最新通知</p></div>';
+                }
+            }).catch(() => {
+                document.getElementById('aliyun-data').innerHTML = '<div class="empty-state">加载失败</div>';
+            });
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelector('[onclick="switchTab(\'' + tab + '\')"]').classList.add('active');
+            document.getElementById('tab-' + tab).classList.add('active');
+            if (tab === 'security') loadSecurity();
+            if (tab === 'ports') loadPorts();
+            if (tab === 'network') loadNetwork();
+            if (tab === 'crontab') loadCrontab();
+            if (tab === 'tasks') loadTasks();
+            if (tab === 'report') loadReport();
+            if (tab === 'aliyun') loadAliyunEvents();
+            if (tab === 'charts') initCharts();
+            if (tab === 'ops') loadOps();
+            if (tab === 'cronmgr') loadCronManager();
+        }
+
+        // ========== 趋势图表功能 ==========
+        let trendChart = null;
+        let currentChartType = 'cpu';
+        let chartRange = 12;
+
+        function initCharts() {
+            const ctx = document.getElementById('trendChart');
+            if (!ctx) return;
+            
+            if (trendChart) {
+                trendChart.destroy();
+            }
+            
+            loadChartData(currentChartType);
+        }
+
+        function loadChartData(type) {
+            fetch(API + '&action=metrics_history&type=' + type + '&hours=' + chartRange).then(r => r.json()).then(d => {
+                if (d.code === 0) {
+                    renderChart(d.data, type, d.summary);
+                }
+            });
+        }
+
+        function renderChart(data, type, summary) {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            const labels = data.map(d => d.time);
+            const values = data.map(d => d.value);
+            
+            const colors = {
+                'cpu': { border: 'rgb(24, 144, 255)', background: 'rgba(24, 144, 255, 0.1)' },
+                'memory': { border: 'rgb(114, 46, 209)', background: 'rgba(114, 46, 209, 0.1)' },
+                'disk': { border: 'rgb(250, 140, 22)', background: 'rgba(250, 140, 22, 0.1)' }
+            };
+            
+            const titles = { 'cpu': 'CPU使用率', 'memory': '内存使用率', 'disk': '磁盘使用率' };
+            
+            trendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: titles[type],
+                        data: values,
+                        borderColor: colors[type].border,
+                        backgroundColor: colors[type].background,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y.toFixed(1) + '%';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            document.getElementById('chartAvg').textContent = summary.avg;
+            document.getElementById('chartMax').textContent = summary.max;
+            document.getElementById('chartMin').textContent = summary.min;
+        }
+
+        function switchChart(type) {
+            currentChartType = type;
+            document.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            loadChartData(type);
+        }
+
+        function changeChartRange() {
+            chartRange = parseInt(document.getElementById('chartRange').value);
+            loadChartData(currentChartType);
+        }
+
+        function refreshCharts() {
+            loadChartData(currentChartType);
+        }
+
+        // ========== 自动化运维功能 ==========
+        function loadOps() {
+            // 自动化运维页面无需加载数据
+        }
+
+        function runAutoOptimize() {
+            const resultEl = document.getElementById('ops-optimize-result');
+            resultEl.innerHTML = '<div class="loading" style="padding:10px">执行中...</div>';
+            
+            fetch(API + '&action=auto_optimize', { method: 'POST' }).then(r => r.json()).then(d => {
+                if (d.code === 0) {
+                    const r = d.results;
+                    resultEl.innerHTML = `
+                        <div class="ops-result">
+                            <strong>✅ 优化完成 (${d.timestamp})</strong><br>
+                            💾 内存: ${r.memory.before}MB → ${r.memory.after}MB (释放 ${r.memory.freed_mb}MB)<br>
+                            🐳 Docker: ${r.docker.status}<br>
+                            📄 日志: ${r.logs.size_before}<br>
+                            📁 临时文件: ${r.tmp.size_before}
+                        </div>
+                    `;
+                } else {
+                    resultEl.innerHTML = '<div class="ops-result" style="color:#f5222d">执行失败</div>';
+                }
+            }).catch(() => {
+                resultEl.innerHTML = '<div class="ops-result" style="color:#f5222d">网络错误</div>';
+            });
+        }
+
+        function runOptimizeMemory() {
+            const resultEl = document.getElementById('ops-memory-result');
+            resultEl.innerHTML = '<div class="loading" style="padding:10px">清理中...</div>';
+            
+            fetch(API + '&action=optimize_memory', { method: 'POST' }).then(r => r.json()).then(d => {
+                if (d.code === 0) {
+                    resultEl.innerHTML = `
+                        <div class="ops-result">
+                            <strong>✅ 内存清理完成</strong><br>
+                            使用内存: ${d.memory_before_mb}MB → ${d.memory_after_mb}MB<br>
+                            释放空间: ${d.freed_mb}MB
+                        </div>
+                    `;
+                    loadStats();
+                } else {
+                    resultEl.innerHTML = '<div class="ops-result" style="color:#f5222d">清理失败: ' + d.msg + '</div>';
+                }
+            });
+        }
+
+        function runCleanupDocker() {
+            const resultEl = document.getElementById('ops-docker-result');
+            resultEl.innerHTML = '<div class="loading" style="padding:10px">清理中...</div>';
+            
+            fetch(API + '&action=cleanup_docker', { method: 'POST' }).then(r => r.json()).then(d => {
+                if (d.code === 0) {
+                    resultEl.innerHTML = `
+                        <div class="ops-result">
+                            <strong>✅ Docker清理完成</strong><br>
+                            释放空间: ${d.space_reclaimed || 'N/A'}<br>
+                            当前可回收: ${d.current_reclaimable || 'N/A'}
+                        </div>
+                    `;
+                } else {
+                    resultEl.innerHTML = '<div class="ops-result" style="color:#f5222d">清理失败</div>';
+                }
+            });
+        }
+
+        function runCleanupLogs() {
+            const resultEl = document.getElementById('ops-logs-result');
+            resultEl.innerHTML = '<div class="loading" style="padding:10px">清理中...</div>';
+            
+            fetch(API + '&action=cleanup_logs', { method: 'POST' }).then(r => r.json()).then(d => {
+                if (d.code === 0) {
+                    resultEl.innerHTML = `
+                        <div class="ops-result">
+                            <strong>✅ 日志清理完成</strong><br>
+                            清理前: ${d.size_before}<br>
+                            清理后: ${d.size_after}
+                        </div>
+                    `;
+                } else {
+                    resultEl.innerHTML = '<div class="ops-result" style="color:#f5222d">清理失败</div>';
+                }
+            });
+        }
+
+        function runAutoBlock() {
+            const threshold = document.getElementById('attackThreshold').value;
+            const resultEl = document.getElementById('ops-block-result');
+            resultEl.innerHTML = '<div class="loading" style="padding:10px">检测中...</div>';
+            
+            fetch(API + '&action=auto_block_attacks&threshold=' + threshold, { method: 'POST' }).then(r => r.json()).then(d => {
+                if (d.code === 0) {
+                    let html = `<strong>✅ 自动封锁完成 (${d.timestamp})</strong><br>`;
+                    html += `阈值: ${d.threshold}次<br>`;
+                    html += `已封锁: ${d.blocked_count}个IP<br>`;
+                    if (d.blocked_ips && d.blocked_ips.length > 0) {
+                        html += '<br><strong>封锁列表:</strong><br>';
+                        d.blocked_ips.forEach(ip => {
+                            html += `🚫 ${ip.ip} (尝试 ${ip.attempts}次)<br>`;
+                        });
+                    }
+                    if (d.skipped_ips && d.skipped_ips.length > 0) {
+                        html += '<br><strong>跳过:</strong> ';
+                        d.skipped_ips.forEach(ip => html += ip.ip + ' ');
+                    }
+                    resultEl.innerHTML = '<div class="ops-result">' + html + '</div>';
+                } else {
+                    resultEl.innerHTML = '<div class="ops-result" style="color:#f5222d">执行失败</div>';
+                }
+            });
+        }
+
+        function runServiceRestart() {
+            const service = document.getElementById('serviceToRestart').value;
+            const resultEl = document.getElementById('ops-restart-result');
+            
+            if (!confirm('⚠️ 确定要重启 ' + service + ' 服务吗？这可能导致短暂的服务中断。')) {
+                return;
+            }
+            
+            resultEl.innerHTML = '<div class="loading" style="padding:10px">重启中...</div>';
+            
+            fetch(API + '&action=service_restart&service=' + service, { method: 'POST' }).then(r => r.json()).then(d => {
+                if (d.code === 0) {
+                    resultEl.innerHTML = `
+                        <div class="ops-result" style="border-left-color:#52c41a">
+                            <strong>✅ 服务重启成功</strong><br>
+                            服务: ${d.service}<br>
+                            状态: ${d.status}<br>
+                            时间: ${d.timestamp}
+                        </div>
+                    `;
+                } else {
+                    resultEl.innerHTML = '<div class="ops-result" style="color:#f5222d">重启失败: ' + d.msg + '</div>';
+                }
+            });
+        }
+
+        // ========== 定时任务管理功能 ==========
+        function loadCronManager() {
+            fetch(API + '&action=crontab').then(r => r.json()).then(d => {
+                if (d.code === 0) {
+                    renderCronManager(d.tasks || []);
+                }
+            });
+        }
+
+        function renderCronManager(tasks) {
+            let html = '';
+            if (tasks.length > 0) {
+                let i = 1;
+                tasks.forEach(t => {
+                    const isActive = !t.command.startsWith('#');
+                    html += '<tr>';
+                    html += '<td>' + (i++) + '</td>';
+                    html += '<td><code>' + t.minute + ' ' + t.hour + ' ' + t.day + ' ' + t.month + ' ' + t.weekday + '</code><br><small style="color:#999">' + t.description + '</small></td>';
+                    html += '<td><code style="font-size:11px">' + t.command.substring(0, 60) + '</code></td>';
+                    html += '<td><span class="tag ' + (isActive ? 'success' : 'warning') + '">' + (isActive ? '启用' : '禁用') + '</span></td>';
+                    html += '<td>';
+                    html += '<a class="action" onclick="deleteCron(\'' + t.command.replace(/'/g, "\\'") + '\')">删除</a> ';
+                    if (isActive) {
+                        html += '<a class="action" onclick="disableCron(\'' + t.command.replace(/'/g, "\\'") + '\')">禁用</a>';
+                    } else {
+                        html += '<a class="action" onclick="enableCron(\'' + t.command.replace(/'/g, "\\'") + '\')">启用</a>';
+                    }
+                    html += '</td>';
+                    html += '</tr>';
+                });
+            } else {
+                html = '<tr><td colspan="5" class="center">暂无定时任务</td></tr>';
+            }
+            document.getElementById('cronManagerData').innerHTML = html;
+        }
+
+        function addCronTask() {
+            const minute = document.getElementById('cronMinute').value || '*';
+            const hour = document.getElementById('cronHour').value || '*';
+            const day = document.getElementById('cronDay').value || '*';
+            const month = document.getElementById('cronMonth').value || '*';
+            const weekday = document.getElementById('cronWeekday').value || '*';
+            const command = document.getElementById('cronCommand').value;
+            
+            if (!command) {
+                alert('请输入要执行的命令');
+                return;
+            }
+            
+            fetch(API + '&action=cron_add&minute=' + encodeURIComponent(minute) + '&hour=' + encodeURIComponent(hour) + '&day=' + encodeURIComponent(day) + '&month=' + encodeURIComponent(month) + '&weekday=' + encodeURIComponent(weekday) + '&command=' + encodeURIComponent(command), {
+                method: 'POST'
+            }).then(r => r.json()).then(d => {
+                if (d.code === 0) {
+                    alert('✅ 定时任务添加成功！');
+                    loadCronManager();
+                    document.getElementById('cronCommand').value = '';
+                } else {
+                    alert('❌ 添加失败: ' + d.msg);
+                }
+            });
+        }
+
+        function deleteCron(command) {
+            if (!confirm('确定要删除这个定时任务吗？')) return;
+            
+            fetch(API + '&action=cron_delete&command=' + encodeURIComponent(command), {
+                method: 'POST'
+            }).then(r => r.json()).then(d => {
+                if (d.code === 0) {
+                    alert('✅ 定时任务已删除');
+                    loadCronManager();
+                } else {
+                    alert('❌ 删除失败: ' + d.msg);
+                }
+            });
+        }
+
+        function disableCron(command) {
+            fetch(API + '&action=cron_disable&command=' + encodeURIComponent(command), {
+                method: 'POST'
+            }).then(r => r.json()).then(d => {
+                if (d.code === 0) {
+                    alert('✅ 定时任务已禁用');
+                    loadCronManager();
+                }
+            });
+        }
+
+        function enableCron(command) {
+            fetch(API + '&action=cron_enable&command=' + encodeURIComponent(command), {
+                method: 'POST'
+            }).then(r => r.json()).then(d => {
+                if (d.code === 0) {
+                    alert('✅ 定时任务已启用');
+                    loadCronManager();
+                }
+            });
+        }
+
+        // Cron预览
+        ['cronMinute', 'cronHour', 'cronDay', 'cronMonth', 'cronWeekday'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updateCronPreview);
+        });
+
+        function updateCronPreview() {
+            const m = document.getElementById('cronMinute').value || '*';
+            const h = document.getElementById('cronHour').value || '*';
+            const d = document.getElementById('cronDay').value || '*';
+            const mo = document.getElementById('cronMonth').value || '*';
+            const w = document.getElementById('cronWeekday').value || '*';
+            document.getElementById('cronPreview').textContent = m + ' ' + h + ' ' + d + ' ' + mo + ' ' + w + ' [command]';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function logout() {
+            fetch(API + '&action=logout').then(() => window.location.href = '?s=monitor');
+        }
+
+        // 模态框点击外部关闭
+        ['detailModal', 'containerModal', 'wechatModal', 'aiModal'].forEach(id => {
+            document.getElementById(id).addEventListener('click', function(e) {
+                if (e.target === this) closeModal(id);
+            });
+        });
+
+        loadAll();
+        setInterval(loadAll, 30000);
+    </script>
+</body>
+</html>
